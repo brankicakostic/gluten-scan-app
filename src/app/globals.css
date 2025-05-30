@@ -8,33 +8,33 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 98%; /* #FAFAFA Off-white */
-    --foreground: 0 0% 20%; /* #333333 Dark Grey */
+    --background: 38 43% 97%; /* User's bgLight: #FAF8F3 */
+    --foreground: 23 29% 19%; /* User's primary (text): #3E2C22 */
 
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 0 0% 20%; /* #333333 Dark Grey */
+    --card: 38 43% 97%; /* User's bgLight: #FAF8F3 */
+    --card-foreground: 23 29% 19%; /* User's primary (text): #3E2C22 */
 
-    --popover: 0 0% 100%; /* White */
-    --popover-foreground: 0 0% 20%; /* #333333 Dark Grey */
+    --popover: 38 43% 97%; /* User's bgLight: #FAF8F3 */
+    --popover-foreground: 23 29% 19%; /* User's primary (text): #3E2C22 */
 
-    --primary: 60 56% 91.2%; /* #F5F5DC Soft Beige */
-    --primary-foreground: 0 0% 20%; /* #333333 Dark Grey (text on primary buttons) */
+    --primary: 43 65% 66%; /* User's accentYellow: #E3C26B */
+    --primary-foreground: 23 29% 19%; /* User's primary (text on primary buttons): #3E2C22 */
 
-    --secondary: 125 32.4% 90%; /* Lighter Pale Green - for secondary elements if needed */
-    --secondary-foreground: 0 0% 20%; /* #333333 Dark Grey */
+    --secondary: 93 33% 83%; /* User's accentGreen: #D2E2C4 */
+    --secondary-foreground: 23 29% 19%; /* User's primary (text on secondary): #3E2C22 */
 
-    --muted: 60 30% 94%; /* Very light, desaturated beige */
-    --muted-foreground: 0 0% 40%; /* Medium gray for muted text */
+    --muted: 93 33% 92%; /* Lighter version of accentGreen */
+    --muted-foreground: 23 20% 45%; /* Lighter version of foreground */
 
-    --accent: 125 32.4% 84.9%; /* #C8E6C9 Pale Green */
-    --accent-foreground: 0 0% 20%; /* #333333 Dark Grey (text on accent elements) */
+    --accent: 93 33% 83%; /* User's accentGreen: #D2E2C4 */
+    --accent-foreground: 23 29% 19%; /* User's primary (text on accent): #3E2C22 */
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 84.2% 60.2%; /* Standard Red for warnings */
+    --destructive-foreground: 0 0% 98%; /* Light text on destructive */
 
-    --border: 60 30% 88%; /* Light desaturated beige border */
-    --input: 60 30% 88%; /* Light desaturated beige input background */
-    --ring: 125 32.4% 75%; /* Darker Pale Green for focus rings */
+    --border: 42 23% 84%; /* User's borderDefault: #E0DBCF */
+    --input: 42 23% 84%; /* User's borderDefault: #E0DBCF */
+    --ring: 43 65% 66%; /* User's accentYellow (primary color for focus rings): #E3C26B */
 
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
@@ -44,51 +44,60 @@ body {
     --radius: 0.5rem;
 
     /* Sidebar specific theme */
-    --sidebar-background: 60 56% 91.2%; /* #F5F5DC Soft Beige */
-    --sidebar-foreground: 0 0% 20%; /* #333333 Dark Grey */
-    --sidebar-primary: 125 32.4% 84.9%; /* #C8E6C9 Pale Green (active/selected items) */
-    --sidebar-primary-foreground: 0 0% 20%; /* #333333 Dark Grey */
-    --sidebar-accent: 125 32.4% 80%; /* Slightly darker Pale Green (hover items) */
-    --sidebar-accent-foreground: 0 0% 20%; /* #333333 Dark Grey */
-    --sidebar-border: 60 50% 85%; /* Muted Beige border for sidebar elements */
-    --sidebar-ring: 125 32.4% 75%; /* Pale Green for focus rings within sidebar */
+    --sidebar-background: 93 33% 83%; /* User's accentGreen: #D2E2C4 */
+    --sidebar-foreground: 23 29% 19%; /* User's primary (text): #3E2C22 */
+    --sidebar-primary: 43 65% 66%; /* User's accentYellow (active/selected items): #E3C26B */
+    --sidebar-primary-foreground: 23 29% 19%; /* User's primary (text on active): #3E2C22 */
+    --sidebar-accent: 43 65% 60%; /* Darker accentYellow (hover items): #E3C26B */
+    --sidebar-accent-foreground: 23 29% 19%; /* User's primary (text on hover): #3E2C22 */
+    --sidebar-border: 93 33% 78%; /* Shade of sidebar-background */
+    --sidebar-ring: 43 65% 66%; /* User's accentYellow (focus rings): #E3C26B */
   }
 
   .dark {
-    /* Keeping dark theme defaults for now, can be customized later if needed */
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    --background: 27 36% 12%; /* User's bgDark: #2B1D14 */
+    --foreground: 43 56% 95%; /* User's textLight: #F9F6ED */
+
+    --card: 27 36% 12%; /* User's bgDark: #2B1D14 */
+    --card-foreground: 43 56% 95%; /* User's textLight: #F9F6ED */
+
+    --popover: 27 36% 12%; /* User's bgDark: #2B1D14 */
+    --popover-foreground: 43 56% 95%; /* User's textLight: #F9F6ED */
+
+    --primary: 43 65% 60%; /* Darker version of accentYellow: #E3C26B */
+    --primary-foreground: 23 29% 19%; /* User's primary (text): #3E2C22 */
+
+    --secondary: 93 30% 35%; /* Darker version of accentGreen: #D2E2C4 */
+    --secondary-foreground: 43 56% 95%; /* User's textLight: #F9F6ED */
+
+    --muted: 27 25% 20%; /* Based on bgDark */
+    --muted-foreground: 43 40% 70%; /* Based on textLight */
+
+    --accent: 93 30% 45%; /* Darker version of accentGreen: #D2E2C4 */
+    --accent-foreground: 43 56% 95%; /* User's textLight: #F9F6ED */
+
+    --destructive: 0 62.8% 30.6%; /* Standard dark red */
+    --destructive-foreground: 0 0% 98%; /* Light text on destructive */
+
+    --border: 27 30% 22%; /* Based on bgDark */
+    --input: 27 30% 22%; /* Based on bgDark */
+    --ring: 43 65% 60%; /* Darker accentYellow (primary color for focus rings) */
+    
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar specific theme */
+    --sidebar-background: 27 36% 12%; /* User's bgDark: #2B1D14 */
+    --sidebar-foreground: 43 56% 95%; /* User's textLight: #F9F6ED */
+    --sidebar-primary: 43 65% 60%; /* Darker accentYellow (active/selected items) */
+    --sidebar-primary-foreground: 23 29% 19%; /* User's primary (text): #3E2C22 */
+    --sidebar-accent: 43 65% 50%; /* Even darker accentYellow (hover items) */
+    --sidebar-accent-foreground: 23 29% 19%; /* User's primary (text): #3E2C22 */
+    --sidebar-border: 27 30% 22%; /* Based on bgDark */
+    --sidebar-ring: 43 65% 60%; /* Darker accentYellow (focus rings) */
   }
 }
 
