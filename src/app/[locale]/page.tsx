@@ -3,8 +3,8 @@
 
 import { useState, type FormEvent, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import Link from 'next/link'; // Added Link
-import { useParams } from 'next/navigation'; // Added useParams
+import Link from 'next/link'; 
+import { useParams } from 'next/navigation'; 
 import { SidebarInset, SidebarRail } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/navigation/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
@@ -22,7 +22,6 @@ import { analyzeDeclaration, type AnalyzeDeclarationOutput } from '@/ai/flows/an
 import { getDailyCeliacTip, type DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import { useToast } from '@/hooks/use-toast';
 
-// Placeholder for barcode scan result
 interface BarcodeScanResult {
   name: string;
   isGlutenFree: boolean;
@@ -31,37 +30,41 @@ interface BarcodeScanResult {
   dataAiHint?: string;
 }
 
-// Placeholder product data (from products page)
-// Re-using the export from products page to keep it DRY
 import { placeholderProducts as allProducts } from './products/page';
 
-// Unique categories for the select dropdown
 const productCategories = Array.from(new Set(allProducts.map(p => p.category)));
 
+const getNutriScoreClasses = (score?: string) => {
+  if (!score) return 'bg-gray-300 text-gray-700';
+  switch (score.toUpperCase()) {
+    case 'A': return 'bg-green-700 text-white';
+    case 'B': return 'bg-lime-500 text-black';
+    case 'C': return 'bg-yellow-400 text-black';
+    case 'D': return 'bg-orange-500 text-white';
+    case 'E': return 'bg-red-600 text-white';
+    default: return 'bg-gray-300 text-gray-700';
+  }
+};
 
 export default function HomePage() {
-  const routeParams = useParams(); // Get route params for locale
+  const routeParams = useParams(); 
   const locale = routeParams.locale as string;
 
-  // State for Declaration Analysis
   const [declarationText, setDeclarationText] = useState<string>('');
   const [analysisResult, setAnalysisResult] = useState<AnalyzeDeclarationOutput | null>(null);
   const [isLoadingDeclaration, setIsLoadingDeclaration] = useState<boolean>(false);
   const [errorDeclaration, setErrorDeclaration] = useState<string | null>(null);
   
-  // State for Barcode Scanning
   const [barcodeScanResult, setBarcodeScanResult] = useState<BarcodeScanResult | null>(null);
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [errorBarcode, setErrorBarcode] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
 
-  // State for Product Search/Filter
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [displayedProducts, setDisplayedProducts] = useState(allProducts.slice(0, 8)); // Show a subset initially
+  const [displayedProducts, setDisplayedProducts] = useState(allProducts.slice(0, 8)); 
 
-  // State for Daily Celiac Tip
   const [dailyTip, setDailyTip] = useState<DailyCeliacTipOutput | null>(null);
   const [isLoadingTip, setIsLoadingTip] = useState<boolean>(true);
   const [errorTip, setErrorTip] = useState<string | null>(null);
@@ -70,7 +73,6 @@ export default function HomePage() {
 
   const { toast } = useToast();
 
-  // Effect to fetch daily celiac tip
   useEffect(() => {
     const fetchTip = async () => {
       setIsLoadingTip(true);
@@ -89,7 +91,6 @@ export default function HomePage() {
     fetchTip();
   }, []);
 
-  // Effect for product filtering
   useEffect(() => {
     let filtered = allProducts;
     if (searchTerm.trim()) {
@@ -100,10 +101,9 @@ export default function HomePage() {
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(product => product.category === selectedCategory);
     }
-    setDisplayedProducts(filtered.slice(0,8)); // Limit displayed products on homepage
+    setDisplayedProducts(filtered.slice(0,8)); 
   }, [searchTerm, selectedCategory]);
   
-  // Effect for camera handling (barcode scanning)
   useEffect(() => {
     if (isScanning) {
       const getCameraPermission = async () => {
@@ -113,7 +113,6 @@ export default function HomePage() {
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
           }
-          // Simulate scan
           setTimeout(() => {
             setBarcodeScanResult({ 
               name: "Simulated Scanned Product", 
@@ -195,7 +194,6 @@ export default function HomePage() {
             icon={ScanLine}
           />
 
-          {/* Daily Celiac Tip Section */}
           <div className="mb-8">
             {isLoadingTip && (
               <div className="flex items-center justify-center text-muted-foreground p-4 bg-muted/50 rounded-lg shadow-sm">
@@ -247,7 +245,6 @@ export default function HomePage() {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            {/* Product Search & Filters Card */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Search className="h-5 w-5"/> Find Products</CardTitle>
@@ -280,7 +277,6 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            {/* Barcode Scanning Card */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2"><QrCode className="h-5 w-5" /> Scan Product Barcode</CardTitle>
@@ -346,7 +342,6 @@ export default function HomePage() {
             </Card>
           </div>
 
-          {/* Product Listing Section */}
           <div className="mb-8">
             <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
               <ShoppingBag className="h-6 w-6 text-primary" /> Products
@@ -360,7 +355,14 @@ export default function HomePage() {
                     </CardHeader>
                     <CardContent className="p-4 flex flex-col flex-grow">
                       <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
-                      <CardDescription className="text-sm text-muted-foreground mb-2">{product.category}</CardDescription>
+                      <div className="flex justify-between items-center mb-2">
+                        <CardDescription className="text-sm text-muted-foreground">{product.category}</CardDescription>
+                        {product.nutriScore && (
+                          <span className={`px-2 py-0.5 rounded-md text-xs font-semibold ${getNutriScoreClasses(product.nutriScore)}`}>
+                            Nutri-Score: {product.nutriScore}
+                          </span>
+                        )}
+                      </div>
                       <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description}</p>
                       <Button asChild variant="outline" size="sm" className="w-full mt-auto">
                         <Link href={`/${locale}/products/${product.id}`}>View Details</Link>
@@ -378,7 +380,6 @@ export default function HomePage() {
             )}
           </div>
 
-          {/* Declaration Analysis Section (Fallback) */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><ScanSearch className="h-5 w-5" /> Analyze Ingredients Manually</CardTitle>

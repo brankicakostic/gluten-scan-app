@@ -17,17 +17,28 @@ import Image from 'next/image';
 
 // Placeholder product data - Exported for use in product detail page
 export const placeholderProducts = [
-  { id: '1', name: 'Gluten-Free Bread', category: 'Bakery', imageUrl: 'https://placehold.co/300x200.png', description: 'Delicious and soft gluten-free white bread.', dataAiHint: 'bread bakery', isGlutenFree: true, ingredients: 'Water, Rice Flour, Tapioca Starch, Potato Starch, Sunflower Oil, Yeast, Sugar, Psyllium Husk Powder, Salt, Xanthan Gum.' },
-  { id: '2', name: 'Corn Pasta', category: 'Pasta', imageUrl: 'https://placehold.co/300x200.png', description: 'Authentic Italian corn pasta, naturally gluten-free.', dataAiHint: 'pasta corn', isGlutenFree: true, ingredients: 'Corn Flour (100%). May contain traces of soy.' },
-  { id: '3', name: 'Rice Cakes', category: 'Snacks', imageUrl: 'https://placehold.co/300x200.png', description: 'Light and crispy rice cakes, perfect for snacking.', dataAiHint: 'rice cakes', isGlutenFree: true, ingredients: 'Whole Grain Brown Rice, Sea Salt.' },
-  { id: '4', name: 'Gluten-Free Oats', category: 'Cereals', imageUrl: 'https://placehold.co/300x200.png', description: 'Certified gluten-free rolled oats for breakfast.', dataAiHint: 'oats cereal', isGlutenFree: true, ingredients: 'Certified Gluten-Free Whole Grain Rolled Oats.' },
-  { id: '5', name: 'Almond Flour Mix', category: 'Bakery', imageUrl: 'https://placehold.co/300x200.png', description: 'Versatile almond flour for baking.', dataAiHint: 'almond flour', isGlutenFree: true, ingredients: 'Blanched Almond Flour.' },
-  { id: '6', name: 'Quinoa Salad Mix', category: 'Snacks', imageUrl: 'https://placehold.co/300x200.png', description: 'Ready-to-eat quinoa salad.', dataAiHint: 'quinoa salad', isGlutenFree: true, ingredients: 'Cooked Quinoa, Vegetables (Bell Peppers, Corn, Black Beans), Olive Oil, Lemon Juice, Spices.' },
-  { id: '7', name: 'Regular Wheat Bread', category: 'Bakery', imageUrl: 'https://placehold.co/300x200.png', description: 'Traditional wheat bread.', dataAiHint: 'wheat bread', isGlutenFree: false, ingredients: 'Wheat Flour, Water, Yeast, Salt, Sugar. Contains: Wheat.' },
+  { id: '1', name: 'Gluten-Free Bread', category: 'Bakery', imageUrl: 'https://placehold.co/300x200.png', description: 'Delicious and soft gluten-free white bread.', dataAiHint: 'bread bakery', isGlutenFree: true, ingredients: 'Water, Rice Flour, Tapioca Starch, Potato Starch, Sunflower Oil, Yeast, Sugar, Psyllium Husk Powder, Salt, Xanthan Gum.', nutriScore: 'B' },
+  { id: '2', name: 'Corn Pasta', category: 'Pasta', imageUrl: 'https://placehold.co/300x200.png', description: 'Authentic Italian corn pasta, naturally gluten-free.', dataAiHint: 'pasta corn', isGlutenFree: true, ingredients: 'Corn Flour (100%). May contain traces of soy.', nutriScore: 'A' },
+  { id: '3', name: 'Rice Cakes', category: 'Snacks', imageUrl: 'https://placehold.co/300x200.png', description: 'Light and crispy rice cakes, perfect for snacking.', dataAiHint: 'rice cakes', isGlutenFree: true, ingredients: 'Whole Grain Brown Rice, Sea Salt.', nutriScore: 'A' },
+  { id: '4', name: 'Gluten-Free Oats', category: 'Cereals', imageUrl: 'https://placehold.co/300x200.png', description: 'Certified gluten-free rolled oats for breakfast.', dataAiHint: 'oats cereal', isGlutenFree: true, ingredients: 'Certified Gluten-Free Whole Grain Rolled Oats.', nutriScore: 'A' },
+  { id: '5', name: 'Almond Flour Mix', category: 'Bakery', imageUrl: 'https://placehold.co/300x200.png', description: 'Versatile almond flour for baking.', dataAiHint: 'almond flour', isGlutenFree: true, ingredients: 'Blanched Almond Flour.', nutriScore: 'C' },
+  { id: '6', name: 'Quinoa Salad Mix', category: 'Snacks', imageUrl: 'https://placehold.co/300x200.png', description: 'Ready-to-eat quinoa salad.', dataAiHint: 'quinoa salad', isGlutenFree: true, ingredients: 'Cooked Quinoa, Vegetables (Bell Peppers, Corn, Black Beans), Olive Oil, Lemon Juice, Spices.', nutriScore: 'B' },
+  { id: '7', name: 'Regular Wheat Bread', category: 'Bakery', imageUrl: 'https://placehold.co/300x200.png', description: 'Traditional wheat bread.', dataAiHint: 'wheat bread', isGlutenFree: false, ingredients: 'Wheat Flour, Water, Yeast, Salt, Sugar. Contains: Wheat.', nutriScore: 'D' },
 ];
 // Unique categories for the select dropdown
 const productCategories = Array.from(new Set(placeholderProducts.map(p => p.category)));
 
+const getNutriScoreClasses = (score?: string) => {
+  if (!score) return 'bg-gray-300 text-gray-700';
+  switch (score.toUpperCase()) {
+    case 'A': return 'bg-green-700 text-white';
+    case 'B': return 'bg-lime-500 text-black';
+    case 'C': return 'bg-yellow-400 text-black';
+    case 'D': return 'bg-orange-500 text-white';
+    case 'E': return 'bg-red-600 text-white';
+    default: return 'bg-gray-300 text-gray-700';
+  }
+};
 
 export default function ProductsPage() {
   const params = useParams();
@@ -89,10 +100,6 @@ export default function ProductsPage() {
                   </SelectContent>
                 </Select>
               </div>
-              {/* Apply Filters button can be removed if filtering is live, or kept for explicit action */}
-              {/* <Button className="w-full md:w-auto">
-                <Search className="mr-2 h-4 w-4" /> Apply Filters
-              </Button> */}
             </div>
           </div>
 
@@ -112,7 +119,14 @@ export default function ProductsPage() {
                   </CardHeader>
                   <CardContent className="p-4 flex flex-col flex-grow">
                     <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
-                    <CardDescription className="text-sm text-muted-foreground mb-2">{product.category}</CardDescription>
+                    <div className="flex justify-between items-center mb-2">
+                      <CardDescription className="text-sm text-muted-foreground">{product.category}</CardDescription>
+                      {product.nutriScore && (
+                        <span className={`px-2 py-0.5 rounded-md text-xs font-semibold ${getNutriScoreClasses(product.nutriScore)}`}>
+                          Nutri-Score: {product.nutriScore}
+                        </span>
+                      )}
+                    </div>
                     <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description}</p>
                     <Button asChild variant="outline" size="sm" className="w-full mt-auto">
                       <Link href={`/${locale}/products/${product.id}`}>View Details</Link>

@@ -14,13 +14,38 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart } from 'lucide-react';
 import { placeholderProducts } from '@/app/[locale]/products/page'; // Re-use from products page for now
 
+// Minimal placeholder product data structure expected by this page
+// Matches the structure in products/page.tsx
+export interface Product {
+  id: string;
+  name: string;
+  category: string;
+  imageUrl: string;
+  description: string;
+  dataAiHint?: string;
+  isGlutenFree?: boolean; 
+  ingredients?: string; 
+  nutriScore?: string; // Added Nutri-Score
+}
+
+const getNutriScoreClasses = (score?: string) => {
+  if (!score) return 'bg-gray-300 text-gray-700';
+  switch (score.toUpperCase()) {
+    case 'A': return 'bg-green-700 text-white';
+    case 'B': return 'bg-lime-500 text-black';
+    case 'C': return 'bg-yellow-400 text-black';
+    case 'D': return 'bg-orange-500 text-white';
+    case 'E': return 'bg-red-600 text-white';
+    default: return 'bg-gray-300 text-gray-700';
+  }
+};
+
 export default function ProductDetailPage() {
   const params = useParams();
   const locale = params.locale as string;
   const productId = params.productId as string;
 
-  // In a real app, you'd fetch this data based on productId
-  const product = placeholderProducts.find(p => p.id === productId);
+  const product = placeholderProducts.find(p => p.id === productId) as Product | undefined;
 
   if (!product) {
     return (
@@ -102,7 +127,6 @@ export default function ProductDetailPage() {
                     <p className="text-sm text-muted-foreground">{product.description}</p>
                   </div>
                   
-                  {/* Placeholder for gluten status - assuming product has an isGlutenFree property */}
                   {product.isGlutenFree !== undefined && (
                      <div>
                         <h3 className="text-md font-semibold mb-1">Gluten Information</h3>
@@ -120,7 +144,15 @@ export default function ProductDetailPage() {
                      </div>
                   )}
 
-                  {/* Placeholder for ingredients */}
+                  {product.nutriScore && (
+                    <div>
+                      <h3 className="text-md font-semibold mb-1">Nutri-Score</h3>
+                      <span className={`px-3 py-1 rounded-lg text-sm font-bold ${getNutriScoreClasses(product.nutriScore)}`}>
+                        {product.nutriScore}
+                      </span>
+                    </div>
+                  )}
+
                   {product.ingredients && (
                     <div>
                       <h3 className="text-md font-semibold mb-1">Ingredients</h3>
@@ -139,17 +171,4 @@ export default function ProductDetailPage() {
       </SidebarInset>
     </div>
   );
-}
-
-// Minimal placeholder product data structure expected by this page
-// Matches the structure in products/page.tsx
-export interface Product {
-  id: string;
-  name: string;
-  category: string;
-  imageUrl: string;
-  description: string;
-  dataAiHint?: string;
-  isGlutenFree?: boolean; // Optional, for display
-  ingredients?: string; // Optional, for display
 }
