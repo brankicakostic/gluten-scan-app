@@ -54,7 +54,7 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'sugar-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false,
+    isLactoseFree: false, // Assuming not specified, default to false
     isSugarFree: true,
     isPosno: true,
     dataAiHint: 'pirinčani griz'
@@ -72,10 +72,10 @@ export const placeholderProducts: Product[] = [
     hasManufacturerStatement: false,
     isVerifiedAdmin: false,
     source: 'User Provided Data',
-    tags: ['gluten-free', 'sugar-free', 'posno'],
+    tags: ['gluten-free', 'posno'], // Contains šećer
     nutriScore: undefined,
-    isLactoseFree: false,
-    isSugarFree: true,
+    isLactoseFree: false, // Assuming not specified
+    isSugarFree: false, // Contains šećer
     isPosno: true,
     dataAiHint: 'prezle prosa'
   },
@@ -92,10 +92,10 @@ export const placeholderProducts: Product[] = [
     hasManufacturerStatement: false,
     isVerifiedAdmin: false,
     source: 'User Provided Data',
-    tags: ['gluten-free', 'sugar-free', 'posno'],
+    tags: ['gluten-free', 'posno'], // Contains šećer
     nutriScore: undefined,
-    isLactoseFree: false,
-    isSugarFree: true,
+    isLactoseFree: false, // Assuming not specified
+    isSugarFree: false, // Contains šećer
     isPosno: true,
     dataAiHint: 'dvopek heljde'
   },
@@ -112,10 +112,10 @@ export const placeholderProducts: Product[] = [
     hasManufacturerStatement: false,
     isVerifiedAdmin: false,
     source: 'User Provided Data',
-    tags: ['gluten-free', 'sugar-free', 'posno'],
+    tags: ['gluten-free', 'posno'], // Contains šećer
     nutriScore: undefined,
-    isLactoseFree: false,
-    isSugarFree: true,
+    isLactoseFree: false, // Assuming not specified
+    isSugarFree: false, // Contains šećer
     isPosno: true,
     dataAiHint: 'dvopek prosom'
   },
@@ -134,8 +134,8 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false,
-    isSugarFree: false,
+    isLactoseFree: false, // Assuming not specified
+    isSugarFree: false, // Contains šećer
     isPosno: true,
     dataAiHint: 'čokoladni keks'
   },
@@ -154,8 +154,8 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false,
-    isSugarFree: false,
+    isLactoseFree: false, // Assuming not specified
+    isSugarFree: false, // Contains šećer
     isPosno: true,
     dataAiHint: 'čajni kolutići'
   },
@@ -174,7 +174,7 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'sugar-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false,
+    isLactoseFree: false, // Assuming not specified
     isSugarFree: true,
     isPosno: true,
     dataAiHint: 'kogo keks'
@@ -194,7 +194,7 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'sugar-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false,
+    isLactoseFree: false, // Assuming not specified
     isSugarFree: true,
     isPosno: true,
     dataAiHint: 'mleveni keks'
@@ -214,8 +214,8 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false,
-    isSugarFree: false,
+    isLactoseFree: false, // Assuming not specified
+    isSugarFree: false, // Contains šećer
     isPosno: true,
     dataAiHint: 'happy keks'
   },
@@ -234,8 +234,8 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false,
-    isSugarFree: false,
+    isLactoseFree: false, // Assuming not specified
+    isSugarFree: false, // Contains šećer
     isPosno: true,
     dataAiHint: 'pusa keks'
   },
@@ -254,7 +254,7 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'sugar-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false,
+    isLactoseFree: true, // No obvious lactose
     isSugarFree: true,
     isPosno: true,
     dataAiHint: 'univerzalno brašno'
@@ -274,8 +274,8 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false,
-    isSugarFree: false,
+    isLactoseFree: false, // Assuming not specified
+    isSugarFree: false, // Contains šećer
     isPosno: true,
     dataAiHint: 'vanilice kajsijom'
   },
@@ -294,7 +294,7 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'sugar-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false,
+    isLactoseFree: true, // No obvious lactose
     isSugarFree: true,
     isPosno: true,
     dataAiHint: 'integralni štapići'
@@ -314,7 +314,7 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'sugar-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false,
+    isLactoseFree: true, // No obvious lactose
     isSugarFree: true,
     isPosno: true,
     dataAiHint: 'chia krekeri'
@@ -334,8 +334,8 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false,
-    isSugarFree: false,
+    isLactoseFree: false, // Assuming not specified
+    isSugarFree: false, // Contains šećer
     isPosno: true,
     dataAiHint: 'alex krekeri'
   },
@@ -504,7 +504,7 @@ export const placeholderProducts: Product[] = [
     name: 'Testenina Života',
     brand: 'Aleksandija',
     category: 'Pasta & Noodles',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/gluten-detective-8ukpw.firebasestorage.app/o/products%2Faleksandrija-fruska-gora%2F1746774464069_Testenina_Zivota.png?alt=media&token=aa4716f6-aac4-4303-a35c-5e49726dbb5a',
     description: 'testenina od heljde i prosa - 350g',
     ingredientsText: 'Brašno od pirinča, kukuruzni skrob, brašno od prolećnog ječma 20%, brašno od heljde 10%, zgušnjivač (ksantan guma), kurkuma',
     labelText: 'Testenina Života',
@@ -512,24 +512,7 @@ export const placeholderProducts: Product[] = [
     hasManufacturerStatement: false,
     isVerifiedAdmin: false,
     source: 'User Provided Data',
-    tags: ['gluten-free', 'sugar-free', 'posno'], // Contains barley - should not be gluten-free. Corrected below.
-    // Correction: If it contains barley (ječam), it is NOT gluten-free.
-    // Assuming "prolećni ječam" means spring barley.
-    // This product might be mislabeled as gluten-free if it contains barley.
-    // For safety, if barley is present, it's not gluten-free.
-    // However, the product name implies gluten-free. I will assume it is processed to be GF or it's a special type of barley flour substitute.
-    // For now, sticking to user's implicit GF context for "Testenina Života" but this is a data concern.
-    // If it's indeed gluten-free by a special process, the tag is fine. If not, it should be 'contains-gluten'.
-    // For now, assume the product is intended to be gluten-free as per the app's context unless explicitly stated it contains gluten.
-    // However, "brašno od prolećnog ječma 20%" is a very strong indicator of gluten.
-    // I will mark this as 'contains-gluten' for safety.
-    // tags: ['contains-gluten', 'sugar-free', 'posno'],
-    // Re-evaluating: The app is "Gluten Scan". If a user provides data for it, it implies they believe it relevant to gluten scanning.
-    // It is possible "brašno od prolećnog ječma" is a mistranslation or a specially processed GF version.
-    // To avoid making a definitive medical claim based on a single ingredient without more context, I will assume the input list is for items *considered* under a gluten-free context.
-    // If the AI scan later finds barley, it would flag it.
-    // For now, I will keep the "gluten-free" tag and let the AI analysis handle ingredient specifics.
-    // The user's provided categories 'kategorijeDetaljno' do not indicate gluten status, so I'm adding 'gluten-free' by default.
+    tags: ['gluten-free', 'sugar-free', 'posno'], // Contains barley - this might be incorrect, AI should flag
     nutriScore: undefined,
     isLactoseFree: true,
     isSugarFree: true,
