@@ -2,37 +2,38 @@
 // This file uses client-side rendering.
 'use client';
 
-import { useEffect, useState } from 'react'; // Added useEffect, useState
+import { useEffect, useState } from 'react';
 import { SidebarInset, SidebarRail } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/navigation/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, StarOff, ShoppingBag, CheckCircle, AlertCircle, Trash2 } from 'lucide-react';
+import { Heart, StarOff, ShoppingBag, CheckCircle, AlertTriangle, Trash2 } from 'lucide-react'; // Added AlertTriangle
 import Image from 'next/image';
-import { useFavorites } from '@/contexts/favorites-context'; // Added import
-import type { Product } from '@/app/[locale]/products/[productId]/page'; // Added import
-import { useToast } from '@/hooks/use-toast'; // Added import
-import Link from 'next/link'; // Added import
-import { useParams } from 'next/navigation'; // Added import
+import { useFavorites } from '@/contexts/favorites-context';
+import type { Product } from '@/app/[locale]/products/[productId]/page';
+import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 
 export default function FavoritesPage() {
-  const { getFavoriteProducts, removeFavorite } = useFavorites(); // Updated
+  const { getFavoriteProducts, removeFavorite } = useFavorites();
   const [favoritedProducts, setFavoritedProducts] = useState<Product[]>([]);
-  const { toast } = useToast(); // Added
-  const params = useParams(); // Added
-  const locale = params.locale as string; // Added
+  const { toast } = useToast();
+  const params = useParams();
+  const locale = params.locale as string;
 
   useEffect(() => {
     setFavoritedProducts(getFavoriteProducts());
-  }, [getFavoriteProducts]); // Updated dependency array
+  }, [getFavoriteProducts, removeFavorite]); // Added removeFavorite to dependency array to ensure re-render on removal
 
-  const handleRemoveFavorite = (product: Product) => { // Added
+  const handleRemoveFavorite = (product: Product) => {
     removeFavorite(product.id);
     toast({ title: `${product.name} removed from favorites.` });
-    // The useEffect will re-render the list
+    // The useEffect will re-render the list because favoriteProductIds in context changes,
+    // which causes getFavoriteProducts to return a new list.
   };
 
 
@@ -73,7 +74,7 @@ export default function FavoritesPage() {
                       variant="destructive" 
                       size="icon" 
                       className="absolute top-2 right-2 opacity-80 group-hover:opacity-100 transition-opacity"
-                      onClick={() => handleRemoveFavorite(product)} // Updated
+                      onClick={() => handleRemoveFavorite(product)}
                     >
                       <Trash2 className="h-4 w-4" />
                       <span className="sr-only">Remove from favorites</span>
