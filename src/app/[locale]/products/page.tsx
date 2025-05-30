@@ -42,7 +42,7 @@ const rawProductsData = [
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera"],
-    "imageUrl": "instant-palentaz-8606112581172.png"
+    "imageUrl": "instant-palenta-8606112581172.png" // Updated filename
   },
   {
     "name": "Pirinčani Griz",
@@ -488,7 +488,7 @@ const rawProductsData = [
   {
     "name": "Proteinske Fit Noodle",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907925",
+    "barcode": "8606107907925", // Note: Duplicate barcode, also used by product-21 (RISO Pasta)
     "size": "320g",
     "ingredients": [
       "Brašno od pirinča",
@@ -539,7 +539,7 @@ const rawProductsData = [
   {
     "name": "RISO Pasta",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907925", // Note: Same barcode as Proteinske Fit Noodle
+    "barcode": "8606107907925", // Note: Duplicate barcode, also used by product-19 (Proteinske Fit Noodle)
     "size": "320g",
     "ingredients": ["Brašno od pirinča", "zgušnjivač ksantan guma"],
     "labelText": "pirinčane nudle",
@@ -623,7 +623,7 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tags": ["bez šećera", "vegan"], // Note: Contains barley, "gluten-free" tag not added automatically
+    "tags": ["bez šećera", "vegan"], // Contains barley, "gluten-free" tag not added by default
     "imageUrl": "testenina-zivota-8606107907567.png"
   },
   {
@@ -724,17 +724,18 @@ const rawProductsData = [
 
 export const placeholderProducts: Product[] = rawProductsData.map((p, index) => {
   const isSugarFree = p.tags.includes('bez šećera');
-  const isPosno = p.tags.includes('vegan'); // Assuming 'vegan' maps to 'isPosno'
+  const isPosno = p.tags.includes('vegan'); 
   const isProtein = p.tags.includes('protein');
 
-  const productTags = ['gluten-free']; // Default assumption
+  const productTags = ['gluten-free']; // Default assumption unless specific ingredients contradict
   if (isSugarFree) productTags.push('sugar-free');
   if (isPosno) productTags.push('posno');
   if (isProtein) productTags.push('high-protein');
-  // Add other tags from p.tags if they are not already covered
+  
   p.tags.forEach(tag => {
-    if (tag !== 'bez šećera' && tag !== 'vegan' && tag !== 'protein' && !productTags.includes(tag)) {
-      productTags.push(tag);
+    const lowerTag = tag.toLowerCase();
+    if (lowerTag !== 'bez šećera' && lowerTag !== 'vegan' && lowerTag !== 'protein' && !productTags.includes(lowerTag)) {
+      productTags.push(lowerTag);
     }
   });
   
@@ -756,42 +757,54 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
     category = 'Instant Meals';
   }
 
-  // Special handling for Testenina Života (contains barley)
-  if (p.name === "Testenina Života") {
-    const glutenFreeIndex = productTags.indexOf('gluten-free');
-    if (glutenFreeIndex > -1) {
-      productTags.splice(glutenFreeIndex, 1); // Remove 'gluten-free'
-    }
-    productTags.push('contains-barley'); // Add a specific tag
-  }
-  
-  // Handle "Proteinski Kakao Krem" (contains milk)
   let actualIsPosno = isPosno;
-  let actualIsLactoseFree = isPosno; // if posno, assume lactose free unless milk is present
-  if (p.name === "Proteinski Kakao Krem" && p.ingredients.join(' ').toLowerCase().includes('mleko u prahu')) {
+  let actualIsLactoseFree = isPosno; // Assume posno implies lactose-free, unless milk is present
+  
+  const ingredientsString = Array.isArray(p.ingredients) ? p.ingredients.join(' ').toLowerCase() : (typeof p.ingredients === 'string' ? p.ingredients.toLowerCase() : '');
+
+  // Specific product checks
+  if (p.name === "Proteinski Kakao Krem" && ingredientsString.includes('mleko u prahu')) {
       actualIsPosno = false;
       actualIsLactoseFree = false;
       const posnoIndex = productTags.indexOf('posno');
       if (posnoIndex > -1) productTags.splice(posnoIndex, 1);
+      // No "lactose-free" tag was being added here, so no need to remove
+  }
+
+  if (p.name === "Testenina Života" && ingredientsString.includes('ječma')) {
+    const glutenFreeIndex = productTags.indexOf('gluten-free');
+    if (glutenFreeIndex > -1) {
+      productTags.splice(glutenFreeIndex, 1); // Remove 'gluten-free'
+    }
+    productTags.push('contains-barley'); // Add specific tag
+    productTags.push('contains-gluten'); // Also mark as contains gluten
+  }
+  
+  // For "Instant Palenta" with cheese
+  if (p.name === "Instant Palenta" && ingredientsString.includes('prah od sira')) {
+    actualIsPosno = false; // Contains cheese, so not posno/vegan
+    actualIsLactoseFree = false; // Contains cheese, so not lactose-free
+    const posnoIndex = productTags.indexOf('posno');
+    if (posnoIndex > -1) productTags.splice(posnoIndex, 1);
   }
 
 
   return {
-    id: `product-${index}`, // Generate unique ID
+    id: `product-${index}`,
     name: p.name,
     brand: p.brand,
     barcode: p.barcode || undefined,
     category: category,
-    imageUrl: `${firebaseStorageBaseUrl}${p.imageUrl}${firebaseStorageTokenPlaceholder}`,
+    imageUrl: `${firebaseStorageBaseUrl}${p.imageUrl}${p.imageUrl.includes('?') ? '' : firebaseStorageTokenPlaceholder}`,
     description: `${p.labelText} - ${p.size}`,
-    ingredientsText: p.ingredients.join(', '),
+    ingredientsText: Array.isArray(p.ingredients) ? p.ingredients.join(', ') : p.ingredients,
     labelText: p.labelText,
     hasAOECSLicense: p.license,
     hasManufacturerStatement: p.manufacturerStatement,
     isVerifiedAdmin: p.verified,
     source: p.source,
     tags: productTags,
-    nutriScore: undefined, // Not in provided data
+    nutriScore: undefined, 
     isLactoseFree: actualIsLactoseFree, 
     isSugarFree: isSugarFree,
     isPosno: actualIsPosno,
@@ -958,3 +971,4 @@ export default function ProductsPage() {
     </div>
   );
 }
+
