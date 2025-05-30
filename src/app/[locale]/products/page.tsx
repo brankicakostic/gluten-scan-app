@@ -77,7 +77,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: false,
     isSugarFree: true,
     isPosno: true,
-    dataAiHint: 'prezle od'
+    dataAiHint: 'prezle prosa'
   },
   {
     id: 'product-3',
@@ -97,7 +97,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: false,
     isSugarFree: true,
     isPosno: true,
-    dataAiHint: 'dvopek od'
+    dataAiHint: 'dvopek heljde'
   },
   {
     id: 'product-4',
@@ -117,7 +117,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: false,
     isSugarFree: true,
     isPosno: true,
-    dataAiHint: 'dvopek sa'
+    dataAiHint: 'dvopek prosom'
   },
   {
     id: 'product-5',
@@ -137,7 +137,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: false,
     isSugarFree: false,
     isPosno: true,
-    dataAiHint: 'cookies keks'
+    dataAiHint: 'čokoladni keks'
   },
   {
     id: 'product-6',
@@ -177,7 +177,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: false,
     isSugarFree: true,
     isPosno: true,
-    dataAiHint: 'ko-go sendvič'
+    dataAiHint: 'kogo keks'
   },
   {
     id: 'product-8',
@@ -197,7 +197,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: false,
     isSugarFree: true,
     isPosno: true,
-    dataAiHint: 'keks života'
+    dataAiHint: 'mleveni keks'
   },
   {
     id: 'product-9',
@@ -217,7 +217,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: false,
     isSugarFree: false,
     isPosno: true,
-    dataAiHint: 'happy life'
+    dataAiHint: 'happy keks'
   },
   {
     id: 'product-10',
@@ -257,7 +257,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: false,
     isSugarFree: true,
     isPosno: true,
-    dataAiHint: 'premium univerzal'
+    dataAiHint: 'univerzalno brašno'
   },
   {
     id: 'product-12',
@@ -277,7 +277,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: false,
     isSugarFree: false,
     isPosno: true,
-    dataAiHint: 'vanilice sa'
+    dataAiHint: 'vanilice kajsijom'
   },
   {
     id: 'product-13',
@@ -337,7 +337,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: false,
     isSugarFree: false,
     isPosno: true,
-    dataAiHint: 'alex slani'
+    dataAiHint: 'alex krekeri'
   },
   {
     id: 'product-16',
@@ -357,7 +357,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: false, // Contains mleko u prahu
     isSugarFree: true,
     isPosno: false, // Contains mleko u prahu
-    dataAiHint: 'proteinski kakao'
+    dataAiHint: 'proteinski krem'
   },
   {
     id: 'product-17',
@@ -377,7 +377,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: true,
     isSugarFree: true,
     isPosno: true,
-    dataAiHint: 'vege proteinski'
+    dataAiHint: 'vege krem'
   },
   {
     id: 'product-18',
@@ -397,7 +397,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: true,
     isSugarFree: true,
     isPosno: true,
-    dataAiHint: 'proteinske fit'
+    dataAiHint: 'fit nudle'
   },
   {
     id: 'product-19',
@@ -417,7 +417,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: true,
     isSugarFree: true,
     isPosno: true,
-    dataAiHint: 'proteinske vege'
+    dataAiHint: 'vege taljatele'
   },
   {
     id: 'product-20',
@@ -457,7 +457,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: true,
     isSugarFree: true,
     isPosno: true,
-    dataAiHint: 'tagliatelle di'
+    dataAiHint: 'riso taljatele'
   },
   {
     id: 'product-22',
@@ -477,7 +477,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: true,
     isSugarFree: true,
     isPosno: true,
-    dataAiHint: 'premium tamna'
+    dataAiHint: 'tamna smeša'
   },
   {
     id: 'product-23',
@@ -497,7 +497,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: true,
     isSugarFree: true,
     isPosno: true,
-    dataAiHint: 'taljatele sa'
+    dataAiHint: 'taljatele kurkumom'
   },
   {
     id: 'product-24',
@@ -534,7 +534,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: true,
     isSugarFree: true,
     isPosno: true,
-    dataAiHint: 'testenina života'
+    dataAiHint: 'testenina heljdom'
   },
   {
     id: 'product-25',
@@ -554,7 +554,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: true,
     isSugarFree: true,
     isPosno: true,
-    dataAiHint: 'brašno od'
+    dataAiHint: 'brašno prosa'
   },
   {
     id: 'product-26',
@@ -574,7 +574,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: true,
     isSugarFree: true,
     isPosno: true,
-    dataAiHint: 'brašno od'
+    dataAiHint: 'brašno pirinča'
   },
   {
     id: 'product-27',
@@ -594,7 +594,7 @@ export const placeholderProducts: Product[] = [
     isLactoseFree: true,
     isSugarFree: true,
     isPosno: true,
-    dataAiHint: 'brašno od'
+    dataAiHint: 'brašno heljde'
   },
   {
     id: 'product-28',
@@ -817,4 +817,5 @@ export default function ProductsPage() {
     </div>
   );
 }
+
 
