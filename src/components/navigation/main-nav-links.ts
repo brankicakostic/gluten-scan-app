@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Home, QrCode, ScanSearch, ListFilter, History, Heart, LayoutGrid } from 'lucide-react';
+import { Home, History, Heart, ScanLine } from 'lucide-react'; // Added Home, ScanLine
 
 export interface NavLink {
   href: string;
@@ -11,27 +11,9 @@ export interface NavLink {
 export const mainNavLinks: NavLink[] = [
   {
     href: '/',
-    label: 'Dashboard',
-    icon: LayoutGrid,
-    tooltip: 'Dashboard',
-  },
-  {
-    href: '/scan-barcode',
-    label: 'Scan Barcode',
-    icon: QrCode,
-    tooltip: 'Scan Barcode',
-  },
-  {
-    href: '/scan-declaration',
-    label: 'Scan Declaration',
-    icon: ScanSearch,
-    tooltip: 'Scan Declaration',
-  },
-  {
-    href: '/products',
-    label: 'Filter Products',
-    icon: ListFilter,
-    tooltip: 'Filter Products',
+    label: 'Home',
+    icon: Home, 
+    tooltip: 'Home / Scan',
   },
   {
     href: '/history',
