@@ -11,23 +11,31 @@ import { SiteHeader } from '@/components/site-header';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Leaf } from 'lucide-react'; // Removed Vegan
-import { placeholderProducts } from '@/app/[locale]/products/page'; // Re-use from products page for now
+import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Leaf, Info, ShieldCheck, FileText, GitBranch, Tag, Barcode } from 'lucide-react';
+import { placeholderProducts } from '@/app/[locale]/products/page'; 
+import { Badge } from '@/components/ui/badge';
 
-// Updated Product interface
+// Updated Product interface to align with schema
 export interface Product {
   id: string;
   name: string;
-  category: string;
+  brand?: string;
+  barcode?: string;
+  category: string; // Maintained for current filtering logic
   imageUrl: string;
-  description: string;
-  dataAiHint?: string;
-  isGlutenFree?: boolean; 
-  ingredients?: string; 
-  nutriScore?: string;
-  isLactoseFree?: boolean;
-  isSugarFree?: boolean;
-  isPosno?: boolean; // isVegan removed
+  description: string; // Maintained for display
+  ingredientsText?: string; // Single string for ingredients
+  labelText?: string; // Text from the product label
+  hasAOECSLicense?: boolean; // AOECS or official mark
+  hasManufacturerStatement?: boolean; // Manufacturer's gluten-free statement
+  isVerifiedAdmin?: boolean; // Manually verified by admin
+  source?: string; // e.g., "CeliVita", "OpenFoodFacts", "User Input"
+  tags?: string[]; // e.g., ["gluten-free", "lactose-free", "may contain traces"]
+  nutriScore?: string; // Maintained
+  isLactoseFree?: boolean; // Maintained (could also be a tag)
+  isSugarFree?: boolean; // Maintained (could also be a tag)
+  isPosno?: boolean; // Maintained (could also be a tag)
+  dataAiHint?: string; // Maintained for image generation hints
 }
 
 const getNutriScoreClasses = (score?: string) => {
@@ -42,13 +50,15 @@ const getNutriScoreClasses = (score?: string) => {
   }
 };
 
-// Helper component for displaying dietary tags
-const DietaryTag = ({ label, icon: Icon }: { label: string; icon: React.ElementType }) => (
-  <div className="flex items-center text-sm text-muted-foreground">
-    <Icon className="h-4 w-4 mr-2 text-primary" />
-    <span>{label}</span>
-  </div>
-);
+const DietaryTag = ({ label, icon: Icon, present = true }: { label: string; icon: React.ElementType; present?: boolean }) => {
+  if (!present) return null;
+  return (
+    <div className="flex items-center text-sm text-muted-foreground">
+      <Icon className="h-4 w-4 mr-2 text-primary" />
+      <span>{label}</span>
+    </div>
+  );
+};
 
 
 export default function ProductDetailPage() {
@@ -84,6 +94,11 @@ export default function ProductDetailPage() {
     );
   }
 
+  const isGlutenFree = product.tags?.includes('gluten-free');
+  const mayContainGluten = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
+  const containsGluten = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat');
+
+
   return (
     <div className="flex min-h-screen">
       <AppSidebar />
@@ -100,7 +115,7 @@ export default function ProductDetailPage() {
           </div>
           <PageHeader 
             title={product.name}
-            description={`Details for ${product.name}`}
+            description={product.brand ? `${product.brand} - Details for ${product.name}` : `Details for ${product.name}`}
             icon={Package}
           />
           
@@ -116,6 +131,16 @@ export default function ProductDetailPage() {
                   data-ai-hint={product.dataAiHint}
                 />
               </Card>
+               {product.barcode && (
+                <Card className="mt-4">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center"><Barcode className="h-5 w-5 mr-2 text-primary"/> Barcode</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">{product.barcode}</p>
+                  </CardContent>
+                </Card>
+              )}
             </div>
 
             <div className="md:col-span-2">
@@ -124,7 +149,8 @@ export default function ProductDetailPage() {
                   <div className="flex justify-between items-start">
                     <div>
                       <CardTitle className="text-3xl">{product.name}</CardTitle>
-                      <CardDescription className="text-lg text-muted-foreground">{product.category}</CardDescription>
+                      {product.brand && <CardDescription className="text-lg text-muted-foreground">{product.brand}</CardDescription>}
+                      <CardDescription className="text-md text-muted-foreground">{product.category}</CardDescription>
                     </div>
                     <Button variant="outline" size="icon" className="ml-auto flex-shrink-0">
                       <Heart className="h-5 w-5" />
@@ -139,22 +165,33 @@ export default function ProductDetailPage() {
                   </div>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {product.isGlutenFree !== undefined && (
-                       <div>
-                          <h3 className="text-md font-semibold mb-2">Gluten Information</h3>
-                          {product.isGlutenFree ? (
-                              <div className="flex items-center text-green-600">
-                                <CheckCircle className="h-5 w-5 mr-2" />
-                                <span>Likely Gluten-Free</span>
-                              </div>
-                            ) : (
-                              <div className="flex items-center text-red-600">
-                                <AlertTriangle className="h-5 w-5 mr-2" />
-                                <span>May Contain Gluten</span>
-                              </div>
-                            )}
-                       </div>
-                    )}
+                    <div>
+                        <h3 className="text-md font-semibold mb-2">Gluten Information</h3>
+                        {isGlutenFree && (
+                            <div className="flex items-center text-green-600">
+                              <CheckCircle className="h-5 w-5 mr-2" />
+                              <span>Certified Gluten-Free</span>
+                            </div>
+                          )}
+                        {containsGluten && (
+                          <div className="flex items-center text-red-600">
+                            <AlertTriangle className="h-5 w-5 mr-2" />
+                            <span>Contains Gluten</span>
+                          </div>
+                        )}
+                        {mayContainGluten && !isGlutenFree && !containsGluten && (
+                          <div className="flex items-center text-orange-500">
+                            <AlertTriangle className="h-5 w-5 mr-2" />
+                            <span>May Contain Gluten Traces</span>
+                          </div>
+                        )}
+                        {!isGlutenFree && !containsGluten && !mayContainGluten && (
+                           <div className="flex items-center text-muted-foreground">
+                             <Info className="h-5 w-5 mr-2" />
+                             <span>Gluten status unknown or not specified</span>
+                           </div>
+                        )}
+                    </div>
 
                     {product.nutriScore && (
                       <div>
@@ -165,23 +202,56 @@ export default function ProductDetailPage() {
                       </div>
                     )}
                   </div>
-                  
+
                   {(product.isLactoseFree || product.isSugarFree || product.isPosno) && (
                     <div>
-                      <h3 className="text-md font-semibold mb-2">Dietary Information</h3>
+                      <h3 className="text-md font-semibold mb-2">Other Dietary Information</h3>
                       <div className="space-y-2">
-                        {product.isLactoseFree && <DietaryTag label="Lactose-Free" icon={CheckCircle} />}
-                        {product.isSugarFree && <DietaryTag label="Sugar-Free" icon={CheckCircle} />}
-                        {product.isPosno && <DietaryTag label="Posno (Lenten)" icon={Leaf} />}
+                        <DietaryTag label="Lactose-Free" icon={CheckCircle} present={product.isLactoseFree} />
+                        <DietaryTag label="Sugar-Free" icon={CheckCircle} present={product.isSugarFree} />
+                        <DietaryTag label="Posno (Lenten)" icon={Leaf} present={product.isPosno} />
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div>
+                    <h3 className="text-md font-semibold mb-2">Certifications & Verifications</h3>
+                    <div className="space-y-2">
+                      <DietaryTag label="AOECS Licensed" icon={ShieldCheck} present={product.hasAOECSLicense} />
+                      <DietaryTag label="Manufacturer Statement (Gluten-Free)" icon={FileText} present={product.hasManufacturerStatement} />
+                      <DietaryTag label="Admin Verified" icon={CheckCircle} present={product.isVerifiedAdmin} />
+                    </div>
+                  </div>
+
+                  {product.ingredientsText && (
+                    <div>
+                      <h3 className="text-md font-semibold mb-1">Ingredients</h3>
+                      <p className="text-xs text-muted-foreground p-3 bg-muted rounded-md">{product.ingredientsText}</p>
+                    </div>
+                  )}
+
+                  {product.labelText && (
+                    <div>
+                      <h3 className="text-md font-semibold mb-1">Label Text</h3>
+                      <p className="text-xs text-muted-foreground p-3 bg-muted rounded-md">{product.labelText}</p>
+                    </div>
+                  )}
+                  
+                  {product.tags && product.tags.length > 0 && (
+                    <div>
+                      <h3 className="text-md font-semibold mb-1 flex items-center"><Tag className="h-4 w-4 mr-2 text-primary"/> Tags</h3>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {product.tags.map(tag => (
+                          <Badge key={tag} variant="secondary">{tag}</Badge>
+                        ))}
                       </div>
                     </div>
                   )}
 
-
-                  {product.ingredients && (
-                    <div>
-                      <h3 className="text-md font-semibold mb-1">Ingredients</h3>
-                      <p className="text-xs text-muted-foreground p-3 bg-muted rounded-md">{product.ingredients}</p>
+                  {product.source && (
+                     <div>
+                      <h3 className="text-md font-semibold mb-1 flex items-center"><GitBranch className="h-4 w-4 mr-2 text-primary"/> Source</h3>
+                      <p className="text-sm text-muted-foreground">{product.source}</p>
                     </div>
                   )}
                   
@@ -197,3 +267,4 @@ export default function ProductDetailPage() {
     </div>
   );
 }
+

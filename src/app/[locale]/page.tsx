@@ -17,21 +17,22 @@ import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, Alert
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, CameraOff, Lightbulb, BookOpen } from 'lucide-react';
+import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, CameraOff, Lightbulb, BookOpen, AlertTriangle } from 'lucide-react';
 import { analyzeDeclaration, type AnalyzeDeclarationOutput } from '@/ai/flows/analyze-declaration';
 import { getDailyCeliacTip, type DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 
+import { placeholderProducts as allProducts, type Product } from './products/page'; // Import Product type
+
 interface BarcodeScanResult {
   name: string;
-  isGlutenFree: boolean;
-  ingredients: string;
+  tags?: string[]; // Updated to use tags
+  ingredientsText?: string;
   imageUrl: string;
   dataAiHint?: string;
 }
 
-import { placeholderProducts as allProducts } from './products/page';
 
 const productCategories = Array.from(new Set(allProducts.map(p => p.category)));
 
@@ -64,7 +65,7 @@ export default function HomePage() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [displayedProducts, setDisplayedProducts] = useState(allProducts.slice(0, 8)); 
+  const [displayedProducts, setDisplayedProducts] = useState<Product[]>(allProducts.slice(0, 8)); 
 
   const [dailyTip, setDailyTip] = useState<DailyCeliacTipOutput | null>(null);
   const [isLoadingTip, setIsLoadingTip] = useState<boolean>(true);
@@ -96,7 +97,8 @@ export default function HomePage() {
     let filtered = allProducts;
     if (searchTerm.trim()) {
       filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase().trim())
+        product.name.toLowerCase().includes(searchTerm.toLowerCase().trim()) ||
+        (product.brand && product.brand.toLowerCase().includes(searchTerm.toLowerCase().trim()))
       );
     }
     if (selectedCategory !== 'all') {
@@ -115,13 +117,27 @@ export default function HomePage() {
             videoRef.current.srcObject = stream;
           }
           setTimeout(() => {
-            setBarcodeScanResult({ 
-              name: "Simulated Scanned Product", 
-              isGlutenFree: Math.random() > 0.5, 
-              ingredients: "Simulated ingredients from barcode scan.", 
-              imageUrl: "https://placehold.co/300x200.png",
-              dataAiHint: "scanned product"
-            });
+            // Simulate finding a product or a generic scan
+            const randomProduct = allProducts[Math.floor(Math.random() * allProducts.length)];
+            const isProductFound = Math.random() > 0.3; // 70% chance to "find" a product
+
+            if (isProductFound && randomProduct) {
+                 setBarcodeScanResult({ 
+                    name: randomProduct.name, 
+                    tags: randomProduct.tags,
+                    ingredientsText: randomProduct.ingredientsText || "Ingredients not available.", 
+                    imageUrl: randomProduct.imageUrl,
+                    dataAiHint: randomProduct.dataAiHint || "scanned product"
+                  });
+            } else {
+                 setBarcodeScanResult({ 
+                    name: "Unknown Product Scanned", 
+                    tags: ['unknown-barcode'],
+                    ingredientsText: "No product information found for this barcode. Try analyzing the declaration.", 
+                    imageUrl: "https://placehold.co/300x200.png",
+                    dataAiHint: "unknown product"
+                  });
+            }
             setIsScanning(false); 
             stopCameraStream();
             toast({ title: "Barcode Scan Simulated", description: "Product details loaded."});
@@ -253,10 +269,10 @@ export default function HomePage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="product-search" className="text-sm font-medium">Search by name</Label>
+                  <Label htmlFor="product-search" className="text-sm font-medium">Search by name or brand</Label>
                   <Input 
                     id="product-search" 
-                    placeholder="e.g., Gluten-Free Bread" 
+                    placeholder="e.g., Gluten-Free Bread, Schar" 
                     value={searchTerm} 
                     onChange={(e) => setSearchTerm(e.target.value)} 
                   />
@@ -319,16 +335,23 @@ export default function HomePage() {
                       <Image src={barcodeScanResult.imageUrl} alt={barcodeScanResult.name} width={80} height={80} className="rounded-md object-cover" data-ai-hint={barcodeScanResult.dataAiHint || "product image"}/>
                       <div>
                         <CardTitle className="text-xl">{barcodeScanResult.name}</CardTitle>
-                        {barcodeScanResult.isGlutenFree ? (
+                        {barcodeScanResult.tags?.includes('gluten-free') && (
                           <div className="flex items-center text-green-600 mt-1"><CheckCircle className="h-5 w-5 mr-1" /><span>Likely Gluten-Free</span></div>
-                        ) : (
-                          <div className="flex items-center text-red-600 mt-1"><AlertCircle className="h-5 w-5 mr-1" /><span>May Contain Gluten</span></div>
+                        )}
+                        {(barcodeScanResult.tags?.includes('contains-gluten') || barcodeScanResult.tags?.includes('contains-wheat')) && (
+                          <div className="flex items-center text-red-600 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>Contains Gluten</span></div>
+                        )}
+                        {barcodeScanResult.tags?.includes('may-contain-gluten') && !barcodeScanResult.tags?.includes('gluten-free') && !barcodeScanResult.tags?.includes('contains-gluten') && (
+                           <div className="flex items-center text-orange-500 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>May Contain Traces</span></div>
+                        )}
+                         {barcodeScanResult.tags?.includes('unknown-barcode') && (
+                           <div className="flex items-center text-muted-foreground mt-1"><Info className="h-5 w-5 mr-1" /><span>Barcode Not Found</span></div>
                         )}
                       </div>
                     </CardHeader>
                     <CardContent>
                       <h4 className="font-semibold mb-1 text-sm">Ingredients:</h4>
-                      <p className="text-xs text-muted-foreground">{barcodeScanResult.ingredients}</p>
+                      <p className="text-xs text-muted-foreground">{barcodeScanResult.ingredientsText || 'Not available'}</p>
                       <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => { setBarcodeScanResult(null); setErrorBarcode(null);}}>Scan Another</Button>
                     </CardContent>
                   </Card>
@@ -349,33 +372,63 @@ export default function HomePage() {
             </h2>
             {displayedProducts.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {displayedProducts.map(product => (
-                  <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col">
-                    <CardHeader className="p-0">
-                      <Image src={product.imageUrl} alt={product.name} width={400} height={200} className="w-full h-48 object-cover" data-ai-hint={product.dataAiHint}/>
-                    </CardHeader>
-                    <CardContent className="p-4 flex flex-col flex-grow">
-                      <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
-                      <div className="flex justify-between items-center mb-2">
-                        <CardDescription className="text-sm text-muted-foreground">{product.category}</CardDescription>
-                        {product.nutriScore && (
-                          <span className={`px-2 py-0.5 rounded-md text-xs font-semibold ${getNutriScoreClasses(product.nutriScore)}`}>
-                            Nutri-Score: {product.nutriScore}
-                          </span>
+                {displayedProducts.map(product => {
+                  const isGlutenFreeTag = product.tags?.includes('gluten-free');
+                  const containsGlutenTag = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat');
+                  const mayContainGlutenTag = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
+
+                  return (
+                    <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col">
+                      <CardHeader className="p-0">
+                        <Image src={product.imageUrl} alt={product.name} width={400} height={200} className="w-full h-48 object-cover" data-ai-hint={product.dataAiHint}/>
+                      </CardHeader>
+                      <CardContent className="p-4 flex flex-col flex-grow">
+                        <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
+                        {product.brand && <CardDescription className="text-xs text-muted-foreground mb-1">{product.brand}</CardDescription>}
+                        <div className="flex justify-between items-center mb-2">
+                          <CardDescription className="text-sm text-muted-foreground">{product.category}</CardDescription>
+                          {product.nutriScore && (
+                            <span className={`px-2 py-0.5 rounded-md text-xs font-semibold ${getNutriScoreClasses(product.nutriScore)}`}>
+                              Nutri-Score: {product.nutriScore}
+                            </span>
+                          )}
+                        </div>
+
+                        {isGlutenFreeTag && (
+                          <div className="flex items-center text-green-600 text-xs mt-1 mb-1">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            <span>Gluten-Free</span>
+                          </div>
                         )}
-                      </div>
-                      <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description}</p>
-                       <div className="flex flex-wrap gap-1 mb-3">
-                        {product.isLactoseFree && <Badge variant="secondary">Lactose-Free</Badge>}
-                        {product.isSugarFree && <Badge variant="secondary">Sugar-Free</Badge>}
-                        {product.isPosno && <Badge variant="secondary">Posno</Badge>}
-                      </div>
-                      <Button asChild variant="outline" size="sm" className="w-full mt-auto">
-                        <Link href={`/${locale}/products/${product.id}`}>View Details</Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
+                        {containsGlutenTag && (
+                          <div className="flex items-center text-red-600 text-xs mt-1 mb-1">
+                            <AlertTriangle className="h-3 w-3 mr-1" />
+                            <span>Contains Gluten</span>
+                          </div>
+                        )}
+                        {mayContainGlutenTag && !isGlutenFreeTag && !containsGlutenTag && (
+                          <div className="flex items-center text-orange-500 text-xs mt-1 mb-1">
+                            <AlertTriangle className="h-3 w-3 mr-1" />
+                            <span>May Contain Traces</span>
+                          </div>
+                        )}
+                        
+                        <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description}</p>
+                         <div className="flex flex-wrap gap-1 mb-3">
+                          {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Lactose-Free</Badge>}
+                          {product.isSugarFree && <Badge variant="secondary" className="text-xs">Sugar-Free</Badge>}
+                          {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
+                           {product.tags?.filter(tag => !['gluten-free', 'contains-gluten', 'may-contain-gluten', 'contains-wheat', 'risk-of-contamination'].includes(tag)).slice(0,1).map(tag => (
+                              <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
+                           ))}
+                        </div>
+                        <Button asChild variant="outline" size="sm" className="w-full mt-auto">
+                          <Link href={`/${locale}/products/${product.id}`}>View Details</Link>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             ) : (
               <div className="text-center py-12 text-muted-foreground border-dashed border-2 rounded-md">
@@ -465,3 +518,4 @@ export default function HomePage() {
     </div>
   );
 }
+
