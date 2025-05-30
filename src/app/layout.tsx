@@ -1,21 +1,10 @@
+
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
-import './globals.css';
-import { Toaster } from '@/components/ui/toaster';
-import { SidebarProvider } from '@/components/ui/sidebar';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
+// This is the root layout. It must define <html> and <body>.
+// The lang attribute here is a fallback. src/app/[locale]/layout.tsx will set the specific lang.
 export const metadata: Metadata = {
-  title: 'Gluten Scan',
+  title: 'Gluten Scan', // Generic title, will be overridden by locale-specific layout
   description: 'Scan and identify gluten-free products easily.',
 };
 
@@ -25,12 +14,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <SidebarProvider defaultOpen={true}>
-          {children}
-        </SidebarProvider>
-        <Toaster />
+    <html lang="sr"> {/* Default to 'sr' here, [locale]/layout.tsx will override */}
+      <body>
+        {children}
       </body>
     </html>
   );
