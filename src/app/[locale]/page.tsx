@@ -1,9 +1,10 @@
 
-
 'use client';
 
 import { useState, type FormEvent, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link'; // Added Link
+import { useParams } from 'next/navigation'; // Added useParams
 import { SidebarInset, SidebarRail } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/navigation/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
@@ -12,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert'; // Renamed to avoid conflict
+import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -31,20 +32,17 @@ interface BarcodeScanResult {
 }
 
 // Placeholder product data (from products page)
-const placeholderProducts = [
-  { id: '1', name: 'Gluten-Free Bread', category: 'Bakery', imageUrl: 'https://placehold.co/300x200.png', description: 'Delicious and soft gluten-free white bread.', dataAiHint: 'bread bakery' },
-  { id: '2', name: 'Corn Pasta', category: 'Pasta', imageUrl: 'https://placehold.co/300x200.png', description: 'Authentic Italian corn pasta, naturally gluten-free.', dataAiHint: 'pasta corn' },
-  { id: '3', name: 'Rice Cakes', category: 'Snacks', imageUrl: 'https://placehold.co/300x200.png', description: 'Light and crispy rice cakes, perfect for snacking.', dataAiHint: 'rice cakes' },
-  { id: '4', name: 'Gluten-Free Oats', category: 'Cereals', imageUrl: 'https://placehold.co/300x200.png', description: 'Certified gluten-free rolled oats for breakfast.', dataAiHint: 'oats cereal' },
-  { id: '5', name: 'Almond Flour Mix', category: 'Bakery', imageUrl: 'https://placehold.co/300x200.png', description: 'Versatile almond flour for baking.', dataAiHint: 'almond flour' },
-  { id: '6', name: 'Quinoa Salad Mix', category: 'Snacks', imageUrl: 'https://placehold.co/300x200.png', description: 'Ready-to-eat quinoa salad.', dataAiHint: 'quinoa salad' },
-];
+// Re-using the export from products page to keep it DRY
+import { placeholderProducts as allProducts } from './products/page';
 
 // Unique categories for the select dropdown
-const productCategories = Array.from(new Set(placeholderProducts.map(p => p.category)));
+const productCategories = Array.from(new Set(allProducts.map(p => p.category)));
 
 
 export default function HomePage() {
+  const routeParams = useParams(); // Get route params for locale
+  const locale = routeParams.locale as string;
+
   // State for Declaration Analysis
   const [declarationText, setDeclarationText] = useState<string>('');
   const [analysisResult, setAnalysisResult] = useState<AnalyzeDeclarationOutput | null>(null);
@@ -61,7 +59,7 @@ export default function HomePage() {
   // State for Product Search/Filter
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [displayedProducts, setDisplayedProducts] = useState(placeholderProducts);
+  const [displayedProducts, setDisplayedProducts] = useState(allProducts.slice(0, 8)); // Show a subset initially
 
   // State for Daily Celiac Tip
   const [dailyTip, setDailyTip] = useState<DailyCeliacTipOutput | null>(null);
@@ -84,7 +82,6 @@ export default function HomePage() {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
         console.error('Failed to fetch daily tip:', errorMessage);
         setErrorTip('Could not load daily tip. Please try refreshing.');
-        // Do not toast error for tip, it's non-critical
       } finally {
         setIsLoadingTip(false);
       }
@@ -94,7 +91,7 @@ export default function HomePage() {
 
   // Effect for product filtering
   useEffect(() => {
-    let filtered = placeholderProducts;
+    let filtered = allProducts;
     if (searchTerm.trim()) {
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase().trim())
@@ -103,7 +100,7 @@ export default function HomePage() {
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(product => product.category === selectedCategory);
     }
-    setDisplayedProducts(filtered);
+    setDisplayedProducts(filtered.slice(0,8)); // Limit displayed products on homepage
   }, [searchTerm, selectedCategory]);
   
   // Effect for camera handling (barcode scanning)
@@ -357,15 +354,17 @@ export default function HomePage() {
             {displayedProducts.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {displayedProducts.map(product => (
-                  <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-200">
+                  <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col">
                     <CardHeader className="p-0">
                       <Image src={product.imageUrl} alt={product.name} width={400} height={200} className="w-full h-48 object-cover" data-ai-hint={product.dataAiHint}/>
                     </CardHeader>
-                    <CardContent className="p-4">
+                    <CardContent className="p-4 flex flex-col flex-grow">
                       <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
                       <CardDescription className="text-sm text-muted-foreground mb-2">{product.category}</CardDescription>
-                      <p className="text-sm mb-3 h-10 overflow-hidden">{product.description}</p>
-                      <Button variant="outline" size="sm" className="w-full">View Details</Button>
+                      <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description}</p>
+                      <Button asChild variant="outline" size="sm" className="w-full mt-auto">
+                        <Link href={`/${locale}/products/${product.id}`}>View Details</Link>
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}
