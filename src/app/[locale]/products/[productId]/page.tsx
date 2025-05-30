@@ -11,7 +11,7 @@ import { SiteHeader } from '@/components/site-header';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Vegan, Leaf } from 'lucide-react'; // Added Vegan, Leaf
+import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Leaf } from 'lucide-react'; // Removed Vegan
 import { placeholderProducts } from '@/app/[locale]/products/page'; // Re-use from products page for now
 
 // Updated Product interface
@@ -27,8 +27,7 @@ export interface Product {
   nutriScore?: string;
   isLactoseFree?: boolean;
   isSugarFree?: boolean;
-  isVegan?: boolean;
-  isPosno?: boolean;
+  isPosno?: boolean; // isVegan removed
 }
 
 const getNutriScoreClasses = (score?: string) => {
@@ -167,13 +166,12 @@ export default function ProductDetailPage() {
                     )}
                   </div>
                   
-                  {(product.isLactoseFree || product.isSugarFree || product.isVegan || product.isPosno) && (
+                  {(product.isLactoseFree || product.isSugarFree || product.isPosno) && (
                     <div>
                       <h3 className="text-md font-semibold mb-2">Dietary Information</h3>
                       <div className="space-y-2">
                         {product.isLactoseFree && <DietaryTag label="Lactose-Free" icon={CheckCircle} />}
                         {product.isSugarFree && <DietaryTag label="Sugar-Free" icon={CheckCircle} />}
-                        {product.isVegan && <DietaryTag label="Vegan" icon={Vegan} />}
                         {product.isPosno && <DietaryTag label="Posno (Lenten)" icon={Leaf} />}
                       </div>
                     </div>

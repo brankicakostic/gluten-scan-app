@@ -368,7 +368,6 @@ export default function HomePage() {
                        <div className="flex flex-wrap gap-1 mb-3">
                         {product.isLactoseFree && <Badge variant="secondary">Lactose-Free</Badge>}
                         {product.isSugarFree && <Badge variant="secondary">Sugar-Free</Badge>}
-                        {product.isVegan && <Badge variant="secondary">Vegan</Badge>}
                         {product.isPosno && <Badge variant="secondary">Posno</Badge>}
                       </div>
                       <Button asChild variant="outline" size="sm" className="w-full mt-auto">
