@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, type FormEvent, useRef, useEffect } from 'react';
@@ -9,12 +10,13 @@ import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert as ShadcnAlert } from '@/components/ui/alert'; // Renamed to avoid conflict
+import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert'; // Renamed to avoid conflict
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, CameraOff } from 'lucide-react';
+import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, CameraOff, Lightbulb } from 'lucide-react';
 import { analyzeDeclaration, type AnalyzeDeclarationOutput } from '@/ai/flows/analyze-declaration';
+import { getDailyCeliacTip, type DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import { useToast } from '@/hooks/use-toast';
 
 // Placeholder for barcode scan result
@@ -59,7 +61,32 @@ export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [displayedProducts, setDisplayedProducts] = useState(placeholderProducts);
 
+  // State for Daily Celiac Tip
+  const [dailyTip, setDailyTip] = useState<string | null>(null);
+  const [isLoadingTip, setIsLoadingTip] = useState<boolean>(true);
+  const [errorTip, setErrorTip] = useState<string | null>(null);
+
   const { toast } = useToast();
+
+  // Effect to fetch daily celiac tip
+  useEffect(() => {
+    const fetchTip = async () => {
+      setIsLoadingTip(true);
+      setErrorTip(null);
+      try {
+        const tipResult = await getDailyCeliacTip();
+        setDailyTip(tipResult.tip);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
+        console.error('Failed to fetch daily tip:', errorMessage);
+        setErrorTip('Could not load daily tip. Please try refreshing.');
+        // Do not toast error for tip, it's non-critical
+      } finally {
+        setIsLoadingTip(false);
+      }
+    };
+    fetchTip();
+  }, []);
 
   // Effect for product filtering
   useEffect(() => {
@@ -166,6 +193,32 @@ export default function HomePage() {
             description="Search, scan, or analyze ingredients to find gluten-free products."
             icon={ScanLine}
           />
+
+          {/* Daily Celiac Tip Section */}
+          <div className="mb-8 text-center">
+            {isLoadingTip && (
+              <div className="flex items-center justify-center text-muted-foreground p-4 bg-muted/50 rounded-lg">
+                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                <span>Loading daily tip...</span>
+              </div>
+            )}
+            {errorTip && !isLoadingTip && (
+              <div className="flex items-center justify-center text-destructive p-4 bg-destructive/10 rounded-lg">
+                <AlertCircle className="h-5 w-5 mr-2" />
+                <span>{errorTip}</span>
+              </div>
+            )}
+            {dailyTip && !isLoadingTip && !errorTip && (
+              <Card className="bg-secondary/50 border-secondary shadow-sm">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-center">
+                    <Lightbulb className="h-6 w-6 mr-3 text-primary flex-shrink-0" />
+                    <p className="text-sm text-secondary-foreground">{dailyTip}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             {/* Product Search & Filters Card */}
@@ -233,8 +286,8 @@ export default function HomePage() {
                 {errorBarcode && !isScanning && (
                   <ShadcnAlert variant="destructive" className="mt-4">
                     <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Scanning Error</AlertTitle>
-                    <AlertDescription>{errorBarcode}</AlertDescription>
+                    <ShadcnAlertTitle>Scanning Error</ShadcnAlertTitle>
+                    <ShadcnAlertDescription>{errorBarcode}</ShadcnAlertDescription>
                   </ShadcnAlert>
                 )}
                 {barcodeScanResult && !isScanning && (
@@ -316,8 +369,8 @@ export default function HomePage() {
                 {errorDeclaration && (
                   <ShadcnAlert variant="destructive" className="mt-4">
                     <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>{errorDeclaration}</AlertDescription>
+                    <ShadcnAlertTitle>Error</ShadcnAlertTitle>
+                    <ShadcnAlertDescription>{errorDeclaration}</ShadcnAlertDescription>
                   </ShadcnAlert>
                 )}
               </CardContent>
@@ -341,10 +394,10 @@ export default function HomePage() {
                   <>
                     <ShadcnAlert variant={analysisResult.hasGluten ? 'destructive' : 'default'} className={analysisResult.hasGluten ? '' : 'border-green-500'}>
                       {analysisResult.hasGluten ? <AlertCircle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5 text-green-600" />}
-                      <AlertTitle className={analysisResult.hasGluten ? '' : 'text-green-700'}>
+                      <ShadcnAlertTitle className={analysisResult.hasGluten ? '' : 'text-green-700'}>
                         {analysisResult.hasGluten ? 'Potential Gluten Detected' : 'Likely Gluten-Free'}
-                      </AlertTitle>
-                      <AlertDescription>Confidence: {Math.round(analysisResult.confidence * 100)}%</AlertDescription>
+                      </ShadcnAlertTitle>
+                      <ShadcnAlertDescription>Confidence: {Math.round(analysisResult.confidence * 100)}%</ShadcnAlertDescription>
                     </ShadcnAlert>
                     <div className="mt-3">
                       <h4 className="font-semibold mb-1 text-sm">Reasoning:</h4>
