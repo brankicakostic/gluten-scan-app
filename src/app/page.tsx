@@ -10,11 +10,12 @@ import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert'; // Renamed to avoid conflict
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, CameraOff, Lightbulb } from 'lucide-react';
+import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, CameraOff, Lightbulb, BookOpen } from 'lucide-react';
 import { analyzeDeclaration, type AnalyzeDeclarationOutput } from '@/ai/flows/analyze-declaration';
 import { getDailyCeliacTip, type DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import { useToast } from '@/hooks/use-toast';
@@ -62,9 +63,11 @@ export default function HomePage() {
   const [displayedProducts, setDisplayedProducts] = useState(placeholderProducts);
 
   // State for Daily Celiac Tip
-  const [dailyTip, setDailyTip] = useState<string | null>(null);
+  const [dailyTip, setDailyTip] = useState<DailyCeliacTipOutput | null>(null);
   const [isLoadingTip, setIsLoadingTip] = useState<boolean>(true);
   const [errorTip, setErrorTip] = useState<string | null>(null);
+  const [showTipDetailsModal, setShowTipDetailsModal] = useState<boolean>(false);
+
 
   const { toast } = useToast();
 
@@ -75,7 +78,7 @@ export default function HomePage() {
       setErrorTip(null);
       try {
         const tipResult = await getDailyCeliacTip();
-        setDailyTip(tipResult.tip);
+        setDailyTip(tipResult);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
         console.error('Failed to fetch daily tip:', errorMessage);
@@ -195,15 +198,15 @@ export default function HomePage() {
           />
 
           {/* Daily Celiac Tip Section */}
-          <div className="mb-8 text-center">
+          <div className="mb-8">
             {isLoadingTip && (
-              <div className="flex items-center justify-center text-muted-foreground p-4 bg-muted/50 rounded-lg">
+              <div className="flex items-center justify-center text-muted-foreground p-4 bg-muted/50 rounded-lg shadow-sm">
                 <Loader2 className="h-5 w-5 mr-2 animate-spin" />
                 <span>Loading daily tip...</span>
               </div>
             )}
             {errorTip && !isLoadingTip && (
-              <div className="flex items-center justify-center text-destructive p-4 bg-destructive/10 rounded-lg">
+              <div className="flex items-center justify-center text-destructive p-4 bg-destructive/10 rounded-lg shadow-sm">
                 <AlertCircle className="h-5 w-5 mr-2" />
                 <span>{errorTip}</span>
               </div>
@@ -211,9 +214,34 @@ export default function HomePage() {
             {dailyTip && !isLoadingTip && !errorTip && (
               <Card className="bg-secondary/50 border-secondary shadow-sm">
                 <CardContent className="p-4">
-                  <div className="flex items-center justify-center">
-                    <Lightbulb className="h-6 w-6 mr-3 text-primary flex-shrink-0" />
-                    <p className="text-sm text-secondary-foreground">{dailyTip}</p>
+                  <div className="flex items-start md:items-center justify-between gap-3 flex-col md:flex-row">
+                    <div className="flex items-center">
+                      <Lightbulb className="h-6 w-6 mr-3 text-primary flex-shrink-0" />
+                      <p className="text-sm text-secondary-foreground">{dailyTip.summary}</p>
+                    </div>
+                    <AlertDialog open={showTipDetailsModal} onOpenChange={setShowTipDetailsModal}>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="bg-background/70 hover:bg-background">
+                          <BookOpen className="mr-2 h-4 w-4" /> Read More
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="flex items-center gap-2">
+                            <Lightbulb className="h-5 w-5 text-primary" /> Daily Celiac Tip
+                          </AlertDialogTitle>
+                          <AlertDialogDescription className="text-left pt-2">
+                            <strong>{dailyTip.summary}</strong>
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <div className="text-sm text-muted-foreground max-h-[60vh] overflow-y-auto pr-2">
+                          <p>{dailyTip.details}</p>
+                        </div>
+                        <AlertDialogFooter>
+                          <AlertDialogAction>Got it!</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </CardContent>
               </Card>
