@@ -17,6 +17,9 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import type { Product } from './[productId]/page'; // Import Product type
 
+const firebaseStorageBaseUrl = 'https://firebasestorage.googleapis.com/v0/b/gluten-detective-8ukpw.firebasestorage.app/o/products%2Faleksandrija-fruska-gora%2F';
+const firebaseStorageTokenPlaceholder = '?alt=media&token=REPLACE_WITH_ACTUAL_TOKEN';
+
 // Updated placeholder product data based on user input
 export const placeholderProducts: Product[] = [
   {
@@ -24,7 +27,7 @@ export const placeholderProducts: Product[] = [
     name: 'Instant Palenta',
     brand: 'Aleksandija',
     category: 'Flours & Grains',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}instant-palenta.png${firebaseStorageTokenPlaceholder}`,
     description: 'sa sirom - 60g',
     ingredientsText: 'Griz od kukuruza (semolina) 94%, prah od sira 5%, stolna so 1%',
     labelText: 'Instant Palenta',
@@ -44,7 +47,7 @@ export const placeholderProducts: Product[] = [
     name: 'Pirinčani Griz',
     brand: 'Aleksandija',
     category: 'Flours & Grains',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}pirinčani-griz.png${firebaseStorageTokenPlaceholder}`,
     description: 'pirinčani griz - 300g',
     ingredientsText: 'pirinčani griz 100%',
     labelText: 'Pirinčani Griz',
@@ -54,7 +57,7 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'sugar-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false, // Assuming not specified, default to false
+    isLactoseFree: false, 
     isSugarFree: true,
     isPosno: true,
     dataAiHint: 'pirinčani griz'
@@ -64,7 +67,7 @@ export const placeholderProducts: Product[] = [
     name: 'Prezle',
     brand: 'Aleksandija',
     category: 'Flours & Grains',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}prezle-prosa.png${firebaseStorageTokenPlaceholder}`,
     description: 'od prosa i heljde - 300g',
     ingredientsText: 'Kukuruzno brašno, brašno od pirinča, brašno od prosa 12%, brašno od heljde 7%, pekarski kvasac, šećer, brašno od guar graška, so, biljna mast (palmina), sojin lecitin, sredstva za dizanje (amonijum bikarbonat, natrijum bikarbonat)',
     labelText: 'Prezle',
@@ -72,10 +75,10 @@ export const placeholderProducts: Product[] = [
     hasManufacturerStatement: false,
     isVerifiedAdmin: false,
     source: 'User Provided Data',
-    tags: ['gluten-free', 'posno'], // Contains šećer
+    tags: ['gluten-free', 'posno'], 
     nutriScore: undefined,
-    isLactoseFree: false, // Assuming not specified
-    isSugarFree: false, // Contains šećer
+    isLactoseFree: false, 
+    isSugarFree: false, 
     isPosno: true,
     dataAiHint: 'prezle prosa'
   },
@@ -84,7 +87,7 @@ export const placeholderProducts: Product[] = [
     name: 'Dvopek',
     brand: 'Aleksandija',
     category: 'Flours & Grains',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}dvopek-heljde.png${firebaseStorageTokenPlaceholder}`,
     description: 'od heljde i prosa - 110g',
     ingredientsText: 'Brašno od pirinča, kukuruzni skrob, kukuruzno brašno, brašno od prosa 11%, brašno od heljde 10%, biljno ulje (palmino), pekarski kvasac, šećer, kuvarska so, brašno od guar graška, sirovi sojin lecitin, sredstvo za dizanje testa (amonijum bikarbonat, natrijum bikarbonat), so',
     labelText: 'Dvopek',
@@ -92,10 +95,10 @@ export const placeholderProducts: Product[] = [
     hasManufacturerStatement: false,
     isVerifiedAdmin: false,
     source: 'User Provided Data',
-    tags: ['gluten-free', 'posno'], // Contains šećer
+    tags: ['gluten-free', 'posno'], 
     nutriScore: undefined,
-    isLactoseFree: false, // Assuming not specified
-    isSugarFree: false, // Contains šećer
+    isLactoseFree: false, 
+    isSugarFree: false, 
     isPosno: true,
     dataAiHint: 'dvopek heljde'
   },
@@ -104,7 +107,7 @@ export const placeholderProducts: Product[] = [
     name: 'Dvopek',
     brand: 'Aleksandija',
     category: 'Flours & Grains',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}dvopek-prosom.png${firebaseStorageTokenPlaceholder}`,
     description: 'sa prosom - 110g',
     ingredientsText: 'Brašno od pirinča, kukuruzni skrob, kukuruzno brašno, brašno od prosa 15%, suncokretovo ulje, šećer, kvasac, brašno od guar graška, so, sirovi sojin lecitin, sredstvo za dizanje testa (amonijum bikarbonat, natrijum bikarbonat)',
     labelText: 'Dvopek',
@@ -112,10 +115,10 @@ export const placeholderProducts: Product[] = [
     hasManufacturerStatement: false,
     isVerifiedAdmin: false,
     source: 'User Provided Data',
-    tags: ['gluten-free', 'posno'], // Contains šećer
+    tags: ['gluten-free', 'posno'], 
     nutriScore: undefined,
-    isLactoseFree: false, // Assuming not specified
-    isSugarFree: false, // Contains šećer
+    isLactoseFree: false, 
+    isSugarFree: false, 
     isPosno: true,
     dataAiHint: 'dvopek prosom'
   },
@@ -124,7 +127,7 @@ export const placeholderProducts: Product[] = [
     name: 'Cookies',
     brand: 'Aleksandija',
     category: 'Sweets & Biscuits',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}čokoladni-keks.png${firebaseStorageTokenPlaceholder}`,
     description: 'keks sa čokoladom - 200g',
     ingredientsText: 'Brašno od pirinča, brašno od prosa, kukuruzni skrob, šećer, biljna mast (suncokretova), brašno od heljde, komadići čokolade 8% (šećer, najmanje 40% suve kakao mase, najmanje 7% kakao maslaca), vanilin šećer, sirovi sojin lecitin, brašno od guar graška, sredstva za dizanje testa (amonijum bikarbonat, prašak za pecivo), kuvarska so',
     labelText: 'Cookies',
@@ -134,8 +137,8 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false, // Assuming not specified
-    isSugarFree: false, // Contains šećer
+    isLactoseFree: false, 
+    isSugarFree: false, 
     isPosno: true,
     dataAiHint: 'čokoladni keks'
   },
@@ -144,7 +147,7 @@ export const placeholderProducts: Product[] = [
     name: 'Čajni Kolutići',
     brand: 'Aleksandija',
     category: 'Sweets & Biscuits',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}čajni-kolutići.png${firebaseStorageTokenPlaceholder}`,
     description: 'sa heljdom - 300g',
     ingredientsText: 'Brašno od pirinča, kukuruzni skrob, šećer, brašno od prosa, palmino ulje, brašno od heljde 6,5%, kukuruzno brašno, brašno od guar graška, sirovi sojin lecitin, sredstvo za dizanje testa (amonijum bikarbonat, natrijum bikarbonat)',
     labelText: 'Čajni Kolutići',
@@ -154,8 +157,8 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false, // Assuming not specified
-    isSugarFree: false, // Contains šećer
+    isLactoseFree: false, 
+    isSugarFree: false, 
     isPosno: true,
     dataAiHint: 'čajni kolutići'
   },
@@ -164,7 +167,7 @@ export const placeholderProducts: Product[] = [
     name: 'KO-GO',
     brand: 'Aleksandija',
     category: 'Sweets & Biscuits',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}kogo-keks.png${firebaseStorageTokenPlaceholder}`,
     description: 'sendvič keks bez šećera - 200g',
     ingredientsText: 'Brašno od pirinča, kukuruzni skrob, biljna mast (palmina), krem od kakaa min 20%, zaslađivači (eritritol, steviol glikozid), kakao prah, lešnici, brašno od soje, sojin lecitin, vanila, skrob od tapioke, brašno od guar graška, sredstva za dizanje testa (amonijum bikarbonat, prašak za pecivo), aroma limuna, so',
     labelText: 'KO-GO',
@@ -174,7 +177,7 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'sugar-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false, // Assuming not specified
+    isLactoseFree: false, 
     isSugarFree: true,
     isPosno: true,
     dataAiHint: 'kogo keks'
@@ -184,7 +187,7 @@ export const placeholderProducts: Product[] = [
     name: 'Keks Života',
     brand: 'Aleksandija',
     category: 'Sweets & Biscuits',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}mleveni-keks.png${firebaseStorageTokenPlaceholder}`,
     description: 'mleveni keks bez šećera - 300g',
     ingredientsText: 'Brašno od pirinča, kukuruzni skrob, skrob od tapioke, biljno ulje (palmino), brašno od guar graška, sojin lecitin, zaslađivač (eritritol, steviol glikozidi), sredstvo za dizanje testa (amonijum bikarbonat, natrijum bikarbonat), so',
     labelText: 'Keks Života',
@@ -194,7 +197,7 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'sugar-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false, // Assuming not specified
+    isLactoseFree: false, 
     isSugarFree: true,
     isPosno: true,
     dataAiHint: 'mleveni keks'
@@ -204,7 +207,7 @@ export const placeholderProducts: Product[] = [
     name: 'Happy Life',
     brand: 'Aleksandija',
     category: 'Sweets & Biscuits',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}happy-keks.png${firebaseStorageTokenPlaceholder}`,
     description: 'mleveni keks - 300g',
     ingredientsText: 'Brašno od pirinča, kukuruzni skrob, kukuruzno brašno, brašno od prosa, šećer, suncokretovo ulje, brašno od guar graška, sredstvo za pohovanje (amonijum bikarbonat)',
     labelText: 'Happy Life',
@@ -214,8 +217,8 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false, // Assuming not specified
-    isSugarFree: false, // Contains šećer
+    isLactoseFree: false, 
+    isSugarFree: false, 
     isPosno: true,
     dataAiHint: 'happy keks'
   },
@@ -224,7 +227,7 @@ export const placeholderProducts: Product[] = [
     name: 'Pusa',
     brand: 'Aleksandija',
     category: 'Sweets & Biscuits',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}pusa-keks.png${firebaseStorageTokenPlaceholder}`,
     description: 'keks od prosa - 150g',
     ingredientsText: 'Kukuruzni skrob, brašno od prosa, šećer, kukuruzno brašno, brašno od pirinča, biljna mast, kakao prah sa smanjenim sadržajem masti 10%, brašno od guar graška, vanilin šećer, sirovi sojin lecitin, so, sredstvo za dizanje testa (amonijum bikarbonat)',
     labelText: 'Pusa',
@@ -234,8 +237,8 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false, // Assuming not specified
-    isSugarFree: false, // Contains šećer
+    isLactoseFree: false, 
+    isSugarFree: false, 
     isPosno: true,
     dataAiHint: 'pusa keks'
   },
@@ -244,7 +247,7 @@ export const placeholderProducts: Product[] = [
     name: 'Premium Univerzal Mix',
     brand: 'Aleksandija',
     category: 'Flours & Grains',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}univerzalno-brašno.png${firebaseStorageTokenPlaceholder}`,
     description: 'univerzalna mešavina brašna - 1kg',
     ingredientsText: 'Brašno od pirinča, brašno od prosa, krompirov skrob, kukuruzni skrob, brašno od guar graška, zgušnjivač (ksantan guma)',
     labelText: 'Premium Univerzal Mix',
@@ -254,7 +257,7 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'sugar-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: true, // No obvious lactose
+    isLactoseFree: true, 
     isSugarFree: true,
     isPosno: true,
     dataAiHint: 'univerzalno brašno'
@@ -264,7 +267,7 @@ export const placeholderProducts: Product[] = [
     name: 'Vanilice',
     brand: 'Aleksandija',
     category: 'Sweets & Biscuits',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}vanilice-kajsijom.png${firebaseStorageTokenPlaceholder}`,
     description: 'sa kajsijom - 180g',
     ingredientsText: 'Brašno od pirinča, brašno od prosa (20%), kukuruzni skrob, voćni fil (šećer, kajsijevo pirea (40%), regulator kiselosti (limunska kiselina), sredstvo za geliranje (pektin)), biljna mast (palmina), šećer, vanilin šećer, sirovi sojin lecitin, brašno od guar graška, so, sredstvo za dizanje testa (amonijum bikarbonat, natrijum bikarbonat)',
     labelText: 'Vanilice',
@@ -274,8 +277,8 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false, // Assuming not specified
-    isSugarFree: false, // Contains šećer
+    isLactoseFree: false, 
+    isSugarFree: false, 
     isPosno: true,
     dataAiHint: 'vanilice kajsijom'
   },
@@ -284,7 +287,7 @@ export const placeholderProducts: Product[] = [
     name: 'Integralni Štapići',
     brand: 'Aleksandija',
     category: 'Salty Snacks',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}integralni-štapići.png${firebaseStorageTokenPlaceholder}`,
     description: 'sa heljdom i prosom - 130g',
     ingredientsText: 'Kukuruzni skrob, brašno od pirinča, brašno od prosa 11%, brašno od heljde 10%, suncokretovo ulje, stolna so, brašno od guar graška, sredstva za dizanje testa (amonijum bikarbonat, prašak za pecivo)',
     labelText: 'Integralni Štapići',
@@ -294,7 +297,7 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'sugar-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: true, // No obvious lactose
+    isLactoseFree: true, 
     isSugarFree: true,
     isPosno: true,
     dataAiHint: 'integralni štapići'
@@ -304,7 +307,7 @@ export const placeholderProducts: Product[] = [
     name: 'Chia',
     brand: 'Aleksandija',
     category: 'Salty Snacks',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}chia-krekeri.png${firebaseStorageTokenPlaceholder}`,
     description: 'krekeri sa čijom - 140g',
     ingredientsText: 'Kukuruzno brašno, brašno od pirinča, kukuruzni skrob, brašno od prosa, biljna mast (palmina), čija 3%, so, zgušnjivač (guar guma), sredstvo za dizanje testa (amonijum bikarbonat, natrijum bikarbonat)',
     labelText: 'Chia',
@@ -314,7 +317,7 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'sugar-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: true, // No obvious lactose
+    isLactoseFree: true, 
     isSugarFree: true,
     isPosno: true,
     dataAiHint: 'chia krekeri'
@@ -324,7 +327,7 @@ export const placeholderProducts: Product[] = [
     name: 'ALEX',
     brand: 'Aleksandija',
     category: 'Salty Snacks',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}alex-krekeri.png${firebaseStorageTokenPlaceholder}`,
     description: 'slani krekeri od prosa i lana - 150g',
     ingredientsText: 'Kukuruzni skrob, kukuruzno brašno, brašno od pirinča, biljna mast (palmina), brašno od prosa (10%), šećer, so, laneno seme (3%), brašno od guar graška, sojin lecitin, sredstva za dizanje testa (amonijum bikarbonat, prašak za pecivo)',
     labelText: 'ALEX',
@@ -334,8 +337,8 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'posno'],
     nutriScore: undefined,
-    isLactoseFree: false, // Assuming not specified
-    isSugarFree: false, // Contains šećer
+    isLactoseFree: false, 
+    isSugarFree: false, 
     isPosno: true,
     dataAiHint: 'alex krekeri'
   },
@@ -344,7 +347,7 @@ export const placeholderProducts: Product[] = [
     name: 'Proteinski Kakao Krem',
     brand: 'Aleksandija',
     category: 'Spreads & Creams',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}proteinski-krem.png${firebaseStorageTokenPlaceholder}`,
     description: 'bez šećera - 200g',
     ingredientsText: 'Protein iz graška, brašno od semena bundeve, vanila, zaslađivač (eritritol, steviol glikozidi), kakao prah sa smanjenim sadržajem masti, lešnici (10%), biljna mast (suncokretova, palmina), sojin lecitin, mleko u prahu',
     labelText: 'Proteinski Kakao Krem',
@@ -354,9 +357,9 @@ export const placeholderProducts: Product[] = [
     source: 'User Provided Data',
     tags: ['gluten-free', 'sugar-free', 'high-protein'],
     nutriScore: undefined,
-    isLactoseFree: false, // Contains mleko u prahu
+    isLactoseFree: false, 
     isSugarFree: true,
-    isPosno: false, // Contains mleko u prahu
+    isPosno: false, 
     dataAiHint: 'proteinski krem'
   },
   {
@@ -364,7 +367,7 @@ export const placeholderProducts: Product[] = [
     name: 'Vege Proteinski Kakao Krem',
     brand: 'Aleksandija',
     category: 'Spreads & Creams',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}vege-krem.png${firebaseStorageTokenPlaceholder}`,
     description: 'bez šećera - 200g',
     ingredientsText: 'Protein iz graška, semenke bundeve golice u prahu 15%, biljna mast (ulje repice, suncokretovo ulje),semenke bundeve golice, kakao prah sa smanjenim sadržajem masti min 10%, lešnici min 10%, zaslađivač (eritritol, steviol glikozid), sirovi sojin lecitin, vanilin',
     labelText: 'Vege Proteinski Kakao Krem',
@@ -384,7 +387,7 @@ export const placeholderProducts: Product[] = [
     name: 'Proteinske Fit Noodle',
     brand: 'Aleksandija',
     category: 'Pasta & Noodles',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}fit-nudle.png${firebaseStorageTokenPlaceholder}`,
     description: 'instant proteinske nudle sa belim lukom - 70g',
     ingredientsText: 'Brašno od pirinča, brašno od bundeve, kukuruzno brašno, brašno od prosa, brašno od heljde, prah od belog luka (5%), biljno ulje (palmino), brašno od guar graška, mešavina začina (u različitim količinama – kurkuma, kari, peršun, so, biber)',
     labelText: 'Proteinske Fit Noodle',
@@ -404,7 +407,7 @@ export const placeholderProducts: Product[] = [
     name: 'Proteinske Vege Tagliatelle',
     brand: 'Aleksandija',
     category: 'Pasta & Noodles',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}vege-taljatele.png${firebaseStorageTokenPlaceholder}`,
     description: 'proteinske vege taljatele - 200g',
     ingredientsText: 'Brašno od pirinča, brašno od bundeve, kukuruzno brašno, brašno od prosa, brašno od heljde, brašno od guar graška, zgušnjivač (ksantan guma), kurkuma',
     labelText: 'Proteinske Vege Tagliatelle',
@@ -424,7 +427,7 @@ export const placeholderProducts: Product[] = [
     name: 'RISO Pasta',
     brand: 'Aleksandija',
     category: 'Pasta & Noodles',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}riso-pasta.png${firebaseStorageTokenPlaceholder}`,
     description: 'pirinčane nudle - 320g',
     ingredientsText: 'Brašno od pirinča, zgušnjivač ksantan guma',
     labelText: 'RISO Pasta',
@@ -444,7 +447,7 @@ export const placeholderProducts: Product[] = [
     name: 'Tagliatelle di RISO',
     brand: 'Aleksandija',
     category: 'Pasta & Noodles',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}riso-taljatele.png${firebaseStorageTokenPlaceholder}`,
     description: 'pirinčane taljatele - 210g',
     ingredientsText: 'Brašno od pirinča, zgušnjivač ksantan guma.',
     labelText: 'Tagliatelle di RISO',
@@ -464,7 +467,7 @@ export const placeholderProducts: Product[] = [
     name: 'Premium Tamna Gotova Smeša',
     brand: 'Aleksandija',
     category: 'Flours & Grains',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}tamna-smeša.png${firebaseStorageTokenPlaceholder}`,
     description: 'od heljde i prosa - 1kg',
     ingredientsText: 'Brašno od pirinča, brašno od prosa, krompirov skrob, kukuruzni skrob, brašno od guar graška, zgušnjivač (ksantan guma)',
     labelText: 'Premium Tamna Gotova Smeša',
@@ -484,7 +487,7 @@ export const placeholderProducts: Product[] = [
     name: 'Taljatele sa Kurkumom',
     brand: 'Aleksandija',
     category: 'Pasta & Noodles',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}taljatele-kurkumom.png${firebaseStorageTokenPlaceholder}`,
     description: 'taljatele sa kurkumom - 280g',
     ingredientsText: 'Brašno od pirinča, brašno od prosa, kukuruzno brašno, mlevena kurkuma 2%, zgušnjivač (ksantan guma)',
     labelText: 'Taljatele sa Kurkumom',
@@ -512,7 +515,7 @@ export const placeholderProducts: Product[] = [
     hasManufacturerStatement: false,
     isVerifiedAdmin: false,
     source: 'User Provided Data',
-    tags: ['gluten-free', 'sugar-free', 'posno'], // Contains barley - this might be incorrect, AI should flag
+    tags: ['gluten-free', 'sugar-free', 'posno'], 
     nutriScore: undefined,
     isLactoseFree: true,
     isSugarFree: true,
@@ -524,7 +527,7 @@ export const placeholderProducts: Product[] = [
     name: 'Brašno od Prosa',
     brand: 'Aleksandija',
     category: 'Flours & Grains',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}brašno-prosa.png${firebaseStorageTokenPlaceholder}`,
     description: 'brašno od prosa - 500g',
     ingredientsText: 'Brašno od prosa 100%',
     labelText: 'Brašno od Prosa',
@@ -544,7 +547,7 @@ export const placeholderProducts: Product[] = [
     name: 'Brašno od Pirinča',
     brand: 'Aleksandija',
     category: 'Flours & Grains',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}brašno-pirinča.png${firebaseStorageTokenPlaceholder}`,
     description: 'brašno od pirinča - 500g',
     ingredientsText: 'Brašno od pirinča 100%',
     labelText: 'Brašno od Pirinča',
@@ -564,7 +567,7 @@ export const placeholderProducts: Product[] = [
     name: 'Brašno od Heljde',
     brand: 'Aleksandija',
     category: 'Flours & Grains',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}brašno-heljde.png${firebaseStorageTokenPlaceholder}`,
     description: 'brašno od heljde - 500g',
     ingredientsText: 'Brašno od heljde 100%',
     labelText: 'Brašno od Heljde',
@@ -584,7 +587,7 @@ export const placeholderProducts: Product[] = [
     name: 'Premium Palenta',
     brand: 'Aleksandija',
     category: 'Flours & Grains',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}premium-palenta.png${firebaseStorageTokenPlaceholder}`,
     description: 'od prosa, pirinča i kukuruza - 500g',
     ingredientsText: 'Griz od prosa 33,33%, griz od pirinča 33,33%, griz od kukuruza 33,33%',
     labelText: 'Premium Palenta',
@@ -604,7 +607,7 @@ export const placeholderProducts: Product[] = [
     name: 'Proteinski Pire',
     brand: 'Aleksandija',
     category: 'Instant Meals',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}proteinski-pire.png${firebaseStorageTokenPlaceholder}`,
     description: 'sa leblebijom i prosom - 180g',
     ingredientsText: 'Brašno leblebija 45%, brašno od prosa 45% i brašno od pirinča',
     labelText: 'Proteinski Pire',
@@ -615,7 +618,7 @@ export const placeholderProducts: Product[] = [
     tags: ['gluten-free', 'posno', 'high-protein'],
     nutriScore: undefined,
     isLactoseFree: true,
-    isSugarFree: true, // Not specified "Bez šećera", but ingredients suggest no added sugar
+    isSugarFree: true, 
     isPosno: true,
     dataAiHint: 'proteinski pire'
   },
@@ -624,7 +627,7 @@ export const placeholderProducts: Product[] = [
     name: 'Tapioka',
     brand: 'Aleksandija',
     category: 'Flours & Grains',
-    imageUrl: 'https://placehold.co/300x200.png',
+    imageUrl: `${firebaseStorageBaseUrl}tapioka-skrob.png${firebaseStorageTokenPlaceholder}`,
     description: 'tapioka - 500g',
     ingredientsText: 'Skrob od tapioke 100%',
     labelText: 'Tapioka',
@@ -801,4 +804,4 @@ export default function ProductsPage() {
   );
 }
 
-
+    
