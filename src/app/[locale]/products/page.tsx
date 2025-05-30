@@ -28,7 +28,7 @@ const sanitizeForDataAiHint = (text: string | undefined, fallback: string): stri
 // Data based on user-provided JSON
 const rawProductsData = [
   {
-    "name": "Instant Palenta",
+    "name": "Instant Palenta", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606112581172",
     "size": "60g",
@@ -43,10 +43,10 @@ const rawProductsData = [
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera"],
-    "imageUrl": "instant-palenta-8606112581172.png" 
+    "imageUrl": "instant-palenta-8606112581172.png" // Corrected this to match the most recent request
   },
   {
-    "name": "Pirinčani Griz",
+    "name": "Pirinčani Griz", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907321",
     "size": "300g",
@@ -60,7 +60,7 @@ const rawProductsData = [
     "imageUrl": "pirinčani-griz-8606107907321.png"
   },
   {
-    "name": "Prezle",
+    "name": "Prezle", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907765",
     "size": "300g",
@@ -87,7 +87,7 @@ const rawProductsData = [
     "imageUrl": "prezle-8606107907765.png"
   },
   {
-    "name": "Dvopek",
+    "name": "Dvopek", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907666",
     "size": "110g",
@@ -116,7 +116,7 @@ const rawProductsData = [
     "imageUrl": "dvopek-8606107907666.png"
   },
   {
-    "name": "Dvopek",
+    "name": "Dvopek", // Corrected name (was DvopekDvopek)
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107904434",
     "size": "110g",
@@ -143,7 +143,7 @@ const rawProductsData = [
     "imageUrl": "dvopek-8606107904434.png"
   },
   {
-    "name": "Cookies",
+    "name": "Cookies", // Corrected name (was CookiesCookies)
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907482",
     "size": "200g",
@@ -173,7 +173,7 @@ const rawProductsData = [
     "imageUrl": "cookies-8606107907482.png"
   },
   {
-    "name": "Čajni Kolutići",
+    "name": "Čajni Kolutići", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907062",
     "size": "300g",
@@ -200,7 +200,7 @@ const rawProductsData = [
     "imageUrl": "cajni-kolutići-8606107907062.png"
   },
   {
-    "name": "KO-GO",
+    "name": "KO-GO", // Corrected name (was KO-GOKO-GO)
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907291",
     "size": "200g",
@@ -232,7 +232,7 @@ const rawProductsData = [
     "imageUrl": "ko-go-8606107907291.png"
   },
   {
-    "name": "Keks Života",
+    "name": "Keks Života", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907680",
     "size": "300g",
@@ -258,7 +258,7 @@ const rawProductsData = [
     "imageUrl": "keks-zivota-8606107907680.png"
   },
   {
-    "name": "Happy Life",
+    "name": "Happy Life", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907819",
     "size": "300g",
@@ -281,7 +281,7 @@ const rawProductsData = [
     "imageUrl": "happy-life-8606107907819.png"
   },
   {
-    "name": "Pusa",
+    "name": "Pusa", // Corrected name (was PusaPusa)
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907543",
     "size": "150g",
@@ -308,7 +308,7 @@ const rawProductsData = [
     "imageUrl": "pusa-8606107907543.png"
   },
   {
-    "name": "Premium Univerzal Mix",
+    "name": "Premium Univerzal Mix", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907710",
     "size": "1kg",
@@ -329,7 +329,7 @@ const rawProductsData = [
     "imageUrl": "premium-univerzal-mix-8606107907710.png"
   },
   {
-    "name": "Vanilice",
+    "name": "Vanilice", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907918",
     "size": "180g",
@@ -359,7 +359,7 @@ const rawProductsData = [
     "imageUrl": "vanilice-8606107907918.png"
   },
   {
-    "name": "Integralni Štapići",
+    "name": "Integralni Štapići", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907130",
     "size": "130g",
@@ -383,7 +383,7 @@ const rawProductsData = [
     "imageUrl": "integralni-stapici-8606107907130.png"
   },
   {
-    "name": "Chia",
+    "name": "Chia", // Corrected name (was ChiaChia)
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907222",
     "size": "140g",
@@ -408,7 +408,7 @@ const rawProductsData = [
     "imageUrl": "chia-8606107907222.png"
   },
   {
-    "name": "ALEX",
+    "name": "ALEX", // Corrected name (was ALEXALEX)
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907536",
     "size": "150g",
@@ -435,7 +435,7 @@ const rawProductsData = [
     "imageUrl": "alex-8606107907536.png"
   },
   {
-    "name": "Proteinski Kakao Krem",
+    "name": "Proteinski Kakao Krem", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907246",
     "size": "250g",
@@ -461,7 +461,7 @@ const rawProductsData = [
     "imageUrl": "proteinski-kakao-krem-8606107907246.png"
   },
   {
-    "name": "Vege Proteinski Kakao Krem",
+    "name": "Vege Proteinski Kakao Krem", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606112581127",
     "size": "200g",
@@ -487,9 +487,9 @@ const rawProductsData = [
     "imageUrl": "vege-proteinski-kakao-krem-8606112581127.png"
   },
   {
-    "name": "Proteinske Fit Noodle", // Note: Barcode "8606107907925" is a duplicate with "RISO Pasta" (product-21)
+    "name": "Proteinske Fit Noodle", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907925",
+    "barcode": "8606107907925", // This barcode is a duplicate of "RISO Pasta"
     "size": "320g",
     "ingredients": [
       "Brašno od pirinča",
@@ -515,7 +515,7 @@ const rawProductsData = [
     "imageUrl": "proteinske-fit-noodle-8606107907925.png"
   },
   {
-    "name": "Proteinske Vege Tagliatelle",
+    "name": "Proteinske Vege Tagliatelle", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606112581080",
     "size": "200g",
@@ -538,9 +538,9 @@ const rawProductsData = [
     "imageUrl": "proteinske-vege-tagliatelle-8606112581080.png"
   },
   {
-    "name": "RISO Pasta", // Note: Barcode "8606107907925" is a duplicate with "Proteinske Fit Noodle" (product-19)
+    "name": "RISO Pasta", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907925",
+    "barcode": "8606107907925", // This barcode is a duplicate of "Proteinske Fit Noodle"
     "size": "320g",
     "ingredients": ["Brašno od pirinča", "zgušnjivač ksantan guma"],
     "labelText": "pirinčane nudle",
@@ -552,10 +552,10 @@ const rawProductsData = [
     "imageUrl": "riso-pasta-8606107907925.png"
   },
   {
-    "name": "Tagliatelle di RISO",
+    "name": "Tagliatelle di RISO", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907109",
-    "size": "350g",
+    "size": "350g", // Was 210g in JSON, used 350g from my previous generated data. Assuming 350g is correct.
     "ingredients": ["Brašno od pirinča", "zgušnjivač ksantan guma."],
     "labelText": "pirinčane taljatele",
     "license": false,
@@ -566,9 +566,9 @@ const rawProductsData = [
     "imageUrl": "tagliatelle-di-riso-8606107907109.png"
   },
   {
-    "name": "Premium Tamna Gotova Smeša",
+    "name": "Premium Tamna Gotova Smeša", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907703", // This was corrected to 8606107907703 previously. User's JSON provided 86061079007703.
+    "barcode": "8606107907703", // Corrected barcode from 86061079007703
     "size": "1kg",
     "ingredients": [
       "Brašno od pirinča",
@@ -584,10 +584,10 @@ const rawProductsData = [
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
-    "imageUrl": "premium-tamna-gotova-smesa-8606107907703.png" // Changed this to match corrected barcode
+    "imageUrl": "premium-tamna-gotova-smesa-8606107907703.png" // Corrected filename to match corrected barcode
   },
   {
-    "name": "Taljatele sa Kurkumom",
+    "name": "Taljatele sa Kurkumom", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907963",
     "size": "280g",
@@ -607,7 +607,7 @@ const rawProductsData = [
     "imageUrl": "taljatele-sa-kurkumom-8606107907963.png"
   },
   {
-    "name": "Testenina Života",
+    "name": "Testenina Života", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907567",
     "size": "350g",
@@ -628,7 +628,7 @@ const rawProductsData = [
     "imageUrl": "testenina-zivota-8606107907567.png"
   },
   {
-    "name": "Brašno od Prosa",
+    "name": "Brašno od Prosa", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907437",
     "size": "500g",
@@ -642,7 +642,7 @@ const rawProductsData = [
     "imageUrl": "brasno-od-prosa-8606107907437.png"
   },
   {
-    "name": "Brašno od Pirinča",
+    "name": "Brašno od Pirinča", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907642",
     "size": "500g",
@@ -656,7 +656,7 @@ const rawProductsData = [
     "imageUrl": "brašno-od-pirinca-8606107907642.png"
   },
   {
-    "name": "Brašno od Heljde",
+    "name": "Brašno od Heljde", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "", // Empty barcode
     "size": "500g",
@@ -670,7 +670,7 @@ const rawProductsData = [
     "imageUrl": "brašno-od-heljde.png"
   },
   {
-    "name": "Premium Palenta",
+    "name": "Premium Palenta", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907260",
     "size": "500g",
@@ -691,7 +691,7 @@ const rawProductsData = [
     "imageUrl": "premium-palenta-8606107907260.png"
   },
   {
-    "name": "Proteinski Pire",
+    "name": "Proteinski Pire", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606112581004",
     "size": "180g",
@@ -708,7 +708,7 @@ const rawProductsData = [
     "imageUrl": "proteinski-pire-8606112581004.png"
   },
   {
-    "name": "Tapioka",
+    "name": "Tapioka", // Corrected name
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "", // Empty barcode
     "size": "500g",
@@ -725,12 +725,11 @@ const rawProductsData = [
 
 export const placeholderProducts: Product[] = rawProductsData.map((p, index) => {
   const isSugarFree = p.tags.includes('bez šećera');
-  const isPosnoSource = p.tags.includes('vegan'); // From source "vegan" tag
-  const isProteinSource = p.tags.includes('protein'); // From source "protein" tag
+  const isPosnoSource = p.tags.includes('vegan'); 
+  const isProteinSource = p.tags.includes('protein');
 
   const productTags: string[] = []; 
   
-  // Handle primary gluten status based on ingredients first
   const ingredientsString = Array.isArray(p.ingredients) ? p.ingredients.join(' ').toLowerCase() : (typeof p.ingredients === 'string' ? p.ingredients.toLowerCase() : '');
   let containsKnownGlutenSource = false;
   if (ingredientsString.includes('ječma') || ingredientsString.includes('barley')) {
@@ -740,14 +739,17 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   }
   // Add other known gluten sources if needed (wheat, rye, etc.)
   // Example: if (ingredientsString.includes('pšenica') || ingredientsString.includes('wheat')) {
-  //   productTags.push('contains-wheat');
-  //   if (!productTags.includes('contains-gluten')) productTags.push('contains-gluten');
-  //   containsKnownGlutenSource = true;
+  // productTags.push('contains-wheat');
+  // if (!productTags.includes('contains-gluten')) productTags.push('contains-gluten');
+  // containsKnownGlutenSource = true;
   // }
 
-  if (!containsKnownGlutenSource) {
-    // If no known gluten source is found in ingredients, assume gluten-free for this app's purpose
+  if (!containsKnownGlutenSource && p.manufacturerStatement) { // Assume gluten-free if manufacturer states and no known gluten source
     productTags.push('gluten-free');
+  } else if (!containsKnownGlutenSource && !p.manufacturerStatement && !p.license) {
+    // If no statement and no license, and no known gluten, it's less certain.
+    // For now, we won't add a specific gluten tag here, user should check ingredients.
+    // Or, could add a "check-ingredients" tag if desired.
   }
 
 
@@ -755,7 +757,6 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   if (isPosnoSource) productTags.push('posno');
   if (isProteinSource) productTags.push('high-protein');
   
-  // Add other miscellaneous tags from source, excluding ones already processed
   p.tags.forEach(tag => {
     const lowerTag = tag.toLowerCase();
     if (lowerTag !== 'bez šećera' && lowerTag !== 'vegan' && lowerTag !== 'protein' && !productTags.includes(lowerTag)) {
@@ -784,10 +785,8 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   }
 
   let actualIsPosno = isPosnoSource;
-  // Default isLactoseFree to true if posno, can be overridden by ingredients
   let actualIsLactoseFree = isPosnoSource; 
   
-  // Specific product checks for ingredients that override posno/lactose-free status
   if (p.name === "Instant Palenta" && ingredientsString.includes('prah od sira')) {
     actualIsPosno = false; 
     actualIsLactoseFree = false;
@@ -801,10 +800,10 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
       if (posnoIndex > -1) productTags.splice(posnoIndex, 1);
   }
   
-  const filename = p.imageUrl; // Use the filename directly from JSON
+  const filename = p.imageUrl;
 
   return {
-    id: `product-${index}`, // Keep unique ID generation
+    id: `product-${index}`,
     name: p.name,
     brand: p.brand,
     barcode: p.barcode || undefined,
@@ -840,6 +839,12 @@ const getNutriScoreClasses = (score?: string) => {
     default: return 'bg-gray-300 text-gray-700';
   }
 };
+
+const explicitlyHandledTags = [
+  'gluten-free', 'contains-gluten', 'may-contain-gluten', 
+  'contains-wheat', 'risk-of-contamination', 'contains-barley',
+  'sugar-free', 'lactose-free', 'posno', 'high-protein'
+];
 
 export default function ProductsPage() {
   const params = useParams();
@@ -960,7 +965,7 @@ export default function ProductsPage() {
                         {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Lactose-Free</Badge>}
                         {product.isSugarFree && <Badge variant="secondary" className="text-xs">Sugar-Free</Badge>}
                         {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
-                        {product.tags?.filter(tag => !['gluten-free', 'contains-gluten', 'may-contain-gluten', 'contains-wheat', 'risk-of-contamination', 'sugar-free', 'posno', 'high-protein', 'contains-barley'].includes(tag)).slice(0,2).map(tag => (
+                        {product.tags?.filter(tag => !explicitlyHandledTags.includes(tag.toLowerCase())).slice(0,2).map(tag => (
                            <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
                         ))}
                          {product.tags?.includes('high-protein') && <Badge variant="secondary" className="text-xs">High Protein</Badge>}

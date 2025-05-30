@@ -48,6 +48,12 @@ const getNutriScoreClasses = (score?: string) => {
   }
 };
 
+const explicitlyHandledTags = [
+  'gluten-free', 'contains-gluten', 'may-contain-gluten', 
+  'contains-wheat', 'risk-of-contamination', 'contains-barley',
+  'sugar-free', 'lactose-free', 'posno', 'high-protein'
+];
+
 export default function HomePage() {
   const routeParams = useParams(); 
   const locale = routeParams.locale as string;
@@ -374,7 +380,7 @@ export default function HomePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {displayedProducts.map(product => {
                   const isGlutenFreeTag = product.tags?.includes('gluten-free');
-                  const containsGlutenTag = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat');
+                  const containsGlutenTag = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley');
                   const mayContainGlutenTag = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
 
                   return (
@@ -418,9 +424,10 @@ export default function HomePage() {
                           {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Lactose-Free</Badge>}
                           {product.isSugarFree && <Badge variant="secondary" className="text-xs">Sugar-Free</Badge>}
                           {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
-                           {product.tags?.filter(tag => !['gluten-free', 'contains-gluten', 'may-contain-gluten', 'contains-wheat', 'risk-of-contamination'].includes(tag)).slice(0,1).map(tag => (
+                           {product.tags?.filter(tag => !explicitlyHandledTags.includes(tag.toLowerCase())).slice(0,1).map(tag => (
                               <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
                            ))}
+                           {product.tags?.includes('high-protein') && <Badge variant="secondary" className="text-xs">High Protein</Badge>}
                         </div>
                         <Button asChild variant="outline" size="sm" className="w-full mt-auto">
                           <Link href={`/${locale}/products/${product.id}`}>View Details</Link>
