@@ -1,4 +1,3 @@
-
 // This file uses client-side rendering.
 'use client';
 
@@ -106,26 +105,26 @@ export default function ProductDetailPage() {
       removeFavorite(product.id);
       toast({ title: `${product.name} removed from favorites.` });
     } else {
-      addFavorite(product); // Changed from product.id to product to align with context
+      addFavorite(product);
       toast({ title: `${product.name} added to favorites!` });
     }
   };
 
-  const isGlutenFree = product.tags?.includes('gluten-free');
+  const isGlutenFreeTag = product.tags?.includes('gluten-free');
   const mayContainGluten = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
-  const containsGluten = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isGlutenFree) ;
+  const containsGluten = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isGlutenFreeTag) ;
 
   const identifiedGlutenSources: string[] = [];
   if (product.tags?.includes('contains-wheat')) identifiedGlutenSources.push('Wheat');
   if (product.tags?.includes('contains-barley')) identifiedGlutenSources.push('Barley');
   if (product.tags?.includes('contains-rye')) identifiedGlutenSources.push('Rye');
-  if (product.tags?.includes('contains-oats') && !isGlutenFree) identifiedGlutenSources.push('Oats (may not be gluten-free)');
+  if (product.tags?.includes('contains-oats') && !isGlutenFreeTag) identifiedGlutenSources.push('Oats (may not be gluten-free)');
 
   const commonAllergenKeywords: { term: string, name: string }[] = [
     { term: 'lešnik', name: 'Hazelnuts' },
-    { term: 'lešnici', name: 'Hazelnuts' }, // Added plural with diacritic
-    { term: 'lesnik', name: 'Hazelnuts' },  // Added singular without diacritic
-    { term: 'lesnici', name: 'Hazelnuts' }, // Added plural without diacritic
+    { term: 'lešnici', name: 'Hazelnuts' },
+    { term: 'lesnik', name: 'Hazelnuts' },
+    { term: 'lesnici', name: 'Hazelnuts' },
     { term: 'kikiriki', name: 'Peanuts' },
     { term: 'soja', name: 'Soy' },
     { term: 'sojin', name: 'Soy' },
@@ -144,7 +143,7 @@ export default function ProductDetailPage() {
     const ingredientsLower = product.ingredientsText.toLowerCase();
     const foundAllergenNames = new Set<string>();
     commonAllergenKeywords.forEach(allergen => {
-      if (ingredientsLower.includes(allergen.term.toLowerCase())) { // Ensure term is also lowercased for comparison
+      if (ingredientsLower.includes(allergen.term.toLowerCase())) {
         foundAllergenNames.add(allergen.name);
       }
     });
@@ -220,25 +219,32 @@ export default function ProductDetailPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <h3 className="text-md font-semibold mb-2">Gluten Information</h3>
-                        {isGlutenFree && (
-                            <div className="flex items-center text-green-600">
-                              <CheckCircle className="h-5 w-5 mr-2" />
-                              <span>Certified Gluten-Free</span>
-                            </div>
-                          )}
-                        {containsGluten && !isGlutenFree && ( 
+                        {product.hasAOECSLicense ? (
+                          <div className="flex items-center text-green-600">
+                            <ShieldCheck className="h-5 w-5 mr-2" />
+                            <span>AOECS Licensed Gluten-Free</span>
+                          </div>
+                        ) : product.hasManufacturerStatement && isGlutenFreeTag ? (
+                          <div className="flex items-center text-green-600">
+                            <FileText className="h-5 w-5 mr-2" />
+                            <span>Manufacturer Declares Gluten-Free</span>
+                          </div>
+                        ) : isGlutenFreeTag ? (
+                          <div className="flex items-center text-green-600">
+                            <CheckCircle className="h-5 w-5 mr-2" />
+                            <span>Considered Gluten-Free</span>
+                          </div>
+                        ) : containsGluten ? (
                           <div className="flex items-center text-red-600">
                             <AlertTriangle className="h-5 w-5 mr-2" />
                             <span>Contains Gluten</span>
                           </div>
-                        )}
-                        {mayContainGluten && !isGlutenFree && !containsGluten && (
+                        ) : mayContainGluten ? (
                           <div className="flex items-center text-orange-500">
                             <AlertTriangle className="h-5 w-5 mr-2" />
                             <span>May Contain Gluten Traces</span>
                           </div>
-                        )}
-                        {!isGlutenFree && !containsGluten && !mayContainGluten && (
+                        ) : (
                            <div className="flex items-center text-muted-foreground">
                              <Info className="h-5 w-5 mr-2" />
                              <span>Gluten status unknown or not specified</span>
@@ -290,11 +296,11 @@ export default function ProductDetailPage() {
                     {identifiedGlutenSources.length > 0 && (
                         <p className="text-sm text-red-600"><strong>Contains Gluten Sources:</strong> {identifiedGlutenSources.join(', ')}.</p>
                     )}
-                    {identifiedGlutenSources.length === 0 && mayContainGluten && !isGlutenFree && (
+                    {identifiedGlutenSources.length === 0 && mayContainGluten && !isGlutenFreeTag && (
                          <p className="text-sm text-orange-600"><strong>Advisory:</strong> May contain traces of gluten.</p>
                     )}
-                    {identifiedGlutenSources.length === 0 && isGlutenFree && (
-                        <p className="text-sm text-green-600">This product is tagged as gluten-free.</p>
+                    {identifiedGlutenSources.length === 0 && isGlutenFreeTag && (
+                        <p className="text-sm text-green-600">This product is generally considered gluten-free based on available information.</p>
                     )}
                     
                     {mentionedNonGlutenAllergens.length > 0 && (
@@ -305,7 +311,7 @@ export default function ProductDetailPage() {
                       </div>
                     )}
 
-                    {identifiedGlutenSources.length === 0 && !isGlutenFree && !mayContainGluten && mentionedNonGlutenAllergens.length === 0 && (
+                    {identifiedGlutenSources.length === 0 && !isGlutenFreeTag && !mayContainGluten && mentionedNonGlutenAllergens.length === 0 && (
                         <p className="text-sm text-muted-foreground">For specific allergen information, please refer to the ingredients list.</p>
                     )}
                      <p className="text-xs text-muted-foreground mt-3 italic">Always check the product packaging for the most accurate and complete allergen details. Allergen information provided here is for guidance and is based on available data.</p>
@@ -349,4 +355,3 @@ export default function ProductDetailPage() {
     </div>
   );
 }
-
