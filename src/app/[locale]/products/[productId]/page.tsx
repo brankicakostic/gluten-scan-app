@@ -14,8 +14,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Leaf, Info, ShieldCheck, FileText, GitBranch, Tag, Barcode } from 'lucide-react';
 import { placeholderProducts } from '@/app/[locale]/products/page'; 
 import { Badge } from '@/components/ui/badge';
-import { useFavorites } from '@/contexts/favorites-context'; // Added import
-import { useToast } from '@/hooks/use-toast'; // Added import
+import { useFavorites } from '@/contexts/favorites-context';
+import { useToast } from '@/hooks/use-toast';
 
 // Updated Product interface to align with schema
 export interface Product {
@@ -23,21 +23,21 @@ export interface Product {
   name: string;
   brand?: string;
   barcode?: string;
-  category: string; // Maintained for current filtering logic
+  category: string; 
   imageUrl: string;
-  description: string; // Maintained for display
-  ingredientsText?: string; // Single string for ingredients
-  labelText?: string; // Text from the product label
-  hasAOECSLicense?: boolean; // AOECS or official mark
-  hasManufacturerStatement?: boolean; // Manufacturer's gluten-free statement
-  isVerifiedAdmin?: boolean; // Manually verified by admin
-  source?: string; // e.g., "CeliVita", "OpenFoodFacts", "User Input"
-  tags?: string[]; // e.g., ["gluten-free", "lactose-free", "may contain traces"]
-  nutriScore?: string; // Maintained
-  isLactoseFree?: boolean; // Maintained (could also be a tag)
-  isSugarFree?: boolean; // Maintained (could also be a tag)
-  isPosno?: boolean; // Maintained (could also be a tag)
-  dataAiHint?: string; // Maintained for image generation hints
+  description: string; 
+  ingredientsText?: string; 
+  labelText?: string; 
+  hasAOECSLicense?: boolean; 
+  hasManufacturerStatement?: boolean; 
+  isVerifiedAdmin?: boolean; 
+  source?: string; 
+  tags?: string[]; 
+  nutriScore?: string; 
+  isLactoseFree?: boolean; 
+  isSugarFree?: boolean; 
+  isPosno?: boolean; 
+  dataAiHint?: string; 
 }
 
 const getNutriScoreClasses = (score?: string) => {
@@ -70,8 +70,8 @@ export default function ProductDetailPage() {
 
   const product = placeholderProducts.find(p => p.id === productId) as Product | undefined;
 
-  const { addFavorite, removeFavorite, isFavorite } = useFavorites(); // Added
-  const { toast } = useToast(); // Added
+  const { addFavorite, removeFavorite, isFavorite } = useFavorites(); 
+  const { toast } = useToast(); 
 
   if (!product) {
     return (
@@ -99,9 +99,9 @@ export default function ProductDetailPage() {
     );
   }
 
-  const isCurrentlyFavorite = isFavorite(product.id); // Added
+  const isCurrentlyFavorite = isFavorite(product.id); 
 
-  const handleToggleFavorite = () => { // Added
+  const handleToggleFavorite = () => { 
     if (isCurrentlyFavorite) {
       removeFavorite(product.id);
       toast({ title: `${product.name} removed from favorites.` });
@@ -113,7 +113,13 @@ export default function ProductDetailPage() {
 
   const isGlutenFree = product.tags?.includes('gluten-free');
   const mayContainGluten = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
-  const containsGluten = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat');
+  const containsGluten = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isGlutenFree) ;
+
+  const identifiedAllergens: string[] = [];
+  if (product.tags?.includes('contains-wheat')) identifiedAllergens.push('Wheat');
+  if (product.tags?.includes('contains-barley')) identifiedAllergens.push('Barley');
+  if (product.tags?.includes('contains-rye')) identifiedAllergens.push('Rye');
+  if (product.tags?.includes('contains-oats') && !isGlutenFree) identifiedAllergens.push('Oats (may not be gluten-free)');
 
 
   return (
@@ -190,7 +196,7 @@ export default function ProductDetailPage() {
                               <span>Certified Gluten-Free</span>
                             </div>
                           )}
-                        {containsGluten && (
+                        {containsGluten && !isGlutenFree && ( // Ensure this only shows if not explicitly gluten-free
                           <div className="flex items-center text-red-600">
                             <AlertTriangle className="h-5 w-5 mr-2" />
                             <span>Contains Gluten</span>
@@ -246,6 +252,26 @@ export default function ProductDetailPage() {
                       <p className="text-xs text-muted-foreground p-3 bg-muted rounded-md">{product.ingredientsText}</p>
                     </div>
                   )}
+                  
+                  <div className="border-t pt-4">
+                    <h3 className="text-md font-semibold mb-2 flex items-center">
+                        <Info className="h-4 w-4 mr-2 text-primary"/> Allergen Notes
+                    </h3>
+                    {identifiedAllergens.length > 0 && (
+                        <p className="text-sm text-muted-foreground"><strong>Contains:</strong> {identifiedAllergens.join(', ')}.</p>
+                    )}
+                    {identifiedAllergens.length === 0 && product.tags?.includes('may-contain-gluten') && !isGlutenFree && (
+                         <p className="text-sm text-orange-600">Advisory: May contain traces of gluten.</p>
+                    )}
+                    {identifiedAllergens.length === 0 && isGlutenFree && (
+                        <p className="text-sm text-green-600">This product is tagged as gluten-free.</p>
+                    )}
+                    {identifiedAllergens.length === 0 && !isGlutenFree && !product.tags?.includes('may-contain-gluten') && (
+                        <p className="text-sm text-muted-foreground">For specific allergen information, please refer to the ingredients list.</p>
+                    )}
+                     <p className="text-xs text-muted-foreground mt-2">Always check the product packaging for the most accurate and complete allergen details.</p>
+                  </div>
+
 
                   {product.labelText && (
                     <div>

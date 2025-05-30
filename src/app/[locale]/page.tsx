@@ -23,11 +23,11 @@ import { getDailyCeliacTip, type DailyCeliacTipOutput } from '@/ai/flows/daily-c
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 
-import { placeholderProducts as allProducts, type Product } from './products/page'; // Import Product type
+import { placeholderProducts as allProducts, type Product } from './products/page'; 
 
 interface BarcodeScanResult {
   name: string;
-  tags?: string[]; // Updated to use tags
+  tags?: string[]; 
   ingredientsText?: string;
   imageUrl: string;
   dataAiHint?: string;
@@ -50,7 +50,7 @@ const getNutriScoreClasses = (score?: string) => {
 
 const explicitlyHandledTags = [
   'gluten-free', 'contains-gluten', 'may-contain-gluten', 
-  'contains-wheat', 'risk-of-contamination', 'contains-barley',
+  'contains-wheat', 'risk-of-contamination', 'contains-barley', 'contains-rye', 'contains-oats',
   'sugar-free', 'lactose-free', 'posno', 'high-protein'
 ];
 
@@ -123,9 +123,8 @@ export default function HomePage() {
             videoRef.current.srcObject = stream;
           }
           setTimeout(() => {
-            // Simulate finding a product or a generic scan
             const randomProduct = allProducts[Math.floor(Math.random() * allProducts.length)];
-            const isProductFound = Math.random() > 0.3; // 70% chance to "find" a product
+            const isProductFound = Math.random() > 0.3; 
 
             if (isProductFound && randomProduct) {
                  setBarcodeScanResult({ 
@@ -344,7 +343,7 @@ export default function HomePage() {
                         {barcodeScanResult.tags?.includes('gluten-free') && (
                           <div className="flex items-center text-green-600 mt-1"><CheckCircle className="h-5 w-5 mr-1" /><span>Likely Gluten-Free</span></div>
                         )}
-                        {(barcodeScanResult.tags?.includes('contains-gluten') || barcodeScanResult.tags?.includes('contains-wheat')) && (
+                        {(barcodeScanResult.tags?.includes('contains-gluten') || barcodeScanResult.tags?.includes('contains-wheat') || barcodeScanResult.tags?.includes('contains-barley') || barcodeScanResult.tags?.includes('contains-rye') || (barcodeScanResult.tags?.includes('contains-oats') && !barcodeScanResult.tags?.includes('gluten-free'))) && (
                           <div className="flex items-center text-red-600 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>Contains Gluten</span></div>
                         )}
                         {barcodeScanResult.tags?.includes('may-contain-gluten') && !barcodeScanResult.tags?.includes('gluten-free') && !barcodeScanResult.tags?.includes('contains-gluten') && (
@@ -380,13 +379,13 @@ export default function HomePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {displayedProducts.map(product => {
                   const isGlutenFreeTag = product.tags?.includes('gluten-free');
-                  const containsGlutenTag = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley');
+                  const containsGlutenTag = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isGlutenFreeTag);
                   const mayContainGlutenTag = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
 
                   return (
                     <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col">
                       <CardHeader className="p-0">
-                        <Image src={product.imageUrl} alt={product.name} width={400} height={200} className="w-full h-48 object-cover" data-ai-hint={product.dataAiHint}/>
+                        <Image src={product.imageUrl} alt={product.name} width={400} height={200} className="w-full h-48 object-cover" data-ai-hint={product.dataAiHint || 'product image'}/>
                       </CardHeader>
                       <CardContent className="p-4 flex flex-col flex-grow">
                         <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
