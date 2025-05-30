@@ -25,6 +25,7 @@ const sanitizeForDataAiHint = (text: string | undefined, fallback: string): stri
   return text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').split('-').slice(0,2).join(' ');
 };
 
+// Data based on user-provided JSON
 const rawProductsData = [
   {
     "name": "Instant Palenta",
@@ -42,7 +43,7 @@ const rawProductsData = [
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera"],
-    "imageUrl": "instant-palenta-8606112581172.png" // Updated filename
+    "imageUrl": "instant-palenta-8606112581172.png" 
   },
   {
     "name": "Pirinčani Griz",
@@ -486,9 +487,9 @@ const rawProductsData = [
     "imageUrl": "vege-proteinski-kakao-krem-8606112581127.png"
   },
   {
-    "name": "Proteinske Fit Noodle",
+    "name": "Proteinske Fit Noodle", // Note: Barcode "8606107907925" is a duplicate with "RISO Pasta" (product-21)
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907925", // Note: Duplicate barcode, also used by product-21 (RISO Pasta)
+    "barcode": "8606107907925",
     "size": "320g",
     "ingredients": [
       "Brašno od pirinča",
@@ -537,9 +538,9 @@ const rawProductsData = [
     "imageUrl": "proteinske-vege-tagliatelle-8606112581080.png"
   },
   {
-    "name": "RISO Pasta",
+    "name": "RISO Pasta", // Note: Barcode "8606107907925" is a duplicate with "Proteinske Fit Noodle" (product-19)
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907925", // Note: Duplicate barcode, also used by product-19 (Proteinske Fit Noodle)
+    "barcode": "8606107907925",
     "size": "320g",
     "ingredients": ["Brašno od pirinča", "zgušnjivač ksantan guma"],
     "labelText": "pirinčane nudle",
@@ -567,7 +568,7 @@ const rawProductsData = [
   {
     "name": "Premium Tamna Gotova Smeša",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907703", // Corrected from 86061079007703
+    "barcode": "8606107907703", // This was corrected to 8606107907703 previously. User's JSON provided 86061079007703.
     "size": "1kg",
     "ingredients": [
       "Brašno od pirinča",
@@ -583,7 +584,7 @@ const rawProductsData = [
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
-    "imageUrl": "premium-tamna-gotova-smesa-8606107907703.png"
+    "imageUrl": "premium-tamna-gotova-smesa-8606107907703.png" // Changed this to match corrected barcode
   },
   {
     "name": "Taljatele sa Kurkumom",
@@ -613,7 +614,7 @@ const rawProductsData = [
     "ingredients": [
       "Brašno od pirinča",
       "kukuruzni skrob",
-      "brašno od prolećnog ječma 20%",
+      "brašno od prolećnog ječma 20%", // Contains barley
       "brašno od heljde 10%",
       "zgušnjivač (ksantan guma)",
       "kurkuma"
@@ -623,7 +624,7 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tags": ["bez šećera", "vegan"], // Contains barley, "gluten-free" tag not added by default
+    "tags": ["bez šećera", "vegan"], // Will be adjusted by logic due to barley
     "imageUrl": "testenina-zivota-8606107907567.png"
   },
   {
@@ -724,14 +725,37 @@ const rawProductsData = [
 
 export const placeholderProducts: Product[] = rawProductsData.map((p, index) => {
   const isSugarFree = p.tags.includes('bez šećera');
-  const isPosno = p.tags.includes('vegan'); 
-  const isProtein = p.tags.includes('protein');
+  const isPosnoSource = p.tags.includes('vegan'); // From source "vegan" tag
+  const isProteinSource = p.tags.includes('protein'); // From source "protein" tag
 
-  const productTags = ['gluten-free']; // Default assumption unless specific ingredients contradict
-  if (isSugarFree) productTags.push('sugar-free');
-  if (isPosno) productTags.push('posno');
-  if (isProtein) productTags.push('high-protein');
+  const productTags: string[] = []; 
   
+  // Handle primary gluten status based on ingredients first
+  const ingredientsString = Array.isArray(p.ingredients) ? p.ingredients.join(' ').toLowerCase() : (typeof p.ingredients === 'string' ? p.ingredients.toLowerCase() : '');
+  let containsKnownGlutenSource = false;
+  if (ingredientsString.includes('ječma') || ingredientsString.includes('barley')) {
+    productTags.push('contains-barley');
+    productTags.push('contains-gluten');
+    containsKnownGlutenSource = true;
+  }
+  // Add other known gluten sources if needed (wheat, rye, etc.)
+  // Example: if (ingredientsString.includes('pšenica') || ingredientsString.includes('wheat')) {
+  //   productTags.push('contains-wheat');
+  //   if (!productTags.includes('contains-gluten')) productTags.push('contains-gluten');
+  //   containsKnownGlutenSource = true;
+  // }
+
+  if (!containsKnownGlutenSource) {
+    // If no known gluten source is found in ingredients, assume gluten-free for this app's purpose
+    productTags.push('gluten-free');
+  }
+
+
+  if (isSugarFree) productTags.push('sugar-free');
+  if (isPosnoSource) productTags.push('posno');
+  if (isProteinSource) productTags.push('high-protein');
+  
+  // Add other miscellaneous tags from source, excluding ones already processed
   p.tags.forEach(tag => {
     const lowerTag = tag.toLowerCase();
     if (lowerTag !== 'bez šećera' && lowerTag !== 'vegan' && lowerTag !== 'protein' && !productTags.includes(lowerTag)) {
@@ -741,61 +765,51 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   
   let category = 'Other';
   const lowerName = p.name.toLowerCase();
-  if (lowerName.includes('palenta') || lowerName.includes('griz') || lowerName.includes('brašno') || lowerName.includes('mix') || lowerName.includes('prezle') || lowerName.includes('tapioka')) {
+  const lowerLabelText = p.labelText.toLowerCase();
+
+  if (lowerName.includes('palenta') || lowerLabelText.includes('palenta') || lowerName.includes('griz') || lowerLabelText.includes('griz') || lowerName.includes('brašno') || lowerLabelText.includes('brašno') || lowerName.includes('mix') || lowerLabelText.includes('mix') || lowerName.includes('prezle') || lowerLabelText.includes('prezle') || lowerName.includes('tapioka') || lowerLabelText.includes('tapioka')) {
     category = 'Flours & Grains';
-  } else if (lowerName.includes('keks') || lowerName.includes('cookies') || lowerName.includes('kolutići') || lowerName.includes('vanilice') || lowerName.includes('pusa')) {
+  } else if (lowerName.includes('keks') || lowerLabelText.includes('keks') || lowerName.includes('cookies') || lowerLabelText.includes('cookies') || lowerName.includes('kolutići') || lowerLabelText.includes('kolutići') || lowerName.includes('vanilice') || lowerLabelText.includes('vanilice') || lowerName.includes('pusa') || lowerLabelText.includes('pusa')) {
     category = 'Sweets & Biscuits';
-  } else if (lowerName.includes('dvopek')) {
+  } else if (lowerName.includes('dvopek') || lowerLabelText.includes('dvopek')) {
     category = 'Bakery';
-  } else if (lowerName.includes('štapići') || lowerName.includes('chia') || lowerName.includes('alex') ) {
+  } else if (lowerName.includes('štapići') || lowerLabelText.includes('štapići') || lowerName.includes('chia') || lowerLabelText.includes('chia') || lowerName.includes('alex') || lowerLabelText.includes('alex') ) {
     category = 'Salty Snacks';
-  } else if (lowerName.includes('krem')) {
+  } else if (lowerName.includes('krem') || lowerLabelText.includes('krem')) {
     category = 'Spreads & Creams';
-  } else if (lowerName.includes('noodle') || lowerName.includes('pasta') || lowerName.includes('tagliatelle') || lowerName.includes('taljatele')) {
+  } else if (lowerName.includes('noodle') || lowerLabelText.includes('noodle') || lowerName.includes('pasta') || lowerLabelText.includes('pasta') || lowerName.includes('tagliatelle') || lowerLabelText.includes('tagliatelle') || lowerName.includes('taljatele') || lowerLabelText.includes('taljatele')) {
     category = 'Pasta & Noodles';
-  } else if (lowerName.includes('pire')) {
+  } else if (lowerName.includes('pire') || lowerLabelText.includes('pire')) {
     category = 'Instant Meals';
   }
 
-  let actualIsPosno = isPosno;
-  let actualIsLactoseFree = isPosno; // Assume posno implies lactose-free, unless milk is present
+  let actualIsPosno = isPosnoSource;
+  // Default isLactoseFree to true if posno, can be overridden by ingredients
+  let actualIsLactoseFree = isPosnoSource; 
   
-  const ingredientsString = Array.isArray(p.ingredients) ? p.ingredients.join(' ').toLowerCase() : (typeof p.ingredients === 'string' ? p.ingredients.toLowerCase() : '');
-
-  // Specific product checks
+  // Specific product checks for ingredients that override posno/lactose-free status
+  if (p.name === "Instant Palenta" && ingredientsString.includes('prah od sira')) {
+    actualIsPosno = false; 
+    actualIsLactoseFree = false;
+    const posnoIndex = productTags.indexOf('posno');
+    if (posnoIndex > -1) productTags.splice(posnoIndex, 1);
+  }
   if (p.name === "Proteinski Kakao Krem" && ingredientsString.includes('mleko u prahu')) {
       actualIsPosno = false;
       actualIsLactoseFree = false;
       const posnoIndex = productTags.indexOf('posno');
       if (posnoIndex > -1) productTags.splice(posnoIndex, 1);
-      // No "lactose-free" tag was being added here, so no need to remove
-  }
-
-  if (p.name === "Testenina Života" && ingredientsString.includes('ječma')) {
-    const glutenFreeIndex = productTags.indexOf('gluten-free');
-    if (glutenFreeIndex > -1) {
-      productTags.splice(glutenFreeIndex, 1); // Remove 'gluten-free'
-    }
-    productTags.push('contains-barley'); // Add specific tag
-    productTags.push('contains-gluten'); // Also mark as contains gluten
   }
   
-  // For "Instant Palenta" with cheese
-  if (p.name === "Instant Palenta" && ingredientsString.includes('prah od sira')) {
-    actualIsPosno = false; // Contains cheese, so not posno/vegan
-    actualIsLactoseFree = false; // Contains cheese, so not lactose-free
-    const posnoIndex = productTags.indexOf('posno');
-    if (posnoIndex > -1) productTags.splice(posnoIndex, 1);
-  }
-
+  const filename = p.imageUrl; // Use the filename directly from JSON
 
   return {
-    id: `product-${index}`,
+    id: `product-${index}`, // Keep unique ID generation
     name: p.name,
     brand: p.brand,
     barcode: p.barcode || undefined,
     category: category,
-    imageUrl: `${firebaseStorageBaseUrl}${p.imageUrl}${p.imageUrl.includes('?') ? '' : firebaseStorageTokenPlaceholder}`,
+    imageUrl: `${firebaseStorageBaseUrl}${filename}${filename.includes('?') ? '' : firebaseStorageTokenPlaceholder}`,
     description: `${p.labelText} - ${p.size}`,
     ingredientsText: Array.isArray(p.ingredients) ? p.ingredients.join(', ') : p.ingredients,
     labelText: p.labelText,
@@ -804,7 +818,7 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
     isVerifiedAdmin: p.verified,
     source: p.source,
     tags: productTags,
-    nutriScore: undefined, 
+    nutriScore: undefined, // Not in source data
     isLactoseFree: actualIsLactoseFree, 
     isSugarFree: isSugarFree,
     isPosno: actualIsPosno,
