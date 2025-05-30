@@ -8,33 +8,34 @@ body {
 
 @layer base {
   :root {
-    --background: 38 43% 97%; /* User's bgLight: #FAF8F3 */
-    --foreground: 23 29% 19%; /* User's primary (text): #3E2C22 */
+    /* Inspired Palette (Light Mode) */
+    --background: 40 50% 97%; /* Light Beige */
+    --foreground: 30 25% 25%; /* Dark Brown */
 
-    --card: 38 43% 97%; /* User's bgLight: #FAF8F3 */
-    --card-foreground: 23 29% 19%; /* User's primary (text): #3E2C22 */
+    --card: 40 50% 97%; /* Light Beige */
+    --card-foreground: 30 25% 25%; /* Dark Brown */
 
-    --popover: 38 43% 97%; /* User's bgLight: #FAF8F3 */
-    --popover-foreground: 23 29% 19%; /* User's primary (text): #3E2C22 */
+    --popover: 40 50% 97%; /* Light Beige */
+    --popover-foreground: 30 25% 25%; /* Dark Brown */
 
-    --primary: 43 65% 66%; /* User's accentYellow: #E3C26B */
-    --primary-foreground: 23 29% 19%; /* User's primary (text on primary buttons): #3E2C22 */
+    --primary: 28 87% 62%; /* Vibrant Orange */
+    --primary-foreground: 0 0% 100%; /* White (for contrast on Orange) */
 
-    --secondary: 93 33% 83%; /* User's accentGreen: #D2E2C4 */
-    --secondary-foreground: 23 29% 19%; /* User's primary (text on secondary): #3E2C22 */
+    --secondary: 150 30% 85%; /* Muted Green */
+    --secondary-foreground: 30 25% 25%; /* Dark Brown */
 
-    --muted: 93 33% 92%; /* Lighter version of accentGreen */
-    --muted-foreground: 23 20% 45%; /* Lighter version of foreground */
+    --muted: 50 70% 88%; /* Muted Yellow */
+    --muted-foreground: 30 15% 45%; /* Darker, less saturated brown */
 
-    --accent: 93 33% 83%; /* User's accentGreen: #D2E2C4 */
-    --accent-foreground: 23 29% 19%; /* User's primary (text on accent): #3E2C22 */
+    --accent: 150 30% 85%; /* Muted Green (using secondary for general accents) */
+    --accent-foreground: 30 25% 25%; /* Dark Brown */
 
     --destructive: 0 84.2% 60.2%; /* Standard Red for warnings */
     --destructive-foreground: 0 0% 98%; /* Light text on destructive */
 
-    --border: 42 23% 84%; /* User's borderDefault: #E0DBCF */
-    --input: 42 23% 84%; /* User's borderDefault: #E0DBCF */
-    --ring: 43 65% 66%; /* User's accentYellow (primary color for focus rings): #E3C26B */
+    --border: 40 25% 90%; /* Light Gray/Beige */
+    --input: 40 25% 90%; /* Light Gray/Beige */
+    --ring: 28 87% 62%; /* Vibrant Orange (primary color for focus rings) */
 
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
@@ -43,45 +44,46 @@ body {
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
 
-    /* Sidebar specific theme */
-    --sidebar-background: 93 33% 83%; /* User's accentGreen: #D2E2C4 */
-    --sidebar-foreground: 23 29% 19%; /* User's primary (text): #3E2C22 */
-    --sidebar-primary: 43 65% 66%; /* User's accentYellow (active/selected items): #E3C26B */
-    --sidebar-primary-foreground: 23 29% 19%; /* User's primary (text on active): #3E2C22 */
-    --sidebar-accent: 43 65% 60%; /* Darker accentYellow (hover items): #E3C26B */
-    --sidebar-accent-foreground: 23 29% 19%; /* User's primary (text on hover): #3E2C22 */
-    --sidebar-border: 93 33% 78%; /* Shade of sidebar-background */
-    --sidebar-ring: 43 65% 66%; /* User's accentYellow (focus rings): #E3C26B */
+    /* Sidebar specific theme (Light Mode) */
+    --sidebar-background: 150 30% 85%; /* Muted Green */
+    --sidebar-foreground: 30 25% 25%; /* Dark Brown */
+    --sidebar-primary: 28 87% 62%;    /* Orange (active/selected items) */
+    --sidebar-primary-foreground: 0 0% 100%; /* White (text on active) */
+    --sidebar-accent: 28 87% 70%;     /* Lighter Orange (hover items) */
+    --sidebar-accent-foreground: 30 25% 25%; /* Dark Brown (text on hover) */
+    --sidebar-border: 150 30% 80%;   /* Shade of Muted Green */
+    --sidebar-ring: 28 87% 62%;      /* Orange (focus rings) */
   }
 
   .dark {
-    --background: 27 36% 12%; /* User's bgDark: #2B1D14 */
-    --foreground: 43 56% 95%; /* User's textLight: #F9F6ED */
+    /* Inspired Palette (Dark Mode) */
+    --background: 30 10% 15%; /* Dark Brown/Charcoal */
+    --foreground: 40 50% 97%; /* Light Beige */
 
-    --card: 27 36% 12%; /* User's bgDark: #2B1D14 */
-    --card-foreground: 43 56% 95%; /* User's textLight: #F9F6ED */
+    --card: 30 10% 15%; /* Dark Brown/Charcoal */
+    --card-foreground: 40 50% 97%; /* Light Beige */
 
-    --popover: 27 36% 12%; /* User's bgDark: #2B1D14 */
-    --popover-foreground: 43 56% 95%; /* User's textLight: #F9F6ED */
+    --popover: 30 10% 15%; /* Dark Brown/Charcoal */
+    --popover-foreground: 40 50% 97%; /* Light Beige */
 
-    --primary: 43 65% 60%; /* Darker version of accentYellow: #E3C26B */
-    --primary-foreground: 23 29% 19%; /* User's primary (text): #3E2C22 */
+    --primary: 28 90% 65%; /* Vibrant Orange (slightly brighter for dark mode) */
+    --primary-foreground: 30 10% 10%; /* Very Dark Brown (text on Orange in dark) */
 
-    --secondary: 93 30% 35%; /* Darker version of accentGreen: #D2E2C4 */
-    --secondary-foreground: 43 56% 95%; /* User's textLight: #F9F6ED */
+    --secondary: 150 25% 35%; /* Dark Muted Green */
+    --secondary-foreground: 40 50% 97%; /* Light Beige */
 
-    --muted: 27 25% 20%; /* Based on bgDark */
-    --muted-foreground: 43 40% 70%; /* Based on textLight */
+    --muted: 50 40% 25%; /* Dark Muted Yellow */
+    --muted-foreground: 40 20% 70%; /* Lighter muted text */
 
-    --accent: 93 30% 45%; /* Darker version of accentGreen: #D2E2C4 */
-    --accent-foreground: 43 56% 95%; /* User's textLight: #F9F6ED */
+    --accent: 150 25% 35%; /* Dark Muted Green */
+    --accent-foreground: 40 50% 97%; /* Light Beige */
 
     --destructive: 0 62.8% 30.6%; /* Standard dark red */
     --destructive-foreground: 0 0% 98%; /* Light text on destructive */
 
-    --border: 27 30% 22%; /* Based on bgDark */
-    --input: 27 30% 22%; /* Based on bgDark */
-    --ring: 43 65% 60%; /* Darker accentYellow (primary color for focus rings) */
+    --border: 30 10% 20%; /* Darker Shade of Background */
+    --input: 30 10% 20%; /* Darker Shade of Background */
+    --ring: 28 90% 65%; /* Vibrant Orange (primary color for focus rings) */
     
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -89,15 +91,15 @@ body {
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
 
-    /* Sidebar specific theme */
-    --sidebar-background: 27 36% 12%; /* User's bgDark: #2B1D14 */
-    --sidebar-foreground: 43 56% 95%; /* User's textLight: #F9F6ED */
-    --sidebar-primary: 43 65% 60%; /* Darker accentYellow (active/selected items) */
-    --sidebar-primary-foreground: 23 29% 19%; /* User's primary (text): #3E2C22 */
-    --sidebar-accent: 43 65% 50%; /* Even darker accentYellow (hover items) */
-    --sidebar-accent-foreground: 23 29% 19%; /* User's primary (text): #3E2C22 */
-    --sidebar-border: 27 30% 22%; /* Based on bgDark */
-    --sidebar-ring: 43 65% 60%; /* Darker accentYellow (focus rings) */
+    /* Sidebar specific theme (Dark Mode) */
+    --sidebar-background: 30 10% 15%; /* Dark Brown/Charcoal */
+    --sidebar-foreground: 40 50% 97%; /* Light Beige */
+    --sidebar-primary: 28 90% 65%;    /* Orange (active/selected items) */
+    --sidebar-primary-foreground: 30 10% 10%; /* Very Dark Brown (text on active) */
+    --sidebar-accent: 28 90% 70%;     /* Lighter Orange (hover items) */
+    --sidebar-accent-foreground: 30 10% 10%; /* Very Dark Brown (text on hover) */
+    --sidebar-border: 30 10% 20%;   /* Darker Shade of Background */
+    --sidebar-ring: 28 90% 65%;      /* Orange (focus rings) */
   }
 }
 
