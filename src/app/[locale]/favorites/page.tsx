@@ -1,4 +1,8 @@
 
+// This file uses client-side rendering.
+'use client';
+
+import { useEffect, useState } from 'react'; // Added useEffect, useState
 import { SidebarInset, SidebarRail } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/navigation/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
@@ -7,15 +11,31 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Heart, StarOff, ShoppingBag, CheckCircle, AlertCircle, Trash2 } from 'lucide-react';
 import Image from 'next/image';
-
-// Placeholder favorite products data
-const placeholderFavorites = [
-  { id: '1', name: 'Gluten-Free Oatmeal', category: 'Breakfast', imageUrl: 'https://placehold.co/300x200.png', isGlutenFree: true, dataAiHint: 'oatmeal breakfast' },
-  { id: '2', name: 'Almond Flour Crackers', category: 'Snacks', imageUrl: 'https://placehold.co/300x200.png', isGlutenFree: true, dataAiHint: 'crackers snack' },
-];
+import { useFavorites } from '@/contexts/favorites-context'; // Added import
+import type { Product } from '@/app/[locale]/products/[productId]/page'; // Added import
+import { useToast } from '@/hooks/use-toast'; // Added import
+import Link from 'next/link'; // Added import
+import { useParams } from 'next/navigation'; // Added import
 
 
 export default function FavoritesPage() {
+  const { getFavoriteProducts, removeFavorite } = useFavorites(); // Updated
+  const [favoritedProducts, setFavoritedProducts] = useState<Product[]>([]);
+  const { toast } = useToast(); // Added
+  const params = useParams(); // Added
+  const locale = params.locale as string; // Added
+
+  useEffect(() => {
+    setFavoritedProducts(getFavoriteProducts());
+  }, [getFavoriteProducts]); // Updated dependency array
+
+  const handleRemoveFavorite = (product: Product) => { // Added
+    removeFavorite(product.id);
+    toast({ title: `${product.name} removed from favorites.` });
+    // The useEffect will re-render the list
+  };
+
+
   return (
     <div className="flex min-h-screen">
       <AppSidebar />
@@ -29,49 +49,78 @@ export default function FavoritesPage() {
             icon={Heart}
           />
           
-          {placeholderFavorites.length > 0 ? (
+          {favoritedProducts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {placeholderFavorites.map(product => (
-                <Card key={product.id} className="overflow-hidden group hover:shadow-xl transition-shadow duration-200">
+              {favoritedProducts.map(product => {
+                const isGlutenFreeTag = product.tags?.includes('gluten-free');
+                const containsGlutenTag = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat');
+                const mayContainGlutenTag = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
+
+                return (
+                <Card key={product.id} className="overflow-hidden group hover:shadow-xl transition-shadow duration-200 flex flex-col">
                   <CardHeader className="p-0 relative">
-                    <Image 
-                      src={product.imageUrl} 
-                      alt={product.name} 
-                      width={400} 
-                      height={200} 
-                      className="w-full h-48 object-cover"
-                      data-ai-hint={product.dataAiHint}
-                    />
-                    <Button variant="destructive" size="icon" className="absolute top-2 right-2 opacity-80 group-hover:opacity-100 transition-opacity">
+                    <Link href={`/${locale}/products/${product.id}`}>
+                      <Image 
+                        src={product.imageUrl} 
+                        alt={product.name} 
+                        width={400} 
+                        height={200} 
+                        className="w-full h-48 object-cover"
+                        data-ai-hint={product.dataAiHint || 'product image'}
+                      />
+                    </Link>
+                    <Button 
+                      variant="destructive" 
+                      size="icon" 
+                      className="absolute top-2 right-2 opacity-80 group-hover:opacity-100 transition-opacity"
+                      onClick={() => handleRemoveFavorite(product)} // Updated
+                    >
                       <Trash2 className="h-4 w-4" />
                       <span className="sr-only">Remove from favorites</span>
                     </Button>
                   </CardHeader>
-                  <CardContent className="p-4">
-                    <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
+                  <CardContent className="p-4 flex flex-col flex-grow">
+                    <Link href={`/${locale}/products/${product.id}`} className="hover:underline">
+                      <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
+                    </Link>
+                    {product.brand && <CardDescription className="text-xs text-muted-foreground mb-1">{product.brand}</CardDescription>}
                     <CardDescription className="text-sm text-muted-foreground mb-2">{product.category}</CardDescription>
-                    {product.isGlutenFree ? (
-                        <div className="flex items-center text-green-600 text-sm mt-1">
-                          <CheckCircle className="h-4 w-4 mr-1" />
+                    
+                    {isGlutenFreeTag && (
+                        <div className="flex items-center text-green-600 text-xs mt-1 mb-1">
+                          <CheckCircle className="h-3 w-3 mr-1" />
                           <span>Gluten-Free</span>
                         </div>
-                      ) : (
-                        <div className="flex items-center text-red-600 text-sm mt-1">
-                          <AlertCircle className="h-4 w-4 mr-1" />
-                          <span>May Contain Gluten</span>
+                      )}
+                      {containsGlutenTag && (
+                        <div className="flex items-center text-red-600 text-xs mt-1 mb-1">
+                          <AlertTriangle className="h-3 w-3 mr-1" />
+                          <span>Contains Gluten</span>
                         </div>
                       )}
+                      {mayContainGlutenTag && !isGlutenFreeTag && !containsGlutenTag && (
+                        <div className="flex items-center text-orange-500 text-xs mt-1 mb-1">
+                          <AlertTriangle className="h-3 w-3 mr-1" />
+                          <span>May Contain Traces</span>
+                        </div>
+                      )}
+                    <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description}</p>
+                     <Button asChild variant="outline" size="sm" className="w-full mt-auto">
+                        <Link href={`/${locale}/products/${product.id}`}>View Details</Link>
+                      </Button>
                   </CardContent>
                 </Card>
-              ))}
+              )})}
             </div>
           ) : (
             <div className="text-center py-12 text-muted-foreground">
               <StarOff className="mx-auto h-16 w-16 mb-4" />
               <h3 className="text-xl font-semibold mb-2">No Favorites Yet</h3>
               <p>Add products to your favorites list to see them here.</p>
-              <Button variant="outline" className="mt-4">
-                <ShoppingBag className="mr-2 h-4 w-4" /> Browse Products
+              <Button variant="outline" className="mt-4" asChild>
+                <Link href={`/${locale}/products`}>
+                  <ShoppingBag className="mr-2 h-4 w-4" /> Browse Products
+                </Link>
               </Button>
             </div>
           )}

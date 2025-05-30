@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import '../globals.css'; // Adjusted path
 import { Toaster } from '@/components/ui/toaster';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { FavoritesProvider } from '@/contexts/favorites-context'; // Added import
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -43,7 +44,9 @@ export default function LocaleLayout({
     <html lang={locale} suppressHydrationWarning> {/* suppressHydrationWarning might be needed if lang mismatch causes issues initially */}
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SidebarProvider defaultOpen={true}>
-          {children}
+          <FavoritesProvider> {/* Added FavoritesProvider */}
+            {children}
+          </FavoritesProvider>
         </SidebarProvider>
         <Toaster />
       </body>

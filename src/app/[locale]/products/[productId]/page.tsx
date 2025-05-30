@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Leaf, Info, ShieldCheck, FileText, GitBranch, Tag, Barcode } from 'lucide-react';
 import { placeholderProducts } from '@/app/[locale]/products/page'; 
 import { Badge } from '@/components/ui/badge';
+import { useFavorites } from '@/contexts/favorites-context'; // Added import
+import { useToast } from '@/hooks/use-toast'; // Added import
 
 // Updated Product interface to align with schema
 export interface Product {
@@ -68,6 +70,9 @@ export default function ProductDetailPage() {
 
   const product = placeholderProducts.find(p => p.id === productId) as Product | undefined;
 
+  const { addFavorite, removeFavorite, isFavorite } = useFavorites(); // Added
+  const { toast } = useToast(); // Added
+
   if (!product) {
     return (
       <div className="flex min-h-screen">
@@ -93,6 +98,18 @@ export default function ProductDetailPage() {
       </div>
     );
   }
+
+  const isCurrentlyFavorite = isFavorite(product.id); // Added
+
+  const handleToggleFavorite = () => { // Added
+    if (isCurrentlyFavorite) {
+      removeFavorite(product.id);
+      toast({ title: `${product.name} removed from favorites.` });
+    } else {
+      addFavorite(product.id);
+      toast({ title: `${product.name} added to favorites!` });
+    }
+  };
 
   const isGlutenFree = product.tags?.includes('gluten-free');
   const mayContainGluten = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
@@ -152,9 +169,9 @@ export default function ProductDetailPage() {
                       {product.brand && <CardDescription className="text-lg text-muted-foreground">{product.brand}</CardDescription>}
                       <CardDescription className="text-md text-muted-foreground">{product.category}</CardDescription>
                     </div>
-                    <Button variant="outline" size="icon" className="ml-auto flex-shrink-0">
-                      <Heart className="h-5 w-5" />
-                      <span className="sr-only">Add to favorites</span>
+                    <Button variant="outline" size="icon" className="ml-auto flex-shrink-0" onClick={handleToggleFavorite}>
+                      <Heart className="h-5 w-5" fill={isCurrentlyFavorite ? 'hsl(var(--primary))' : 'none'} />
+                      <span className="sr-only">{isCurrentlyFavorite ? 'Remove from favorites' : 'Add to favorites'}</span>
                     </Button>
                   </div>
                 </CardHeader>
