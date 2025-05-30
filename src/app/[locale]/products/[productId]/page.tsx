@@ -106,7 +106,7 @@ export default function ProductDetailPage() {
       removeFavorite(product.id);
       toast({ title: `${product.name} removed from favorites.` });
     } else {
-      addFavorite(product.id);
+      addFavorite(product); // Changed from product.id to product to align with context
       toast({ title: `${product.name} added to favorites!` });
     }
   };
@@ -122,18 +122,21 @@ export default function ProductDetailPage() {
   if (product.tags?.includes('contains-oats') && !isGlutenFree) identifiedGlutenSources.push('Oats (may not be gluten-free)');
 
   const commonAllergenKeywords: { term: string, name: string }[] = [
-    { term: 'lešnik', name: 'Hazelnuts' }, // Lešnik
-    { term: 'kikiriki', name: 'Peanuts' }, // Kikiriki
-    { term: 'soja', name: 'Soy' }, // Soja
-    { term: 'sojin', name: 'Soy' }, // Sojin (e.g., sojin lecitin)
-    { term: 'mleko', name: 'Milk' }, // Mleko
-    { term: 'mlijeko', name: 'Milk' }, // Mlijeko (alternative spelling)
-    { term: 'mlečni', name: 'Milk' }, // Mlečni
-    { term: 'jaja', name: 'Eggs' }, // Jaja
-    { term: 'jaje', name: 'Eggs' }, // Jaje
-    { term: 'badem', name: 'Almonds' }, // Badem
-    { term: 'orah', name: 'Walnuts' }, // Orah
-    { term: 'susam', name: 'Sesame' }, // Susam
+    { term: 'lešnik', name: 'Hazelnuts' },
+    { term: 'lešnici', name: 'Hazelnuts' }, // Added plural with diacritic
+    { term: 'lesnik', name: 'Hazelnuts' },  // Added singular without diacritic
+    { term: 'lesnici', name: 'Hazelnuts' }, // Added plural without diacritic
+    { term: 'kikiriki', name: 'Peanuts' },
+    { term: 'soja', name: 'Soy' },
+    { term: 'sojin', name: 'Soy' },
+    { term: 'mleko', name: 'Milk' },
+    { term: 'mlijeko', name: 'Milk' },
+    { term: 'mlečni', name: 'Milk' },
+    { term: 'jaja', name: 'Eggs' },
+    { term: 'jaje', name: 'Eggs' },
+    { term: 'badem', name: 'Almonds' },
+    { term: 'orah', name: 'Walnuts' },
+    { term: 'susam', name: 'Sesame' },
   ];
   
   let mentionedNonGlutenAllergens: string[] = [];
@@ -141,7 +144,7 @@ export default function ProductDetailPage() {
     const ingredientsLower = product.ingredientsText.toLowerCase();
     const foundAllergenNames = new Set<string>();
     commonAllergenKeywords.forEach(allergen => {
-      if (ingredientsLower.includes(allergen.term)) {
+      if (ingredientsLower.includes(allergen.term.toLowerCase())) { // Ensure term is also lowercased for comparison
         foundAllergenNames.add(allergen.name);
       }
     });
