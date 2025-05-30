@@ -11,11 +11,10 @@ import { SiteHeader } from '@/components/site-header';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart } from 'lucide-react';
+import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Vegan, Leaf } from 'lucide-react'; // Added Vegan, Leaf
 import { placeholderProducts } from '@/app/[locale]/products/page'; // Re-use from products page for now
 
-// Minimal placeholder product data structure expected by this page
-// Matches the structure in products/page.tsx
+// Updated Product interface
 export interface Product {
   id: string;
   name: string;
@@ -25,7 +24,11 @@ export interface Product {
   dataAiHint?: string;
   isGlutenFree?: boolean; 
   ingredients?: string; 
-  nutriScore?: string; // Added Nutri-Score
+  nutriScore?: string;
+  isLactoseFree?: boolean;
+  isSugarFree?: boolean;
+  isVegan?: boolean;
+  isPosno?: boolean;
 }
 
 const getNutriScoreClasses = (score?: string) => {
@@ -39,6 +42,15 @@ const getNutriScoreClasses = (score?: string) => {
     default: return 'bg-gray-300 text-gray-700';
   }
 };
+
+// Helper component for displaying dietary tags
+const DietaryTag = ({ label, icon: Icon }: { label: string; icon: React.ElementType }) => (
+  <div className="flex items-center text-sm text-muted-foreground">
+    <Icon className="h-4 w-4 mr-2 text-primary" />
+    <span>{label}</span>
+  </div>
+);
+
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -127,31 +139,46 @@ export default function ProductDetailPage() {
                     <p className="text-sm text-muted-foreground">{product.description}</p>
                   </div>
                   
-                  {product.isGlutenFree !== undefined && (
-                     <div>
-                        <h3 className="text-md font-semibold mb-1">Gluten Information</h3>
-                        {product.isGlutenFree ? (
-                            <div className="flex items-center text-green-600">
-                              <CheckCircle className="h-5 w-5 mr-2" />
-                              <span>Likely Gluten-Free</span>
-                            </div>
-                          ) : (
-                            <div className="flex items-center text-red-600">
-                              <AlertTriangle className="h-5 w-5 mr-2" />
-                              <span>May Contain Gluten</span>
-                            </div>
-                          )}
-                     </div>
-                  )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {product.isGlutenFree !== undefined && (
+                       <div>
+                          <h3 className="text-md font-semibold mb-2">Gluten Information</h3>
+                          {product.isGlutenFree ? (
+                              <div className="flex items-center text-green-600">
+                                <CheckCircle className="h-5 w-5 mr-2" />
+                                <span>Likely Gluten-Free</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center text-red-600">
+                                <AlertTriangle className="h-5 w-5 mr-2" />
+                                <span>May Contain Gluten</span>
+                              </div>
+                            )}
+                       </div>
+                    )}
 
-                  {product.nutriScore && (
+                    {product.nutriScore && (
+                      <div>
+                        <h3 className="text-md font-semibold mb-2">Nutri-Score</h3>
+                        <span className={`px-3 py-1 rounded-lg text-sm font-bold ${getNutriScoreClasses(product.nutriScore)}`}>
+                          {product.nutriScore}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {(product.isLactoseFree || product.isSugarFree || product.isVegan || product.isPosno) && (
                     <div>
-                      <h3 className="text-md font-semibold mb-1">Nutri-Score</h3>
-                      <span className={`px-3 py-1 rounded-lg text-sm font-bold ${getNutriScoreClasses(product.nutriScore)}`}>
-                        {product.nutriScore}
-                      </span>
+                      <h3 className="text-md font-semibold mb-2">Dietary Information</h3>
+                      <div className="space-y-2">
+                        {product.isLactoseFree && <DietaryTag label="Lactose-Free" icon={CheckCircle} />}
+                        {product.isSugarFree && <DietaryTag label="Sugar-Free" icon={CheckCircle} />}
+                        {product.isVegan && <DietaryTag label="Vegan" icon={Vegan} />}
+                        {product.isPosno && <DietaryTag label="Posno (Lenten)" icon={Leaf} />}
+                      </div>
                     </div>
                   )}
+
 
                   {product.ingredients && (
                     <div>

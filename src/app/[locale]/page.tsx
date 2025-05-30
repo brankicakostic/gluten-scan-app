@@ -21,6 +21,7 @@ import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, 
 import { analyzeDeclaration, type AnalyzeDeclarationOutput } from '@/ai/flows/analyze-declaration';
 import { getDailyCeliacTip, type DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 interface BarcodeScanResult {
   name: string;
@@ -364,6 +365,12 @@ export default function HomePage() {
                         )}
                       </div>
                       <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description}</p>
+                       <div className="flex flex-wrap gap-1 mb-3">
+                        {product.isLactoseFree && <Badge variant="secondary">Lactose-Free</Badge>}
+                        {product.isSugarFree && <Badge variant="secondary">Sugar-Free</Badge>}
+                        {product.isVegan && <Badge variant="secondary">Vegan</Badge>}
+                        {product.isPosno && <Badge variant="secondary">Posno</Badge>}
+                      </div>
                       <Button asChild variant="outline" size="sm" className="w-full mt-auto">
                         <Link href={`/${locale}/products/${product.id}`}>View Details</Link>
                       </Button>
