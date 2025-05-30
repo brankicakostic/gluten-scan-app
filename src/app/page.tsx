@@ -9,12 +9,13 @@ import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { ScanSearch, QrCode, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, ScanLine, CameraOff } from 'lucide-react';
+import { Alert as ShadcnAlert } from '@/components/ui/alert'; // Renamed to avoid conflict
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, CameraOff } from 'lucide-react';
 import { analyzeDeclaration, type AnalyzeDeclarationOutput } from '@/ai/flows/analyze-declaration';
 import { useToast } from '@/hooks/use-toast';
-import { Alert as ShadcnAlert } from '@/components/ui/alert'; // Renamed to avoid conflict with window.Alert
-
 
 // Placeholder for barcode scan result
 interface BarcodeScanResult {
@@ -24,6 +25,20 @@ interface BarcodeScanResult {
   imageUrl: string;
   dataAiHint?: string;
 }
+
+// Placeholder product data (from products page)
+const placeholderProducts = [
+  { id: '1', name: 'Gluten-Free Bread', category: 'Bakery', imageUrl: 'https://placehold.co/300x200.png', description: 'Delicious and soft gluten-free white bread.', dataAiHint: 'bread bakery' },
+  { id: '2', name: 'Corn Pasta', category: 'Pasta', imageUrl: 'https://placehold.co/300x200.png', description: 'Authentic Italian corn pasta, naturally gluten-free.', dataAiHint: 'pasta corn' },
+  { id: '3', name: 'Rice Cakes', category: 'Snacks', imageUrl: 'https://placehold.co/300x200.png', description: 'Light and crispy rice cakes, perfect for snacking.', dataAiHint: 'rice cakes' },
+  { id: '4', name: 'Gluten-Free Oats', category: 'Cereals', imageUrl: 'https://placehold.co/300x200.png', description: 'Certified gluten-free rolled oats for breakfast.', dataAiHint: 'oats cereal' },
+  { id: '5', name: 'Almond Flour Mix', category: 'Bakery', imageUrl: 'https://placehold.co/300x200.png', description: 'Versatile almond flour for baking.', dataAiHint: 'almond flour' },
+  { id: '6', name: 'Quinoa Salad Mix', category: 'Snacks', imageUrl: 'https://placehold.co/300x200.png', description: 'Ready-to-eat quinoa salad.', dataAiHint: 'quinoa salad' },
+];
+
+// Unique categories for the select dropdown
+const productCategories = Array.from(new Set(placeholderProducts.map(p => p.category)));
+
 
 export default function HomePage() {
   // State for Declaration Analysis
@@ -39,9 +54,28 @@ export default function HomePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
 
+  // State for Product Search/Filter
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [displayedProducts, setDisplayedProducts] = useState(placeholderProducts);
 
   const { toast } = useToast();
 
+  // Effect for product filtering
+  useEffect(() => {
+    let filtered = placeholderProducts;
+    if (searchTerm.trim()) {
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase().trim())
+      );
+    }
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(product => product.category === selectedCategory);
+    }
+    setDisplayedProducts(filtered);
+  }, [searchTerm, selectedCategory]);
+  
+  // Effect for camera handling (barcode scanning)
   useEffect(() => {
     if (isScanning) {
       const getCameraPermission = async () => {
@@ -51,30 +85,24 @@ export default function HomePage() {
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
           }
-          // In a real app, you'd integrate a barcode scanning library here
-          // For now, we'll simulate a scan after a delay
+          // Simulate scan
           setTimeout(() => {
-            // Simulate finding a product
             setBarcodeScanResult({ 
-              name: "Simulated Product", 
+              name: "Simulated Scanned Product", 
               isGlutenFree: Math.random() > 0.5, 
-              ingredients: "Simulated ingredients, may contain gluten if !isGlutenFree", 
+              ingredients: "Simulated ingredients from barcode scan.", 
               imageUrl: "https://placehold.co/300x200.png",
-              dataAiHint: "food product"
+              dataAiHint: "scanned product"
             });
             setIsScanning(false); 
             stopCameraStream();
             toast({ title: "Barcode Scan Simulated", description: "Product details loaded."});
-          }, 5000); // Simulate 5 second scan
+          }, 5000);
         } catch (error) {
           console.error('Error accessing camera:', error);
           setHasCameraPermission(false);
-          setErrorBarcode('Camera access denied or no camera found. Please enable camera permissions or try manual input.');
-          toast({
-            variant: 'destructive',
-            title: 'Camera Access Denied',
-            description: 'Please enable camera permissions in your browser settings to scan barcodes.',
-          });
+          setErrorBarcode('Camera access denied. Please enable permissions.');
+          toast({ variant: 'destructive', title: 'Camera Access Denied', description: 'Enable camera permissions for barcode scanning.'});
           setIsScanning(false);
         }
       };
@@ -82,11 +110,8 @@ export default function HomePage() {
     } else {
       stopCameraStream();
     }
-
-    return () => {
-      stopCameraStream();
-    };
-  }, [isScanning]);
+    return () => stopCameraStream();
+  }, [isScanning, toast]);
 
   const stopCameraStream = () => {
     if (videoRef.current && videoRef.current.srcObject) {
@@ -102,27 +127,17 @@ export default function HomePage() {
       setErrorDeclaration('Please enter a product declaration.');
       return;
     }
-
     setIsLoadingDeclaration(true);
     setErrorDeclaration(null);
     setAnalysisResult(null);
-
     try {
       const result = await analyzeDeclaration({ declarationText });
       setAnalysisResult(result);
-      toast({
-        title: "Analysis Complete",
-        description: "Product declaration has been analyzed.",
-      });
+      toast({ title: "Analysis Complete", description: "Product declaration analyzed." });
     } catch (err) {
-      console.error('Error analyzing declaration:', err);
-      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
-      setErrorDeclaration(`Failed to analyze declaration: ${errorMessage}`);
-      toast({
-        variant: "destructive",
-        title: "Analysis Failed",
-        description: `Could not analyze declaration. ${errorMessage}`,
-      });
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
+      setErrorDeclaration(`Analysis failed: ${errorMessage}`);
+      toast({ variant: "destructive", title: "Analysis Failed", description: errorMessage });
     } finally {
       setIsLoadingDeclaration(false);
     }
@@ -139,7 +154,6 @@ export default function HomePage() {
     stopCameraStream();
   };
 
-
   return (
     <div className="flex min-h-screen">
       <AppSidebar />
@@ -149,15 +163,49 @@ export default function HomePage() {
         <main className="flex-1 p-6 md:p-8">
           <PageHeader 
             title="Welcome to Gluten Scan" 
-            description="Quickly check products by scanning a barcode or entering ingredients."
+            description="Search, scan, or analyze ingredients to find gluten-free products."
             icon={ScanLine}
           />
-          <div className="space-y-8">
-            {/* Barcode Scanning Section */}
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            {/* Product Search & Filters Card */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2"><QrCode /> Scan Product Barcode</CardTitle>
-                <CardDescription>Use your device's camera to scan a product's barcode for instant gluten information.</CardDescription>
+                <CardTitle className="flex items-center gap-2"><Search className="h-5 w-5"/> Find Products</CardTitle>
+                <CardDescription>Search by name or filter by category to find gluten-free items.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="product-search" className="text-sm font-medium">Search by name</Label>
+                  <Input 
+                    id="product-search" 
+                    placeholder="e.g., Gluten-Free Bread" 
+                    value={searchTerm} 
+                    onChange={(e) => setSearchTerm(e.target.value)} 
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="product-category" className="text-sm font-medium">Category</Label>
+                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                    <SelectTrigger id="product-category">
+                      <SelectValue placeholder="All Categories" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Categories</SelectItem>
+                      {productCategories.map(category => (
+                        <SelectItem key={category} value={category}>{category}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Barcode Scanning Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><QrCode className="h-5 w-5" /> Scan Product Barcode</CardTitle>
+                <CardDescription>Use your device's camera for instant gluten information.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {!isScanning && !barcodeScanResult && (
@@ -165,10 +213,9 @@ export default function HomePage() {
                     <QrCode className="mr-2 h-5 w-5" /> Start Scanning
                   </Button>
                 )}
-
                 {isScanning && (
                   <div className="space-y-4">
-                    <div className="aspect-video bg-muted rounded-md flex flex-col items-center justify-center text-muted-foreground p-4">
+                     <div className="aspect-video bg-muted rounded-md flex flex-col items-center justify-center text-muted-foreground p-4">
                        <video ref={videoRef} className="w-full h-full object-cover rounded-md" autoPlay playsInline muted />
                        {hasCameraPermission === false && (
                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 p-4 rounded-md">
@@ -180,157 +227,151 @@ export default function HomePage() {
                           <p className="mt-2 text-sm">Point your camera at a barcode...</p>
                        )}
                     </div>
-                    <Button onClick={handleCancelScanning} variant="outline" className="w-full">
-                      Cancel Scan
-                    </Button>
+                    <Button onClick={handleCancelScanning} variant="outline" className="w-full">Cancel Scan</Button>
                   </div>
                 )}
-                
                 {errorBarcode && !isScanning && (
-                    <ShadcnAlert variant="destructive" className="mt-4">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertTitle>Scanning Error</AlertTitle>
-                      <AlertDescription>{errorBarcode}</AlertDescription>
-                    </ShadcnAlert>
-                  )}
-
+                  <ShadcnAlert variant="destructive" className="mt-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Scanning Error</AlertTitle>
+                    <AlertDescription>{errorBarcode}</AlertDescription>
+                  </ShadcnAlert>
+                )}
                 {barcodeScanResult && !isScanning && (
                   <Card className="mt-4">
                     <CardHeader className="flex flex-row items-start gap-4">
-                      <Image 
-                        src={barcodeScanResult.imageUrl} 
-                        alt={barcodeScanResult.name} 
-                        width={80} 
-                        height={80} 
-                        className="rounded-md object-cover"
-                        data-ai-hint={barcodeScanResult.dataAiHint || "product image"}
-                      />
+                      <Image src={barcodeScanResult.imageUrl} alt={barcodeScanResult.name} width={80} height={80} className="rounded-md object-cover" data-ai-hint={barcodeScanResult.dataAiHint || "product image"}/>
                       <div>
                         <CardTitle className="text-xl">{barcodeScanResult.name}</CardTitle>
                         {barcodeScanResult.isGlutenFree ? (
-                          <div className="flex items-center text-green-600 mt-1">
-                            <CheckCircle className="h-5 w-5 mr-1" />
-                            <span>Likely Gluten-Free</span>
-                          </div>
+                          <div className="flex items-center text-green-600 mt-1"><CheckCircle className="h-5 w-5 mr-1" /><span>Likely Gluten-Free</span></div>
                         ) : (
-                          <div className="flex items-center text-red-600 mt-1">
-                            <AlertCircle className="h-5 w-5 mr-1" />
-                            <span>May Contain Gluten</span>
-                          </div>
+                          <div className="flex items-center text-red-600 mt-1"><AlertCircle className="h-5 w-5 mr-1" /><span>May Contain Gluten</span></div>
                         )}
                       </div>
                     </CardHeader>
                     <CardContent>
                       <h4 className="font-semibold mb-1 text-sm">Ingredients:</h4>
                       <p className="text-xs text-muted-foreground">{barcodeScanResult.ingredients}</p>
-                      <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => { setBarcodeScanResult(null); setErrorBarcode(null);}}>
-                        Scan Another Product
-                      </Button>
+                      <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => { setBarcodeScanResult(null); setErrorBarcode(null);}}>Scan Another</Button>
                     </CardContent>
                   </Card>
                 )}
-                 {!isScanning && !barcodeScanResult && !errorBarcode && hasCameraPermission !== false && (
+                {!isScanning && !barcodeScanResult && !errorBarcode && hasCameraPermission !== false && (
                    <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md">
-                    <ShoppingBag className="mx-auto h-8 w-8 mb-2" />
-                    <p className="text-sm">Scan a product to see its details here.</p>
+                    <QrCode className="mx-auto h-8 w-8 mb-2" />
+                    <p className="text-sm">Scan results will appear here.</p>
                   </div>
                 )}
               </CardContent>
             </Card>
+          </div>
 
-            {/* Declaration Analysis Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2"><ScanSearch /> Analyze Ingredients Manually</CardTitle>
-                <CardDescription>If you can't scan a barcode, paste the product's ingredient list below for AI analysis.</CardDescription>
-              </CardHeader>
-              <form onSubmit={handleDeclarationSubmit}>
-                <CardContent>
-                  <Textarea
-                    placeholder="e.g., Wheat flour, sugar, salt, yeast, barley malt extract..."
-                    value={declarationText}
-                    onChange={(e) => setDeclarationText(e.target.value)}
-                    rows={8}
-                    className="resize-none"
-                    aria-label="Product Declaration Input"
-                  />
-                  {errorDeclaration && (
-                    <ShadcnAlert variant="destructive" className="mt-4">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertTitle>Error</AlertTitle>
-                      <AlertDescription>{errorDeclaration}</AlertDescription>
-                    </ShadcnAlert>
-                  )}
-                </CardContent>
-                <CardFooter>
-                  <Button type="submit" disabled={isLoadingDeclaration} className="w-full">
-                    {isLoadingDeclaration ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <Sparkles className="mr-2 h-4 w-4" />
-                    )}
-                    Analyze with AI
-                  </Button>
-                </CardFooter>
-              </form>
-            </Card>
+          {/* Product Listing Section */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
+              <ShoppingBag className="h-6 w-6 text-primary" /> Products
+            </h2>
+            {displayedProducts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {displayedProducts.map(product => (
+                  <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-200">
+                    <CardHeader className="p-0">
+                      <Image src={product.imageUrl} alt={product.name} width={400} height={200} className="w-full h-48 object-cover" data-ai-hint={product.dataAiHint}/>
+                    </CardHeader>
+                    <CardContent className="p-4">
+                      <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
+                      <CardDescription className="text-sm text-muted-foreground mb-2">{product.category}</CardDescription>
+                      <p className="text-sm mb-3 h-10 overflow-hidden">{product.description}</p>
+                      <Button variant="outline" size="sm" className="w-full">View Details</Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 text-muted-foreground border-dashed border-2 rounded-md">
+                <PackageOpen className="mx-auto h-16 w-16 mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No Products Found</h3>
+                <p>Try adjusting your search or filters.</p>
+              </div>
+            )}
+          </div>
 
-            {/* Declaration Analysis Results */}
+          {/* Declaration Analysis Section (Fallback) */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><ScanSearch className="h-5 w-5" /> Analyze Ingredients Manually</CardTitle>
+              <CardDescription>If you can't scan or find a product, paste its ingredient list below for AI analysis.</CardDescription>
+            </CardHeader>
+            <form onSubmit={handleDeclarationSubmit}>
+              <CardContent>
+                <Textarea
+                  placeholder="e.g., Wheat flour, sugar, salt, yeast, barley malt extract..."
+                  value={declarationText}
+                  onChange={(e) => setDeclarationText(e.target.value)}
+                  rows={8}
+                  className="resize-none"
+                  aria-label="Product Declaration Input"
+                />
+                {errorDeclaration && (
+                  <ShadcnAlert variant="destructive" className="mt-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>{errorDeclaration}</AlertDescription>
+                  </ShadcnAlert>
+                )}
+              </CardContent>
+              <CardFooter>
+                <Button type="submit" disabled={isLoadingDeclaration} className="w-full">
+                  {isLoadingDeclaration ? (<Loader2 className="mr-2 h-4 w-4 animate-spin" />) : (<Sparkles className="mr-2 h-4 w-4" />)}
+                  Analyze with AI
+                </Button>
+              </CardFooter>
+            </form>
             {(analysisResult || isLoadingDeclaration) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>AI Analysis Report</CardTitle>
-                  <CardDescription>Results of the gluten detection analysis for the entered ingredients.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {isLoadingDeclaration && (
-                    <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
-                      <Loader2 className="h-10 w-10 animate-spin text-primary mb-3" />
-                      <p>Analyzing ingredients...</p>
+              <CardContent className="mt-6 border-t pt-6">
+                <CardTitle className="text-lg mb-2">AI Analysis Report</CardTitle>
+                {isLoadingDeclaration && (
+                  <div className="flex flex-col items-center justify-center h-24 text-muted-foreground">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
+                    <p>Analyzing...</p>
+                  </div>
+                )}
+                {analysisResult && !isLoadingDeclaration && (
+                  <>
+                    <ShadcnAlert variant={analysisResult.hasGluten ? 'destructive' : 'default'} className={analysisResult.hasGluten ? '' : 'border-green-500'}>
+                      {analysisResult.hasGluten ? <AlertCircle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5 text-green-600" />}
+                      <AlertTitle className={analysisResult.hasGluten ? '' : 'text-green-700'}>
+                        {analysisResult.hasGluten ? 'Potential Gluten Detected' : 'Likely Gluten-Free'}
+                      </AlertTitle>
+                      <AlertDescription>Confidence: {Math.round(analysisResult.confidence * 100)}%</AlertDescription>
+                    </ShadcnAlert>
+                    <div className="mt-3">
+                      <h4 className="font-semibold mb-1 text-sm">Reasoning:</h4>
+                      <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md">{analysisResult.reason}</p>
                     </div>
-                  )}
-                  {analysisResult && !isLoadingDeclaration && (
-                    <>
-                      <ShadcnAlert variant={analysisResult.hasGluten ? 'destructive' : 'default'} className={analysisResult.hasGluten ? '' : 'border-green-500'}>
-                        {analysisResult.hasGluten ? <AlertCircle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5 text-green-600" />}
-                        <AlertTitle className={analysisResult.hasGluten ? '' : 'text-green-700'}>
-                          {analysisResult.hasGluten ? 'Potential Gluten Detected' : 'Likely Gluten-Free'}
-                        </AlertTitle>
-                        <AlertDescription>
-                          Confidence: {Math.round(analysisResult.confidence * 100)}%
-                        </AlertDescription>
-                      </ShadcnAlert>
-                      
-                      <div>
-                        <h4 className="font-semibold mb-1 text-sm">Reasoning:</h4>
-                        <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md">{analysisResult.reason}</p>
+                    {analysisResult.glutenIngredients && analysisResult.glutenIngredients.length > 0 && (
+                      <div className="mt-3">
+                        <h4 className="font-semibold mb-1 text-sm">Potential Gluten Ingredients:</h4>
+                        <ul className="list-disc list-inside text-xs space-y-1">
+                          {analysisResult.glutenIngredients.map((ing, index) => (
+                            <li key={index} className="text-destructive-foreground bg-destructive/80 px-1.5 py-0.5 rounded-sm">{ing}</li>
+                          ))}
+                        </ul>
                       </div>
-
-                      {analysisResult.glutenIngredients && analysisResult.glutenIngredients.length > 0 && (
-                        <div>
-                          <h4 className="font-semibold mb-1 text-sm">Potential Gluten Ingredients Found:</h4>
-                          <ul className="list-disc list-inside text-xs space-y-1">
-                            {analysisResult.glutenIngredients.map((ing, index) => (
-                              <li key={index} className="text-destructive-foreground bg-destructive/80 px-1.5 py-0.5 rounded-sm">{ing}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                       <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => setAnalysisResult(null)}>
-                        Clear Analysis Results
-                      </Button>
-                    </>
-                  )}
-                </CardContent>
-              </Card>
+                    )}
+                     <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => setAnalysisResult(null)}>Clear Analysis</Button>
+                  </>
+                )}
+              </CardContent>
             )}
              {!isLoadingDeclaration && !analysisResult && !errorDeclaration && declarationText && (
-                   <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md">
+                   <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md mt-4">
                     <Info className="mx-auto h-8 w-8 mb-2 text-primary" />
                     <p className="text-sm">Analysis results for ingredients will appear here once submitted.</p>
                   </div>
               )}
-          </div>
+          </Card>
         </main>
       </SidebarInset>
     </div>

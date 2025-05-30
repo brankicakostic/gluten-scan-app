@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Home, History, Heart, ScanLine } from 'lucide-react'; // Added Home, ScanLine
+import { Home, History, Heart, ShoppingBag } from 'lucide-react'; // Added ShoppingBag
 
 export interface NavLink {
   href: string;
@@ -13,7 +13,13 @@ export const mainNavLinks: NavLink[] = [
     href: '/',
     label: 'Home',
     icon: Home, 
-    tooltip: 'Home / Scan',
+    tooltip: 'Home / Scan & Search',
+  },
+  {
+    href: '/products',
+    label: 'Browse Products',
+    icon: ShoppingBag,
+    tooltip: 'Browse All Products',
   },
   {
     href: '/history',

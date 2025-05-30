@@ -14,7 +14,13 @@ const placeholderProducts = [
   { id: '1', name: 'Gluten-Free Bread', category: 'Bakery', imageUrl: 'https://placehold.co/300x200.png', description: 'Delicious and soft gluten-free white bread.', dataAiHint: 'bread bakery' },
   { id: '2', name: 'Corn Pasta', category: 'Pasta', imageUrl: 'https://placehold.co/300x200.png', description: 'Authentic Italian corn pasta, naturally gluten-free.', dataAiHint: 'pasta corn' },
   { id: '3', name: 'Rice Cakes', category: 'Snacks', imageUrl: 'https://placehold.co/300x200.png', description: 'Light and crispy rice cakes, perfect for snacking.', dataAiHint: 'rice cakes' },
+  { id: '4', name: 'Gluten-Free Oats', category: 'Cereals', imageUrl: 'https://placehold.co/300x200.png', description: 'Certified gluten-free rolled oats for breakfast.', dataAiHint: 'oats cereal' },
+  { id: '5', name: 'Almond Flour Mix', category: 'Bakery', imageUrl: 'https://placehold.co/300x200.png', description: 'Versatile almond flour for baking.', dataAiHint: 'almond flour' },
+  { id: '6', name: 'Quinoa Salad Mix', category: 'Snacks', imageUrl: 'https://placehold.co/300x200.png', description: 'Ready-to-eat quinoa salad.', dataAiHint: 'quinoa salad' },
 ];
+// Unique categories for the select dropdown
+const productCategories = Array.from(new Set(placeholderProducts.map(p => p.category)));
+
 
 export default function ProductsPage() {
   return (
@@ -27,14 +33,15 @@ export default function ProductsPage() {
           <PageHeader 
             title="Find Gluten-Free Products"
             description="Search and filter through a curated list of gluten-free items."
-            icon={ListFilter}
+            icon={ShoppingBag} // Changed from ListFilter for consistency with nav
           />
 
           <div className="mb-8 p-6 bg-card border rounded-lg shadow">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
               <div className="space-y-1.5">
                 <label htmlFor="search" className="text-sm font-medium">Search Products</label>
-                <Input id="search" placeholder="Search by name or brand..." icon={<Search className="h-4 w-4 text-muted-foreground" />} />
+                {/* Removed unsupported icon prop from Input */}
+                <Input id="search" placeholder="Search by name or brand..." />
               </div>
               <div className="space-y-1.5">
                 <label htmlFor="category" className="text-sm font-medium">Category</label>
@@ -44,10 +51,9 @@ export default function ProductsPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Categories</SelectItem>
-                    <SelectItem value="bakery">Bakery</SelectItem>
-                    <SelectItem value="pasta">Pasta</SelectItem>
-                    <SelectItem value="snacks">Snacks</SelectItem>
-                    <SelectItem value="cereals">Cereals</SelectItem>
+                    {productCategories.map(category => (
+                        <SelectItem key={category} value={category}>{category}</SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -58,7 +64,7 @@ export default function ProductsPage() {
           </div>
 
           {placeholderProducts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {placeholderProducts.map(product => (
                 <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-200">
                   <CardHeader className="p-0">
