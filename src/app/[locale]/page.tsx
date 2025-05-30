@@ -167,7 +167,7 @@ export default function HomePage() {
       toast({ title: "Analysis Complete", description: "Product declaration analyzed." });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
-      setErrorDeclaration(\`Analysis failed: \${errorMessage}\`);
+      setErrorDeclaration('Analysis failed: ' + errorMessage);
       toast({ variant: "destructive", title: "Analysis Failed", description: errorMessage });
     } finally {
       setIsLoadingDeclaration(false);
