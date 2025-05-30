@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Wheat } from 'lucide-react'; // Using Wheat as a placeholder logo icon
+import { ScanLine } from 'lucide-react'; // Changed from Wheat to ScanLine
 import {
   Sidebar,
   SidebarHeader,
@@ -22,9 +22,9 @@ export function AppSidebar() {
     <Sidebar side="left" variant="sidebar" collapsible="icon">
       <SidebarHeader className="p-4">
         <Link href="/" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
-          <Wheat className="h-8 w-8 text-primary-foreground bg-primary p-1.5 rounded-lg" />
+          <ScanLine className="h-8 w-8 text-primary-foreground bg-primary p-1.5 rounded-lg" />
           <span className="font-semibold text-lg group-data-[collapsible=icon]:hidden">
-            Gluten Detective
+            Gluten Scan
           </span>
         </Link>
       </SidebarHeader>
@@ -53,7 +53,7 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter className="p-4 group-data-[collapsible=icon]:hidden">
         <p className="text-xs text-sidebar-foreground/70">
-          &copy; {new Date().getFullYear()} Gluten Detective
+          &copy; {new Date().getFullYear()} Gluten Scan
         </p>
       </SidebarFooter>
     </Sidebar>

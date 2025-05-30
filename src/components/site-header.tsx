@@ -1,13 +1,13 @@
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { Wheat } from 'lucide-react';
+import { ScanLine } from 'lucide-react'; // Changed from Wheat to ScanLine
 
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
         <div className="mr-4 hidden md:flex">
-           <Wheat className="h-6 w-6 mr-2 text-primary-foreground bg-primary p-1 rounded-md" />
-          <span className="font-bold">Gluten Detective</span>
+           <ScanLine className="h-6 w-6 mr-2 text-primary-foreground bg-primary p-1 rounded-md" />
+          <span className="font-bold">Gluten Scan</span>
         </div>
         <div className="md:hidden">
           <SidebarTrigger />

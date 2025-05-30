@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Gluten Detective',
+  title: 'Gluten Scan',
   description: 'Scan and identify gluten-free products easily.',
 };
 
