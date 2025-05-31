@@ -121,8 +121,8 @@ const rawProductsData = [
   {
     "name": "Dvopek",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907671",
-    "size": "220g",
+    "barcode": "8606107907671", // New barcode
+    "size": "220g", // Changed size
     "ingredients": [
       "Brašno od pirinča",
       "kukuruzni skrob",
@@ -145,7 +145,7 @@ const rawProductsData = [
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
-    "imageUrl": "dvopek-8606107907666.png", 
+    "imageUrl": "dvopek-8606107907666.png", // Assuming same image as the 110g version, adjust if different
     "nutriscore": "B"
   },
   {
@@ -536,7 +536,7 @@ const rawProductsData = [
   {
     "name": "Proteinske Fit Noodle",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907925",
+    "barcode": "8606107907925", // Note: Duplicate barcode with RISO Pasta
     "size": "320g",
     "ingredients": [
       "Brašno od pirinča",
@@ -589,7 +589,7 @@ const rawProductsData = [
   {
     "name": "RISO Pasta",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907925", 
+    "barcode": "8606107907925", // Note: Duplicate barcode with Proteinske Fit Noodle
     "size": "320g",
     "ingredients": ["Brašno od pirinča", "zgušnjivač ksantan guma"],
     "labelText": "pirinčane nudle",
@@ -619,8 +619,8 @@ const rawProductsData = [
    {
     "name": "Tagliatelle di RISO",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907949",
-    "size": "210g",
+    "barcode": "8606107907949", // New barcode
+    "size": "210g", // Changed size
     "ingredients": ["Brašno od pirinča", "zgušnjivač ksantan guma."],
     "labelText": "pirinčane taljatele",
     "license": false,
@@ -628,13 +628,13 @@ const rawProductsData = [
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
-    "imageUrl": "tagliatelle-di-riso-8606107907109.png", 
+    "imageUrl": "tagliatelle-di-riso-8606107907109.png", // Assuming same image as 350g, adjust if different
     "nutriscore": "N/A"
   },
   {
     "name": "Premium Tamna Gotova Smeša",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907703", 
+    "barcode": "8606107907703", // Corrected from 86061079007703 in previous data
     "size": "1kg",
     "ingredients": [
       "Brašno od pirinča",
@@ -650,7 +650,7 @@ const rawProductsData = [
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
-    "imageUrl": "premium-tamna-gotova-smesa-8606107907703.png",
+    "imageUrl": "premium-tamna-gotova-smesa-8606107907703.png", // Corrected filename
     "nutriscore": "C"
   },
   {
@@ -682,7 +682,7 @@ const rawProductsData = [
     "ingredients": [
       "Brašno od pirinča",
       "kukuruzni skrob",
-      "brašno od prolećnog ječma 20%",
+      "brašno od prolećnog ječma 20%", // Contains barley
       "brašno od heljde 10%",
       "zgušnjivač (ksantan guma)",
       "kurkuma"
@@ -692,7 +692,7 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tags": ["bez šećera", "vegan"], 
+    "tags": ["bez šećera", "vegan"], // Will be overridden by barley detection
     "imageUrl": "testenina-zivota-8606107907567.png",
     "nutriscore": "B"
   },
@@ -799,9 +799,10 @@ const rawProductsData = [
 ];
 
 export const placeholderProducts: Product[] = rawProductsData.map((p, index) => {
-  const isSugarFree = p.tags.map(t => t.toLowerCase()).includes('bez šećera');
-  const isPosnoSource = p.tags.map(t => t.toLowerCase()).includes('vegan'); 
-  const isProteinSource = p.tags.map(t => t.toLowerCase()).includes('protein');
+  const originalTags = p.tags.map(t => t.toLowerCase());
+  const isSugarFree = originalTags.includes('bez šećera');
+  const isPosnoSource = originalTags.includes('vegan'); 
+  const isProteinSource = originalTags.includes('protein');
 
   const productTags: string[] = []; 
   
@@ -827,16 +828,21 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
     productTags.push('contains-oats');
   }
 
-  if (!containsKnownGlutenSource && p.manufacturerStatement && !productTags.some(tag => tag.startsWith('contains-'))) {
-    productTags.push('gluten-free');
-  } else if (p.manufacturerStatement && productTags.includes('contains-oats') && !containsKnownGlutenSource) {
-     productTags.push('gluten-free');
+  // Add 'gluten-free' tag only if manufacturer states it AND no direct gluten sources were detected from ingredients.
+  // Or if it contains oats but manufacturer states gluten-free (implying certified GF oats).
+  if (p.manufacturerStatement) {
+    if (productTags.includes('contains-oats') && !containsKnownGlutenSource) {
+      productTags.push('gluten-free');
+    } else if (!containsKnownGlutenSource) {
+      productTags.push('gluten-free');
+    }
   }
-
+  
   if (isSugarFree) productTags.push('sugar-free');
   if (isPosnoSource) productTags.push('posno');
   if (isProteinSource) productTags.push('high-protein');
   
+  // Add other miscellaneous tags from source, ensuring no duplicates
   p.tags.forEach(tag => {
     const lowerTag = tag.toLowerCase();
     if (lowerTag !== 'bez šećera' && lowerTag !== 'vegan' && lowerTag !== 'protein' && !productTags.includes(lowerTag)) {
@@ -868,13 +874,14 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   let actualIsPosno = isPosnoSource;
   let actualIsLactoseFree = isPosnoSource; 
   
-  if (p.name === "Instant Palenta" && ingredientsString.includes('prah od sira')) { 
+  // Specific product overrides for posno/lactose-free based on ingredients
+  if (p.barcode === "8606112581172" && ingredientsString.includes('prah od sira')) { // Instant Palenta with cheese
     actualIsPosno = false; 
     actualIsLactoseFree = false;
     const posnoIndex = productTags.indexOf('posno');
     if (posnoIndex > -1) productTags.splice(posnoIndex, 1);
   }
-  if (p.name === "Proteinski Kakao Krem" && ingredientsString.includes('mleko u prahu')) { 
+  if (p.barcode === "8606107907246" && ingredientsString.includes('mleko u prahu')) { // Proteinski Kakao Krem with milk powder
       actualIsPosno = false;
       actualIsLactoseFree = false;
       const posnoIndex = productTags.indexOf('posno');
@@ -883,7 +890,8 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   
   const filename = p.imageUrl;
 
-  if (p.barcode === "8606107907567") { // Testenina Života
+  // Specific override for "Testenina Života" due to barley content
+  if (p.barcode === "8606107907567") { 
     const glutenFreeIndex = productTags.indexOf('gluten-free');
     if (glutenFreeIndex > -1) {
       productTags.splice(glutenFreeIndex, 1); 
@@ -901,7 +909,7 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
     barcode: p.barcode || undefined,
     category: category,
     imageUrl: `${firebaseStorageBaseUrl}${filename}${filename.includes('?') ? '' : firebaseStorageTokenPlaceholder}`,
-    description: `${p.labelText} - ${p.size || ''}`,
+    description: `${p.labelText}${p.size ? ' - ' + p.size : ''}`,
     ingredientsText: Array.isArray(p.ingredients) ? p.ingredients.join(', ') : p.ingredients,
     labelText: p.labelText,
     hasAOECSLicense: p.license,
@@ -920,14 +928,14 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
 const productCategories = Array.from(new Set(placeholderProducts.map(p => p.category)));
 
 const getNutriScoreClasses = (score?: string) => {
-  if (!score) return 'bg-gray-300 text-gray-700';
+  if (!score) return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';
   switch (score.toUpperCase()) {
-    case 'A': return 'bg-green-700 text-white';
-    case 'B': return 'bg-lime-500 text-black';
-    case 'C': return 'bg-yellow-400 text-black';
-    case 'D': return 'bg-orange-500 text-white';
-    case 'E': return 'bg-red-600 text-white';
-    default: return 'bg-gray-300 text-gray-700';
+    case 'A': return 'border-green-500 text-green-700 dark:text-green-400 dark:border-green-600 bg-green-100 dark:bg-green-900/50';
+    case 'B': return 'border-lime-500 text-lime-700 dark:text-lime-400 dark:border-lime-600 bg-lime-100 dark:bg-lime-900/50';
+    case 'C': return 'border-yellow-500 text-yellow-700 dark:text-yellow-400 dark:border-yellow-600 bg-yellow-100 dark:bg-yellow-900/50';
+    case 'D': return 'border-orange-500 text-orange-700 dark:text-orange-400 dark:border-orange-600 bg-orange-100 dark:bg-orange-900/50';
+    case 'E': return 'border-red-500 text-red-700 dark:text-red-400 dark:border-red-600 bg-red-100 dark:bg-red-900/50';
+    default: return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';
   }
 };
 
@@ -1026,8 +1034,8 @@ export default function ProductsPage() {
                       <div className="flex justify-between items-center mb-2">
                         <CardDescription className="text-sm text-muted-foreground">{product.category}</CardDescription>
                         {product.nutriScore && (
-                          <span className={`px-2 py-0.5 rounded-md text-xs font-semibold ${getNutriScoreClasses(product.nutriScore)}`}>
-                            Nutri-Score: {product.nutriScore}
+                          <span className={`px-2 py-0.5 rounded-md text-xs font-semibold border ${getNutriScoreClasses(product.nutriScore)}`}>
+                            {product.nutriScore}
                           </span>
                         )}
                       </div>

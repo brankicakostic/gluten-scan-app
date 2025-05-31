@@ -1,3 +1,4 @@
+
 // This file uses client-side rendering.
 'use client';
 
@@ -40,14 +41,14 @@ export interface Product {
 }
 
 const getNutriScoreClasses = (score?: string) => {
-  if (!score) return 'bg-gray-300 text-gray-700';
+  if (!score) return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';
   switch (score.toUpperCase()) {
-    case 'A': return 'bg-green-700 text-white';
-    case 'B': return 'bg-lime-500 text-black';
-    case 'C': return 'bg-yellow-400 text-black';
-    case 'D': return 'bg-orange-500 text-white';
-    case 'E': return 'bg-red-600 text-white';
-    default: return 'bg-gray-300 text-gray-700';
+    case 'A': return 'border-green-500 text-green-700 dark:text-green-400 dark:border-green-600 bg-green-100 dark:bg-green-900/50';
+    case 'B': return 'border-lime-500 text-lime-700 dark:text-lime-400 dark:border-lime-600 bg-lime-100 dark:bg-lime-900/50';
+    case 'C': return 'border-yellow-500 text-yellow-700 dark:text-yellow-400 dark:border-yellow-600 bg-yellow-100 dark:bg-yellow-900/50';
+    case 'D': return 'border-orange-500 text-orange-700 dark:text-orange-400 dark:border-orange-600 bg-orange-100 dark:bg-orange-900/50';
+    case 'E': return 'border-red-500 text-red-700 dark:text-red-400 dark:border-red-600 bg-red-100 dark:bg-red-900/50';
+    default: return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';
   }
 };
 
@@ -255,7 +256,7 @@ export default function ProductDetailPage() {
                     {product.nutriScore && (
                       <div>
                         <h3 className="text-md font-semibold mb-2">Nutri-Score</h3>
-                        <span className={`px-3 py-1 rounded-lg text-sm font-bold ${getNutriScoreClasses(product.nutriScore)}`}>
+                        <span className={`px-3 py-1 rounded-lg text-sm font-bold border ${getNutriScoreClasses(product.nutriScore)}`}>
                           {product.nutriScore}
                         </span>
                       </div>
@@ -355,3 +356,4 @@ export default function ProductDetailPage() {
     </div>
   );
 }
+

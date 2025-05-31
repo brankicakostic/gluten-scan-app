@@ -37,14 +37,14 @@ interface BarcodeScanResult {
 const productCategories = Array.from(new Set(allProducts.map(p => p.category)));
 
 const getNutriScoreClasses = (score?: string) => {
-  if (!score) return 'bg-gray-300 text-gray-700';
+  if (!score) return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';
   switch (score.toUpperCase()) {
-    case 'A': return 'bg-green-700 text-white';
-    case 'B': return 'bg-lime-500 text-black';
-    case 'C': return 'bg-yellow-400 text-black';
-    case 'D': return 'bg-orange-500 text-white';
-    case 'E': return 'bg-red-600 text-white';
-    default: return 'bg-gray-300 text-gray-700';
+    case 'A': return 'border-green-500 text-green-700 dark:text-green-400 dark:border-green-600 bg-green-100 dark:bg-green-900/50';
+    case 'B': return 'border-lime-500 text-lime-700 dark:text-lime-400 dark:border-lime-600 bg-lime-100 dark:bg-lime-900/50';
+    case 'C': return 'border-yellow-500 text-yellow-700 dark:text-yellow-400 dark:border-yellow-600 bg-yellow-100 dark:bg-yellow-900/50';
+    case 'D': return 'border-orange-500 text-orange-700 dark:text-orange-400 dark:border-orange-600 bg-orange-100 dark:bg-orange-900/50';
+    case 'E': return 'border-red-500 text-red-700 dark:text-red-400 dark:border-red-600 bg-red-100 dark:bg-red-900/50';
+    default: return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';
   }
 };
 
@@ -393,8 +393,8 @@ export default function HomePage() {
                         <div className="flex justify-between items-center mb-2">
                           <CardDescription className="text-sm text-muted-foreground">{product.category}</CardDescription>
                           {product.nutriScore && (
-                            <span className={`px-2 py-0.5 rounded-md text-xs font-semibold ${getNutriScoreClasses(product.nutriScore)}`}>
-                              Nutri-Score: {product.nutriScore}
+                            <span className={`px-2 py-0.5 rounded-md text-xs font-semibold border ${getNutriScoreClasses(product.nutriScore)}`}>
+                              {product.nutriScore}
                             </span>
                           )}
                         </div>
