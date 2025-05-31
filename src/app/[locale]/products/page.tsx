@@ -41,8 +41,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera"], // Renamed to avoid confusion with final tags
-    "imageUrlFilename": "instant-palenta-8606112581172.png" 
+    "tags": ["bez šećera"],
+    "imageUrl": "instant-palenta-8606112581172.png",
+    "nutriscore": "N/A"
   },
   {
     "name": "Pirinčani Griz",
@@ -55,8 +56,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "pirinčani-griz-8606107907321.png"
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "pirinčani-griz-8606107907321.png",
+    "nutriscore": "N/A"
   },
   {
     "name": "Prezle",
@@ -82,8 +84,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "prezle-8606107907765.png"
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "prezle-8606107907765.png",
+    "nutriscore": "N/A"
   },
   {
     "name": "Dvopek",
@@ -111,8 +114,39 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "dvopek-8606107907666.png"
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "dvopek-8606107907666.png",
+    "nutriscore": "B"
+  },
+  {
+    "name": "Dvopek",
+    "brand": "Aleksandrija Fruška Gora",
+    "barcode": "8606107907671",
+    "size": "220g",
+    "ingredients": [
+      "Brašno od pirinča",
+      "kukuruzni skrob",
+      "kukuruzno brašno",
+      "brašno od prosa 11%",
+      "brašno od heljde 10%",
+      "biljno ulje (palmino)",
+      "pekarski kvasac",
+      "šećer",
+      "kuvarska so",
+      "brašno od guar graška",
+      "sirovi sojin lecitin",
+      "sredstvo za dizanje testa (amonijum bikarbonat",
+      "natrijum bikarbonat)",
+      "so"
+    ],
+    "labelText": "od heljde i prosa",
+    "license": false,
+    "manufacturerStatement": true,
+    "verified": true,
+    "source": "aleksandrijaglutenfree.com",
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "dvopek-8606107907666.png", 
+    "nutriscore": "B"
   },
   {
     "name": "Dvopek",
@@ -138,8 +172,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "dvopek-8606107904434.png"
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "dvopek-8606107904434.png",
+    "nutriscore": "C"
   },
   {
     "name": "Cookies",
@@ -168,8 +203,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["vegan"],
-    "imageUrlFilename": "cookies-8606107907482.png"
+    "tags": ["vegan"],
+    "imageUrl": "cookies-8606107907482.png",
+    "nutriscore": "C"
   },
   {
     "name": "Čajni Kolutići",
@@ -195,8 +231,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["vegan"],
-    "imageUrlFilename": "cajni-kolutići-8606107907062.png"
+    "tags": ["vegan"],
+    "imageUrl": "cajni-kolutići-8606107907062.png",
+    "nutriscore": "D"
   },
   {
     "name": "KO-GO",
@@ -227,8 +264,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "ko-go-8606107907291.png"
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "ko-go-8606107907291.png",
+    "nutriscore": "N/A"
   },
   {
     "name": "Keks Života",
@@ -253,8 +291,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "keks-zivota-8606107907680.png"
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "keks-zivota-8606107907680.png",
+    "nutriscore": "N/A"
   },
   {
     "name": "Happy Life",
@@ -276,8 +315,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["vegan"],
-    "imageUrlFilename": "happy-life-8606107907819.png"
+    "tags": ["vegan"],
+    "imageUrl": "happy-life-8606107907819.png",
+    "nutriscore": "N/A"
   },
   {
     "name": "Pusa",
@@ -303,8 +343,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["vegan"],
-    "imageUrlFilename": "pusa-8606107907543.png"
+    "tags": ["vegan"],
+    "imageUrl": "pusa-8606107907543.png",
+    "nutriscore": "C"
   },
   {
     "name": "Premium Univerzal Mix",
@@ -324,8 +365,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "premium-univerzal-mix-8606107907710.png"
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "premium-univerzal-mix-8606107907710.png",
+    "nutriscore": "C"
   },
   {
     "name": "Vanilice",
@@ -354,8 +396,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["vegan"],
-    "imageUrlFilename": "vanilice-8606107907918.png"
+    "tags": ["vegan"],
+    "imageUrl": "vanilice-8606107907918.png",
+    "nutriscore": "D"
   },
   {
     "name": "Integralni Štapići",
@@ -378,8 +421,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "integralni-stapici-8606107907130.png"
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "integralni-stapici-8606107907130.png",
+    "nutriscore": "C"
   },
   {
     "name": "Chia",
@@ -403,8 +447,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "chia-8606107907222.png"
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "chia-8606107907222.png",
+    "nutriscore": "N/A"
   },
   {
     "name": "ALEX",
@@ -430,8 +475,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["vegan"],
-    "imageUrlFilename": "alex-8606107907536.png"
+    "tags": ["vegan"],
+    "imageUrl": "alex-8606107907536.png",
+    "nutriscore": "N/A"
   },
   {
     "name": "Proteinski Kakao Krem",
@@ -456,8 +502,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["protein", "bez šećera"],
-    "imageUrlFilename": "proteinski-kakao-krem-8606107907246.png"
+    "tags": ["protein", "bez šećera"],
+    "imageUrl": "proteinski-kakao-krem-8606107907246.png",
+    "nutriscore": "N/A"
   },
   {
     "name": "Vege Proteinski Kakao Krem",
@@ -482,13 +529,14 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["protein", "bez šećera", "vegan"],
-    "imageUrlFilename": "vege-proteinski-kakao-krem-8606112581127.png"
+    "tags": ["protein", "bez šećera", "vegan"],
+    "imageUrl": "vege-proteinski-kakao-krem-8606112581127.png",
+    "nutriscore": "N/A"
   },
   {
     "name": "Proteinske Fit Noodle",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907925", 
+    "barcode": "8606107907925",
     "size": "320g",
     "ingredients": [
       "Brašno od pirinča",
@@ -510,8 +558,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["protein", "bez šećera", "vegan"],
-    "imageUrlFilename": "proteinske-fit-noodle-8606107907925.png"
+    "tags": ["protein", "bez šećera", "vegan"],
+    "imageUrl": "proteinske-fit-noodle-8606107907925.png",
+    "nutriscore": "A"
   },
   {
     "name": "Proteinske Vege Tagliatelle",
@@ -533,8 +582,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["protein", "bez šećera", "vegan"],
-    "imageUrlFilename": "proteinske-vege-tagliatelle-8606112581080.png"
+    "tags": ["protein", "bez šećera", "vegan"],
+    "imageUrl": "proteinske-vege-tagliatelle-8606112581080.png",
+    "nutriscore": "N/A"
   },
   {
     "name": "RISO Pasta",
@@ -547,22 +597,39 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "riso-pasta-8606107907925.png"
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "riso-pasta-8606107907925.png",
+    "nutriscore": "N/A"
   },
   {
     "name": "Tagliatelle di RISO",
     "brand": "Aleksandrija Fruška Gora",
     "barcode": "8606107907109",
-    "size": "350g", 
+    "size": "350g",
     "ingredients": ["Brašno od pirinča", "zgušnjivač ksantan guma."],
     "labelText": "pirinčane taljatele",
     "license": false,
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "tagliatelle-di-riso-8606107907109.png"
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "tagliatelle-di-riso-8606107907109.png",
+    "nutriscore": "N/A"
+  },
+   {
+    "name": "Tagliatelle di RISO",
+    "brand": "Aleksandrija Fruška Gora",
+    "barcode": "8606107907949",
+    "size": "210g",
+    "ingredients": ["Brašno od pirinča", "zgušnjivač ksantan guma."],
+    "labelText": "pirinčane taljatele",
+    "license": false,
+    "manufacturerStatement": true,
+    "verified": true,
+    "source": "aleksandrijaglutenfree.com",
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "tagliatelle-di-riso-8606107907109.png", 
+    "nutriscore": "N/A"
   },
   {
     "name": "Premium Tamna Gotova Smeša",
@@ -582,8 +649,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "premium-tamna-gotova-smesa-8606107907703.png" 
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "premium-tamna-gotova-smesa-8606107907703.png",
+    "nutriscore": "C"
   },
   {
     "name": "Taljatele sa Kurkumom",
@@ -602,8 +670,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "taljatele-sa-kurkumom-8606107907963.png"
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "taljatele-sa-kurkumom-8606107907963.png",
+    "nutriscore": "N/A"
   },
   {
     "name": "Testenina Života",
@@ -623,8 +692,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"], 
-    "imageUrlFilename": "testenina-zivota-8606107907567.png"
+    "tags": ["bez šećera", "vegan"], 
+    "imageUrl": "testenina-zivota-8606107907567.png",
+    "nutriscore": "B"
   },
   {
     "name": "Brašno od Prosa",
@@ -637,8 +707,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "brasno-od-prosa-8606107907437.png"
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "brasno-od-prosa-8606107907437.png",
+    "nutriscore": "B"
   },
   {
     "name": "Brašno od Pirinča",
@@ -651,13 +722,14 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "brašno-od-pirinca-8606107907642.png"
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "brašno-od-pirinca-8606107907642.png",
+    "nutriscore": "A"
   },
   {
     "name": "Brašno od Heljde",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "", 
+    "barcode": "",
     "size": "500g",
     "ingredients": ["Brašno od heljde 100%"],
     "labelText": "brašno od heljde",
@@ -665,8 +737,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "brašno-od-heljde.png"
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "brašno-od-heljde.png",
+    "nutriscore": "N/A"
   },
   {
     "name": "Premium Palenta",
@@ -686,8 +759,9 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "premium-palenta-8606107907260.png"
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "premium-palenta-8606107907260.png",
+    "nutriscore": "C"
   },
   {
     "name": "Proteinski Pire",
@@ -703,13 +777,14 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["protein", "vegan"],
-    "imageUrlFilename": "proteinski-pire-8606112581004.png"
+    "tags": ["protein", "vegan"],
+    "imageUrl": "proteinski-pire-8606112581004.png",
+    "nutriscore": "N/A"
   },
   {
     "name": "Tapioka",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "", 
+    "barcode": "",
     "size": "500g",
     "ingredients": ["Skrob od tapioke 100%"],
     "labelText": "tapioka",
@@ -717,15 +792,16 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tagsFromSource": ["bez šećera", "vegan"],
-    "imageUrlFilename": "tapioka.png"
+    "tags": ["bez šećera", "vegan"],
+    "imageUrl": "tapioka.png",
+    "nutriscore": "N/A"
   }
 ];
 
 export const placeholderProducts: Product[] = rawProductsData.map((p, index) => {
-  const isSugarFree = p.tagsFromSource.map(t => t.toLowerCase()).includes('bez šećera');
-  const isPosnoSource = p.tagsFromSource.map(t => t.toLowerCase()).includes('vegan'); 
-  const isProteinSource = p.tagsFromSource.map(t => t.toLowerCase()).includes('protein');
+  const isSugarFree = p.tags.map(t => t.toLowerCase()).includes('bez šećera');
+  const isPosnoSource = p.tags.map(t => t.toLowerCase()).includes('vegan'); 
+  const isProteinSource = p.tags.map(t => t.toLowerCase()).includes('protein');
 
   const productTags: string[] = []; 
   
@@ -737,7 +813,7 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
     productTags.push('contains-gluten');
     containsKnownGlutenSource = true;
   }
-  if (ingredientsString.includes('pšenic') || ingredientsString.includes('wheat')) { // pšenica, pšenični
+  if (ingredientsString.includes('pšenic') || ingredientsString.includes('wheat')) { 
     productTags.push('contains-wheat');
     if (!productTags.includes('contains-gluten')) productTags.push('contains-gluten');
     containsKnownGlutenSource = true;
@@ -747,27 +823,21 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
     if (!productTags.includes('contains-gluten')) productTags.push('contains-gluten');
     containsKnownGlutenSource = true;
   }
-  // Oats are only considered a gluten source if not certified gluten-free
   if (ingredientsString.includes('ovas') || ingredientsString.includes('zob') || ingredientsString.includes('oats')) {
     productTags.push('contains-oats');
-    // We don't automatically add 'contains-gluten' for oats, as GF oats exist.
-    // The 'gluten-free' tag will override this if present.
   }
-
 
   if (!containsKnownGlutenSource && p.manufacturerStatement && !productTags.some(tag => tag.startsWith('contains-'))) {
     productTags.push('gluten-free');
   } else if (p.manufacturerStatement && productTags.includes('contains-oats') && !containsKnownGlutenSource) {
-    // If manufacturer states GF and only oats are present, assume they are GF oats.
      productTags.push('gluten-free');
   }
-
 
   if (isSugarFree) productTags.push('sugar-free');
   if (isPosnoSource) productTags.push('posno');
   if (isProteinSource) productTags.push('high-protein');
   
-  p.tagsFromSource.forEach(tag => {
+  p.tags.forEach(tag => {
     const lowerTag = tag.toLowerCase();
     if (lowerTag !== 'bez šećera' && lowerTag !== 'vegan' && lowerTag !== 'protein' && !productTags.includes(lowerTag)) {
       productTags.push(lowerTag);
@@ -776,7 +846,8 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   
   let category = 'Other';
   const lowerName = p.name.toLowerCase();
-  const lowerLabelText = p.labelText.toLowerCase();
+  const lowerLabelText = p.labelText ? p.labelText.toLowerCase() : '';
+
 
   if (lowerName.includes('palenta') || lowerLabelText.includes('palenta') || lowerName.includes('griz') || lowerLabelText.includes('griz') || lowerName.includes('brašno') || lowerLabelText.includes('brašno') || lowerName.includes('mix') || lowerLabelText.includes('mix') || lowerName.includes('prezle') || lowerLabelText.includes('prezle') || lowerName.includes('tapioka') || lowerLabelText.includes('tapioka')) {
     category = 'Flours & Grains';
@@ -797,32 +868,31 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   let actualIsPosno = isPosnoSource;
   let actualIsLactoseFree = isPosnoSource; 
   
-  // Specific product adjustments
-  if (p.name === "Instant Palenta" && ingredientsString.includes('prah od sira')) { // cheese powder
+  if (p.name === "Instant Palenta" && ingredientsString.includes('prah od sira')) { 
     actualIsPosno = false; 
     actualIsLactoseFree = false;
     const posnoIndex = productTags.indexOf('posno');
     if (posnoIndex > -1) productTags.splice(posnoIndex, 1);
   }
-  if (p.name === "Proteinski Kakao Krem" && ingredientsString.includes('mleko u prahu')) { // milk powder
+  if (p.name === "Proteinski Kakao Krem" && ingredientsString.includes('mleko u prahu')) { 
       actualIsPosno = false;
       actualIsLactoseFree = false;
       const posnoIndex = productTags.indexOf('posno');
       if (posnoIndex > -1) productTags.splice(posnoIndex, 1);
   }
   
-  const filename = p.imageUrlFilename;
+  const filename = p.imageUrl;
 
-  // Correcting "Testenina Života" gluten status based on barley
   if (p.barcode === "8606107907567") { // Testenina Života
     const glutenFreeIndex = productTags.indexOf('gluten-free');
     if (glutenFreeIndex > -1) {
-      productTags.splice(glutenFreeIndex, 1); // Remove 'gluten-free' if it was added
+      productTags.splice(glutenFreeIndex, 1); 
     }
     if (!productTags.includes('contains-barley')) productTags.push('contains-barley');
     if (!productTags.includes('contains-gluten')) productTags.push('contains-gluten');
   }
 
+  const nutriScoreValue = p.nutriscore && p.nutriscore.toUpperCase() !== "N/A" ? p.nutriscore.toUpperCase() : undefined;
 
   return {
     id: `product-${index}`,
@@ -831,7 +901,7 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
     barcode: p.barcode || undefined,
     category: category,
     imageUrl: `${firebaseStorageBaseUrl}${filename}${filename.includes('?') ? '' : firebaseStorageTokenPlaceholder}`,
-    description: `${p.labelText} - ${p.size}`,
+    description: `${p.labelText} - ${p.size || ''}`,
     ingredientsText: Array.isArray(p.ingredients) ? p.ingredients.join(', ') : p.ingredients,
     labelText: p.labelText,
     hasAOECSLicense: p.license,
@@ -839,14 +909,13 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
     isVerifiedAdmin: p.verified,
     source: p.source,
     tags: productTags,
-    nutriScore: undefined, // Not in source data
+    nutriScore: nutriScoreValue,
     isLactoseFree: actualIsLactoseFree, 
     isSugarFree: isSugarFree,
     isPosno: actualIsPosno,
     dataAiHint: sanitizeForDataAiHint(p.name, `product ${index}`),
   };
 });
-
 
 const productCategories = Array.from(new Set(placeholderProducts.map(p => p.category)));
 
