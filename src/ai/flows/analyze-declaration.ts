@@ -67,7 +67,7 @@ const analyzeDeclarationPrompt = ai.definePrompt({
 
   **Rizični Sastojci (Risky Ingredients - may or may not contain gluten, assess carefully based on context and notes):**
   *   **Ovas** (Oats): Moguća kontaminacija ako nije sertifikovan kao bezglutenski. Prirodno bez glutena, ali skoro uvek kontaminiran bez sertifikata. Consider risky and likely containing gluten UNLESS it is explicitly certified/labeled as "bezglutenski ovas" (gluten-free oats).
-  *   **Modifikovani skrob** (Modified starch): Poreklo može biti pšenično. If the source is not specified (e.g., "modifikovani kukuruzni skrob" - modified corn starch is safe), assume it's risky. If it just says "modifikovani skrob" and could be from wheat, flag as risky.
+  *   **Modifikovani skrob** (Modified starch - general term): Poreklo može biti pšenično. If the source is not specified (e.g., "modifikovani kukuruzni skrob" - modified corn starch is safe), assume it's risky. If it just says "modifikovani skrob" and could be from wheat, flag as risky.
   *   **Maltodekstrin**: Ako je iz pšenice, sadrži gluten. If the source is not specified (e.g., "maltodekstrin (kukuruzni)" - corn maltodextrin is safe), assume it's risky. "Maltodekstrin (pšenični)" contains gluten.
   *   **Dekstrin**: Ako je iz pšenice, sadrži gluten. If the source is not specified, assume it's risky. "Dekstrin (pšenični)" contains gluten.
   *   **Biljni protein** (Vegetable protein): Ponekad iz pšenice. If source is not specified, consider risky.
@@ -76,14 +76,38 @@ const analyzeDeclarationPrompt = ai.definePrompt({
   *   **Alkohol**: Ako je iz ječma (e.g., beer, some whiskies), it contains gluten. Destilovani alkohol (npr. votka, rum) može biti bez glutena ako je destilovan, UNLESS gluten-containing ingredients are added after distillation.
   *   **Arome** (Flavors - natural/artificial, "prirodne/veštačke"): Moguće prisustvo slada. Mogu sadržati ječam, slad, pšenične derivate. If not specified as gluten-free, consider risky.
   *   **Ekstrakt kvasca** (Yeast extract): Moguće tragove glutena. If product is not certified gluten-free, consider yeast extract risky.
-  *   **Stabilizatori E1404-E1450** (Stabilizers, e.g., oxidized starch, starch acetate like E1404, E1410, E1412, E1413, E1414, E1420, E1422, E1440, E1442, E1450, E1451): Zavisno od porekla. If derived from wheat, they contain gluten. If source is not specified, they are risky.
   *   **Mladi ječam** (Young barley/barley grass): List biljke, bez glutena samo ako nije klasao i ako je testiran (gluten-free only if harvested before jointing and certified gluten-free). Otherwise, assume products with "ječam" contain gluten.
+  *   **Pojačivači ukusa i arome (Flavor enhancers and aromas) - Consider risky:**
+      *   E620 glutaminska kiselina (Glutamic acid)
+      *   E621 mononatrijumov glutaminat (Monosodium glutamate - MSG)
+      *   E622 monokalijumov glutamat (Monopotassium glutamate)
+      *   E623 kalcijumov diglutaminat (Calcium diglutamate)
+      *   E624 monoamonijumov glutaminat (Monoammonium glutamate)
+      *   E625 magnezijumov diglutaminat (Magnesium diglutamate)
+  *   **Specifični skrobovi (Specific starches) - Consider these risky as their source might be wheat unless specified otherwise (e.g., "pšenični skrob" contains gluten, "kukuruzni skrob" is safe). If origin is not specified, be cautious:**
+      *   E1404 oksidovani skrob (Oxidized starch)
+      *   E1410 monoskrobni fosfat (Monostarch phosphate)
+      *   E1412 diskrobni fosfat (Distarch phosphate)
+      *   E1413 fosforilisani diskrobni fosfat (Phosphated distarch phosphate)
+      *   E1414 acetilovani diskrobni fosfat (Acetylated distarch phosphate)
+      *   E1420 acetilovani skrob (Acetylated starch)
+      *   E1422 acetilovani diskrobni adipat (Acetylated distarch adipate)
+      *   E1440 hidroksipropil skrob (Hydroxypropyl starch)
+      *   E1442 hidroksipropil diskrobni fosfat (Hydroxypropyl distarch phosphate)
+      *   (Note: Other modified starches not listed here, like E1450 or E1451, should also be considered risky if their source, e.g. wheat, is not specified as gluten-free).
+  *   **Antioksidanti (Antioxidants) - Consider risky if source not specified:**
+      *   E575 glukono-delta-lakton (Glucono delta-lactone) - Can be derived from wheat or corn. Risky if source is unknown.
+  *   **Veštačke boje - Karamel boje (Artificial colors - Caramel colors) - Can be derived from gluten-containing grains (like wheat or barley). Consider risky unless specified as derived from a gluten-free source or if the product is certified gluten-free:**
+      *   E150a (Plain Caramel / Caustic caramel)
+      *   E150b (Caustic sulphite caramel)
+      *   E150c (Ammonia caramel)
+      *   E150d (Sulphite ammonia caramel)
 
   **General Approach:**
   *   If an ingredient is listed as 'Direktni Izvori Glutena', set 'hasGluten' to true and list it in 'glutenIngredients'.
-  *   If an ingredient is 'Rizični', assess based on the notes and context. If the origin is not specified as gluten-free, or if there's a strong likelihood of gluten (e.g., generic 'maltodekstrin' without source), lean towards caution: set 'hasGluten' to true and list it.
+  *   If an ingredient is 'Rizični', assess based on the notes and context. If the origin is not specified as gluten-free, or if there's a strong likelihood of gluten (e.g., generic 'maltodekstrin' without source, or an E-number listed above without a confirmed GF source), lean towards caution: set 'hasGluten' to true and list it.
   *   If a product contains 'Ovas' (oats) and is NOT explicitly certified gluten-free, set 'hasGluten' to true due to high risk of cross-contamination.
-  *   Confidence should be high (e.g., 0.9-1.0) if direct gluten sources are found or if uncertified oats are present. For other risky ingredients where origin is ambiguous, confidence might be moderate (e.g., 0.6-0.8). If no risky ingredients are found, confidence for 'likely gluten-free' should also be high.
+  *   Confidence should be high (e.g., 0.9-1.0) if direct gluten sources are found or if uncertified oats are present. For other risky ingredients where origin is ambiguous or for the listed E-numbers, confidence might be moderate (e.g., 0.6-0.8). If no risky ingredients are found, confidence for 'likely gluten-free' should also be high.
   *   Your 'reason' should clearly explain which ingredients led to the determination.
 
   Product Declaration:
