@@ -32,7 +32,7 @@ const AnalyzeDeclarationOutputSchema = z.object({
     .min(0)
     .max(1)
     .describe('A confidence score (0-1) indicating the certainty of the gluten detection.'),
-  reason: z.string().describe('The reasoning behind the gluten detection result.'),
+  reason: z.string().describe('The reasoning behind the gluten detection result, including notes on milk allergens if present.'),
 });
 export type AnalyzeDeclarationOutput = z.infer<typeof AnalyzeDeclarationOutputSchema>;
 
@@ -72,7 +72,7 @@ const analyzeDeclarationPrompt = ai.definePrompt({
   *   **Modifikovani skrob** (Modified starch - general term): Risky if the source (e.g., pšenični - wheat) is not specified as gluten-free (e.g., 'modifikovani kukuruzni skrob' - modified corn starch is safe).
   *   **Glukozni sirup** (Glucose syrup - generic term): Risky if the source is not specified (see exceptions below).
   *   **Maltodekstrin** (Maltodextrin - generic term): Risky if the source is not specified (see exceptions below).
-  *   **Dekstrin** (Dextrin - generic term): Risky if the source is not specified. 'Dekstrin (pšenični)' contains gluten.
+  *   **Dekstrin** (Dextrin - generic term): Risky if the source not specified. 'Dekstrin (pšenični)' contains gluten.
   *   **Biljni protein** (Vegetable protein): Can be from wheat. Risky if source not specified.
   *   **Biljna vlakna** (Vegetable fiber): Possible wheat origin. Risky if source not specified.
   *   **Sirće** (Vinegar): Malt vinegar ('sladno sirće') contains gluten. Distilled vinegar is usually safe. If type is unclear, be cautious.
@@ -96,7 +96,7 @@ const analyzeDeclarationPrompt = ai.definePrompt({
   **4. Neutralni Sastojci (Generally Safe Ingredients):**
   These are generally considered safe: Pirinač (rice), Kukuruz (corn), Proso (millet), Amarant (amaranth), Kinoa (quinoa), Heljda (buckwheat), Leblebija (chickpea).
 
-  **General Approach for Analysis:**
+  **General Approach for Gluten Analysis:**
   1.  **Scan for Direktni Izvori Glutena:** If any are found, set 'hasGluten' to true, list them in 'glutenIngredients', set confidence high (0.9-1.0), and explain this in 'reason'.
   2.  **Assess Rizični Sastojci:**
       *   **Ovas (Oats):** If present and NOT explicitly 'sertifikovan bezglutenski ovas' (or product not described as certified gluten-free), set 'hasGluten' to true, list 'Ovas (nesertifikovan)' in 'glutenIngredients', high confidence.
@@ -111,7 +111,22 @@ const analyzeDeclarationPrompt = ai.definePrompt({
       *   0.6-0.8 for other risky ingredients if their presence leads to 'hasGluten: true'.
       *   If no direct gluten sources or significant unmitigated risky ingredients are found (especially if 'Neutralni Sastojci' are prominent or text mentions GF certification), 'hasGluten: false' should have high confidence (0.8-1.0).
   6.  **GlutenIngredients List:** Populate with specific ingredients identified as problematic.
-  7.  **Reason Field:** Clearly explain the decision, citing specific ingredients and rules applied.
+  7.  **Reason Field:** Clearly explain the decision for gluten, citing specific ingredients and rules applied.
+
+  **Analiza Mlečnih Alergena (Lactose and Casein Analysis):**
+  Nakon analize glutena, takođe proveri sledeće mlečne alergene. Uključi relevantne napomene u 'reason' polje, PORED obrazloženja za gluten.
+
+  *   **Izvori Laktoze (Lactose Sources):** Mleko (milk), svi mlečni derivati (all milk derivatives - unless specified lactose-free), surutka (whey), pavlaka (cream), mlečni šećer (milk sugar).
+      *   Ako pronađeš izvore laktoze I deklaracija NE sadrži eksplicitno 'bez laktoze' (lactose-free): Dodaj u 'reason' napomenu poput: 'Napomena o laktozi: Sadrži sastojke koji su izvor laktoze (npr. mleko, pavlaka). Proizvod možda nije pogodan za osobe intolerantne na laktozu.'
+      *   Ako deklaracija eksplicitno sadrži 'bez laktoze': Dodaj u 'reason' napomenu poput: 'Napomena o laktozi: Deklarisano kao bez laktoze. Ovo je generalno pogodno za osobe sa intolerancijom na mlečni šećer.'
+
+  *   **Izvori Kazeina (Mlečni Proteini - Casein Sources):** Mleko (milk), mlečni proteini (milk proteins), surutka u prahu (whey powder), kazeinat (caseinate), mlečni koncentrat (milk concentrate).
+      *   Ako pronađeš izvore kazeina: Dodaj u 'reason' napomenu poput: 'Napomena o kazeinu: Sadrži sastojke koji su izvor mlečnih proteina (kazeina, npr. mlečni proteini, kazeinat). Nije pogodno za osobe sa alergijom na mlečne proteine.'
+
+  *   **Važno Upozorenje (Important Warning - if relevant):**
+      *   Ako deklaracija eksplicitno sadrži 'bez laktoze' ALI su takođe pronađeni izvori kazeina: Dodaj u 'reason' napomenu poput: 'UPOZORENJE: Iako je proizvod deklarisan kao "bez laktoze", sadrži izvore kazeina (mlečnih proteina). Ovo može biti problematično za osobe sa alergijom na mlečne proteine, iako je laktoza uklonjena.'
+
+  Tvoj primarni zadatak je i dalje detekcija glutena i popunjavanje 'hasGluten', 'glutenIngredients' i 'confidence'. Informacije o mlečnim alergenima su dodatne napomene za 'reason' polje.
 
   Product Declaration to Analyze:
   {{{declarationText}}}`,
