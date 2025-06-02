@@ -16,6 +16,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw } from 'lucide-react';
 import { analyzeDeclaration, type AnalyzeDeclarationOutput } from '@/ai/flows/analyze-declaration';
@@ -67,7 +68,7 @@ export default function HomePage() {
   const [errorDeclaration, setErrorDeclaration] = useState<string | null>(null);
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isLoadingOcr, setIsLoadingOcr] = useState<boolean>(false); // Used for both file and camera OCR
+  const [isLoadingOcr, setIsLoadingOcr] = useState<boolean>(false); 
   
   const [barcodeScanResult, setBarcodeScanResult] = useState<BarcodeScanResult | null>(null);
   const [isScanningBarcode, setIsScanningBarcode] = useState<boolean>(false);
@@ -78,7 +79,11 @@ export default function HomePage() {
   const [isTakingOcrPhoto, setIsTakingOcrPhoto] = useState<boolean>(false);
   const ocrVideoRef = useRef<HTMLVideoElement>(null);
   const [hasOcrCameraPermission, setHasOcrCameraPermission] = useState<boolean | null>(null);
-  // No need for ocrPhotoDataUri state, can pass directly
+
+  const [showLabelingQuestionModal, setShowLabelingQuestionModal] = useState<boolean>(false);
+  const [ocrTextForAnalysis, setOcrTextForAnalysis] = useState<string>('');
+  const [selectedLabelingOption, setSelectedLabelingOption] = useState<string>('');
+
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -125,7 +130,6 @@ export default function HomePage() {
     setDisplayedProducts(filtered.slice(0,8)); 
   }, [searchTerm, selectedCategory]);
   
-  // Barcode Camera Effect
   useEffect(() => {
     const stopStream = (stream: MediaStream | null) => {
       stream?.getTracks().forEach(track => track.stop());
@@ -146,7 +150,6 @@ export default function HomePage() {
           if (barcodeVideoRef.current) {
             barcodeVideoRef.current.srcObject = currentStream;
           }
-          // Simulate scan
           setTimeout(() => {
             const randomProduct = allProducts[Math.floor(Math.random() * allProducts.length)];
             const isProductFound = Math.random() > 0.3; 
@@ -189,7 +192,7 @@ export default function HomePage() {
     }
     return () => {
       stopStream(currentStream);
-      if (barcodeVideoRef.current?.srcObject) { // Ensure cleanup if component unmounts while stream is active
+      if (barcodeVideoRef.current?.srcObject) { 
           stopStream(barcodeVideoRef.current.srcObject as MediaStream);
           barcodeVideoRef.current.srcObject = null;
       }
@@ -197,7 +200,6 @@ export default function HomePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isScanningBarcode]); 
 
-  // OCR Camera Effect
   useEffect(() => {
     const stopStream = (stream: MediaStream | null) => {
         stream?.getTracks().forEach(track => track.stop());
@@ -237,18 +239,23 @@ export default function HomePage() {
   }, [isTakingOcrPhoto, toast]);
 
 
-  const performAiAnalysis = async (textToAnalyze: string) => {
+  const performAiAnalysis = async (textToAnalyze: string, labelingInfo?: string) => {
     if (!textToAnalyze.trim()) {
         setErrorDeclaration('No text to analyze.');
+        setIsLoadingDeclaration(false); 
         return;
     }
     setIsLoadingDeclaration(true);
+    setIsLoadingOcr(false); 
     setErrorDeclaration(null);
     setAnalysisResult(null);
     try {
-      const result = await analyzeDeclaration({ declarationText: textToAnalyze });
+      const result = await analyzeDeclaration({ 
+        declarationText: textToAnalyze,
+        labelingInfo: labelingInfo || 'unknown'
+      });
       setAnalysisResult(result);
-      incrementScanCount();
+      incrementScanCount(); 
       toast({ title: "AI Analysis Complete", description: "Product declaration analyzed." });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
@@ -265,7 +272,7 @@ export default function HomePage() {
       setShowScanLimitModal(true);
       return;
     }
-    performAiAnalysis(declarationText);
+    performAiAnalysis(declarationText, 'unknown');
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -274,38 +281,74 @@ export default function HomePage() {
       setErrorDeclaration(null); 
       setDeclarationText(''); 
       setAnalysisResult(null);
-      setIsTakingOcrPhoto(false); // Ensure OCR camera mode is off
+      setIsTakingOcrPhoto(false); 
     }
   };
   
   const processOcrData = async (imageDataUri: string) => {
     setIsLoadingOcr(true);
     setErrorDeclaration(null);
-    setAnalysisResult(null);
+    setAnalysisResult(null); // Clear previous AI analysis
+    setDeclarationText(''); // Clear manual text area
     try {
       const ocrResult: OcrDeclarationOutput = await ocrDeclaration({ imageDataUri });
-      setDeclarationText(ocrResult.extractedText);
-      toast({ title: "OCR Scan Complete", description: "Text extracted. Analyzing..." });
-      
       if (ocrResult.extractedText.trim()) {
-        await performAiAnalysis(ocrResult.extractedText); // Calls incrementScanCount internally
+        setOcrTextForAnalysis(ocrResult.extractedText);
+        setShowLabelingQuestionModal(true);
+        toast({ title: "OCR Scan Complete", description: "Please provide labeling information below." });
       } else {
         setErrorDeclaration('OCR did not find any text to analyze.');
         toast({ variant: "destructive", title: "OCR Empty", description: "No text found in image."});
+        // Reset OCR inputs if no text found
+        setSelectedFile(null);
+        const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
+        setIsTakingOcrPhoto(false);
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
-      setErrorDeclaration('OCR or Analysis failed: ' + errorMessage);
-      toast({ variant: "destructive", title: "Operation Failed", description: errorMessage });
-    } finally {
-      setIsLoadingOcr(false);
-      // Clear inputs after processing
-      setSelectedFile(null); 
+      setErrorDeclaration('OCR processing failed: ' + errorMessage);
+      toast({ variant: "destructive", title: "OCR Failed", description: errorMessage });
+      // Reset OCR inputs on error
+      setSelectedFile(null);
       const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
-      setIsTakingOcrPhoto(false); // Turn off camera mode
+      setIsTakingOcrPhoto(false);
+    } finally {
+      setIsLoadingOcr(false); 
     }
   };
+
+  const handleLabelingChoiceSubmit = async () => {
+    if (!ocrTextForAnalysis || !selectedLabelingOption) {
+      toast({ variant: "destructive", title: "Selection Missing", description: "Please select a labeling option."});
+      return;
+    }
+    setShowLabelingQuestionModal(false); 
+    setDeclarationText(ocrTextForAnalysis); // Populate textarea for visibility, then analyze
+
+    await performAiAnalysis(ocrTextForAnalysis, selectedLabelingOption);
+
+    setOcrTextForAnalysis('');
+    setSelectedLabelingOption('');
+    setSelectedFile(null);
+    const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+    setIsTakingOcrPhoto(false); 
+  };
+  
+  const resetOcrState = () => {
+    setOcrTextForAnalysis('');
+    setSelectedLabelingOption('');
+    setSelectedFile(null);
+    const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+    setIsTakingOcrPhoto(false);
+    setErrorDeclaration(null);
+    setAnalysisResult(null); // Also clear any previous analysis result
+    setDeclarationText(''); // Clear text area
+  };
+
 
   const handleOcrScanAndAnalyzeFile = async () => {
     if (!canScan()) {
@@ -325,7 +368,6 @@ export default function HomePage() {
     reader.onerror = (error) => {
       console.error('Error reading file:', error);
       setErrorDeclaration('Failed to read the image file.');
-      setIsLoadingOcr(false);
       toast({ variant: "destructive", title: "File Read Error", description: "Could not read the selected image." });
     };
   };
@@ -335,12 +377,9 @@ export default function HomePage() {
       setShowScanLimitModal(true);
       return;
     }
+    resetOcrState(); // Clear previous OCR/analysis states
     setIsTakingOcrPhoto(true);
-    setSelectedFile(null);
-    setDeclarationText('');
-    setAnalysisResult(null);
-    setErrorDeclaration(null);
-    setHasOcrCameraPermission(null); // Reset permission status for new attempt
+    setHasOcrCameraPermission(null); 
   };
 
   const handleCaptureOcrPhoto = async () => {
@@ -348,9 +387,9 @@ export default function HomePage() {
         setErrorDeclaration("OCR Camera not ready or permission denied.");
         return;
     }
-    if (!canScan()) { // Double check limit before capture
+    if (!canScan()) { 
         setShowScanLimitModal(true);
-        setIsTakingOcrPhoto(false); // Exit camera mode
+        setIsTakingOcrPhoto(false); 
         return;
     }
     const canvas = document.createElement('canvas');
@@ -359,17 +398,17 @@ export default function HomePage() {
     const context = canvas.getContext('2d');
     if (context) {
         context.drawImage(ocrVideoRef.current, 0, 0, canvas.width, canvas.height);
-        const imageDataUri = canvas.toDataURL('image/jpeg'); // Or image/png
+        const imageDataUri = canvas.toDataURL('image/jpeg'); 
         await processOcrData(imageDataUri);
     } else {
         setErrorDeclaration("Could not capture image from camera.");
     }
-    setIsTakingOcrPhoto(false); // Turn off camera mode after capture attempt
+    setIsTakingOcrPhoto(false); 
   };
 
   const handleCancelOcrPhotoCapture = () => {
     setIsTakingOcrPhoto(false);
-    setErrorDeclaration(null); // Clear any camera related errors
+    setErrorDeclaration(null); 
   };
 
   const handleStartBarcodeScanning = () => {
@@ -387,8 +426,7 @@ export default function HomePage() {
     setIsScanningBarcode(false);
   };
 
-  const isLoadingOcrRelated = isLoadingOcr || (isLoadingDeclaration && (selectedFile !== null || isTakingOcrPhoto));
-  const isLoadingManualAnalysis = isLoadingDeclaration && !selectedFile && !isTakingOcrPhoto;
+  const isLoadingAnyOcrProcess = isLoadingOcr || showLabelingQuestionModal;
 
   return (
     <div className="flex min-h-screen">
@@ -520,7 +558,7 @@ export default function HomePage() {
                     onClick={handleStartBarcodeScanning} 
                     className="w-full" 
                     size="lg" 
-                    disabled={!userCanCurrentlyScan || isLoadingOcr || isLoadingDeclaration || isTakingOcrPhoto}
+                    disabled={!userCanCurrentlyScan || isLoadingAnyOcrProcess || isLoadingDeclaration || isTakingOcrPhoto}
                   >
                     <QrCode className="mr-2 h-5 w-5" /> Start Barcode Scanning
                   </Button>
@@ -668,8 +706,7 @@ export default function HomePage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* File Upload for OCR */}
-                {!isTakingOcrPhoto && !isScanningBarcode && (
+                {!isTakingOcrPhoto && !isScanningBarcode && !showLabelingQuestionModal && (
                   <div>
                     <Label htmlFor="ocr-file-input" className="text-sm font-medium">Upload Ingredient List Image</Label>
                     <div className="flex items-center gap-2">
@@ -679,22 +716,21 @@ export default function HomePage() {
                         accept="image/*"
                         onChange={handleFileChange}
                         className="flex-grow"
-                        disabled={!userCanCurrentlyScan || isLoadingOcrRelated || isTakingOcrPhoto || isScanningBarcode}
+                        disabled={!userCanCurrentlyScan || isLoadingAnyOcrProcess || isLoadingDeclaration}
                       />
                       <Button onClick={handleOcrScanAndAnalyzeFile} 
-                        disabled={!selectedFile || !userCanCurrentlyScan || isLoadingOcrRelated || isTakingOcrPhoto || isScanningBarcode} 
+                        disabled={!selectedFile || !userCanCurrentlyScan || isLoadingAnyOcrProcess || isLoadingDeclaration} 
                         variant="outline"
                       >
                         {isLoadingOcr && selectedFile ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UploadCloud className="mr-2 h-4 w-4" />}
-                        Scan Image & Analyze
+                        Scan Image
                       </Button>
                     </div>
                     {selectedFile && <p className="text-xs text-muted-foreground mt-1">Selected: {selectedFile.name}</p>}
                   </div>
                 )}
 
-                {/* "OR" Separator if multiple options are available */}
-                {!isTakingOcrPhoto && !isScanningBarcode && (
+                {!isTakingOcrPhoto && !isScanningBarcode && !showLabelingQuestionModal && (
                   <div className="flex items-center gap-2">
                     <div className="flex-grow border-t"></div>
                     <span className="text-xs text-muted-foreground">OR</span>
@@ -702,8 +738,7 @@ export default function HomePage() {
                   </div>
                 )}
                 
-                {/* Take Picture for OCR */}
-                {!isScanningBarcode && ( // Only show if not barcode scanning
+                {!isScanningBarcode && !showLabelingQuestionModal && ( 
                   <div>
                     {!isTakingOcrPhoto && (
                       <>
@@ -711,11 +746,11 @@ export default function HomePage() {
                         <Button 
                           id="ocr-take-picture-button"
                           onClick={handleInitiateOcrPhotoCapture} 
-                          disabled={!userCanCurrentlyScan || isLoadingOcrRelated || isScanningBarcode} 
+                          disabled={!userCanCurrentlyScan || isLoadingAnyOcrProcess || isLoadingDeclaration} 
                           variant="outline" 
                           className="w-full"
                         >
-                          <Camera className="mr-2 h-4 w-4" /> Take Picture & Analyze
+                          <Camera className="mr-2 h-4 w-4" /> Take Picture
                         </Button>
                       </>
                     )}
@@ -734,11 +769,11 @@ export default function HomePage() {
                         <div className="flex gap-2">
                           <Button 
                             onClick={handleCaptureOcrPhoto} 
-                            disabled={!hasOcrCameraPermission || isLoadingOcrRelated}
+                            disabled={!hasOcrCameraPermission || isLoadingOcr}
                             className="flex-grow"
                           >
                             {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Camera className="mr-2 h-4 w-4"/>}
-                             Capture Photo
+                             Capture & Scan Photo
                           </Button>
                           <Button onClick={handleCancelOcrPhotoCapture} variant="outline" className="flex-grow">Cancel</Button>
                         </div>
@@ -747,8 +782,7 @@ export default function HomePage() {
                   </div>
                 )}
                 
-                {/* "OR" Separator if multiple options are available */}
-                 {!isTakingOcrPhoto && !isScanningBarcode && (
+                 {!isTakingOcrPhoto && !isScanningBarcode && !showLabelingQuestionModal && (
                   <div className="flex items-center gap-2">
                     <div className="flex-grow border-t"></div>
                     <span className="text-xs text-muted-foreground">OR</span>
@@ -756,8 +790,7 @@ export default function HomePage() {
                   </div>
                 )}
 
-                {/* Paste Text for Analysis */}
-                {!isTakingOcrPhoto && !isScanningBarcode && (
+                {!isTakingOcrPhoto && !isScanningBarcode && !showLabelingQuestionModal && (
                   <form onSubmit={handleDeclarationSubmit} className="space-y-4">
                     <div>
                       <Label htmlFor="declaration-text-area" className="text-sm font-medium">Paste Ingredient List</Label>
@@ -767,28 +800,25 @@ export default function HomePage() {
                         value={declarationText}
                         onChange={(e) => {
                           setDeclarationText(e.target.value);
-                          setSelectedFile(null); 
-                          setIsTakingOcrPhoto(false);
-                          const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
-                          if (fileInput) fileInput.value = '';
+                          resetOcrState(); // Clear OCR state if user types manually
                         }}
                         rows={6}
                         className="resize-none"
                         aria-label="Product Declaration Input"
-                        disabled={!userCanCurrentlyScan || isLoadingOcrRelated || isTakingOcrPhoto || isScanningBarcode}
+                        disabled={!userCanCurrentlyScan || isLoadingAnyOcrProcess || isLoadingDeclaration}
                       />
                     </div>
                     <Button type="submit" 
-                      disabled={!userCanCurrentlyScan || isLoadingManualAnalysis || !declarationText.trim() || isLoadingOcr || isTakingOcrPhoto || isScanningBarcode} 
+                      disabled={!userCanCurrentlyScan || isLoadingDeclaration || !declarationText.trim() || isLoadingAnyOcrProcess} 
                       className="w-full"
                     >
-                      {isLoadingManualAnalysis ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                      {isLoadingDeclaration && !isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                       Analyze Text with AI
                     </Button>
                   </form>
                 )}
                 
-                {errorDeclaration && (
+                {errorDeclaration && !showLabelingQuestionModal && (
                   <ShadcnAlert variant="destructive" className="mt-2">
                     <AlertCircle className="h-4 w-4" />
                     <ShadcnAlertTitle>Error</ShadcnAlertTitle>
@@ -798,16 +828,16 @@ export default function HomePage() {
               </div>
             </CardContent>
             
-            {(analysisResult || isLoadingOcrRelated || isLoadingManualAnalysis ) && (
+            {(analysisResult || isLoadingDeclaration || isLoadingAnyOcrProcess) && !showLabelingQuestionModal && (
               <CardContent className="mt-6 border-t pt-6">
                 <CardTitle className="text-lg mb-2">AI Analysis Report</CardTitle>
-                {(isLoadingOcrRelated || isLoadingManualAnalysis) && (
+                {(isLoadingDeclaration || isLoadingOcr) && (
                   <div className="flex flex-col items-center justify-center h-24 text-muted-foreground">
                     <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
-                    <p>Analyzing...</p>
+                    <p>{isLoadingOcr ? 'Processing Image...' : 'Analyzing Ingredients...'}</p>
                   </div>
                 )}
-                {analysisResult && !isLoadingOcrRelated && !isLoadingManualAnalysis && (
+                {analysisResult && !isLoadingDeclaration && !isLoadingOcr && (
                   <>
                     <ShadcnAlert variant={analysisResult.hasGluten ? 'destructive' : 'default'} className={analysisResult.hasGluten ? '' : 'border-green-500'}>
                       {analysisResult.hasGluten ? <AlertCircle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5 text-green-600" />}
@@ -833,17 +863,13 @@ export default function HomePage() {
                      <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => {
                        setAnalysisResult(null);
                        setDeclarationText('');
-                       setSelectedFile(null);
-                       setIsTakingOcrPhoto(false);
-                       const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
-                       if (fileInput) fileInput.value = '';
-                       setErrorDeclaration(null);
+                       resetOcrState();
                      }}>Clear Analysis & Inputs</Button>
                   </>
                 )}
               </CardContent>
             )}
-             {!isLoadingOcrRelated && !isLoadingManualAnalysis && !analysisResult && !errorDeclaration && (declarationText || selectedFile || isTakingOcrPhoto) && (
+             {!isLoadingDeclaration && !isLoadingAnyOcrProcess && !analysisResult && !errorDeclaration && (declarationText || selectedFile || isTakingOcrPhoto) && !showLabelingQuestionModal && (
                    <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md mt-4 mx-6 mb-6">
                     <Info className="mx-auto h-8 w-8 mb-2 text-primary" />
                     <p className="text-sm">Analysis results will appear here once submitted.</p>
@@ -869,6 +895,45 @@ export default function HomePage() {
                   setShowScanLimitModal(false);
                 }}>
                   Learn More About Premium
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <AlertDialog open={showLabelingQuestionModal} onOpenChange={setShowLabelingQuestionModal}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Product Labeling Information</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Please indicate if you see any of these gluten-free labels on the product packaging.
+                  This helps improve the analysis accuracy. <br />
+                  (Example AOECS: A crossed grain symbol, often with a license number and country code.)
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="space-y-3 py-2">
+                <RadioGroup value={selectedLabelingOption} onValueChange={setSelectedLabelingOption} className="gap-3">
+                  <div className="flex items-center space-x-2 p-2 border rounded-md hover:bg-muted/50 transition-colors">
+                    <RadioGroupItem value="aoecs" id="label-aoecs" />
+                    <Label htmlFor="label-aoecs" className="cursor-pointer flex-1">AOECS Certificate (e.g., Crossed Grain symbol)</Label>
+                  </div>
+                  <div className="flex items-center space-x-2 p-2 border rounded-md hover:bg-muted/50 transition-colors">
+                    <RadioGroupItem value="gf_text" id="label-gf_text" />
+                    <Label htmlFor="label-gf_text" className="cursor-pointer flex-1">"Gluten-Free" Text/Icon (not an official certificate)</Label>
+                  </div>
+                  <div className="flex items-center space-x-2 p-2 border rounded-md hover:bg-muted/50 transition-colors">
+                    <RadioGroupItem value="none" id="label-none" />
+                    <Label htmlFor="label-none" className="cursor-pointer flex-1">No Gluten-Free Label Present</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => {
+                  resetOcrState();
+                  setShowLabelingQuestionModal(false);
+                }}>Cancel Scan</AlertDialogCancel>
+                <AlertDialogAction onClick={handleLabelingChoiceSubmit} disabled={!selectedLabelingOption || isLoadingDeclaration}>
+                  {isLoadingDeclaration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Continue to AI Analysis
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
