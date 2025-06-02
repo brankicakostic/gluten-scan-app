@@ -11,7 +11,7 @@ import { SiteHeader } from '@/components/site-header';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Leaf, Info, ShieldCheck, FileText, GitBranch, Tag, Barcode, CircleAlert, Store } from 'lucide-react';
+import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Leaf, Info, ShieldCheck, FileText, GitBranch, Tag, Barcode, CircleAlert, Store, MapPin } from 'lucide-react';
 import { placeholderProducts } from '@/app/[locale]/products/page'; 
 import { Badge } from '@/components/ui/badge';
 import { useFavorites } from '@/contexts/favorites-context';
@@ -286,10 +286,17 @@ export default function ProductDetailPage() {
 
                   {product.brand === "Aleksandrija Fruška Gora" && (
                     <div>
-                      <h3 className="text-md font-semibold mb-1 flex items-center">
-                        <Store className="h-4 w-4 mr-2 text-primary"/> Dostupno u
-                      </h3>
-                      <p className="text-sm text-muted-foreground">DM, Maxi, Bio Špajz, online</p>
+                      <div className="flex items-center mb-1">
+                        <Store className="h-4 w-4 mr-2 text-primary"/> 
+                        <h3 className="text-md font-semibold">Dostupno u</h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground ml-6">DM, Maxi, Bio Špajz, online</p>
+                      
+                      <div className="flex items-center mt-2 mb-1">
+                        <MapPin className="h-4 w-4 mr-2 text-primary"/>
+                        <h3 className="text-md font-semibold">Zemlja porekla</h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground ml-6">Srbija</p>
                     </div>
                   )}
 
