@@ -11,7 +11,7 @@ import { SiteHeader } from '@/components/site-header';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Leaf, Info, ShieldCheck, FileText, GitBranch, Tag, Barcode, CircleAlert } from 'lucide-react';
+import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Leaf, Info, ShieldCheck, FileText, GitBranch, Tag, Barcode, CircleAlert, Store } from 'lucide-react';
 import { placeholderProducts } from '@/app/[locale]/products/page'; 
 import { Badge } from '@/components/ui/badge';
 import { useFavorites } from '@/contexts/favorites-context';
@@ -42,12 +42,13 @@ export interface Product {
 
 const getNutriScoreClasses = (score?: string) => {
   if (!score) return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';
+  // Return only border and text color, background will be transparent or very light
   switch (score.toUpperCase()) {
-    case 'A': return 'border-green-500 text-green-700 dark:text-green-400 dark:border-green-600 bg-green-100 dark:bg-green-900/50';
-    case 'B': return 'border-lime-500 text-lime-700 dark:text-lime-400 dark:border-lime-600 bg-lime-100 dark:bg-lime-900/50';
-    case 'C': return 'border-yellow-500 text-yellow-700 dark:text-yellow-400 dark:border-yellow-600 bg-yellow-100 dark:bg-yellow-900/50';
-    case 'D': return 'border-orange-500 text-orange-700 dark:text-orange-400 dark:border-orange-600 bg-orange-100 dark:bg-orange-900/50';
-    case 'E': return 'border-red-500 text-red-700 dark:text-red-400 dark:border-red-600 bg-red-100 dark:bg-red-900/50';
+    case 'A': return 'border-green-500 text-green-700 dark:text-green-400 dark:border-green-600 bg-green-50 dark:bg-green-900/30';
+    case 'B': return 'border-lime-500 text-lime-700 dark:text-lime-400 dark:border-lime-600 bg-lime-50 dark:bg-lime-900/30';
+    case 'C': return 'border-yellow-500 text-yellow-700 dark:text-yellow-400 dark:border-yellow-600 bg-yellow-50 dark:bg-yellow-900/30';
+    case 'D': return 'border-orange-500 text-orange-700 dark:text-orange-400 dark:border-orange-600 bg-orange-50 dark:bg-orange-900/30';
+    case 'E': return 'border-red-500 text-red-700 dark:text-red-400 dark:border-red-600 bg-red-50 dark:bg-red-900/30';
     default: return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';
   }
 };
@@ -106,7 +107,7 @@ export default function ProductDetailPage() {
       removeFavorite(product.id);
       toast({ title: `${product.name} removed from favorites.` });
     } else {
-      addFavorite(product);
+      addFavorite(product); // Pass the full product object
       toast({ title: `${product.name} added to favorites!` });
     }
   };
@@ -256,7 +257,7 @@ export default function ProductDetailPage() {
                     {product.nutriScore && (
                       <div>
                         <h3 className="text-md font-semibold mb-2">Nutri-Score</h3>
-                        <span className={`px-3 py-1 rounded-lg text-sm font-bold border ${getNutriScoreClasses(product.nutriScore)}`}>
+                        <span className={`px-3 py-1 rounded-lg text-lg font-bold border-2 ${getNutriScoreClasses(product.nutriScore)}`}>
                           {product.nutriScore}
                         </span>
                       </div>
@@ -282,6 +283,15 @@ export default function ProductDetailPage() {
                       <DietaryTag label="Admin Verified" icon={CheckCircle} present={product.isVerifiedAdmin} />
                     </div>
                   </div>
+
+                  {product.brand === "Aleksandrija Fruška Gora" && (
+                    <div>
+                      <h3 className="text-md font-semibold mb-1 flex items-center">
+                        <Store className="h-4 w-4 mr-2 text-primary"/> Dostupno u
+                      </h3>
+                      <p className="text-sm text-muted-foreground">DM, Maxi, Bio Špajz, online</p>
+                    </div>
+                  )}
 
                   {product.ingredientsText && (
                     <div>
