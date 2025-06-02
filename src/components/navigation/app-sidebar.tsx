@@ -69,6 +69,10 @@ export function AppSidebar() {
           <Link href={`/${locale}/terms`} className="hover:underline">
             Uslovi korišćenja
           </Link>
+          <span className="mx-1">-</span>
+          <Link href={`/${locale}/privacy`} className="hover:underline">
+            Privatnost
+          </Link>
         </p>
       </SidebarFooter>
     </Sidebar>
