@@ -17,12 +17,13 @@ import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, Alert
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud } from 'lucide-react';
+import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw } from 'lucide-react'; // Changed Premium to Star
 import { analyzeDeclaration, type AnalyzeDeclarationOutput } from '@/ai/flows/analyze-declaration';
 import { getDailyCeliacTip, type DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import { ocrDeclaration, type OcrDeclarationOutput } from '@/ai/flows/ocr-declaration-flow';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import { useScanLimiter } from '@/contexts/scan-limiter-context'; 
 
 import { placeholderProducts as allProducts, type Product } from './products/page'; 
 
@@ -38,14 +39,15 @@ interface BarcodeScanResult {
 const productCategories = Array.from(new Set(allProducts.map(p => p.category)));
 
 const getNutriScoreClasses = (score?: string) => {
-  if (!score) return 'border-gray-300 text-gray-700 bg-gray-100/50 dark:bg-gray-700/50 dark:text-gray-300 dark:border-gray-500';
+  if (!score) return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';
+  // Return only border and text color, background will be transparent or very light
   switch (score.toUpperCase()) {
-    case 'A': return 'border-green-500 text-green-700 dark:text-green-400 dark:border-green-600 bg-green-500/10';
-    case 'B': return 'border-lime-500 text-lime-700 dark:text-lime-400 dark:border-lime-600 bg-lime-500/10';
-    case 'C': return 'border-yellow-500 text-yellow-700 dark:text-yellow-400 dark:border-yellow-600 bg-yellow-500/10';
-    case 'D': return 'border-orange-500 text-orange-700 dark:text-orange-400 dark:border-orange-600 bg-orange-500/10';
-    case 'E': return 'border-red-500 text-red-700 dark:text-red-400 dark:border-red-600 bg-red-500/10';
-    default: return 'border-gray-300 text-gray-700 bg-gray-100/50 dark:bg-gray-700/50 dark:text-gray-300 dark:border-gray-500';
+    case 'A': return 'border-green-500 text-green-700 dark:text-green-400 dark:border-green-600 bg-green-50 dark:bg-green-900/30';
+    case 'B': return 'border-lime-500 text-lime-700 dark:text-lime-400 dark:border-lime-600 bg-lime-50 dark:bg-lime-900/30';
+    case 'C': return 'border-yellow-500 text-yellow-700 dark:text-yellow-400 dark:border-yellow-600 bg-yellow-50 dark:bg-yellow-900/30';
+    case 'D': return 'border-orange-500 text-orange-700 dark:text-orange-400 dark:border-orange-600 bg-orange-50 dark:bg-orange-900/30';
+    case 'E': return 'border-red-500 text-red-700 dark:text-red-400 dark:border-red-600 bg-red-50 dark:bg-red-900/30';
+    default: return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';
   }
 };
 
@@ -58,6 +60,8 @@ const explicitlyHandledTags = [
 export default function HomePage() {
   const routeParams = useParams(); 
   const locale = routeParams.locale as string;
+  const { toast } = useToast();
+  const { canScan, incrementScanCount, getRemainingScans, scanLimit, resetScanCount } = useScanLimiter();
 
   const [declarationText, setDeclarationText] = useState<string>('');
   const [analysisResult, setAnalysisResult] = useState<AnalyzeDeclarationOutput | null>(null);
@@ -80,9 +84,7 @@ export default function HomePage() {
   const [isLoadingTip, setIsLoadingTip] = useState<boolean>(true);
   const [errorTip, setErrorTip] = useState<string | null>(null);
   const [showTipDetailsModal, setShowTipDetailsModal] = useState<boolean>(false);
-
-
-  const { toast } = useToast();
+  const [showScanLimitModal, setShowScanLimitModal] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchTip = async () => {
@@ -118,6 +120,11 @@ export default function HomePage() {
   
   useEffect(() => {
     if (isScanning) {
+      if (!canScan()) {
+        setShowScanLimitModal(true);
+        setIsScanning(false);
+        return;
+      }
       const getCameraPermission = async () => {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
@@ -146,10 +153,11 @@ export default function HomePage() {
                     dataAiHint: "unknown product"
                   });
             }
+            incrementScanCount();
             setIsScanning(false); 
             stopCameraStream();
             toast({ title: "Barcode Scan Simulated", description: "Product details loaded."});
-          }, 5000);
+          }, 3000); // Reduced timeout for quicker simulation
         } catch (error) {
           console.error('Error accessing camera:', error);
           setHasCameraPermission(false);
@@ -163,7 +171,8 @@ export default function HomePage() {
       stopCameraStream();
     }
     return () => stopCameraStream();
-  }, [isScanning, toast]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isScanning, toast]); // Removed canScan and incrementScanCount from deps to avoid re-triggering on count change while scanning
 
   const stopCameraStream = () => {
     if (videoRef.current && videoRef.current.srcObject) {
@@ -175,6 +184,10 @@ export default function HomePage() {
 
   const handleDeclarationSubmit = async (event?: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
+    if (!canScan()) {
+      setShowScanLimitModal(true);
+      return;
+    }
     if (!declarationText.trim()) {
       setErrorDeclaration('Please enter a product declaration or upload an image.');
       return;
@@ -185,6 +198,7 @@ export default function HomePage() {
     try {
       const result = await analyzeDeclaration({ declarationText });
       setAnalysisResult(result);
+      incrementScanCount();
       toast({ title: "Analysis Complete", description: "Product declaration analyzed." });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
@@ -198,13 +212,17 @@ export default function HomePage() {
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       setSelectedFile(event.target.files[0]);
-      setErrorDeclaration(null); // Clear previous errors
-      setDeclarationText(''); // Clear textarea if a file is selected
-      setAnalysisResult(null); // Clear previous analysis
+      setErrorDeclaration(null); 
+      setDeclarationText(''); 
+      setAnalysisResult(null); 
     }
   };
 
-  const handleOcrScan = async () => {
+  const handleOcrScanAndAnalyze = async () => {
+    if (!canScan()) {
+      setShowScanLimitModal(true);
+      return;
+    }
     if (!selectedFile) {
       setErrorDeclaration('Please select an image file first.');
       return;
@@ -218,24 +236,30 @@ export default function HomePage() {
     reader.onload = async () => {
       const imageDataUri = reader.result as string;
       try {
-        const result: OcrDeclarationOutput = await ocrDeclaration({ imageDataUri });
-        setDeclarationText(result.extractedText);
-        toast({ title: "OCR Scan Complete", description: "Text extracted from image. You can now analyze." });
-        // Optionally, automatically trigger analysis after OCR:
-        // if (result.extractedText.trim()) {
-        //   handleDeclarationSubmit(); // You might need to adjust this if handleDeclarationSubmit expects an event
-        // }
+        const ocrResult: OcrDeclarationOutput = await ocrDeclaration({ imageDataUri });
+        setDeclarationText(ocrResult.extractedText);
+        toast({ title: "OCR Scan Complete", description: "Text extracted. Analyzing..." });
+        
+        if (ocrResult.extractedText.trim()) {
+          setIsLoadingDeclaration(true); // Set loading for AI analysis part
+          const analysis = await analyzeDeclaration({ declarationText: ocrResult.extractedText });
+          setAnalysisResult(analysis);
+          incrementScanCount(); // Increment after successful AI analysis
+          toast({ title: "AI Analysis Complete", description: "Product declaration analyzed." });
+        } else {
+          setErrorDeclaration('OCR did not find any text to analyze.');
+          toast({ variant: "destructive", title: "OCR Empty", description: "No text found in image."});
+        }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
-        setErrorDeclaration('OCR scan failed: ' + errorMessage);
-        toast({ variant: "destructive", title: "OCR Failed", description: errorMessage });
+        setErrorDeclaration('OCR or Analysis failed: ' + errorMessage);
+        toast({ variant: "destructive", title: "Operation Failed", description: errorMessage });
       } finally {
         setIsLoadingOcr(false);
-        setSelectedFile(null); // Clear the selected file
-        // Clear the file input visually (optional, might need a ref or reset the form)
+        setIsLoadingDeclaration(false); // Ensure this is also reset
+        setSelectedFile(null); 
         const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
         if (fileInput) fileInput.value = '';
-
       }
     };
     reader.onerror = (error) => {
@@ -248,6 +272,10 @@ export default function HomePage() {
 
 
   const handleStartScanning = () => {
+    if (!canScan()) {
+      setShowScanLimitModal(true);
+      return;
+    }
     setIsScanning(true);
     setBarcodeScanResult(null);
     setErrorBarcode(null);
@@ -258,6 +286,10 @@ export default function HomePage() {
     stopCameraStream();
   };
 
+  const currentRemainingScans = getRemainingScans();
+  const userCanCurrentlyScan = canScan();
+
+
   return (
     <div className="flex min-h-screen">
       <AppSidebar />
@@ -266,10 +298,35 @@ export default function HomePage() {
         <SiteHeader />
         <main className="flex-1 p-6 md:p-8">
           <PageHeader 
-            title="Welcome to Gluten Scan" 
+            title="Welcome to Gluten Detective" // Updated app name
             description="Search, scan, or analyze ingredients to find gluten-free products."
             icon={ScanLine}
           />
+          
+          {/* Scan Limiter Info */}
+           <Card className="mb-6 bg-muted/30 border-muted/50">
+            <CardContent className="p-3">
+              <div className="flex items-center justify-between text-sm">
+                {userCanCurrentlyScan ? (
+                  <div className="flex items-center text-primary">
+                    <CheckCircle className="h-4 w-4 mr-1.5" />
+                    <span>{currentRemainingScans} of {scanLimit} free scans remaining.</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center text-destructive">
+                    <AlertCircle className="h-4 w-4 mr-1.5" />
+                    <span>No free scans remaining. Upgrade for unlimited scans.</span>
+                  </div>
+                )}
+                {/* Reset button for testing - REMOVE FOR PRODUCTION */}
+                {process.env.NODE_ENV === 'development' && (
+                  <Button variant="outline" size="sm" onClick={resetScanCount} title="Reset Scan Count (Dev Only)">
+                    <RotateCcw className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
           <div className="mb-8">
             {isLoadingTip && (
@@ -361,7 +418,7 @@ export default function HomePage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {!isScanning && !barcodeScanResult && (
-                  <Button onClick={handleStartScanning} className="w-full" size="lg">
+                  <Button onClick={handleStartScanning} className="w-full" size="lg" disabled={!userCanCurrentlyScan || isLoadingOcr || isLoadingDeclaration}>
                     <QrCode className="mr-2 h-5 w-5" /> Start Scanning
                   </Button>
                 )}
@@ -412,7 +469,7 @@ export default function HomePage() {
                     <CardContent>
                       <h4 className="font-semibold mb-1 text-sm">Ingredients:</h4>
                       <p className="text-xs text-muted-foreground">{barcodeScanResult.ingredientsText || 'Not available'}</p>
-                      <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => { setBarcodeScanResult(null); setErrorBarcode(null);}}>Scan Another</Button>
+                      <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => { setBarcodeScanResult(null); setErrorBarcode(null);}} disabled={!userCanCurrentlyScan}>Scan Another</Button>
                     </CardContent>
                   </Card>
                 )}
@@ -516,10 +573,11 @@ export default function HomePage() {
                       accept="image/*"
                       onChange={handleFileChange}
                       className="flex-grow"
+                      disabled={!userCanCurrentlyScan || isLoadingOcr || isLoadingDeclaration}
                     />
-                    <Button onClick={handleOcrScan} disabled={!selectedFile || isLoadingOcr || isLoadingDeclaration} variant="outline">
-                      {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UploadCloud className="mr-2 h-4 w-4" />}
-                      Scan Image
+                    <Button onClick={handleOcrScanAndAnalyze} disabled={!selectedFile || !userCanCurrentlyScan || isLoadingOcr || isLoadingDeclaration} variant="outline">
+                      {isLoadingOcr || (isLoadingDeclaration && selectedFile) ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UploadCloud className="mr-2 h-4 w-4" />}
+                      Scan Image & Analyze
                     </Button>
                   </div>
                    {selectedFile && <p className="text-xs text-muted-foreground mt-1">Selected: {selectedFile.name}</p>}
@@ -538,13 +596,14 @@ export default function HomePage() {
                       value={declarationText}
                       onChange={(e) => {
                         setDeclarationText(e.target.value);
-                        setSelectedFile(null); // Clear file if user types manually
+                        setSelectedFile(null); 
                         const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
                         if (fileInput) fileInput.value = '';
                       }}
                       rows={6}
                       className="resize-none"
                       aria-label="Product Declaration Input"
+                      disabled={!userCanCurrentlyScan || isLoadingOcr || isLoadingDeclaration}
                     />
                   </div>
                   {errorDeclaration && (
@@ -554,8 +613,8 @@ export default function HomePage() {
                       <ShadcnAlertDescription>{errorDeclaration}</ShadcnAlertDescription>
                     </ShadcnAlert>
                   )}
-                  <Button type="submit" disabled={isLoadingDeclaration || isLoadingOcr} className="w-full">
-                    {isLoadingDeclaration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                  <Button type="submit" disabled={!userCanCurrentlyScan || isLoadingDeclaration || isLoadingOcr || !declarationText.trim()} className="w-full">
+                    {(isLoadingDeclaration && !selectedFile) ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                     Analyze Text with AI
                   </Button>
                 </form>
@@ -613,6 +672,31 @@ export default function HomePage() {
                   </div>
               )}
           </Card>
+
+          {/* Scan Limit Modal */}
+          <AlertDialog open={showScanLimitModal} onOpenChange={setShowScanLimitModal}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center">
+                  <Star className="h-5 w-5 mr-2 text-primary" /> {/* Changed Premium to Star */}
+                  Free Scan Limit Reached
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  You have used all your {scanLimit} free scans. To continue scanning and analyzing products, please consider upgrading to our Premium version.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Maybe Later</AlertDialogCancel>
+                <AlertDialogAction onClick={() => {
+                  toast({ title: "Premium (Coming Soon!)", description: "Thanks for your interest! Premium features are under development."});
+                  setShowScanLimitModal(false);
+                }}>
+                  Learn More About Premium
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
         </main>
       </SidebarInset>
     </div>

@@ -4,7 +4,8 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import '../globals.css'; // Adjusted path
 import { Toaster } from '@/components/ui/toaster';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { FavoritesProvider } from '@/contexts/favorites-context'; // Added import
+import { FavoritesProvider } from '@/contexts/favorites-context';
+import { ScanLimiterProvider } from '@/contexts/scan-limiter-context'; // Added import
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -25,7 +26,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   // Example: Dynamically set title based on locale
   // You would typically fetch translations for this
-  const title = params.locale === 'sr' ? 'Gluten Sken' : 'Gluten Scan';
+  const title = params.locale === 'sr' ? 'Gluten Detektiv' : 'Gluten Detective'; // Updated app name
   return {
     title: title,
     description: params.locale === 'sr' ? 'Lako skenirajte i identifikujte proizvode bez glutena.' : 'Scan and identify gluten-free products easily.',
@@ -44,8 +45,10 @@ export default function LocaleLayout({
     <html lang={locale} suppressHydrationWarning> {/* suppressHydrationWarning might be needed if lang mismatch causes issues initially */}
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SidebarProvider defaultOpen={true}>
-          <FavoritesProvider> {/* Added FavoritesProvider */}
-            {children}
+          <FavoritesProvider>
+            <ScanLimiterProvider> {/* Added ScanLimiterProvider */}
+              {children}
+            </ScanLimiterProvider>
           </FavoritesProvider>
         </SidebarProvider>
         <Toaster />
