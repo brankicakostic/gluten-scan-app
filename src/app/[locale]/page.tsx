@@ -17,7 +17,7 @@ import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, Alert
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw } from 'lucide-react'; // Changed Premium to Star
+import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw } from 'lucide-react';
 import { analyzeDeclaration, type AnalyzeDeclarationOutput } from '@/ai/flows/analyze-declaration';
 import { getDailyCeliacTip, type DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import { ocrDeclaration, type OcrDeclarationOutput } from '@/ai/flows/ocr-declaration-flow';
@@ -35,12 +35,10 @@ interface BarcodeScanResult {
   dataAiHint?: string;
 }
 
-
 const productCategories = Array.from(new Set(allProducts.map(p => p.category)));
 
 const getNutriScoreClasses = (score?: string) => {
   if (!score) return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';
-  // Return only border and text color, background will be transparent or very light
   switch (score.toUpperCase()) {
     case 'A': return 'border-green-500 text-green-700 dark:text-green-400 dark:border-green-600 bg-green-50 dark:bg-green-900/30';
     case 'B': return 'border-lime-500 text-lime-700 dark:text-lime-400 dark:border-lime-600 bg-lime-50 dark:bg-lime-900/30';
@@ -67,14 +65,20 @@ export default function HomePage() {
   const [analysisResult, setAnalysisResult] = useState<AnalyzeDeclarationOutput | null>(null);
   const [isLoadingDeclaration, setIsLoadingDeclaration] = useState<boolean>(false);
   const [errorDeclaration, setErrorDeclaration] = useState<string | null>(null);
+  
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isLoadingOcr, setIsLoadingOcr] = useState<boolean>(false);
+  const [isLoadingOcr, setIsLoadingOcr] = useState<boolean>(false); // Used for both file and camera OCR
   
   const [barcodeScanResult, setBarcodeScanResult] = useState<BarcodeScanResult | null>(null);
-  const [isScanning, setIsScanning] = useState<boolean>(false);
+  const [isScanningBarcode, setIsScanningBarcode] = useState<boolean>(false);
+  const barcodeVideoRef = useRef<HTMLVideoElement>(null);
+  const [hasBarcodeCameraPermission, setHasBarcodeCameraPermission] = useState<boolean | null>(null);
   const [errorBarcode, setErrorBarcode] = useState<string | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+
+  const [isTakingOcrPhoto, setIsTakingOcrPhoto] = useState<boolean>(false);
+  const ocrVideoRef = useRef<HTMLVideoElement>(null);
+  const [hasOcrCameraPermission, setHasOcrCameraPermission] = useState<boolean | null>(null);
+  // No need for ocrPhotoDataUri state, can pass directly
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -85,6 +89,9 @@ export default function HomePage() {
   const [errorTip, setErrorTip] = useState<string | null>(null);
   const [showTipDetailsModal, setShowTipDetailsModal] = useState<boolean>(false);
   const [showScanLimitModal, setShowScanLimitModal] = useState<boolean>(false);
+
+  const userCanCurrentlyScan = canScan();
+  const currentRemainingScans = getRemainingScans();
 
   useEffect(() => {
     const fetchTip = async () => {
@@ -118,20 +125,28 @@ export default function HomePage() {
     setDisplayedProducts(filtered.slice(0,8)); 
   }, [searchTerm, selectedCategory]);
   
+  // Barcode Camera Effect
   useEffect(() => {
-    if (isScanning) {
+    const stopStream = (stream: MediaStream | null) => {
+      stream?.getTracks().forEach(track => track.stop());
+    };
+
+    let currentStream: MediaStream | null = null;
+
+    if (isScanningBarcode) {
       if (!canScan()) {
         setShowScanLimitModal(true);
-        setIsScanning(false);
+        setIsScanningBarcode(false);
         return;
       }
-      const getCameraPermission = async () => {
+      const getCamera = async () => {
         try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-          setHasCameraPermission(true);
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
+          currentStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+          setHasBarcodeCameraPermission(true);
+          if (barcodeVideoRef.current) {
+            barcodeVideoRef.current.srcObject = currentStream;
           }
+          // Simulate scan
           setTimeout(() => {
             const randomProduct = allProducts[Math.floor(Math.random() * allProducts.length)];
             const isProductFound = Math.random() > 0.3; 
@@ -154,52 +169,87 @@ export default function HomePage() {
                   });
             }
             incrementScanCount();
-            setIsScanning(false); 
-            stopCameraStream();
+            setIsScanningBarcode(false); 
             toast({ title: "Barcode Scan Simulated", description: "Product details loaded."});
-          }, 3000); // Reduced timeout for quicker simulation
+          }, 3000);
         } catch (error) {
-          console.error('Error accessing camera:', error);
-          setHasCameraPermission(false);
+          console.error('Error accessing barcode camera:', error);
+          setHasBarcodeCameraPermission(false);
           setErrorBarcode('Camera access denied. Please enable permissions.');
           toast({ variant: 'destructive', title: 'Camera Access Denied', description: 'Enable camera permissions for barcode scanning.'});
-          setIsScanning(false);
+          setIsScanningBarcode(false);
         }
       };
-      getCameraPermission();
+      getCamera();
     } else {
-      stopCameraStream();
+      if (barcodeVideoRef.current?.srcObject) {
+        stopStream(barcodeVideoRef.current.srcObject as MediaStream);
+        barcodeVideoRef.current.srcObject = null;
+      }
     }
-    return () => stopCameraStream();
+    return () => {
+      stopStream(currentStream);
+      if (barcodeVideoRef.current?.srcObject) { // Ensure cleanup if component unmounts while stream is active
+          stopStream(barcodeVideoRef.current.srcObject as MediaStream);
+          barcodeVideoRef.current.srcObject = null;
+      }
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isScanning, toast]); // Removed canScan and incrementScanCount from deps to avoid re-triggering on count change while scanning
+  }, [isScanningBarcode]); 
 
-  const stopCameraStream = () => {
-    if (videoRef.current && videoRef.current.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach(track => track.stop());
-      videoRef.current.srcObject = null;
-    }
-  };
+  // OCR Camera Effect
+  useEffect(() => {
+    const stopStream = (stream: MediaStream | null) => {
+        stream?.getTracks().forEach(track => track.stop());
+    };
+    let currentStream: MediaStream | null = null;
 
-  const handleDeclarationSubmit = async (event?: FormEvent<HTMLFormElement>) => {
-    event?.preventDefault();
-    if (!canScan()) {
-      setShowScanLimitModal(true);
-      return;
+    if (isTakingOcrPhoto) {
+        const getCamera = async () => {
+            try {
+                currentStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                setHasOcrCameraPermission(true);
+                if (ocrVideoRef.current) {
+                    ocrVideoRef.current.srcObject = currentStream;
+                }
+            } catch (error) {
+                console.error('Error accessing OCR camera:', error);
+                setHasOcrCameraPermission(false);
+                setErrorDeclaration('OCR Camera access denied. Please enable permissions.');
+                toast({ variant: 'destructive', title: 'Camera Access Denied', description: 'Enable camera permissions for OCR.' });
+                setIsTakingOcrPhoto(false);
+            }
+        };
+        getCamera();
+    } else {
+        if (ocrVideoRef.current?.srcObject) {
+            stopStream(ocrVideoRef.current.srcObject as MediaStream);
+            ocrVideoRef.current.srcObject = null;
+        }
     }
-    if (!declarationText.trim()) {
-      setErrorDeclaration('Please enter a product declaration or upload an image.');
-      return;
+    return () => {
+        stopStream(currentStream);
+        if (ocrVideoRef.current?.srcObject) { 
+            stopStream(ocrVideoRef.current.srcObject as MediaStream);
+            ocrVideoRef.current.srcObject = null;
+        }
+    };
+  }, [isTakingOcrPhoto, toast]);
+
+
+  const performAiAnalysis = async (textToAnalyze: string) => {
+    if (!textToAnalyze.trim()) {
+        setErrorDeclaration('No text to analyze.');
+        return;
     }
     setIsLoadingDeclaration(true);
     setErrorDeclaration(null);
     setAnalysisResult(null);
     try {
-      const result = await analyzeDeclaration({ declarationText });
+      const result = await analyzeDeclaration({ declarationText: textToAnalyze });
       setAnalysisResult(result);
       incrementScanCount();
-      toast({ title: "Analysis Complete", description: "Product declaration analyzed." });
+      toast({ title: "AI Analysis Complete", description: "Product declaration analyzed." });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
       setErrorDeclaration('Analysis failed: ' + errorMessage);
@@ -209,16 +259,55 @@ export default function HomePage() {
     }
   };
 
+  const handleDeclarationSubmit = async (event?: FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
+    if (!canScan()) {
+      setShowScanLimitModal(true);
+      return;
+    }
+    performAiAnalysis(declarationText);
+  };
+
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       setSelectedFile(event.target.files[0]);
       setErrorDeclaration(null); 
       setDeclarationText(''); 
-      setAnalysisResult(null); 
+      setAnalysisResult(null);
+      setIsTakingOcrPhoto(false); // Ensure OCR camera mode is off
+    }
+  };
+  
+  const processOcrData = async (imageDataUri: string) => {
+    setIsLoadingOcr(true);
+    setErrorDeclaration(null);
+    setAnalysisResult(null);
+    try {
+      const ocrResult: OcrDeclarationOutput = await ocrDeclaration({ imageDataUri });
+      setDeclarationText(ocrResult.extractedText);
+      toast({ title: "OCR Scan Complete", description: "Text extracted. Analyzing..." });
+      
+      if (ocrResult.extractedText.trim()) {
+        await performAiAnalysis(ocrResult.extractedText); // Calls incrementScanCount internally
+      } else {
+        setErrorDeclaration('OCR did not find any text to analyze.');
+        toast({ variant: "destructive", title: "OCR Empty", description: "No text found in image."});
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
+      setErrorDeclaration('OCR or Analysis failed: ' + errorMessage);
+      toast({ variant: "destructive", title: "Operation Failed", description: errorMessage });
+    } finally {
+      setIsLoadingOcr(false);
+      // Clear inputs after processing
+      setSelectedFile(null); 
+      const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+      setIsTakingOcrPhoto(false); // Turn off camera mode
     }
   };
 
-  const handleOcrScanAndAnalyze = async () => {
+  const handleOcrScanAndAnalyzeFile = async () => {
     if (!canScan()) {
       setShowScanLimitModal(true);
       return;
@@ -227,40 +316,11 @@ export default function HomePage() {
       setErrorDeclaration('Please select an image file first.');
       return;
     }
-    setIsLoadingOcr(true);
-    setErrorDeclaration(null);
-    setAnalysisResult(null);
-
+    
     const reader = new FileReader();
     reader.readAsDataURL(selectedFile);
     reader.onload = async () => {
-      const imageDataUri = reader.result as string;
-      try {
-        const ocrResult: OcrDeclarationOutput = await ocrDeclaration({ imageDataUri });
-        setDeclarationText(ocrResult.extractedText);
-        toast({ title: "OCR Scan Complete", description: "Text extracted. Analyzing..." });
-        
-        if (ocrResult.extractedText.trim()) {
-          setIsLoadingDeclaration(true); // Set loading for AI analysis part
-          const analysis = await analyzeDeclaration({ declarationText: ocrResult.extractedText });
-          setAnalysisResult(analysis);
-          incrementScanCount(); // Increment after successful AI analysis
-          toast({ title: "AI Analysis Complete", description: "Product declaration analyzed." });
-        } else {
-          setErrorDeclaration('OCR did not find any text to analyze.');
-          toast({ variant: "destructive", title: "OCR Empty", description: "No text found in image."});
-        }
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
-        setErrorDeclaration('OCR or Analysis failed: ' + errorMessage);
-        toast({ variant: "destructive", title: "Operation Failed", description: errorMessage });
-      } finally {
-        setIsLoadingOcr(false);
-        setIsLoadingDeclaration(false); // Ensure this is also reset
-        setSelectedFile(null); 
-        const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
-        if (fileInput) fileInput.value = '';
-      }
+      await processOcrData(reader.result as string);
     };
     reader.onerror = (error) => {
       console.error('Error reading file:', error);
@@ -270,25 +330,65 @@ export default function HomePage() {
     };
   };
 
-
-  const handleStartScanning = () => {
+  const handleInitiateOcrPhotoCapture = () => {
     if (!canScan()) {
       setShowScanLimitModal(true);
       return;
     }
-    setIsScanning(true);
+    setIsTakingOcrPhoto(true);
+    setSelectedFile(null);
+    setDeclarationText('');
+    setAnalysisResult(null);
+    setErrorDeclaration(null);
+    setHasOcrCameraPermission(null); // Reset permission status for new attempt
+  };
+
+  const handleCaptureOcrPhoto = async () => {
+    if (!ocrVideoRef.current || !hasOcrCameraPermission) {
+        setErrorDeclaration("OCR Camera not ready or permission denied.");
+        return;
+    }
+    if (!canScan()) { // Double check limit before capture
+        setShowScanLimitModal(true);
+        setIsTakingOcrPhoto(false); // Exit camera mode
+        return;
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = ocrVideoRef.current.videoWidth;
+    canvas.height = ocrVideoRef.current.videoHeight;
+    const context = canvas.getContext('2d');
+    if (context) {
+        context.drawImage(ocrVideoRef.current, 0, 0, canvas.width, canvas.height);
+        const imageDataUri = canvas.toDataURL('image/jpeg'); // Or image/png
+        await processOcrData(imageDataUri);
+    } else {
+        setErrorDeclaration("Could not capture image from camera.");
+    }
+    setIsTakingOcrPhoto(false); // Turn off camera mode after capture attempt
+  };
+
+  const handleCancelOcrPhotoCapture = () => {
+    setIsTakingOcrPhoto(false);
+    setErrorDeclaration(null); // Clear any camera related errors
+  };
+
+  const handleStartBarcodeScanning = () => {
+    if (!canScan()) {
+      setShowScanLimitModal(true);
+      return;
+    }
+    setIsScanningBarcode(true);
     setBarcodeScanResult(null);
     setErrorBarcode(null);
+    setHasBarcodeCameraPermission(null);
   };
   
-  const handleCancelScanning = () => {
-    setIsScanning(false);
-    stopCameraStream();
+  const handleCancelBarcodeScanning = () => {
+    setIsScanningBarcode(false);
   };
 
-  const currentRemainingScans = getRemainingScans();
-  const userCanCurrentlyScan = canScan();
-
+  const isLoadingOcrRelated = isLoadingOcr || (isLoadingDeclaration && (selectedFile !== null || isTakingOcrPhoto));
+  const isLoadingManualAnalysis = isLoadingDeclaration && !selectedFile && !isTakingOcrPhoto;
 
   return (
     <div className="flex min-h-screen">
@@ -298,12 +398,11 @@ export default function HomePage() {
         <SiteHeader />
         <main className="flex-1 p-6 md:p-8">
           <PageHeader 
-            title="Welcome to Gluten Detective" // Updated app name
+            title="Welcome to Gluten Detective"
             description="Search, scan, or analyze ingredients to find gluten-free products."
             icon={ScanLine}
           />
           
-          {/* Scan Limiter Info */}
            <Card className="mb-6 bg-muted/30 border-muted/50">
             <CardContent className="p-3">
               <div className="flex items-center justify-between text-sm">
@@ -318,7 +417,6 @@ export default function HomePage() {
                     <span>No free scans remaining. Upgrade for unlimited scans.</span>
                   </div>
                 )}
-                {/* Reset button for testing - REMOVE FOR PRODUCTION */}
                 {process.env.NODE_ENV === 'development' && (
                   <Button variant="outline" size="sm" onClick={resetScanCount} title="Reset Scan Count (Dev Only)">
                     <RotateCcw className="h-3 w-3" />
@@ -417,36 +515,42 @@ export default function HomePage() {
                 <CardDescription>Use your device's camera for instant gluten information.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {!isScanning && !barcodeScanResult && (
-                  <Button onClick={handleStartScanning} className="w-full" size="lg" disabled={!userCanCurrentlyScan || isLoadingOcr || isLoadingDeclaration}>
-                    <QrCode className="mr-2 h-5 w-5" /> Start Scanning
+                {!isScanningBarcode && !barcodeScanResult && (
+                  <Button 
+                    onClick={handleStartBarcodeScanning} 
+                    className="w-full" 
+                    size="lg" 
+                    disabled={!userCanCurrentlyScan || isLoadingOcr || isLoadingDeclaration || isTakingOcrPhoto}
+                  >
+                    <QrCode className="mr-2 h-5 w-5" /> Start Barcode Scanning
                   </Button>
                 )}
-                {isScanning && (
+                {isScanningBarcode && (
                   <div className="space-y-4">
-                     <div className="aspect-video bg-muted rounded-md flex flex-col items-center justify-center text-muted-foreground p-4">
-                       <video ref={videoRef} className="w-full h-full object-cover rounded-md" autoPlay playsInline muted />
-                       {hasCameraPermission === false && (
+                     <div className="aspect-video bg-muted rounded-md flex flex-col items-center justify-center text-muted-foreground p-4 relative">
+                       <video ref={barcodeVideoRef} className="w-full h-full object-cover rounded-md" autoPlay playsInline muted />
+                       {hasBarcodeCameraPermission === null && <Loader2 className="absolute h-8 w-8 animate-spin text-primary"/>}
+                       {hasBarcodeCameraPermission === false && (
                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 p-4 rounded-md">
                             <CameraOff className="h-12 w-12 mb-2 text-destructive" />
                             <p className="text-center text-destructive-foreground">Camera access is required. Please enable permissions.</p>
                          </div>
                        )}
-                       {hasCameraPermission === true && (
-                          <p className="mt-2 text-sm">Point your camera at a barcode...</p>
+                       {hasBarcodeCameraPermission === true && (
+                          <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-sm bg-black/50 text-white px-2 py-1 rounded">Point camera at barcode...</p>
                        )}
                     </div>
-                    <Button onClick={handleCancelScanning} variant="outline" className="w-full">Cancel Scan</Button>
+                    <Button onClick={handleCancelBarcodeScanning} variant="outline" className="w-full">Cancel Barcode Scan</Button>
                   </div>
                 )}
-                {errorBarcode && !isScanning && (
+                {errorBarcode && !isScanningBarcode && (
                   <ShadcnAlert variant="destructive" className="mt-4">
                     <AlertCircle className="h-4 w-4" />
-                    <ShadcnAlertTitle>Scanning Error</ShadcnAlertTitle>
+                    <ShadcnAlertTitle>Barcode Scanning Error</ShadcnAlertTitle>
                     <ShadcnAlertDescription>{errorBarcode}</ShadcnAlertDescription>
                   </ShadcnAlert>
                 )}
-                {barcodeScanResult && !isScanning && (
+                {barcodeScanResult && !isScanningBarcode && (
                   <Card className="mt-4">
                     <CardHeader className="flex flex-row items-start gap-4">
                       <Image src={barcodeScanResult.imageUrl} alt={barcodeScanResult.name} width={80} height={80} className="rounded-md object-cover" data-ai-hint={barcodeScanResult.dataAiHint || "product image"}/>
@@ -469,14 +573,14 @@ export default function HomePage() {
                     <CardContent>
                       <h4 className="font-semibold mb-1 text-sm">Ingredients:</h4>
                       <p className="text-xs text-muted-foreground">{barcodeScanResult.ingredientsText || 'Not available'}</p>
-                      <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => { setBarcodeScanResult(null); setErrorBarcode(null);}} disabled={!userCanCurrentlyScan}>Scan Another</Button>
+                      <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => { setBarcodeScanResult(null); setErrorBarcode(null);}}>Scan Another Barcode</Button>
                     </CardContent>
                   </Card>
                 )}
-                {!isScanning && !barcodeScanResult && !errorBarcode && hasCameraPermission !== false && (
+                {!isScanningBarcode && !barcodeScanResult && !errorBarcode && (
                    <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md">
                     <QrCode className="mx-auto h-8 w-8 mb-2" />
-                    <p className="text-sm">Scan results will appear here.</p>
+                    <p className="text-sm">Barcode scan results will appear here.</p>
                   </div>
                 )}
               </CardContent>
@@ -560,77 +664,150 @@ export default function HomePage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><ScanSearch className="h-5 w-5" /> Analyze Ingredients</CardTitle>
-              <CardDescription>Paste ingredients below, or upload an image of the ingredient list for AI analysis.</CardDescription>
+              <CardDescription>Paste ingredients, upload an image, or take a picture of the ingredient list for AI analysis.</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div>
-                  <Label htmlFor="ocr-file-input" className="text-sm font-medium">Upload Ingredient List Image</Label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      id="ocr-file-input"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      className="flex-grow"
-                      disabled={!userCanCurrentlyScan || isLoadingOcr || isLoadingDeclaration}
-                    />
-                    <Button onClick={handleOcrScanAndAnalyze} disabled={!selectedFile || !userCanCurrentlyScan || isLoadingOcr || isLoadingDeclaration} variant="outline">
-                      {isLoadingOcr || (isLoadingDeclaration && selectedFile) ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UploadCloud className="mr-2 h-4 w-4" />}
-                      Scan Image & Analyze
-                    </Button>
-                  </div>
-                   {selectedFile && <p className="text-xs text-muted-foreground mt-1">Selected: {selectedFile.name}</p>}
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex-grow border-t"></div>
-                  <span className="text-xs text-muted-foreground">OR</span>
-                  <div className="flex-grow border-t"></div>
-                </div>
-                <form onSubmit={handleDeclarationSubmit} className="space-y-4">
+                {/* File Upload for OCR */}
+                {!isTakingOcrPhoto && !isScanningBarcode && (
                   <div>
-                    <Label htmlFor="declaration-text-area" className="text-sm font-medium">Paste Ingredient List</Label>
-                    <Textarea
-                      id="declaration-text-area"
-                      placeholder="e.g., Wheat flour, sugar, salt, yeast, barley malt extract..."
-                      value={declarationText}
-                      onChange={(e) => {
-                        setDeclarationText(e.target.value);
-                        setSelectedFile(null); 
-                        const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
-                        if (fileInput) fileInput.value = '';
-                      }}
-                      rows={6}
-                      className="resize-none"
-                      aria-label="Product Declaration Input"
-                      disabled={!userCanCurrentlyScan || isLoadingOcr || isLoadingDeclaration}
-                    />
+                    <Label htmlFor="ocr-file-input" className="text-sm font-medium">Upload Ingredient List Image</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        id="ocr-file-input"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="flex-grow"
+                        disabled={!userCanCurrentlyScan || isLoadingOcrRelated || isTakingOcrPhoto || isScanningBarcode}
+                      />
+                      <Button onClick={handleOcrScanAndAnalyzeFile} 
+                        disabled={!selectedFile || !userCanCurrentlyScan || isLoadingOcrRelated || isTakingOcrPhoto || isScanningBarcode} 
+                        variant="outline"
+                      >
+                        {isLoadingOcr && selectedFile ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UploadCloud className="mr-2 h-4 w-4" />}
+                        Scan Image & Analyze
+                      </Button>
+                    </div>
+                    {selectedFile && <p className="text-xs text-muted-foreground mt-1">Selected: {selectedFile.name}</p>}
                   </div>
-                  {errorDeclaration && (
-                    <ShadcnAlert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <ShadcnAlertTitle>Error</ShadcnAlertTitle>
-                      <ShadcnAlertDescription>{errorDeclaration}</ShadcnAlertDescription>
-                    </ShadcnAlert>
-                  )}
-                  <Button type="submit" disabled={!userCanCurrentlyScan || isLoadingDeclaration || isLoadingOcr || !declarationText.trim()} className="w-full">
-                    {(isLoadingDeclaration && !selectedFile) ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                    Analyze Text with AI
-                  </Button>
-                </form>
+                )}
+
+                {/* "OR" Separator if multiple options are available */}
+                {!isTakingOcrPhoto && !isScanningBarcode && (
+                  <div className="flex items-center gap-2">
+                    <div className="flex-grow border-t"></div>
+                    <span className="text-xs text-muted-foreground">OR</span>
+                    <div className="flex-grow border-t"></div>
+                  </div>
+                )}
+                
+                {/* Take Picture for OCR */}
+                {!isScanningBarcode && ( // Only show if not barcode scanning
+                  <div>
+                    {!isTakingOcrPhoto && (
+                      <>
+                        <Label htmlFor="ocr-take-picture-button" className="text-sm font-medium sr-only">Take Picture of Ingredient List</Label>
+                        <Button 
+                          id="ocr-take-picture-button"
+                          onClick={handleInitiateOcrPhotoCapture} 
+                          disabled={!userCanCurrentlyScan || isLoadingOcrRelated || isScanningBarcode} 
+                          variant="outline" 
+                          className="w-full"
+                        >
+                          <Camera className="mr-2 h-4 w-4" /> Take Picture & Analyze
+                        </Button>
+                      </>
+                    )}
+                    {isTakingOcrPhoto && (
+                      <div className="space-y-2">
+                        <div className="aspect-video bg-muted rounded-md flex flex-col items-center justify-center text-muted-foreground p-1 relative">
+                          <video ref={ocrVideoRef} className="w-full h-full object-cover rounded-md" autoPlay playsInline muted />
+                          {hasOcrCameraPermission === null && <Loader2 className="absolute h-8 w-8 animate-spin text-primary"/>}
+                          {hasOcrCameraPermission === false && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 p-4 rounded-md">
+                              <CameraOff className="h-10 w-10 mb-2 text-destructive" />
+                              <p className="text-center text-destructive-foreground text-sm">OCR Camera access is required. Please enable permissions in your browser settings.</p>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex gap-2">
+                          <Button 
+                            onClick={handleCaptureOcrPhoto} 
+                            disabled={!hasOcrCameraPermission || isLoadingOcrRelated}
+                            className="flex-grow"
+                          >
+                            {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Camera className="mr-2 h-4 w-4"/>}
+                             Capture Photo
+                          </Button>
+                          <Button onClick={handleCancelOcrPhotoCapture} variant="outline" className="flex-grow">Cancel</Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* "OR" Separator if multiple options are available */}
+                 {!isTakingOcrPhoto && !isScanningBarcode && (
+                  <div className="flex items-center gap-2">
+                    <div className="flex-grow border-t"></div>
+                    <span className="text-xs text-muted-foreground">OR</span>
+                    <div className="flex-grow border-t"></div>
+                  </div>
+                )}
+
+                {/* Paste Text for Analysis */}
+                {!isTakingOcrPhoto && !isScanningBarcode && (
+                  <form onSubmit={handleDeclarationSubmit} className="space-y-4">
+                    <div>
+                      <Label htmlFor="declaration-text-area" className="text-sm font-medium">Paste Ingredient List</Label>
+                      <Textarea
+                        id="declaration-text-area"
+                        placeholder="e.g., Wheat flour, sugar, salt, yeast, barley malt extract..."
+                        value={declarationText}
+                        onChange={(e) => {
+                          setDeclarationText(e.target.value);
+                          setSelectedFile(null); 
+                          setIsTakingOcrPhoto(false);
+                          const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
+                          if (fileInput) fileInput.value = '';
+                        }}
+                        rows={6}
+                        className="resize-none"
+                        aria-label="Product Declaration Input"
+                        disabled={!userCanCurrentlyScan || isLoadingOcrRelated || isTakingOcrPhoto || isScanningBarcode}
+                      />
+                    </div>
+                    <Button type="submit" 
+                      disabled={!userCanCurrentlyScan || isLoadingManualAnalysis || !declarationText.trim() || isLoadingOcr || isTakingOcrPhoto || isScanningBarcode} 
+                      className="w-full"
+                    >
+                      {isLoadingManualAnalysis ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                      Analyze Text with AI
+                    </Button>
+                  </form>
+                )}
+                
+                {errorDeclaration && (
+                  <ShadcnAlert variant="destructive" className="mt-2">
+                    <AlertCircle className="h-4 w-4" />
+                    <ShadcnAlertTitle>Error</ShadcnAlertTitle>
+                    <ShadcnAlertDescription>{errorDeclaration}</ShadcnAlertDescription>
+                  </ShadcnAlert>
+                )}
               </div>
             </CardContent>
             
-            {(analysisResult || isLoadingDeclaration || isLoadingOcr ) && (
+            {(analysisResult || isLoadingOcrRelated || isLoadingManualAnalysis ) && (
               <CardContent className="mt-6 border-t pt-6">
                 <CardTitle className="text-lg mb-2">AI Analysis Report</CardTitle>
-                {(isLoadingDeclaration || isLoadingOcr) && (
+                {(isLoadingOcrRelated || isLoadingManualAnalysis) && (
                   <div className="flex flex-col items-center justify-center h-24 text-muted-foreground">
                     <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
                     <p>Analyzing...</p>
                   </div>
                 )}
-                {analysisResult && !isLoadingDeclaration && !isLoadingOcr && (
+                {analysisResult && !isLoadingOcrRelated && !isLoadingManualAnalysis && (
                   <>
                     <ShadcnAlert variant={analysisResult.hasGluten ? 'destructive' : 'default'} className={analysisResult.hasGluten ? '' : 'border-green-500'}>
                       {analysisResult.hasGluten ? <AlertCircle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5 text-green-600" />}
@@ -657,15 +834,16 @@ export default function HomePage() {
                        setAnalysisResult(null);
                        setDeclarationText('');
                        setSelectedFile(null);
+                       setIsTakingOcrPhoto(false);
                        const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
                        if (fileInput) fileInput.value = '';
                        setErrorDeclaration(null);
-                     }}>Clear Analysis & Input</Button>
+                     }}>Clear Analysis & Inputs</Button>
                   </>
                 )}
               </CardContent>
             )}
-             {!isLoadingDeclaration && !isLoadingOcr && !analysisResult && !errorDeclaration && (declarationText || selectedFile) && (
+             {!isLoadingOcrRelated && !isLoadingManualAnalysis && !analysisResult && !errorDeclaration && (declarationText || selectedFile || isTakingOcrPhoto) && (
                    <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md mt-4 mx-6 mb-6">
                     <Info className="mx-auto h-8 w-8 mb-2 text-primary" />
                     <p className="text-sm">Analysis results will appear here once submitted.</p>
@@ -673,12 +851,11 @@ export default function HomePage() {
               )}
           </Card>
 
-          {/* Scan Limit Modal */}
           <AlertDialog open={showScanLimitModal} onOpenChange={setShowScanLimitModal}>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle className="flex items-center">
-                  <Star className="h-5 w-5 mr-2 text-primary" /> {/* Changed Premium to Star */}
+                  <Star className="h-5 w-5 mr-2 text-primary" /> 
                   Free Scan Limit Reached
                 </AlertDialogTitle>
                 <AlertDialogDescription>
@@ -702,3 +879,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+    
