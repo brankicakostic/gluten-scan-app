@@ -38,7 +38,9 @@ const assessProductRiskPrompt = ai.definePrompt({
   name: 'assessProductRiskPrompt',
   input: {schema: AssessProductRiskInputSchema},
   output: {schema: AssessProductRiskOutputSchema},
-  prompt: `Zadatak ti je da analiziraš prehrambeni proizvod na osnovu datih informacija i proceniš njegov rizik za osobu sa celijakijom.
+  prompt: `Ocenjuješ proizvode za upotrebu u aplikaciji za osobe koje izbegavaju gluten. Zamisli da si nutricionista – objektivan, pažljiv, ali ne paničan.
+
+Zadatak ti je da analiziraš prehrambeni proizvod na osnovu datih informacija i proceniš njegov rizik za osobu sa celijakijom.
 Vrati ocenu rizika kao jednu od sledećih vrednosti za 'riskLevel': GREEN, YELLOW, ili RED.
 U polje 'reasoning' unesi detaljno obrazloženje svoje odluke.
 
@@ -193,3 +195,5 @@ const assessProductRiskFlow = ai.defineFlow(
     
 
     
+
+      
