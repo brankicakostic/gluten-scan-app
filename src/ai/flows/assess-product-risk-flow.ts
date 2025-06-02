@@ -72,6 +72,7 @@ Opasni Sastojci (Direktni izvori glutena - vode u RED ako se pronađu, osim ako 
 Skriveni/Rizični Sastojci (Mogu ukazivati na YELLOW ili RED ako nema jakih GF potvrda):
   - glukozni sirup (ako nije eksplicitno navedeno da je na bazi kukuruza, pirinča, krompira ili pšenice/ječma prema 'Dozvoljeni Izuzeci')
   - maltodekstrin (ako nije eksplicitno navedeno da je na bazi kukuruza, pirinča, krompira ili pšenice prema 'Dozvoljeni Izuzeci')
+  - dekstroza (ako nije eksplicitno navedeno da je na bazi kukuruza, pirinča, krompira ili pšenice prema 'Dozvoljeni Izuzeci')
   - prirodna aroma / aroma (mogu sadržati gluten nosače)
   - biljni protein / hidrolizovani biljni protein (ako izvor nije naveden kao bezglutenski)
   - modifikovani skrob (ako izvor nije naveden kao bezglutenski, npr. kukuruzni, krompirov, tapioka)
@@ -89,6 +90,7 @@ Rizični E-Brojevi (Mogu ukazivati na YELLOW ili RED ako nema jakih GF potvrda, 
 Dozvoljeni Izuzeci (Ovi sastojci, iako izvedeni iz glutenskih žitarica, smatraju se bezbednim i NE TREBA da sami po sebi vode ka RED ili YELLOW ako su jedini potencijalni problem):
   - glukozni sirup na bazi pšenice (uključujući i dekstrozu)
   - maltodekstrin na bazi pšenice
+  - dekstroza na bazi pšenice
   - glukozni sirup na bazi ječma
   - žitni destilati ili etil alkohol poljoprivrednog porekla za proizvodnju jakih alkoholnih pića dobijenih iz žita
 
@@ -99,6 +101,12 @@ Ovas (Zob):
   - Prirodno ne sadrži gluten ali je često kontaminiran. Sadrži avenin koji kod nekih izaziva reakciju.
   - Smatraj ga RIZIČNIM (RED) osim ako je proizvod eksplicitno sertifikovan kao bezglutenski sa bezglutenskim ovasom (npr. 'hasLicenseOrCert' je true i odnosi se na GF ovas, ili 'gfLabelOnPackaging' je pouzdana GF oznaka koja pokriva ovas).
 
+Posebna pažnja za osetljive osobe (ako postoji GF oznaka/sertifikat):
+Ako proizvod ima jasnu GF oznaku ('gfLabelOnPackaging' je true) ili sertifikat ('hasLicenseOrCert' je true), ALI 'ingredientsList' sadrži sastojke kao što su 'maltodekstrin', 'dekstroza', ili 'glukozni sirup' BEZ navedenog bezglutenskog porekla (npr. NIJE 'maltodekstrin (pšenični)', 'dekstroza (pšenična)' koji su dozvoljeni izuzeci):
+  - `riskLevel` bi generalno trebalo da ostane GREEN zbog zvanične GF potvrde.
+  - U 'reasoning', OBAVEZNO dodaj napomenu: "Proizvod poseduje zvaničnu gluten-free potvrdu. Sadrži [navedi_sastojak_poput_maltodekstrina] čije poreklo nije specificirano. Iako je proizvod sertifikovan kao bezglutenski, osobe sa izuzetno visokom osetljivošću na gluten mogu želeti da obrate pažnju na ovu informaciju." Primer: "Proizvod poseduje zvaničnu gluten-free potvrdu. Sadrži maltodekstrin čije poreklo nije specificirano. Iako je proizvod sertifikovan kao bezglutenski, osobe sa izuzetno visokom osetljivošću na gluten mogu želeti da obrate pažnju na ovu informaciju."
+  - Nemoj automatski oceniti kao YELLOW ili RED samo zbog ovoga ako postoji jaka GF potvrda, osim ako postoje drugi jači negativni faktori koji bi to opravdali (npr. dodatna napomena "proizvedeno u pogonu gde se koristi pšenica" a da nije AOECS).
+
 Logika za određivanje 'riskLevel':
 
 1.  STROGO RED AKO:
@@ -107,28 +115,29 @@ Logika za određivanje 'riskLevel':
     *   'ingredientsList' sadrži "ovas" ili "zob" A NIJE zadovoljen uslov za bezbedan ovas (nema 'hasLicenseOrCert' ili pouzdane 'gfLabelOnPackaging' koja eksplicitno potvrđuje bezglutenski ovas).
 
 2.  STROGO GREEN AKO (i nijedan RED uslov nije ispunjen):
-    *   'hasLicenseOrCert' je true (npr. AOECS sertifikat). Obrazloženje treba da navede sertifikat kao glavni razlog. Čak i ako postoje 'additionalNotes' o tragovima, AOECS sertifikat obično pokriva ovo.
-    *   'labTestPerformed' je true I 'labTestResultPpm' <= 20 (idealno <= 10 ppm). Navedi rezultat.
-    *   'gfLabelOnPackaging' je true (npr. "precrtana pšenica" koja implicira AOECS ili slično pouzdano) I nema konfliktnih informacija (npr. opasnih sastojaka koji nisu pokriveni izuzecima).
+    *   'hasLicenseOrCert' je true (npr. AOECS sertifikat). Obrazloženje treba da navede sertifikat kao glavni razlog. Čak i ako postoje 'additionalNotes' o tragovima, AOECS sertifikat obično pokriva ovo. Primeniti pravilo "Posebna pažnja za osetljive osobe" ako je relevantno.
+    *   'labTestPerformed' je true I 'labTestResultPpm' <= 20 (idealno <= 10 ppm). Navedi rezultat. Primeniti pravilo "Posebna pažnja za osetljive osobe" ako je relevantno.
+    *   'gfLabelOnPackaging' je true (npr. "precrtana pšenica" koja implicira AOECS ili slično pouzdano) I nema konfliktnih informacija (npr. opasnih sastojaka koji nisu pokriveni izuzecima). Primeniti pravilo "Posebna pažnja za osetljive osobe" ako je relevantno.
 
 3.  KOMBINOVANA PROCENA (ako nema strogih RED ili GREEN):
     *   Ako 'additionalNotes' ili 'ingredientsList' sadrži fraze poput "može sadržati tragove glutena", "proizvedeno u objektu gde se koristi gluten", "sadrži tragove pšenice/ječma/raži":
-        *   Ako proizvod ima 'hasLicenseOrCert' (AOECS), onda je GREEN (jer AOECS to dozvoljava unutar standarda).
+        *   Ako proizvod ima 'hasLicenseOrCert' (AOECS), onda je GREEN (jer AOECS to dozvoljava unutar standarda, ali i dalje primeni "Posebna pažnja za osetljive osobe" ako je relevantno).
         *   Inače, ovo vodi ka YELLOW. Obrazloži da je zbog upozorenja o tragovima.
     *   Ako je 'verifiedByCeliacAssociation' true:
-        *   Ako su svi sastojci u 'ingredientsList' sa liste 'Neutralni Sastojci' ili su jasno bezopasni (npr. "suncokretovo ulje", "so", "šećer") I nema upozorenja o tragovima -> GREEN. Obrazloži da je na listi udruženja i sastojci su čisti.
+        *   Ako su svi sastojci u 'ingredientsList' sa liste 'Neutralni Sastojci' ili su jasno bezopasni (npr. "suncokretovo ulje", "so", "šećer") I nema upozorenja o tragovima -> GREEN. Obrazloži da je na listi udruženja i sastojci su čisti. Primeniti pravilo "Posebna pažnja za osetljive osobe" ako je relevantno.
         *   Inače (npr. nema drugih jakih GF potvrda poput labela/licence, ili sastojci nisu svi trivijalno sigurni) -> YELLOW. Obrazloži kao u primeru: "Na spisku udruženja, ali bez drugih jakih potvrda. Sastojci deluju bezbedno, ali je potrebna opreznost/provera."
     *   Ako je 'manufacturerStatementProvided' true I 'manufacturerStatementClaimsGF' true:
-        *   Ako su svi sastojci u 'ingredientsList' sa liste 'Neutralni Sastojci' ili jasno bezopasni I nema upozorenja o tragovima -> GREEN.
-        *   Ako 'ingredientsList' sadrži 'Skriveni/Rizični Sastojci' ili 'Rizični E-Brojevi' koji NISU pokriveni 'Dozvoljeni Izuzeci' -> YELLOW. Obrazloži da proizvođač tvrdi GF, ali neki sastojci (navedi koji) zahtevaju pažnju.
+        *   Ako su svi sastojci u 'ingredientsList' sa liste 'Neutralni Sastojci' ili jasno bezopasni I nema upozorenja o tragovima -> GREEN. Primeniti pravilo "Posebna pažnja za osetljive osobe" ako je relevantno.
+        *   Ako 'ingredientsList' sadrži 'Skriveni/Rizični Sastojci' ili 'Rizični E-Brojevi' koji NISU pokriveni 'Dozvoljeni Izuzeci' -> YELLOW. Obrazloži da proizvođač tvrdi GF, ali neki sastojci (navedi koji) zahtevaju pažnju. Primeniti pravilo "Posebna pažnja za osetljive osobe" ako je relevantno.
     *   Ako je 'gfLabelOnPackaging' true (ali nije potvrđena kao AOECS kroz 'hasLicenseOrCert'):
-        *   Ako su svi sastojci u 'ingredientsList' sa liste 'Neutralni Sastojci' ili jasno bezopasni I nema upozorenja o tragovima -> GREEN (uz napomenu da se oslanja na oznaku proizvođača).
-        *   Ako 'ingredientsList' sadrži 'Skriveni/Rizični Sastojci' ili 'Rizični E-Brojevi' koji NISU pokriveni 'Dozvoljeni Izuzeci' -> YELLOW.
+        *   Ako su svi sastojci u 'ingredientsList' sa liste 'Neutralni Sastojci' ili jasno bezopasni I nema upozorenja o tragovima -> GREEN (uz napomenu da se oslanja na oznaku proizvođača). Primeniti pravilo "Posebna pažnja za osetljive osobe" ako je relevantno.
+        *   Ako 'ingredientsList' sadrži 'Skriveni/Rizični Sastojci' ili 'Rizični E-Brojevi' koji NISU pokriveni 'Dozvoljeni Izuzeci' -> YELLOW. Primeniti pravilo "Posebna pažnja za osetljive osobe" ako je relevantno.
     *   Ako NEMA eksplicitnih GF tvrdnji (sva relevantna boolean polja su false):
-        *   Ako 'ingredientsList' sadrži 'Skriveni/Rizični Sastojci' ili 'Rizični E-Brojevi' -> YELLOW ili RED (ako je sastojak veoma sumnjiv). Obrazloži.
+        *   Ako 'ingredientsList' sadrži 'Skriveni/Rizični Sastojci' (uključujući generički maltodekstrin, dekstrozu, glukozni sirup) ili 'Rizični E-Brojevi' -> YELLOW ili RED (ako je sastojak veoma sumnjiv). Obrazloži.
         *   Ako su svi sastojci u 'ingredientsList' sa liste 'Neutralni Sastojci' ili deluju bezopasno -> YELLOW. Obrazloži da nema GF potvrda i da postoji rizik od kontaminacije iako sastojci deluju OK.
 
-Obavezno navedi ključne faktore iz ulaza koji su doveli do tvoje odluke u 'reasoning'.
+Obavezno navedi ključne faktore iz ulaza koji su doveli do tvoje odluke u 'reasoning'. Uvek primeni pravilo "Posebna pažnja za osetljive osobe" kada je 'riskLevel' GREEN a relevantni sastojci su prisutni.
+
 Primer ulaza:
 {
   "name": "Keks sa prosojem",
@@ -180,5 +189,7 @@ const assessProductRiskFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    
 
     
