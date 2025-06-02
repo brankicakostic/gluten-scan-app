@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, type FormEvent, useRef, useEffect } from 'react';
+import { useState, type FormEvent, useRef, useEffect, ChangeEvent } from 'react';
 import Image from 'next/image';
 import Link from 'next/link'; 
 import { useParams } from 'next/navigation'; 
@@ -17,9 +17,10 @@ import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, Alert
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, CameraOff, Lightbulb, BookOpen, AlertTriangle } from 'lucide-react';
+import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud } from 'lucide-react';
 import { analyzeDeclaration, type AnalyzeDeclarationOutput } from '@/ai/flows/analyze-declaration';
 import { getDailyCeliacTip, type DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
+import { ocrDeclaration, type OcrDeclarationOutput } from '@/ai/flows/ocr-declaration-flow';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 
@@ -37,14 +38,14 @@ interface BarcodeScanResult {
 const productCategories = Array.from(new Set(allProducts.map(p => p.category)));
 
 const getNutriScoreClasses = (score?: string) => {
-  if (!score) return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';
+  if (!score) return 'border-gray-300 text-gray-700 bg-gray-100/50 dark:bg-gray-700/50 dark:text-gray-300 dark:border-gray-500';
   switch (score.toUpperCase()) {
-    case 'A': return 'border-green-500 text-green-700 dark:text-green-400 dark:border-green-600 bg-green-100 dark:bg-green-900/50';
-    case 'B': return 'border-lime-500 text-lime-700 dark:text-lime-400 dark:border-lime-600 bg-lime-100 dark:bg-lime-900/50';
-    case 'C': return 'border-yellow-500 text-yellow-700 dark:text-yellow-400 dark:border-yellow-600 bg-yellow-100 dark:bg-yellow-900/50';
-    case 'D': return 'border-orange-500 text-orange-700 dark:text-orange-400 dark:border-orange-600 bg-orange-100 dark:bg-orange-900/50';
-    case 'E': return 'border-red-500 text-red-700 dark:text-red-400 dark:border-red-600 bg-red-100 dark:bg-red-900/50';
-    default: return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';
+    case 'A': return 'border-green-500 text-green-700 dark:text-green-400 dark:border-green-600 bg-green-500/10';
+    case 'B': return 'border-lime-500 text-lime-700 dark:text-lime-400 dark:border-lime-600 bg-lime-500/10';
+    case 'C': return 'border-yellow-500 text-yellow-700 dark:text-yellow-400 dark:border-yellow-600 bg-yellow-500/10';
+    case 'D': return 'border-orange-500 text-orange-700 dark:text-orange-400 dark:border-orange-600 bg-orange-500/10';
+    case 'E': return 'border-red-500 text-red-700 dark:text-red-400 dark:border-red-600 bg-red-500/10';
+    default: return 'border-gray-300 text-gray-700 bg-gray-100/50 dark:bg-gray-700/50 dark:text-gray-300 dark:border-gray-500';
   }
 };
 
@@ -62,6 +63,8 @@ export default function HomePage() {
   const [analysisResult, setAnalysisResult] = useState<AnalyzeDeclarationOutput | null>(null);
   const [isLoadingDeclaration, setIsLoadingDeclaration] = useState<boolean>(false);
   const [errorDeclaration, setErrorDeclaration] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isLoadingOcr, setIsLoadingOcr] = useState<boolean>(false);
   
   const [barcodeScanResult, setBarcodeScanResult] = useState<BarcodeScanResult | null>(null);
   const [isScanning, setIsScanning] = useState<boolean>(false);
@@ -170,10 +173,10 @@ export default function HomePage() {
     }
   };
 
-  const handleDeclarationSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleDeclarationSubmit = async (event?: FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
     if (!declarationText.trim()) {
-      setErrorDeclaration('Please enter a product declaration.');
+      setErrorDeclaration('Please enter a product declaration or upload an image.');
       return;
     }
     setIsLoadingDeclaration(true);
@@ -191,6 +194,58 @@ export default function HomePage() {
       setIsLoadingDeclaration(false);
     }
   };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setSelectedFile(event.target.files[0]);
+      setErrorDeclaration(null); // Clear previous errors
+      setDeclarationText(''); // Clear textarea if a file is selected
+      setAnalysisResult(null); // Clear previous analysis
+    }
+  };
+
+  const handleOcrScan = async () => {
+    if (!selectedFile) {
+      setErrorDeclaration('Please select an image file first.');
+      return;
+    }
+    setIsLoadingOcr(true);
+    setErrorDeclaration(null);
+    setAnalysisResult(null);
+
+    const reader = new FileReader();
+    reader.readAsDataURL(selectedFile);
+    reader.onload = async () => {
+      const imageDataUri = reader.result as string;
+      try {
+        const result: OcrDeclarationOutput = await ocrDeclaration({ imageDataUri });
+        setDeclarationText(result.extractedText);
+        toast({ title: "OCR Scan Complete", description: "Text extracted from image. You can now analyze." });
+        // Optionally, automatically trigger analysis after OCR:
+        // if (result.extractedText.trim()) {
+        //   handleDeclarationSubmit(); // You might need to adjust this if handleDeclarationSubmit expects an event
+        // }
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
+        setErrorDeclaration('OCR scan failed: ' + errorMessage);
+        toast({ variant: "destructive", title: "OCR Failed", description: errorMessage });
+      } finally {
+        setIsLoadingOcr(false);
+        setSelectedFile(null); // Clear the selected file
+        // Clear the file input visually (optional, might need a ref or reset the form)
+        const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
+
+      }
+    };
+    reader.onerror = (error) => {
+      console.error('Error reading file:', error);
+      setErrorDeclaration('Failed to read the image file.');
+      setIsLoadingOcr(false);
+      toast({ variant: "destructive", title: "File Read Error", description: "Could not read the selected image." });
+    };
+  };
+
 
   const handleStartScanning = () => {
     setIsScanning(true);
@@ -447,44 +502,76 @@ export default function HomePage() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><ScanSearch className="h-5 w-5" /> Analyze Ingredients Manually</CardTitle>
-              <CardDescription>If you can't scan or find a product, paste its ingredient list below for AI analysis.</CardDescription>
+              <CardTitle className="flex items-center gap-2"><ScanSearch className="h-5 w-5" /> Analyze Ingredients</CardTitle>
+              <CardDescription>Paste ingredients below, or upload an image of the ingredient list for AI analysis.</CardDescription>
             </CardHeader>
-            <form onSubmit={handleDeclarationSubmit}>
-              <CardContent>
-                <Textarea
-                  placeholder="e.g., Wheat flour, sugar, salt, yeast, barley malt extract..."
-                  value={declarationText}
-                  onChange={(e) => setDeclarationText(e.target.value)}
-                  rows={8}
-                  className="resize-none"
-                  aria-label="Product Declaration Input"
-                />
-                {errorDeclaration && (
-                  <ShadcnAlert variant="destructive" className="mt-4">
-                    <AlertCircle className="h-4 w-4" />
-                    <ShadcnAlertTitle>Error</ShadcnAlertTitle>
-                    <ShadcnAlertDescription>{errorDeclaration}</ShadcnAlertDescription>
-                  </ShadcnAlert>
-                )}
-              </CardContent>
-              <CardFooter>
-                <Button type="submit" disabled={isLoadingDeclaration} className="w-full">
-                  {isLoadingDeclaration ? (<Loader2 className="mr-2 h-4 w-4 animate-spin" />) : (<Sparkles className="mr-2 h-4 w-4" />)}
-                  Analyze with AI
-                </Button>
-              </CardFooter>
-            </form>
-            {(analysisResult || isLoadingDeclaration) && (
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="ocr-file-input" className="text-sm font-medium">Upload Ingredient List Image</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="ocr-file-input"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="flex-grow"
+                    />
+                    <Button onClick={handleOcrScan} disabled={!selectedFile || isLoadingOcr || isLoadingDeclaration} variant="outline">
+                      {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UploadCloud className="mr-2 h-4 w-4" />}
+                      Scan Image
+                    </Button>
+                  </div>
+                   {selectedFile && <p className="text-xs text-muted-foreground mt-1">Selected: {selectedFile.name}</p>}
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-grow border-t"></div>
+                  <span className="text-xs text-muted-foreground">OR</span>
+                  <div className="flex-grow border-t"></div>
+                </div>
+                <form onSubmit={handleDeclarationSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="declaration-text-area" className="text-sm font-medium">Paste Ingredient List</Label>
+                    <Textarea
+                      id="declaration-text-area"
+                      placeholder="e.g., Wheat flour, sugar, salt, yeast, barley malt extract..."
+                      value={declarationText}
+                      onChange={(e) => {
+                        setDeclarationText(e.target.value);
+                        setSelectedFile(null); // Clear file if user types manually
+                        const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
+                        if (fileInput) fileInput.value = '';
+                      }}
+                      rows={6}
+                      className="resize-none"
+                      aria-label="Product Declaration Input"
+                    />
+                  </div>
+                  {errorDeclaration && (
+                    <ShadcnAlert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <ShadcnAlertTitle>Error</ShadcnAlertTitle>
+                      <ShadcnAlertDescription>{errorDeclaration}</ShadcnAlertDescription>
+                    </ShadcnAlert>
+                  )}
+                  <Button type="submit" disabled={isLoadingDeclaration || isLoadingOcr} className="w-full">
+                    {isLoadingDeclaration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                    Analyze Text with AI
+                  </Button>
+                </form>
+              </div>
+            </CardContent>
+            
+            {(analysisResult || isLoadingDeclaration || isLoadingOcr ) && (
               <CardContent className="mt-6 border-t pt-6">
                 <CardTitle className="text-lg mb-2">AI Analysis Report</CardTitle>
-                {isLoadingDeclaration && (
+                {(isLoadingDeclaration || isLoadingOcr) && (
                   <div className="flex flex-col items-center justify-center h-24 text-muted-foreground">
                     <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
                     <p>Analyzing...</p>
                   </div>
                 )}
-                {analysisResult && !isLoadingDeclaration && (
+                {analysisResult && !isLoadingDeclaration && !isLoadingOcr && (
                   <>
                     <ShadcnAlert variant={analysisResult.hasGluten ? 'destructive' : 'default'} className={analysisResult.hasGluten ? '' : 'border-green-500'}>
                       {analysisResult.hasGluten ? <AlertCircle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5 text-green-600" />}
@@ -495,7 +582,7 @@ export default function HomePage() {
                     </ShadcnAlert>
                     <div className="mt-3">
                       <h4 className="font-semibold mb-1 text-sm">Reasoning:</h4>
-                      <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md">{analysisResult.reason}</p>
+                      <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.reason}</p>
                     </div>
                     {analysisResult.glutenIngredients && analysisResult.glutenIngredients.length > 0 && (
                       <div className="mt-3">
@@ -507,15 +594,22 @@ export default function HomePage() {
                         </ul>
                       </div>
                     )}
-                     <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => setAnalysisResult(null)}>Clear Analysis</Button>
+                     <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => {
+                       setAnalysisResult(null);
+                       setDeclarationText('');
+                       setSelectedFile(null);
+                       const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
+                       if (fileInput) fileInput.value = '';
+                       setErrorDeclaration(null);
+                     }}>Clear Analysis & Input</Button>
                   </>
                 )}
               </CardContent>
             )}
-             {!isLoadingDeclaration && !analysisResult && !errorDeclaration && declarationText && (
-                   <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md mt-4">
+             {!isLoadingDeclaration && !isLoadingOcr && !analysisResult && !errorDeclaration && (declarationText || selectedFile) && (
+                   <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md mt-4 mx-6 mb-6">
                     <Info className="mx-auto h-8 w-8 mb-2 text-primary" />
-                    <p className="text-sm">Analysis results for ingredients will appear here once submitted.</p>
+                    <p className="text-sm">Analysis results will appear here once submitted.</p>
                   </div>
               )}
           </Card>
@@ -524,4 +618,3 @@ export default function HomePage() {
     </div>
   );
 }
-
