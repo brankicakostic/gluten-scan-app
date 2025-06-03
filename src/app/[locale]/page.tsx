@@ -82,6 +82,7 @@ export default function HomePage() {
 
   const [showLabelingQuestionModal, setShowLabelingQuestionModal] = useState<boolean>(false);
   const [ocrTextForAnalysis, setOcrTextForAnalysis] = useState<string>('');
+  const [manualTextForAnalysis, setManualTextForAnalysis] = useState<string>('');
   const [selectedLabelingOption, setSelectedLabelingOption] = useState<string>('');
 
 
@@ -246,7 +247,6 @@ export default function HomePage() {
         return;
     }
     setIsLoadingDeclaration(true);
-    setIsLoadingOcr(false); 
     setErrorDeclaration(null);
     setAnalysisResult(null);
     try {
@@ -272,7 +272,15 @@ export default function HomePage() {
       setShowScanLimitModal(true);
       return;
     }
-    performAiAnalysis(declarationText, 'unknown');
+    if (!declarationText.trim()) {
+        setErrorDeclaration('Please enter ingredients to analyze.');
+        return;
+    }
+    setManualTextForAnalysis(declarationText);
+    setOcrTextForAnalysis(''); // Clear any OCR text
+    setSelectedFile(null); // Clear any selected file
+    setSelectedLabelingOption('');
+    setShowLabelingQuestionModal(true);
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -288,65 +296,71 @@ export default function HomePage() {
   const processOcrData = async (imageDataUri: string) => {
     setIsLoadingOcr(true);
     setErrorDeclaration(null);
-    setAnalysisResult(null); // Clear previous AI analysis
-    setDeclarationText(''); // Clear manual text area
+    setAnalysisResult(null); 
+    setDeclarationText(''); 
+    setManualTextForAnalysis(''); // Clear manual text if OCR is used
     try {
       const ocrResult: OcrDeclarationOutput = await ocrDeclaration({ imageDataUri });
       if (ocrResult.extractedText.trim()) {
         setOcrTextForAnalysis(ocrResult.extractedText);
+        setSelectedLabelingOption('');
         setShowLabelingQuestionModal(true);
         toast({ title: "OCR Scan Complete", description: "Please provide labeling information below." });
       } else {
         setErrorDeclaration('OCR did not find any text to analyze.');
         toast({ variant: "destructive", title: "OCR Empty", description: "No text found in image."});
-        // Reset OCR inputs if no text found
-        setSelectedFile(null);
-        const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
-        if (fileInput) fileInput.value = '';
-        setIsTakingOcrPhoto(false);
+        resetAnalysisInputs();
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
       setErrorDeclaration('OCR processing failed: ' + errorMessage);
       toast({ variant: "destructive", title: "OCR Failed", description: errorMessage });
-      // Reset OCR inputs on error
-      setSelectedFile(null);
-      const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
-      if (fileInput) fileInput.value = '';
-      setIsTakingOcrPhoto(false);
+      resetAnalysisInputs();
     } finally {
       setIsLoadingOcr(false); 
     }
   };
 
   const handleLabelingChoiceSubmit = async () => {
-    if (!ocrTextForAnalysis || !selectedLabelingOption) {
-      toast({ variant: "destructive", title: "Selection Missing", description: "Please select a labeling option."});
+    const textToAnalyze = manualTextForAnalysis || ocrTextForAnalysis;
+    if (!textToAnalyze || !selectedLabelingOption) {
+      toast({ variant: "destructive", title: "Selection Missing", description: "Please select a labeling option or provide text."});
       return;
     }
     setShowLabelingQuestionModal(false); 
-    setDeclarationText(ocrTextForAnalysis); // Populate textarea for visibility, then analyze
+    
+    // If manualTextForAnalysis was the source, declarationText is already up-to-date.
+    // If ocrTextForAnalysis was the source, update declarationText for display purposes.
+    if (ocrTextForAnalysis) {
+        setDeclarationText(ocrTextForAnalysis);
+    }
 
-    await performAiAnalysis(ocrTextForAnalysis, selectedLabelingOption);
-
+    await performAiAnalysis(textToAnalyze, selectedLabelingOption);
+    
+    // Clear all specific input states AFTER analysis is kicked off
+    setManualTextForAnalysis('');
     setOcrTextForAnalysis('');
-    setSelectedLabelingOption('');
+    // Do not clear declarationText here if it was manual input, allow user to see what was analyzed.
+    // It will be cleared by resetAnalysisInputs if "Clear Analysis & Inputs" is clicked.
     setSelectedFile(null);
     const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
     if (fileInput) fileInput.value = '';
     setIsTakingOcrPhoto(false); 
+    setSelectedLabelingOption('');
   };
   
-  const resetOcrState = () => {
-    setOcrTextForAnalysis('');
-    setSelectedLabelingOption('');
+  const resetAnalysisInputs = () => {
+    setDeclarationText('');
+    setAnalysisResult(null);
+    setErrorDeclaration(null);
     setSelectedFile(null);
     const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
     if (fileInput) fileInput.value = '';
     setIsTakingOcrPhoto(false);
-    setErrorDeclaration(null);
-    setAnalysisResult(null); 
-    // setDeclarationText(''); // Do not clear manual declaration text here
+    setOcrTextForAnalysis('');
+    setManualTextForAnalysis('');
+    setSelectedLabelingOption('');
+    setShowLabelingQuestionModal(false); 
   };
 
 
@@ -377,8 +391,7 @@ export default function HomePage() {
       setShowScanLimitModal(true);
       return;
     }
-    resetOcrState(); 
-    setDeclarationText(''); // Clear manual text when initiating photo capture
+    resetAnalysisInputs(); 
     setIsTakingOcrPhoto(true);
     setHasOcrCameraPermission(null); 
   };
@@ -427,7 +440,7 @@ export default function HomePage() {
     setIsScanningBarcode(false);
   };
 
-  const isLoadingAnyOcrProcess = isLoadingOcr || showLabelingQuestionModal;
+  const isLoadingAnyAnalysisProcess = isLoadingOcr || isLoadingDeclaration || showLabelingQuestionModal;
 
   return (
     <div className="flex min-h-screen">
@@ -559,7 +572,7 @@ export default function HomePage() {
                     onClick={handleStartBarcodeScanning} 
                     className="w-full" 
                     size="lg" 
-                    disabled={!userCanCurrentlyScan || isLoadingAnyOcrProcess || isLoadingDeclaration || isTakingOcrPhoto}
+                    disabled={!userCanCurrentlyScan || isLoadingAnyAnalysisProcess || isTakingOcrPhoto}
                   >
                     <QrCode className="mr-2 h-5 w-5" /> Start Barcode Scanning
                   </Button>
@@ -717,10 +730,10 @@ export default function HomePage() {
                         accept="image/*"
                         onChange={handleFileChange}
                         className="flex-grow"
-                        disabled={!userCanCurrentlyScan || isLoadingAnyOcrProcess || isLoadingDeclaration}
+                        disabled={!userCanCurrentlyScan || isLoadingAnyAnalysisProcess}
                       />
                       <Button onClick={handleOcrScanAndAnalyzeFile} 
-                        disabled={!selectedFile || !userCanCurrentlyScan || isLoadingAnyOcrProcess || isLoadingDeclaration} 
+                        disabled={!selectedFile || !userCanCurrentlyScan || isLoadingAnyAnalysisProcess} 
                         variant="outline"
                       >
                         {isLoadingOcr && selectedFile ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UploadCloud className="mr-2 h-4 w-4" />}
@@ -747,7 +760,7 @@ export default function HomePage() {
                         <Button 
                           id="ocr-take-picture-button"
                           onClick={handleInitiateOcrPhotoCapture} 
-                          disabled={!userCanCurrentlyScan || isLoadingAnyOcrProcess || isLoadingDeclaration} 
+                          disabled={!userCanCurrentlyScan || isLoadingAnyAnalysisProcess} 
                           variant="outline" 
                           className="w-full"
                         >
@@ -801,31 +814,25 @@ export default function HomePage() {
                         value={declarationText}
                         onChange={(e) => {
                             setDeclarationText(e.target.value);
-                            // If user is typing/pasting, it implies they are using the manual text input method.
-                            // We should clear states related to other input methods (file upload, camera OCR)
-                            // to avoid confusion and ensure this manual input is what gets processed
-                            // if they click "Analyze Text with AI".
+                            if (e.target.value.trim() !== manualTextForAnalysis) {
+                                setManualTextForAnalysis(''); // Invalidate pending manual analysis if text changes
+                            }
                             if (selectedFile) {
                                 setSelectedFile(null);
                                 const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
                                 if (fileInput) fileInput.value = '';
                             }
-                            if (isTakingOcrPhoto) {
-                                setIsTakingOcrPhoto(false); // Ensure camera mode is off
-                            }
-                            if (ocrTextForAnalysis) { // If there was text from OCR pending labeling
-                                setOcrTextForAnalysis('');
-                                setSelectedLabelingOption(''); // Clear labeling state too
-                            }
+                            if (isTakingOcrPhoto) setIsTakingOcrPhoto(false);
+                            if (ocrTextForAnalysis) setOcrTextForAnalysis(''); 
                         }}
                         rows={6}
                         className="resize-none"
                         aria-label="Product Declaration Input"
-                        disabled={!userCanCurrentlyScan || isLoadingAnyOcrProcess || isLoadingDeclaration}
+                        disabled={!userCanCurrentlyScan || isLoadingAnyAnalysisProcess}
                       />
                     </div>
                     <Button type="submit" 
-                      disabled={!userCanCurrentlyScan || isLoadingDeclaration || !declarationText.trim() || isLoadingAnyOcrProcess} 
+                      disabled={!userCanCurrentlyScan || isLoadingDeclaration || !declarationText.trim() || isLoadingAnyAnalysisProcess} 
                       className="w-full"
                     >
                       {isLoadingDeclaration && !isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
@@ -844,10 +851,10 @@ export default function HomePage() {
               </div>
             </CardContent>
             
-            {(analysisResult || isLoadingDeclaration || isLoadingAnyOcrProcess) && !showLabelingQuestionModal && (
+            {(analysisResult || isLoadingDeclaration || isLoadingAnyAnalysisProcess) && !showLabelingQuestionModal && (
               <CardContent className="mt-6 border-t pt-6">
                 <CardTitle className="text-lg mb-2">AI Analysis Report</CardTitle>
-                {(isLoadingDeclaration || isLoadingOcr) && (
+                {(isLoadingDeclaration || isLoadingOcr) && !showLabelingQuestionModal && (
                   <div className="flex flex-col items-center justify-center h-24 text-muted-foreground">
                     <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
                     <p>{isLoadingOcr ? 'Processing Image...' : 'Analyzing Ingredients...'}</p>
@@ -855,37 +862,71 @@ export default function HomePage() {
                 )}
                 {analysisResult && !isLoadingDeclaration && !isLoadingOcr && (
                   <>
-                    <ShadcnAlert variant={analysisResult.hasGluten ? 'destructive' : 'default'} className={analysisResult.hasGluten ? '' : 'border-green-500'}>
-                      {analysisResult.hasGluten ? <AlertCircle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5 text-green-600" />}
-                      <ShadcnAlertTitle className={analysisResult.hasGluten ? '' : 'text-green-700'}>
-                        {analysisResult.hasGluten ? 'Potential Gluten Detected' : 'Likely Gluten-Free'}
-                      </ShadcnAlertTitle>
-                      <ShadcnAlertDescription>Confidence: {Math.round(analysisResult.confidence * 100)}%</ShadcnAlertDescription>
-                    </ShadcnAlert>
+                    {analysisResult.hasGluten && analysisResult.confidence < 0.4 ? (
+                      <ShadcnAlert variant="default" className="border-orange-500 bg-orange-50 dark:bg-orange-900/30">
+                        <AlertTriangle className="h-5 w-5 text-orange-600" />
+                        <ShadcnAlertTitle className="text-orange-700 dark:text-orange-400">
+                          Nizak rizik / Proveri dodatno
+                        </ShadcnAlertTitle>
+                        <ShadcnAlertDescription className="text-orange-600 dark:text-orange-300">
+                          Poverenje: {Math.round(analysisResult.confidence * 100)}%.<br />
+                          Ovaj sastojak (ili sastojci) se u većini slučajeva smatra bezbednim. Rizik je teorijski i ne zahteva akciju, osim ako postoji dodatni podatak o kontaminaciji.
+                        </ShadcnAlertDescription>
+                      </ShadcnAlert>
+                    ) : analysisResult.hasGluten ? (
+                      <ShadcnAlert variant='destructive'>
+                        <AlertCircle className="h-5 w-5" />
+                        <ShadcnAlertTitle>
+                          Potential Gluten Detected
+                        </ShadcnAlertTitle>
+                        <ShadcnAlertDescription>Confidence: {Math.round(analysisResult.confidence * 100)}%</ShadcnAlertDescription>
+                      </ShadcnAlert>
+                    ) : (
+                      <ShadcnAlert variant='default' className='border-green-500 bg-green-50 dark:bg-green-900/30'>
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                        <ShadcnAlertTitle className='text-green-700 dark:text-green-400'>
+                          Likely Gluten-Free
+                        </ShadcnAlertTitle>
+                        <ShadcnAlertDescription className="text-green-600 dark:text-green-300">Confidence: {Math.round(analysisResult.confidence * 100)}%</ShadcnAlertDescription>
+                      </ShadcnAlert>
+                    )}
+
                     <div className="mt-3">
                       <h4 className="font-semibold mb-1 text-sm">Reasoning:</h4>
                       <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.reason}</p>
                     </div>
+
                     {analysisResult.glutenIngredients && analysisResult.glutenIngredients.length > 0 && (
                       <div className="mt-3">
-                        <h4 className="font-semibold mb-1 text-sm">Potential Gluten Ingredients:</h4>
+                        <h4 className="font-semibold mb-1 text-sm">
+                          {analysisResult.hasGluten && analysisResult.confidence < 0.4
+                            ? "Sastojci označeni kao niskorizični:"
+                            : "Potential Gluten Ingredients:"}
+                        </h4>
                         <ul className="list-disc list-inside text-xs space-y-1">
                           {analysisResult.glutenIngredients.map((ing, index) => (
-                            <li key={index} className="text-destructive-foreground bg-destructive/80 px-1.5 py-0.5 rounded-sm">{ing}</li>
+                            <li
+                              key={index}
+                              className={
+                                analysisResult.hasGluten && analysisResult.confidence < 0.4
+                                  ? "text-orange-800 dark:text-orange-300 bg-orange-100 dark:bg-orange-700/40 px-1.5 py-0.5 rounded-sm"
+                                  : "text-destructive-foreground bg-destructive/80 px-1.5 py-0.5 rounded-sm"
+                              }
+                            >
+                              {ing}
+                            </li>
                           ))}
                         </ul>
                       </div>
                     )}
-                     <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => {
-                       setAnalysisResult(null);
-                       setDeclarationText('');
-                       resetOcrState();
-                     }}>Clear Analysis & Inputs</Button>
+                     <Button variant="outline" size="sm" className="mt-4 w-full" onClick={resetAnalysisInputs}>
+                       Clear Analysis & Inputs
+                     </Button>
                   </>
                 )}
               </CardContent>
             )}
-             {!isLoadingDeclaration && !isLoadingAnyOcrProcess && !analysisResult && !errorDeclaration && (declarationText || selectedFile || isTakingOcrPhoto) && !showLabelingQuestionModal && (
+             {!isLoadingAnyAnalysisProcess && !analysisResult && !errorDeclaration && (declarationText || selectedFile || isTakingOcrPhoto) && !showLabelingQuestionModal && (
                    <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md mt-4 mx-6 mb-6">
                     <Info className="mx-auto h-8 w-8 mb-2 text-primary" />
                     <p className="text-sm">Analysis results will appear here once submitted.</p>
@@ -943,11 +984,7 @@ export default function HomePage() {
                 </RadioGroup>
               </div>
               <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => {
-                  resetOcrState(); // This will clear selectedFile, ocrTextForAnalysis, etc.
-                  setDeclarationText(''); // Also clear manual text area if scan is fully cancelled
-                  setShowLabelingQuestionModal(false);
-                }}>Cancel Scan</AlertDialogCancel>
+                <AlertDialogCancel onClick={resetAnalysisInputs}>Cancel Scan</AlertDialogCancel>
                 <AlertDialogAction onClick={handleLabelingChoiceSubmit} disabled={!selectedLabelingOption || isLoadingDeclaration}>
                   {isLoadingDeclaration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Continue to AI Analysis

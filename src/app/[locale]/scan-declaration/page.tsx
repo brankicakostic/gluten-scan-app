@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert';
-import { ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, Star } from 'lucide-react'; // Changed Premium to Star
+import { ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, Star, AlertTriangle } from 'lucide-react'; // Added AlertTriangle
 import { analyzeDeclaration, type AnalyzeDeclarationOutput } from '@/ai/flows/analyze-declaration';
 import { useToast } from '@/hooks/use-toast';
 import { useScanLimiter } from '@/contexts/scan-limiter-context';
@@ -41,7 +41,10 @@ export default function ScanDeclarationPage() {
     setAnalysisResult(null);
 
     try {
-      const result = await analyzeDeclaration({ declarationText });
+      // For this dedicated page, we assume no specific labeling info is gathered in a separate step,
+      // so we pass 'unknown' or rely on the AI's default handling if labelingInfo is optional.
+      // If a labeling info step were to be added here, it would mirror the homepage logic.
+      const result = await analyzeDeclaration({ declarationText, labelingInfo: 'unknown' });
       setAnalysisResult(result);
       incrementScanCount();
       toast({
@@ -155,15 +158,34 @@ export default function ScanDeclarationPage() {
                 )}
                 {analysisResult && (
                   <>
-                    <ShadcnAlert variant={analysisResult.hasGluten ? 'destructive' : 'default'} className={analysisResult.hasGluten ? '' : 'border-green-500'}>
-                      {analysisResult.hasGluten ? <AlertCircle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5 text-green-600" />}
-                      <ShadcnAlertTitle className={analysisResult.hasGluten ? '' : 'text-green-700'}>
-                        {analysisResult.hasGluten ? 'Potential Gluten Detected' : 'Likely Gluten-Free'}
-                      </ShadcnAlertTitle>
-                      <ShadcnAlertDescription>
-                        Confidence: {Math.round(analysisResult.confidence * 100)}%
-                      </ShadcnAlertDescription>
-                    </ShadcnAlert>
+                    {analysisResult.hasGluten && analysisResult.confidence < 0.4 ? (
+                      <ShadcnAlert variant="default" className="border-orange-500 bg-orange-50 dark:bg-orange-900/30">
+                        <AlertTriangle className="h-5 w-5 text-orange-600" />
+                        <ShadcnAlertTitle className="text-orange-700 dark:text-orange-400">
+                          Nizak rizik / Proveri dodatno
+                        </ShadcnAlertTitle>
+                        <ShadcnAlertDescription className="text-orange-600 dark:text-orange-300">
+                          Poverenje: {Math.round(analysisResult.confidence * 100)}%.<br />
+                          Ovaj sastojak (ili sastojci) se u većini slučajeva smatra bezbednim. Rizik je teorijski i ne zahteva akciju, osim ako postoji dodatni podatak o kontaminaciji.
+                        </ShadcnAlertDescription>
+                      </ShadcnAlert>
+                    ) : analysisResult.hasGluten ? (
+                      <ShadcnAlert variant='destructive'>
+                        <AlertCircle className="h-5 w-5" />
+                        <ShadcnAlertTitle>
+                          Potential Gluten Detected
+                        </ShadcnAlertTitle>
+                        <ShadcnAlertDescription>Confidence: {Math.round(analysisResult.confidence * 100)}%</ShadcnAlertDescription>
+                      </ShadcnAlert>
+                    ) : (
+                      <ShadcnAlert variant='default' className='border-green-500 bg-green-50 dark:bg-green-900/30'>
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                        <ShadcnAlertTitle className='text-green-700 dark:text-green-400'>
+                          Likely Gluten-Free
+                        </ShadcnAlertTitle>
+                        <ShadcnAlertDescription className="text-green-600 dark:text-green-300">Confidence: {Math.round(analysisResult.confidence * 100)}%</ShadcnAlertDescription>
+                      </ShadcnAlert>
+                    )}
                     
                     <div>
                       <h4 className="font-semibold mb-1">Reasoning:</h4>
@@ -172,10 +194,23 @@ export default function ScanDeclarationPage() {
 
                     {analysisResult.glutenIngredients && analysisResult.glutenIngredients.length > 0 && (
                       <div>
-                        <h4 className="font-semibold mb-1">Potential Gluten Ingredients Found:</h4>
-                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                        <h4 className="font-semibold mb-1">
+                           {analysisResult.hasGluten && analysisResult.confidence < 0.4
+                            ? "Sastojci označeni kao niskorizični:"
+                            : "Potential Gluten Ingredients Found:"}
+                        </h4>
+                        <ul className="list-disc list-inside text-sm space-y-1">
                           {analysisResult.glutenIngredients.map((ing, index) => (
-                            <li key={index} className="text-destructive-foreground bg-destructive/80 px-2 py-1 rounded-sm">{ing}</li>
+                            <li 
+                              key={index} 
+                              className={
+                                analysisResult.hasGluten && analysisResult.confidence < 0.4
+                                  ? "text-orange-800 dark:text-orange-300 bg-orange-100 dark:bg-orange-700/40 px-1.5 py-0.5 rounded-sm"
+                                  : "text-destructive-foreground bg-destructive/80 px-1.5 py-0.5 rounded-sm"
+                              }
+                            >
+                              {ing}
+                            </li>
                           ))}
                         </ul>
                       </div>
@@ -196,7 +231,7 @@ export default function ScanDeclarationPage() {
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle className="flex items-center">
-                  <Star className="h-5 w-5 mr-2 text-primary" /> {/* Changed Premium to Star */}
+                  <Star className="h-5 w-5 mr-2 text-primary" /> 
                   Free Scan Limit Reached
                 </AlertDialogTitle>
                 <AlertDialogDescription>
