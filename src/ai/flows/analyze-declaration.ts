@@ -89,7 +89,8 @@ const analyzeDeclarationPrompt = ai.definePrompt({
   *   **Biljna vlakna** (Vegetable fiber): Possible wheat origin. Risky if source not specified.
   *   **Sirće** (Vinegar): Malt vinegar ('sladno sirće') contains gluten. Distilled vinegar is usually safe. If type is unclear, be cautious.
   *   **Alkohol** (Alcohol): If from barley (e.g., beer, some whiskies), it contains gluten (see exceptions for distillates below).
-  *   **Arome / Prirodna aroma** (Flavors - natural/artificial): Can contain barley, malt, wheat derivatives. Risky if not specified as gluten-free or if 'labelingInfo' is not 'aoecs'.
+  *   **Arome / Prirodna aroma** (Flavors - natural/artificial): Generalno mogu sadržati nosače na bazi glutena (ječam, slad, derivati pšenice). Rizično ako nije specificirano kao bezglutensko ili ako 'labelingInfo' nije 'aoecs'.
+      *   *Posebna napomena za **Aroma vanile (Vanilla aroma):*** U većini slučajeva se smatra bezbednom. Međutim, u retkim situacijama može sadržati alkohol dobijen iz žitarica. Ako proizvod nema jasnu gluten-free oznaku (npr. 'labelingInfo' je 'none' ili 'unknown'), a sadrži aromu vanile, preporučuje se dodatna provera ili oprez.
   *   **Ekstrakt kvasca** (Yeast extract): Possible trace gluten. Risky if product not certified gluten-free (i.e. 'labelingInfo' is not 'aoecs').
   *   **Mladi ječam** (Young barley/barley grass): Gluten-free only if harvested before jointing and certified. Assume products with 'ječam' contain gluten unless explicitly stated otherwise under AOECS.
   *   **Rizični E-Brojevi (Risky E-Numbers):**
@@ -112,7 +113,7 @@ const analyzeDeclarationPrompt = ai.definePrompt({
   1.  **Scan for Direktni Izvori Glutena:** If any are found (and not an exempt form like GF wheat starch under AOECS), set 'hasGluten' to true, list them, high confidence (0.9-1.0).
   2.  **Assess Rizični Sastojci:**
       *   **Ovas (Oats):** If present and NOT explicitly 'sertifikovan bezglutenski ovas' AND 'labelingInfo' is not 'aoecs' (which implies safe oats), set 'hasGluten' to true, list 'Ovas (nesertifikovan)', high confidence. If 'labelingInfo' is 'aoecs', assume oats are GF.
-      *   **Other Risky Ingredients (including E-numbers):** If found:
+      *   **Other Risky Ingredients (including E-numbers and specific note for Aroma vanile):** If found:
           *   Check if an exception under 'Dozvoljeni Izuzeci'. If yes, do not set 'hasGluten: true' solely on this.
           *   If 'labelingInfo' is 'aoecs', assume the ingredient is handled/sourced safely unless it's a non-exempt direct gluten source. Note this assumption in 'reason'.
           *   If not an exception and 'labelingInfo' is not 'aoecs' (or is 'none'/'unknown'), set 'hasGluten' to true. Confidence 0.6-0.9.
