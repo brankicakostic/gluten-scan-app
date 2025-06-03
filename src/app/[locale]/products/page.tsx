@@ -809,27 +809,279 @@ const rawProductsData = [
     "source": "Aleva.rs (primer)",
     "tags": ["vegan"],
     "imageUrl": "https://placehold.co/400x200.png",
-    "nutriscore": "A"
+    "nutriscore": "A",
+    "jsonCategory": "Spices & Seasonings",
+    "Poreklo": "Srbija"
+  },
+  // Slavuj products start here
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176510",
+    "name":"Integralno brašno od prosa",
+    "size":"500g",
+    "jsonCategory":"Brašno",
+    "nutriscore":"B",
+    "Poreklo":"Srbija",
+    "ingredients": ["Integralno brašno od prosa 100%"],
+    "labelText": "Integralno brašno od prosa",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "name": "Aleva Kokošija Supa sa Rezancima",
-    "brand": "Aleva",
-    "barcode": "8600500000028",
-    "size": "65g",
-    "ingredients": ["Rezanci 58% (pšenična krupica, jaja u prahu)", "kuhinjska so 14.5%", "sušeno povrće 9.7% (šargarepa, crni luk, paškanat)", "palmina mast", "pojačivači arome (mononatrijum-glutaminat 4.5%, dinatrijum 5'-ribonukleotidi)", "šećer", "ekstrakt kvasca", "hidrolizovani biljni proteini soje", "arome (sadrže celer)", "začini (peršun list, biber)", "boja (karamel obični)", "kokošiji mesni ekstrakt 0.2%"],
-    "labelText": "Bistra kokošija supa sa rezancima",
-    "license": false,
-    "manufacturerStatement": false,
-    "verified": false,
-    "source": "Aleva.rs (primer)",
-    "tags": [], // Logic will add 'contains-wheat' and 'contains-gluten'
-    "imageUrl": "https://placehold.co/400x200.png",
-    "nutriscore": "D"
+    "brand": "Slavuj",
+    "barcode":"8606109176527",
+    "name":"Integralno brašno od polbe",
+    "size":"500g",
+    "jsonCategory":"Brašno",
+    "nutriscore":"B",
+    "Poreklo":"Srbija",
+    "ingredients": ["Integralno brašno od polbe 100%"], // Contains gluten
+    "labelText": "Integralno brašno od polbe",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176329",
+    "name":"Integralno brašno od heljde",
+    "size":"500g",
+    "jsonCategory":"Brašno",
+    "nutriscore":"B",
+    "Poreklo":"Srbija",
+    "ingredients": ["Integralno brašno od heljde 100%"],
+    "labelText": "Integralno brašno od heljde",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176497",
+    "name":"Integralno brašno od prosa",
+    "size":"5kg",
+    "jsonCategory":"Brašno",
+    "nutriscore":"B",
+    "Poreklo":"Srbija",
+    "ingredients": ["Integralno brašno od prosa 100%"],
+    "labelText": "Integralno brašno od prosa",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176503",
+    "name":"Integralno brašno od polbe",
+    "size":"5kg",
+    "jsonCategory":"Brašno",
+    "nutriscore":"B",
+    "Poreklo":"Srbija",
+    "ingredients": ["Integralno brašno od polbe 100%"], // Contains gluten
+    "labelText": "Integralno brašno od polbe",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176473",
+    "name":"Integralno brašno od heljde",
+    "size":"5kg",
+    "jsonCategory":"Brašno",
+    "nutriscore":"B",
+    "Poreklo":"Srbija",
+    "ingredients": ["Integralno brašno od heljde 100%"],
+    "labelText": "Integralno brašno od heljde",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176459",
+    "name":"Pahuljice od sirove heljde",
+    "size":"300g",
+    "jsonCategory":"Pahuljice",
+    "nutriscore":"A",
+    "Poreklo":"Srbija",
+    "ingredients": ["Pahuljice od sirove heljde 100%"],
+    "labelText": "Pahuljice od sirove heljde",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176138",
+    "name":"Pahuljice od heljde",
+    "size":"300g",
+    "jsonCategory":"Pahuljice",
+    "nutriscore":"A",
+    "Poreklo":"Srbija",
+    "ingredients": ["Pahuljice od heljde 100%"],
+    "labelText": "Pahuljice od heljde",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176022",
+    "name":"Pahuljice od prosa",
+    "size":"300g",
+    "jsonCategory":"Pahuljice",
+    "nutriscore":"A",
+    "Poreklo":"Srbija",
+    "ingredients": ["Pahuljice od prosa 100%"],
+    "labelText": "Pahuljice od prosa",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176015",
+    "name":"Pahuljice od pirinča",
+    "size":"300g",
+    "jsonCategory":"Pahuljice",
+    "nutriscore":"A",
+    "Poreklo":"Srbija",
+    "ingredients": ["Pahuljice od pirinča 100%"],
+    "labelText": "Pahuljice od pirinča",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176039",
+    "name":"Pahuljice od graška",
+    "size":"300g",
+    "jsonCategory":"Pahuljice",
+    "nutriscore":"A",
+    "Poreklo":"Srbija",
+    "ingredients": ["Pahuljice od graška 100%"],
+    "labelText": "Pahuljice od graška",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176084",
+    "name":"Pahuljice od kukuruza",
+    "size":"300g",
+    "jsonCategory":"Pahuljice",
+    "nutriscore":"A",
+    "Poreklo":"Srbija",
+    "ingredients": ["Pahuljice od kukuruza 100%"],
+    "labelText": "Pahuljice od kukuruza",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176008",
+    "name":"Pahuljice od heljde",
+    "size":"500g",
+    "jsonCategory":"Pahuljice",
+    "nutriscore":"A",
+    "Poreklo":"Srbija",
+    "ingredients": ["Pahuljice od heljde 100%"],
+    "labelText": "Pahuljice od heljde",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176768",
+    "name":"Pahuljice od kukuruza",
+    "size":"3kg",
+    "jsonCategory":"Pahuljice",
+    "nutriscore":"A",
+    "Poreklo":"Srbija",
+    "ingredients": ["Pahuljice od kukuruza 100%"],
+    "labelText": "Pahuljice od kukuruza",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176183",
+    "name":"Pahuljice od prosa",
+    "size":"3kg",
+    "jsonCategory":"Pahuljice",
+    "nutriscore":"A",
+    "Poreklo":"Srbija",
+    "ingredients": ["Pahuljice od prosa 100%"],
+    "labelText": "Pahuljice od prosa",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176176", // Note: Duplicate barcode with another "Pahuljice od kukuruza 3kg", check if intentional
+    "name":"Pahuljice od kukuruza",
+    "size":"3kg",
+    "jsonCategory":"Pahuljice",
+    "nutriscore":"A",
+    "Poreklo":"Srbija",
+    "ingredients": ["Pahuljice od kukuruza 100%"],
+    "labelText": "Pahuljice od kukuruza",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109177628",
+    "name":"Heljda oljuštena-sirova",
+    "size":"300g",
+    "jsonCategory":"Drevna zrna",
+    "nutriscore":"A",
+    "Poreklo":"Srbija",
+    "ingredients": ["Heljda oljuštena-sirova 100%"],
+    "labelText": "Heljda oljuštena-sirova",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176275",
+    "name":"Heljda propržena",
+    "size":"300g",
+    "jsonCategory":"Drevna zrna",
+    "nutriscore":"A",
+    "Poreklo":"Srbija",
+    "ingredients": ["Heljda propržena 100%"],
+    "labelText": "Heljda propržena",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176628",
+    "name":"Zrno polbe glazirano",
+    "size":"300g",
+    "jsonCategory":"Drevna zrna",
+    "nutriscore":"A",
+    "Poreklo":"Srbija",
+    "ingredients": ["Zrno polbe glazirano 100%"], // Contains gluten
+    "labelText": "Zrno polbe glazirano",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176251",
+    "name":"Proso",
+    "size":"300g",
+    "jsonCategory":"Drevna zrna",
+    "nutriscore":"A",
+    "Poreklo":"Srbija",
+    "ingredients": ["Proso 100%"],
+    "labelText": "Proso",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109177669",
+    "name":"Prirodni med od heljde",
+    "size":"900g",
+    "jsonCategory":"Med",
+    "nutriscore":"C",
+    "Poreklo":"Srbija",
+    "ingredients": ["Prirodni med od heljde 100%"],
+    "labelText": "Prirodni med od heljde",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan"], "imageUrl": "https://placehold.co/400x200.png"
+  },
+  {
+    "brand": "Slavuj",
+    "barcode":"8606109176893",
+    "name":"Prirodni med od heljde",
+    "size":"400g",
+    "jsonCategory":"Med",
+    "nutriscore":"C",
+    "Poreklo":"Srbija",
+    "ingredients": ["Prirodni med od heljde 100%"],
+    "labelText": "Prirodni med od heljde",
+    "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tags": ["vegan"], "imageUrl": "https://placehold.co/400x200.png"
   }
 ];
 
 export const placeholderProducts: Product[] = rawProductsData.map((p, index) => {
-  const originalTags = p.tags.map(t => t.toLowerCase());
+  const originalTags = p.tags?.map(t => t.toLowerCase()) || []; // Ensure p.tags is defined
   const isSugarFree = originalTags.includes('bez šećera');
   const isPosnoSource = originalTags.includes('vegan'); 
   const isProteinSource = originalTags.includes('protein');
@@ -844,7 +1096,7 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
     productTags.push('contains-gluten');
     containsKnownGlutenSource = true;
   }
-  if (ingredientsString.includes('pšenic') || ingredientsString.includes('wheat') || ingredientsString.includes('pšenična krupica') || ingredientsString.includes('pšenični skrob') || ingredientsString.includes('durum') || ingredientsString.includes('spelta') || ingredientsString.includes('kuskus')) { 
+  if (ingredientsString.includes('pšenic') || ingredientsString.includes('wheat') || ingredientsString.includes('pšenična krupica') || ingredientsString.includes('pšenični skrob') || ingredientsString.includes('durum') || ingredientsString.includes('spelta') || ingredientsString.includes('kuskus') || ingredientsString.includes('polbe')) { 
     productTags.push('contains-wheat');
     if (!productTags.includes('contains-gluten')) productTags.push('contains-gluten');
     containsKnownGlutenSource = true;
@@ -870,7 +1122,7 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   if (isPosnoSource) productTags.push('posno');
   if (isProteinSource) productTags.push('high-protein');
   
-  p.tags.forEach(tag => {
+  (p.tags || []).forEach(tag => { // Ensure p.tags is defined
     const lowerTag = tag.toLowerCase();
     if (lowerTag !== 'bez šećera' && lowerTag !== 'vegan' && lowerTag !== 'protein' && !productTags.includes(lowerTag)) {
       productTags.push(lowerTag);
@@ -880,9 +1132,15 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   let category = 'Other';
   const lowerName = p.name.toLowerCase();
   const lowerLabelText = p.labelText ? p.labelText.toLowerCase() : '';
+  const jsonCategory = p.jsonCategory?.toLowerCase(); // Use the temp jsonCategory
 
-
-  if (lowerName.includes('palenta') || lowerLabelText.includes('palenta') || lowerName.includes('griz') || lowerLabelText.includes('griz') || lowerName.includes('brašno') || lowerLabelText.includes('brašno') || lowerName.includes('mix') || lowerLabelText.includes('mix') || lowerName.includes('prezle') || lowerLabelText.includes('prezle') || lowerName.includes('tapioka') || lowerLabelText.includes('tapioka')) {
+  if (jsonCategory === 'brašno' || jsonCategory === 'drevna zrna') {
+    category = 'Flours & Grains';
+  } else if (jsonCategory === 'pahuljice') {
+    category = 'Cereals & Flakes';
+  } else if (jsonCategory === 'med') {
+    category = 'Honey & Sweeteners';
+  } else if (lowerName.includes('palenta') || lowerLabelText.includes('palenta') || lowerName.includes('griz') || lowerLabelText.includes('griz') || lowerName.includes('mix') || lowerLabelText.includes('mix') || lowerName.includes('prezle') || lowerLabelText.includes('prezle') || lowerName.includes('tapioka') || lowerLabelText.includes('tapioka')) {
     category = 'Flours & Grains';
   } else if (lowerName.includes('keks') || lowerLabelText.includes('keks') || lowerName.includes('cookies') || lowerLabelText.includes('cookies') || lowerName.includes('kolutići') || lowerLabelText.includes('kolutići') || lowerName.includes('vanilice') || lowerLabelText.includes('vanilice') || lowerName.includes('pusa') || lowerLabelText.includes('pusa')) {
     category = 'Sweets & Biscuits';
@@ -896,9 +1154,10 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
     category = 'Pasta & Noodles';
   } else if (lowerName.includes('pire') || lowerLabelText.includes('pire') || lowerName.includes('supa') || lowerLabelText.includes('supa')) {
     category = 'Soups & Instant Meals';
-  } else if (lowerName.includes('začin') || lowerLabelText.includes('začin') || lowerName.includes('paprika') || lowerLabelText.includes('paprika') || lowerName.includes('biber') || lowerLabelText.includes('biber') || (lowerName.includes('so') && !lowerName.includes('sos'))) {
+  } else if (jsonCategory === 'spices & seasonings' || lowerName.includes('začin') || lowerLabelText.includes('začin') || lowerName.includes('paprika') || lowerLabelText.includes('paprika') || lowerName.includes('biber') || lowerLabelText.includes('biber') || (lowerName.includes('so') && !lowerName.includes('sos'))) {
     category = 'Spices & Seasonings';
   }
+
 
   let actualIsPosno = isPosnoSource;
   let actualIsLactoseFree = isPosnoSource; 
@@ -914,17 +1173,6 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
       actualIsLactoseFree = false;
       const posnoIndex = productTags.indexOf('posno');
       if (posnoIndex > -1) productTags.splice(posnoIndex, 1);
-  }
-  if (p.barcode === "8600500000028" && (ingredientsString.includes('jaja u prahu') || ingredientsString.includes('kokošiji mesni ekstrakt'))) { // Aleva Supa
-      actualIsPosno = false;
-      actualIsLactoseFree = true; // Assuming no milk derivatives unless stated for this type of soup
-      const posnoIndex = productTags.indexOf('posno');
-      if (posnoIndex > -1) productTags.splice(posnoIndex, 1);
-      // Ensure lactose-free if no milk and it's not posno due to eggs/meat
-      if (!productTags.includes('lactose-free') && !ingredientsString.includes('mleko') && !ingredientsString.includes('surutk')) {
-        productTags.push('lactose-free');
-        actualIsLactoseFree = true;
-      }
   }
   
   const isFullUrl = p.imageUrl.startsWith('http://') || p.imageUrl.startsWith('https://');
@@ -943,15 +1191,15 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   const nutriScoreValue = p.nutriscore && p.nutriscore.toUpperCase() !== "N/A" ? p.nutriscore.toUpperCase() : undefined;
 
   return {
-    id: p.barcode || `product-${index}`, // Use barcode as ID if available, otherwise fallback
+    id: p.barcode || `product-${index}-${p.name.replace(/\s+/g, '-')}`, // Ensure unique ID
     name: p.name,
     brand: p.brand,
     barcode: p.barcode || undefined,
     category: category,
     imageUrl: finalImageUrl,
-    description: `${p.labelText}${p.size ? ' - ' + p.size : ''}`,
+    description: `${p.labelText || p.name}${p.size ? ' - ' + p.size : ''}${p.Poreklo ? ' (Poreklo: ' + p.Poreklo + ')' : ''}`,
     ingredientsText: Array.isArray(p.ingredients) ? p.ingredients.join(', ') : p.ingredients,
-    labelText: p.labelText,
+    labelText: p.labelText || p.name,
     hasAOECSLicense: p.license,
     hasManufacturerStatement: p.manufacturerStatement,
     isVerifiedAdmin: p.verified,
@@ -961,7 +1209,7 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
     isLactoseFree: actualIsLactoseFree, 
     isSugarFree: isSugarFree,
     isPosno: actualIsPosno,
-    dataAiHint: sanitizeForDataAiHint(p.name, `product ${index}`),
+    dataAiHint: sanitizeForDataAiHint(p.name, `product ${p.brand?.toLowerCase() || 'item'} ${index}`),
   };
 });
 
