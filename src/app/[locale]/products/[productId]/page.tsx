@@ -16,6 +16,8 @@ import { placeholderProducts } from '@/app/[locale]/products/page';
 import { Badge } from '@/components/ui/badge';
 import { useFavorites } from '@/contexts/favorites-context';
 import { useToast } from '@/hooks/use-toast';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 
 // Updated Product interface to align with schema
 export interface Product {
@@ -107,7 +109,7 @@ export default function ProductDetailPage() {
       removeFavorite(product.id);
       toast({ title: `${product.name} removed from favorites.` });
     } else {
-      addFavorite(product); // Pass the full product object
+      addFavorite(product.id); // Pass only product ID as per context definition
       toast({ title: `${product.name} added to favorites!` });
     }
   };
@@ -276,10 +278,38 @@ export default function ProductDetailPage() {
                   )}
                   
                   <div>
-                    <h3 className="text-md font-semibold mb-2">Certifications & Verifications</h3>
+                    <h3 className="text-md font-semibold mb-2">Certifications &amp; Verifications</h3>
                     <div className="space-y-2">
-                      <DietaryTag label="AOECS Licensed" icon={ShieldCheck} present={product.hasAOECSLicense} />
-                      <DietaryTag label="Manufacturer Statement (Gluten-Free)" icon={FileText} present={product.hasManufacturerStatement} />
+                      {product.hasAOECSLicense && (
+                        <TooltipProvider delayDuration={300}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex items-center text-sm text-foreground cursor-help">
+                                <ShieldCheck className="h-4 w-4 mr-2 text-primary" />
+                                <span>AOECS Licensed</span>
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent className="w-64 text-sm">
+                              <p>✅ AOECS sertifikat potvrđuje da je proizvod prošao strogu kontrolu i laboratorijska testiranja. Siguran je za osobe sa celijakijom i označen je simbolom prekriženog klasja.</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                      {product.hasManufacturerStatement && (
+                         <TooltipProvider delayDuration={300}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex items-center text-sm text-foreground cursor-help">
+                                <FileText className="h-4 w-4 mr-2 text-primary" />
+                                <span>Manufacturer Statement (Gluten-Free)</span>
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent className="w-64 text-sm">
+                              <p>ℹ️ Proizvođač tvrdi da proizvod ne sadrži gluten i da se pakuje bez kontaminacije. Ipak, bez sertifikata ili laboratorijskog testa, ovo se tretira kao informacija iz poverenja, ali ne kao garancija.</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
                       <DietaryTag label="Admin Verified" icon={CheckCircle} present={product.isVerifiedAdmin} />
                     </div>
                   </div>
