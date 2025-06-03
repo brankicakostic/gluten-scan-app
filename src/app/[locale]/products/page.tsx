@@ -18,17 +18,14 @@ import { Badge } from '@/components/ui/badge';
 import type { Product } from './[productId]/page'; 
 
 const firebaseStorageBaseUrl = 'https://firebasestorage.googleapis.com/v0/b/gluten-detective-8ukpw.firebasestorage.app/o/products%2F';
-const firebaseStorageTokenPlaceholder = '?alt=media&token=REPLACE_WITH_ACTUAL_TOKEN'; // Replace with actual token if needed or ensure files are public
 
 const sanitizeForDataAiHint = (text: string | undefined, fallback: string): string => {
   if (!text) return fallback;
   return text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').split('-').slice(0,2).join(' ');
 };
 
-// Note: Added 'seriesAffected', 'warning', 'note' and 'tagsFromInput' to raw data structure
-// Also renamed 'ean' to 'barcode' in new entries, and 'weight' to 'size'
 const rawProductsData = [
-  // ... (Aleksandrija Fruška Gora products remain here) ...
+  // Aleksandrija Fruška Gora products
   {
     "name": "Instant Palenta",
     "brand": "Aleksandrija Fruška Gora",
@@ -832,6 +829,7 @@ const rawProductsData = [
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
+  // Aleva products
   {
     "name": "Aleva Paprika Slatka Mlevena",
     "brand": "Aleva",
@@ -940,23 +938,23 @@ const rawProductsData = [
   },
   // Molendini Products
   ...[
-    { "barcode": "8600955501298", "name": "Keks sa voćnim punjenjem od aronije, šljive i jabuke 180g", "ingredients": "voćno punjenje - aronija, šljiva i jabuka 27 % (voćna kaša - aronija 30 %, šljiva 30 % i jabuka 15 %, šećer, zgušnjivač: agar i limunska kiselina), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-sa-vo-nim-punjenjem-od-aronije-ljive-i-jabuke-180g-8600955501298.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
-    { "barcode": "8600955501281", "name": "Keks sa voćnim punjenjem od kajsije i jabuke 180g", "ingredients": "voćno punjenje - kajsija i jabuka 27 % (voćna kaša - kajsija 30 % i jabuka 30 %, šećer, glukozni sirup i limunska kiselina), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-sa-vo-nim-punjenjem-od-kajsije-i-jabuke-180g-8600955501281.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
-    { "barcode": "8600955501311", "name": "Keks sa voćnim punjenjem od višnje i jabuke 180g", "ingredients": "voćno punjenje - višnja i jabuka 27 % (voćna kaša - višnja 30 % i jabuka 30 %, šećer, glukozni sirup i limunska kiselina), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-sa-vo-nim-punjenjem-od-vi-nje-i-jabuke-180g-8600955501311.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
-    { "barcode": "8600955501274", "name": "Keks punjen kremom 180g", "ingredients": "punjenje – krem 23 % (šećer, nehidrogenizovana biljna ulja i masti (ulja (suncokreta), masti (palme)), kakao prah sa redukovanim sadržajem kakao maslaca (16,5 %), lešnici, kukuruzni skrob, emulgator (suncokretov lecitin) i aroma (vanilin)), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-punjen-kremom-180g-8600955501274.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
-    { "barcode": "8600955501526", "name": "Keks punjen belim kremom 180g", "ingredients": "punjenje – beli krem 23 % (šećer, nehidrogenizovana biljna ulja i masti (ulja (suncokreta), masti (palme)), bela čokolada 10 % ( šećer, mleko u prahu, kakao maslac), mleko u prahu, kukuruzni skrob, emulgator (suncokretov lecitin) i aroma), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-punjen-belim-kremom-180g-8600955501526.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
-    { "barcode": "8600955501519", "name": "Keks punjen kremom sa lešnikom 180g", "ingredients": "punjenje – krem proizvod sa dodatkom lešnika 23 % (šećer, nehidrogenizovana biljna ulja i masti (ulja (suncokreta), masti (palme)), kakao prah sa redukovanim sadržajem kakao maslaca 5,8%, obrano mleko u prahu 5,35%, lešnici 5,3 %, surutka u prahu, sojino brašno, emulgator (sojin lecitin) i aroma), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-punjen-kremom-sa-le-nikom-180g-8600955501519.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
-    { "barcode": "8600955501304", "name": "Keks sa šumskim voćem 180g", "ingredients": "invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), šumsko voće 4,4 % (kandirana brusnica 1,6 %, kandirana aronija 1,6 %, kandirana kupina 0,4 %, kandirana jagoda 0,4 %, kandirana malina 0,4 %), surogat čokolade u granulama 4 % (šećer, potpuno hidrogenizovane biljne masti palminog jezgra, kakao prah sa redukovanim sadržajem kakao maslaca 16 %, emulgator - sojin lecitin, aroma – vanilin), med, kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin), aroma šumskog voća i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-sa-umskim-vo-em-180g-8600955501304.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
-    { "barcode": "8600955501809", "name": "Keks Frollini sa kremom 120g", "ingredients": "brašno (pirinčano brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno, obezmašćeno sojino brašno), punjenje – krem 13 % (šećer, nehidrogenizovana biljna ulja i masti (ulja (suncokreta), masti (palme)), kakao prah sa redukovanim sadržajem kakao maslaca (16,5 %), lešnici, kukuruzni skrob, emulgator (suncokretov lecitin) i aroma (vanilin)), biljna (palmina) mast, invertni šećerni sirup, kukuruzni skrob, šećer, med, belance u prahu, sredstva za dizanje testa (natrijum-hidrogenkarbonat i natrijum-pirofosfat), so, limunska kiselina, konzervans (kalijum-sorbat), stabilizator (guar guma), emulgator (sojin lecitin) i  aroma slatke pavlake.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-frollini-sa-kremom-120g-8600955501809.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
-    { "barcode": "8600955501816", "name": "Keks Frollini sa belim kremom 120g", "ingredients": "brašno (pirinčano brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno, obezmašćeno sojino brašno), punjenje – beli krem 13 % (šećer, nehidrogenizovana biljna ulja i masti (ulja (suncokreta), masti (palme)), bela čokolada 10 % ( šećer, mleko u prahu, kakao maslac), mleko u prahu, kukuruzni skrob, emulgator (suncokretov lecitin) i aroma), biljna (palmina) mast, invertni šećerni sirup, kukuruzni skrob, šećer, med, belance u prahu,  sredstva za dizanje testa (natrijum hidrogenkarbonat i natrijum pirofosfat), so, kakao prah sa redukovanim sadržajem kakao maslaca, limunska kiselina, konzervans (kalijum-sorbat), aroma čokolade, stabilizator (guar guma),  emulgator (sojin lecitin), aroma slatke pavlake i prirodna boja (oksid gvožđa). ", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-frollini-sa-belim-kremom-120g-8600955501816.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
-    { "barcode": "8600955501861", "name": "Keks sa urmom punjen šljivom 180g", "ingredients": "urma (mlevena) 27 %, voćno punjenje - šljiva 20 % (voćna kaša – šljiva 99,4 % i zgušnjivač: agar), brašno (heljdino brašno, pirinčano brašno i ekstrudirano kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, belance u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-sa-urmom-punjen-ljivom-180g-8600955501861.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
-    { "barcode": "8600955501878", "name": "Keks sa urmom punjen višnjom 180g", "ingredients": "urma (mlevena) 27%, voćno punjenje - višnja 20 % (voćna kaša – višnja 99,4 % i zgušnjivač: agar), brašno (heljdino brašno, pirinčano brašno i ekstrudirano kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), mešavina začina (cimet, karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, belance u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-sa-urmom-punjen-vi-njom-180g-8600955501878.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
-    { "barcode": "8600955501885", "name": "Keks sa urmom punjen smokvom 180g", "ingredients": "urma (mlevena) 27 %, voćno punjenje - smokva 20 % (voćna kaša – smokva 99,4 % i zgušnjivač: agar), brašno (heljdino brašno, pirinčano brašno i ekstrudirano kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, belance u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-sa-urmom-punjen-smokvom-180g-8600955501885.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
-    { "barcode": "8600955501991", "name": "Kreker sa đumbirom - BEZ ŠEĆERA 120g", "ingredients": "brašno (pirinčano/rižino brašno, heljdino brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno i brašno od prosa), biljna (palmina) mast, kukuruzni skrob,                               mlevene/mljevene semenke/sjemenke biljke chia (Salvia hispanica), citrusna vlakna, so/sol, đumbir u prahu 1%, kiselina/kisjelina (limunska kiselina/kisjelina), konzervans (kalijum-sorbat), sredstva za dizanje testa/tijesta (natrijum-hidrogenkarbonat i natrijum-pirofosfat), stabilizator (guar guma), emulgator (sojin lecitin) i aroma đumbir. ", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/kreker-sa-umbirom-bez-e-era-120g-8600955501991.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
-    { "barcode": "8600955501977", "name": "Kreker sa belim lukom - BEZ ŠEĆERA 120g", "ingredients": "brašno (pirinčano/rižino brašno, heljdino brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno i brašno od prosa), biljna (palmina) mast, kukuruzni skrob, mlevene/mljevene semenke/sjemenke biljke chia (Salvia hispanica), citrusna vlakana, so/sol, beli/bijeli luk u prahu 0,65%, kiselina/kisjelina (limunska kiselina/kisjelina), konzervans (kalijum-sorbat), sredstva za dizanje testa/tijesta (natrijum-hidrogenkarbonat i natrijum-pirofosfat), stabilizator (guar guma) i emulgator (sojin lecitin).", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/kreker-sa-belim-lukom-bez-e-era-120g-8600955501977.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
-    { "barcode": "8600955501984", "name": "Kreker sa čilijem - BEZ ŠEĆERA 120g", "ingredients": "brašno (pirinčano/rižino brašno, heljdino brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno i brašno od prosa), biljna (palmina) mast, kukuruzni skrob,                               mlevene/mljevene semenke/sjemenke biljke chia (Salvia hispanica), citrusna vlakna, so/sol, kiselina/kisjelina (limunska kiselina/kisjelina), konzervans (kalijum-sorbat), sredstva za dizanje testa/tijesta (natrijum-hidrogenkarbonat i natrijum-pirofosfat), čili u prahu 0,4%, stabilizator (guar guma) i emulgator (sojin lecitin).", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/kreker-sa-ilijem-bez-e-era-120g-8600955501984.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
-    { "barcode": "8600955502004", "name": "Kreker sa kikirikijem - BEZ ŠEĆERA 120g", "ingredients": "brašno (pirinčano/rižino brašno, heljdino brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno i brašno od prosa), biljna (palmina) mast, kukuruzni skrob,                               mleveni/mljeveni kikiriki 4,5 %, mlevene/mljevene semenke/sjemenke biljke chia (Salvia hispanica), citrusna vlakna, so/sol, kiselina/kisjelina (limunska kiselina/kisjelina), konzervans (kalijum-sorbat), sredstva za dizanje testa/tijesta (natrijum-hidrogenkarbonat i natrijum-pirofosfat), stabilizator (guar guma), emulgator (sojin lecitin) i aroma kikirikija.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/kreker-sa-kikirikijem-bez-e-era-120g-8600955502004.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
-  ].map(p => ({...p, barcode: String(p.barcode) })), // Convert EAN to string barcode
+    { "ean": 8600955501298, "name": "Keks sa voćnim punjenjem od aronije, šljive i jabuke 180g", "ingredients": "voćno punjenje - aronija, šljiva i jabuka 27 % (voćna kaša - aronija 30 %, šljiva 30 % i jabuka 15 %, šećer, zgušnjivač: agar i limunska kiselina), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-sa-vo-nim-punjenjem-od-aronije-ljive-i-jabuke-180g-8600955501298.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
+    { "ean": 8600955501281, "name": "Keks sa voćnim punjenjem od kajsije i jabuke 180g", "ingredients": "voćno punjenje - kajsija i jabuka 27 % (voćna kaša - kajsija 30 % i jabuka 30 %, šećer, glukozni sirup i limunska kiselina), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-sa-vo-nim-punjenjem-od-kajsije-i-jabuke-180g-8600955501281.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
+    { "ean": 8600955501311, "name": "Keks sa voćnim punjenjem od višnje i jabuke 180g", "ingredients": "voćno punjenje - višnja i jabuka 27 % (voćna kaša - višnja 30 % i jabuka 30 %, šećer, glukozni sirup i limunska kiselina), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-sa-vo-nim-punjenjem-od-vi-nje-i-jabuke-180g-8600955501311.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
+    { "ean": 8600955501274, "name": "Keks punjen kremom 180g", "ingredients": "punjenje – krem 23 % (šećer, nehidrogenizovana biljna ulja i masti (ulja (suncokreta), masti (palme)), kakao prah sa redukovanim sadržajem kakao maslaca (16,5 %), lešnici, kukuruzni skrob, emulgator (suncokretov lecitin) i aroma (vanilin)), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-punjen-kremom-180g-8600955501274.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
+    { "ean": 8600955501526, "name": "Keks punjen belim kremom 180g", "ingredients": "punjenje – beli krem 23 % (šećer, nehidrogenizovana biljna ulja i masti (ulja (suncokreta), masti (palme)), bela čokolada 10 % ( šećer, mleko u prahu, kakao maslac), mleko u prahu, kukuruzni skrob, emulgator (suncokretov lecitin) i aroma), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-punjen-belim-kremom-180g-8600955501526.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
+    { "ean": 8600955501519, "name": "Keks punjen kremom sa lešnikom 180g", "ingredients": "punjenje – krem proizvod sa dodatkom lešnika 23 % (šećer, nehidrogenizovana biljna ulja i masti (ulja (suncokreta), masti (palme)), kakao prah sa redukovanim sadržajem kakao maslaca 5,8%, obrano mleko u prahu 5,35%, lešnici 5,3 %, surutka u prahu, sojino brašno, emulgator (sojin lecitin) i aroma), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-punjen-kremom-sa-le-nikom-180g-8600955501519.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
+    { "ean": 8600955501304, "name": "Keks sa šumskim voćem 180g", "ingredients": "invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), šumsko voće 4,4 % (kandirana brusnica 1,6 %, kandirana aronija 1,6 %, kandirana kupina 0,4 %, kandirana jagoda 0,4 %, kandirana malina 0,4 %), surogat čokolade u granulama 4 % (šećer, potpuno hidrogenizovane biljne masti palminog jezgra, kakao prah sa redukovanim sadržajem kakao maslaca 16 %, emulgator - sojin lecitin, aroma – vanilin), med, kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin), aroma šumskog voća i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-sa-umskim-vo-em-180g-8600955501304.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
+    { "ean": 8600955501809, "name": "Keks Frollini sa kremom 120g", "ingredients": "brašno (pirinčano brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno, obezmašćeno sojino brašno), punjenje – krem 13 % (šećer, nehidrogenizovana biljna ulja i masti (ulja (suncokreta), masti (palme)), kakao prah sa redukovanim sadržajem kakao maslaca (16,5 %), lešnici, kukuruzni skrob, emulgator (suncokretov lecitin) i aroma (vanilin)), biljna (palmina) mast, invertni šećerni sirup, kukuruzni skrob, šećer, med, belance u prahu, sredstva za dizanje testa (natrijum-hidrogenkarbonat i natrijum-pirofosfat), so, limunska kiselina, konzervans (kalijum-sorbat), stabilizator (guar guma), emulgator (sojin lecitin) i  aroma slatke pavlake.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-frollini-sa-kremom-120g-8600955501809.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
+    { "ean": 8600955501816, "name": "Keks Frollini sa belim kremom 120g", "ingredients": "brašno (pirinčano brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno, obezmašćeno sojino brašno), punjenje – beli krem 13 % (šećer, nehidrogenizovana biljna ulja i masti (ulja (suncokreta), masti (palme)), bela čokolada 10 % ( šećer, mleko u prahu, kakao maslac), mleko u prahu, kukuruzni skrob, emulgator (suncokretov lecitin) i aroma), biljna (palmina) mast, invertni šećerni sirup, kukuruzni skrob, šećer, med, belance u prahu,  sredstva za dizanje testa (natrijum hidrogenkarbonat i natrijum pirofosfat), so, kakao prah sa redukovanim sadržajem kakao maslaca, limunska kiselina, konzervans (kalijum-sorbat), aroma čokolade, stabilizator (guar guma),  emulgator (sojin lecitin), aroma slatke pavlake i prirodna boja (oksid gvožđa). ", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-frollini-sa-belim-kremom-120g-8600955501816.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
+    { "ean": 8600955501861, "name": "Keks sa urmom punjen šljivom 180g", "ingredients": "urma (mlevena) 27 %, voćno punjenje - šljiva 20 % (voćna kaša – šljiva 99,4 % i zgušnjivač: agar), brašno (heljdino brašno, pirinčano brašno i ekstrudirano kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, belance u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-sa-urmom-punjen-ljivom-180g-8600955501861.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
+    { "ean": 8600955501878, "name": "Keks sa urmom punjen višnjom 180g", "ingredients": "urma (mlevena) 27%, voćno punjenje - višnja 20 % (voćna kaša – višnja 99,4 % i zgušnjivač: agar), brašno (heljdino brašno, pirinčano brašno i ekstrudirano kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), mešavina začina (cimet, karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, belance u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-sa-urmom-punjen-vi-njom-180g-8600955501878.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
+    { "ean": 8600955501885, "name": "Keks sa urmom punjen smokvom 180g", "ingredients": "urma (mlevena) 27 %, voćno punjenje - smokva 20 % (voćna kaša – smokva 99,4 % i zgušnjivač: agar), brašno (heljdino brašno, pirinčano brašno i ekstrudirano kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, belance u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/keks-sa-urmom-punjen-smokvom-180g-8600955501885.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
+    { "ean": 8600955501991, "name": "Kreker sa đumbirom - BEZ ŠEĆERA 120g", "ingredients": "brašno (pirinčano/rižino brašno, heljdino brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno i brašno od prosa), biljna (palmina) mast, kukuruzni skrob,                               mlevene/mljevene semenke/sjemenke biljke chia (Salvia hispanica), citrusna vlakna, so/sol, đumbir u prahu 1%, kiselina/kisjelina (limunska kiselina/kisjelina), konzervans (kalijum-sorbat), sredstva za dizanje testa/tijesta (natrijum-hidrogenkarbonat i natrijum-pirofosfat), stabilizator (guar guma), emulgator (sojin lecitin) i aroma đumbir. ", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/kreker-sa-umbirom-bez-e-era-120g-8600955501991.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
+    { "ean": 8600955501977, "name": "Kreker sa belim lukom - BEZ ŠEĆERA 120g", "ingredients": "brašno (pirinčano/rižino brašno, heljdino brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno i brašno od prosa), biljna (palmina) mast, kukuruzni skrob, mlevene/mljevene semenke/sjemenke biljke chia (Salvia hispanica), citrusna vlakana, so/sol, beli/bijeli luk u prahu 0,65%, kiselina/kisjelina (limunska kiselina/kisjelina), konzervans (kalijum-sorbat), sredstva za dizanje testa/tijesta (natrijum-hidrogenkarbonat i natrijum-pirofosfat), stabilizator (guar guma) i emulgator (sojin lecitin).", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/kreker-sa-belim-lukom-bez-e-era-120g-8600955501977.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
+    { "ean": 8600955501984, "name": "Kreker sa čilijem - BEZ ŠEĆERA 120g", "ingredients": "brašno (pirinčano/rižino brašno, heljdino brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno i brašno od prosa), biljna (palmina) mast, kukuruzni skrob,                               mlevene/mljevene semenke/sjemenke biljke chia (Salvia hispanica), citrusna vlakna, so/sol, kiselina/kisjelina (limunska kiselina/kisjelina), konzervans (kalijum-sorbat), sredstva za dizanje testa/tijesta (natrijum-hidrogenkarbonat i natrijum-pirofosfat), čili u prahu 0,4%, stabilizator (guar guma) i emulgator (sojin lecitin).", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/kreker-sa-ilijem-bez-e-era-120g-8600955501984.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
+    { "ean": 8600955502004, "name": "Kreker sa kikirikijem - BEZ ŠEĆERA 120g", "ingredients": "brašno (pirinčano/rižino brašno, heljdino brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno i brašno od prosa), biljna (palmina) mast, kukuruzni skrob,                               mleveni/mljeveni kikiriki 4,5 %, mlevene/mljevene semenke/sjemenke biljke chia (Salvia hispanica), citrusna vlakna, so/sol, kiselina/kisjelina (limunska kiselina/kisjelina), konzervans (kalijum-sorbat), sredstva za dizanje testa/tijesta (natrijum-hidrogenkarbonat i natrijum-pirofosfat), stabilizator (guar guma), emulgator (sojin lecitin) i aroma kikirikija.", "license": false, "manufacturerStatement": true, "verified": false, "source": "Molendini katalog", "tagsFromInput": [], "imageUrl": "molendini/kreker-sa-kikirikijem-bez-e-era-120g-8600955502004.jpg", "brand": "Molendini (Velptom)", Poreklo: "Srbija" },
+  ].map(p => ({...p, barcode: String(p.ean), tagsFromInput: p.tags || [] })), // Convert EAN to string barcode and ensure tagsFromInput exists
   // Scitec Nutrition Product with Recall
   {
     "brand": "Scitec Nutrition",
@@ -984,23 +982,23 @@ const rawProductsData = [
   },
 ];
 
-export const placeholderProducts: Product[] = rawProductsData.map((p, index) => {
+export const placeholderProducts: Product[] = rawProductsData.flat().map((p, index) => {
   const originalTags = p.tagsFromInput?.map(t => t.toLowerCase()) || []; 
   const isSugarFreeInput = originalTags.includes('bez šećera') || p.name?.toLowerCase().includes('bez šećera');
   const isPosnoSource = originalTags.includes('vegan'); 
   const isProteinSource = originalTags.includes('protein');
 
-  const productTags: string[] = new Set<string>(); // Use Set to avoid duplicate tags initially
+  const productTags: Set<string> = new Set<string>(); 
   
   const ingredientsString = Array.isArray(p.ingredients) ? p.ingredients.join(' ').toLowerCase() : (typeof p.ingredients === 'string' ? p.ingredients.toLowerCase() : '');
   let containsKnownGlutenSource = false;
 
   if (p.warning) {
-    productTags.add('sadrži-gluten'); // Default to contains-gluten if warning is present
+    productTags.add('sadrži-gluten'); 
     productTags.add('upozorenje');
     productTags.add('povučeno');
     productTags.add('problematična-serija');
-    containsKnownGlutenSource = true; // Treat as containing gluten due to recall
+    containsKnownGlutenSource = true; 
   } else {
     if (ingredientsString.includes('ječma') || ingredientsString.includes('barley') || ingredientsString.includes('ječmenog slada') || ingredientsString.includes('ekstrakt slada')) {
       productTags.add('contains-barley');
@@ -1019,22 +1017,16 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
     }
     if (ingredientsString.includes('ovas') || ingredientsString.includes('zob') || ingredientsString.includes('oats')) {
       productTags.add('contains-oats');
-      // If oats are present and product is not licensed/stated GF, it's a risk
-      if (!p.license && !p.manufacturerStatement && !p.labelText?.toLowerCase().includes('gluten free')) {
-        // This could be 'may-contain-gluten' or 'risk-of-contamination' depending on strictness
-        // For now, 'contains-oats' is enough, details page can elaborate
-      }
     }
 
-    // Add 'gluten-free' tag logic
     if (!containsKnownGlutenSource) {
-      if (p.license) { // AOECS or similar license implies GF
+      if (p.license) { 
         productTags.add('gluten-free');
       } else if (p.manufacturerStatement && p.labelText?.toLowerCase().includes('gluten free')) {
         productTags.add('gluten-free');
       } else if (p.manufacturerStatement && (p.tagsFromInput || []).includes('gluten-free')) {
          productTags.add('gluten-free');
-      } else if (p.manufacturerStatement && !productTags.has('contains-oats')) { // If manufacturer states GF and no obvious gluten or oats
+      } else if (p.manufacturerStatement && !productTags.has('contains-oats')) { 
          productTags.add('gluten-free');
       }
     }
@@ -1046,9 +1038,8 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   
   (p.tagsFromInput || []).forEach(tag => { 
     const lowerTag = tag.toLowerCase();
-    // Add original tags unless they are handled by specific logic or are generic
     if (lowerTag !== 'bez šećera' && lowerTag !== 'vegan' && lowerTag !== 'protein' && 
-        !productTags.has(lowerTag) && !['gluten-free', 'contains-gluten', 'contains-wheat', 'contains-barley', 'contains-rye', 'contains-oats'].includes(lowerTag)) {
+        !productTags.has(lowerTag) && !['gluten-free', 'contains-gluten', 'contains-wheat', 'contains-barley', 'contains-rye', 'contains-oats', 'sadrži-gluten', 'upozorenje', 'povučeno', 'problematična-serija'].includes(lowerTag)) {
       productTags.add(lowerTag);
     }
   });
@@ -1064,14 +1055,14 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
     category = 'Cereals & Flakes';
   } else if (jsonCategory === 'med') {
     category = 'Honey & Sweeteners';
+  } else if (lowerName.includes('keks') || lowerLabelText.includes('keks') || lowerName.includes('cookies') || lowerLabelText.includes('cookies') || lowerName.includes('kolutići') || lowerLabelText.includes('kolutići') || lowerName.includes('vanilice') || lowerLabelText.includes('vanilice') || lowerName.includes('pusa') || lowerLabelText.includes('pusa') || lowerName.includes('frollini')) {
+    category = 'Sweets & Biscuits';
+  } else if (lowerName.includes('kreker') || lowerLabelText.includes('kreker') || lowerName.includes('štapići') || lowerLabelText.includes('štapići') || lowerName.includes('chia') || lowerLabelText.includes('chia') || lowerName.includes('alex') || lowerLabelText.includes('alex')) {
+    category = 'Salty Snacks';
   } else if (lowerName.includes('palenta') || lowerLabelText.includes('palenta') || lowerName.includes('griz') || lowerLabelText.includes('griz') || lowerName.includes('mix') || lowerLabelText.includes('mix') || lowerName.includes('prezle') || lowerLabelText.includes('prezle') || lowerName.includes('tapioka') || lowerLabelText.includes('tapioka')) {
     category = 'Flours & Grains';
-  } else if (lowerName.includes('keks') || lowerLabelText.includes('keks') || lowerName.includes('cookies') || lowerLabelText.includes('cookies') || lowerName.includes('kolutići') || lowerLabelText.includes('kolutići') || lowerName.includes('vanilice') || lowerLabelText.includes('vanilice') || lowerName.includes('pusa') || lowerLabelText.includes('pusa')) {
-    category = 'Sweets & Biscuits';
   } else if (lowerName.includes('dvopek') || lowerLabelText.includes('dvopek')) {
     category = 'Bakery';
-  } else if (lowerName.includes('štapići') || lowerLabelText.includes('štapići') || lowerName.includes('chia') || lowerLabelText.includes('chia') || lowerName.includes('alex') || lowerLabelText.includes('alex') || lowerName.includes('kreker') ) {
-    category = 'Salty Snacks';
   } else if (lowerName.includes('krem') || lowerLabelText.includes('krem')) {
     category = 'Spreads & Creams';
   } else if (lowerName.includes('noodle') || lowerLabelText.includes('noodle') || lowerName.includes('pasta') || lowerLabelText.includes('pasta') || lowerName.includes('tagliatelle') || lowerLabelText.includes('tagliatelle') || lowerName.includes('taljatele') || lowerLabelText.includes('taljatele')) {
@@ -1085,52 +1076,42 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   }
 
   let actualIsPosno = isPosnoSource;
-  let actualIsLactoseFree = isPosnoSource; // Assume posno implies lactose-free initially
+  let actualIsLactoseFree = isPosnoSource; 
   
-  // Specific overrides for lactose/posno based on ingredients
-  if (p.barcode === "8606112581172" && ingredientsString.includes('prah od sira')) { 
-    actualIsPosno = false; 
-    actualIsLactoseFree = false;
-    productTags.delete('posno');
-  }
-  if (p.barcode === "8606107907246" && ingredientsString.includes('mleko u prahu')) { 
-      actualIsPosno = false;
-      actualIsLactoseFree = false;
-      productTags.delete('posno');
-  }
-  if (p.barcode === "8600955501526" && (ingredientsString.includes('mleko u prahu') || ingredientsString.includes('bela čokolada'))) { // Molendini Keks punjen belim kremom
-    actualIsPosno = false;
-    actualIsLactoseFree = false;
-    productTags.delete('posno');
-  }
-  if (p.barcode === "8600955501519" && (ingredientsString.includes('obrano mleko u prahu') || ingredientsString.includes('surutka u prahu'))) { // Molendini Keks punjen kremom sa lešnikom
-    actualIsPosno = false;
-    actualIsLactoseFree = false;
-    productTags.delete('posno');
-  }
-   if (p.barcode === "8600955501816" && (ingredientsString.includes('mleko u prahu') || ingredientsString.includes('bela čokolada'))) { // Molendini Keks Frollini sa belim kremom
-    actualIsPosno = false;
-    actualIsLactoseFree = false;
-    productTags.delete('posno');
-  }
+  const milkKeywords = ['mleko', 'mlijeko', 'mlečni', 'surutka', 'whey', 'sir', 'cheese', 'kazein', 'casein', 'laktoza', 'lactose', 'bela čokolada']; // "bela čokolada" often contains milk
+  const eggKeywords = ['jaja', 'jaje', 'jaja u prahu', 'belance', 'belance u prahu', 'egg'];
 
-  // Add lactose-free tag if no milk ingredients and not already posno (which implies it)
-  if (!actualIsPosno && !ingredientsString.includes('mleko') && !ingredientsString.includes('mlijeko') && !ingredientsString.includes('surutka') && !ingredientsString.includes('whey') && !ingredientsString.includes('sir') && !ingredientsString.includes('cheese') && !ingredientsString.includes('kazein')) {
-      actualIsLactoseFree = true;
+  if (milkKeywords.some(kw => ingredientsString.includes(kw))) {
+    actualIsPosno = false;
+    actualIsLactoseFree = false;
+    productTags.delete('posno'); // Remove if present
   }
-  if(actualIsLactoseFree) productTags.add('lactose-free');
+  if (eggKeywords.some(kw => ingredientsString.includes(kw))) {
+    actualIsPosno = false; // Eggs are not posno
+    // Lactose status is independent of eggs
+  }
+  
+  if(actualIsLactoseFree && !productTags.has('posno')) productTags.add('lactose-free');
+  else if (!actualIsLactoseFree) productTags.delete('lactose-free');
 
 
   const isFullUrl = p.imageUrl?.startsWith('http://') || p.imageUrl?.startsWith('https://');
-  const finalImageUrl = isFullUrl ? p.imageUrl : `${firebaseStorageBaseUrl}${p.imageUrl}${p.imageUrl?.includes('?') ? '' : firebaseStorageTokenPlaceholder}`;
+  let finalImageUrl = 'https://placehold.co/400x200.png'; // Default placeholder
 
-  // Specific fix for "Integralno brašno od polbe" and "Zrno polbe glazirano" (Slavuj)
+  if (p.imageUrl) {
+    if (isFullUrl) {
+      finalImageUrl = p.imageUrl;
+    } else {
+      const encodedImagePath = p.imageUrl.replace(/\//g, '%2F');
+      finalImageUrl = `${firebaseStorageBaseUrl}${encodedImagePath}?alt=media`;
+    }
+  }
+  
   if (p.name.toLowerCase().includes("polbe")) {
     productTags.delete('gluten-free');
     productTags.add('contains-wheat'); 
     productTags.add('contains-gluten');
   }
-  // Specific fix for "Testenina Života" (Aleksandrija) which contains barley
   if (p.barcode === "8606107907567") { 
     productTags.delete('gluten-free');
     productTags.add('contains-barley');
@@ -1138,14 +1119,13 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   }
 
   const nameForDesc = p.name.replace(/(\d+g|\d+kg)/i, '').trim();
-  let description = `${nameForDesc}${p.size ? ' - ' + p.size : ''}${p.Poreklo ? ` (Poreklo: ${p.Poreklo})` : ''}`;
+  const productSizeFromName = p.name.match(/(\d+g|\d+kg)/i);
+  const currentProductSize = p.size || (productSizeFromName ? productSizeFromName[0] : p.weight); // Use p.weight as fallback for size
+
+  let description = `${nameForDesc}${currentProductSize ? ' - ' + currentProductSize : ''}${p.Poreklo ? ` (Poreklo: ${p.Poreklo})` : ''}`;
   if (p.warning && p.note) {
     description = `${p.note} Originalni opis: ${description}`;
   }
-
-
-  const sizeMatch = p.name.match(/(\d+g|\d+kg)/i);
-  const productSize = p.size || (sizeMatch ? sizeMatch[0] : undefined);
 
   return {
     id: p.barcode || `product-${index}-${p.name.replace(/\s+/g, '-')}`, 
@@ -1153,13 +1133,13 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
     brand: p.brand,
     barcode: p.barcode || undefined,
     category: category,
-    imageUrl: finalImageUrl || 'https://placehold.co/400x200.png',
+    imageUrl: finalImageUrl,
     description: description,
     ingredientsText: Array.isArray(p.ingredients) ? p.ingredients.join(', ') : (p.ingredients || "Sastojci nisu navedeni."),
     labelText: p.labelText || p.name,
-    hasAOECSLicense: p.license,
-    hasManufacturerStatement: p.manufacturerStatement,
-    isVerifiedAdmin: p.verified,
+    hasAOECSLicense: !!p.license,
+    hasManufacturerStatement: !!p.manufacturerStatement,
+    isVerifiedAdmin: !!p.verified,
     source: p.source,
     tags: Array.from(productTags),
     nutriScore: p.nutriscore && p.nutriscore.toUpperCase() !== "N/A" ? p.nutriscore.toUpperCase() : undefined,
@@ -1280,7 +1260,6 @@ export default function ProductsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {currentProductsToDisplay.map(product => {
                   const isGlutenFreeTag = product.tags?.includes('gluten-free');
-                  // For recalled products, containsGlutenTag should be true due to specific tagging
                   const containsGlutenTag = product.warning || product.tags?.includes('contains-gluten') || product.tags?.includes('sadrži-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isGlutenFreeTag);
                   const mayContainGlutenTag = !product.warning && (product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination'));
                   
@@ -1393,3 +1372,4 @@ export default function ProductsPage() {
   );
 }
 
+    
