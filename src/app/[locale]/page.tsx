@@ -345,8 +345,8 @@ export default function HomePage() {
     if (fileInput) fileInput.value = '';
     setIsTakingOcrPhoto(false);
     setErrorDeclaration(null);
-    setAnalysisResult(null); // Also clear any previous analysis result
-    setDeclarationText(''); // Clear text area
+    setAnalysisResult(null); 
+    // setDeclarationText(''); // Do not clear manual declaration text here
   };
 
 
@@ -377,7 +377,8 @@ export default function HomePage() {
       setShowScanLimitModal(true);
       return;
     }
-    resetOcrState(); // Clear previous OCR/analysis states
+    resetOcrState(); 
+    setDeclarationText(''); // Clear manual text when initiating photo capture
     setIsTakingOcrPhoto(true);
     setHasOcrCameraPermission(null); 
   };
@@ -799,8 +800,23 @@ export default function HomePage() {
                         placeholder="e.g., Wheat flour, sugar, salt, yeast, barley malt extract..."
                         value={declarationText}
                         onChange={(e) => {
-                          setDeclarationText(e.target.value);
-                          resetOcrState(); // Clear OCR state if user types manually
+                            setDeclarationText(e.target.value);
+                            // If user is typing/pasting, it implies they are using the manual text input method.
+                            // We should clear states related to other input methods (file upload, camera OCR)
+                            // to avoid confusion and ensure this manual input is what gets processed
+                            // if they click "Analyze Text with AI".
+                            if (selectedFile) {
+                                setSelectedFile(null);
+                                const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
+                                if (fileInput) fileInput.value = '';
+                            }
+                            if (isTakingOcrPhoto) {
+                                setIsTakingOcrPhoto(false); // Ensure camera mode is off
+                            }
+                            if (ocrTextForAnalysis) { // If there was text from OCR pending labeling
+                                setOcrTextForAnalysis('');
+                                setSelectedLabelingOption(''); // Clear labeling state too
+                            }
                         }}
                         rows={6}
                         className="resize-none"
@@ -928,7 +944,8 @@ export default function HomePage() {
               </div>
               <AlertDialogFooter>
                 <AlertDialogCancel onClick={() => {
-                  resetOcrState();
+                  resetOcrState(); // This will clear selectedFile, ocrTextForAnalysis, etc.
+                  setDeclarationText(''); // Also clear manual text area if scan is fully cancelled
                   setShowLabelingQuestionModal(false);
                 }}>Cancel Scan</AlertDialogCancel>
                 <AlertDialogAction onClick={handleLabelingChoiceSubmit} disabled={!selectedLabelingOption || isLoadingDeclaration}>
