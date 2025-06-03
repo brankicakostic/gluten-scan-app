@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react'; // Added ChevronLeft, ChevronRight
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import type { Product } from './[productId]/page'; 
@@ -43,7 +43,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera"],
     "imageUrl": "instant-palenta-8606112581172.png",
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Pirinčani Griz",
@@ -58,7 +59,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "pirinčani-griz-8606107907321.png",
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Prezle",
@@ -86,7 +88,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "prezle-8606107907765.png",
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Dvopek",
@@ -116,7 +119,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "dvopek-8606107907666.png",
-    "nutriscore": "B"
+    "nutriscore": "B",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Dvopek",
@@ -146,7 +150,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "dvopek-8606107907666.png", 
-    "nutriscore": "B"
+    "nutriscore": "B",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Dvopek",
@@ -174,7 +179,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "dvopek-8606107904434.png",
-    "nutriscore": "C"
+    "nutriscore": "C",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Cookies",
@@ -205,7 +211,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["vegan"],
     "imageUrl": "cookies-8606107907482.png",
-    "nutriscore": "C"
+    "nutriscore": "C",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Čajni Kolutići",
@@ -233,7 +240,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["vegan"],
     "imageUrl": "cajni-kolutići-8606107907062.png",
-    "nutriscore": "D"
+    "nutriscore": "D",
+    "Poreklo": "Srbija"
   },
   {
     "name": "KO-GO",
@@ -266,7 +274,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "ko-go-8606107907291.png",
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Keks Života",
@@ -293,7 +302,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "keks-zivota-8606107907680.png",
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Happy Life",
@@ -317,7 +327,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["vegan"],
     "imageUrl": "happy-life-8606107907819.png",
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Pusa",
@@ -345,7 +356,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["vegan"],
     "imageUrl": "pusa-8606107907543.png",
-    "nutriscore": "C"
+    "nutriscore": "C",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Premium Univerzal Mix",
@@ -367,7 +379,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "premium-univerzal-mix-8606107907710.png",
-    "nutriscore": "C"
+    "nutriscore": "C",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Vanilice",
@@ -398,7 +411,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["vegan"],
     "imageUrl": "vanilice-8606107907918.png",
-    "nutriscore": "D"
+    "nutriscore": "D",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Integralni Štapići",
@@ -423,7 +437,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "integralni-stapici-8606107907130.png",
-    "nutriscore": "C"
+    "nutriscore": "C",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Chia",
@@ -449,7 +464,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "chia-8606107907222.png",
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "ALEX",
@@ -477,7 +493,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["vegan"],
     "imageUrl": "alex-8606107907536.png",
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Proteinski Kakao Krem",
@@ -504,7 +521,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["protein", "bez šećera"],
     "imageUrl": "proteinski-kakao-krem-8606107907246.png",
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Vege Proteinski Kakao Krem",
@@ -531,7 +549,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["protein", "bez šećera", "vegan"],
     "imageUrl": "vege-proteinski-kakao-krem-8606112581127.png",
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Proteinske Fit Noodle",
@@ -560,7 +579,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["protein", "bez šećera", "vegan"],
     "imageUrl": "proteinske-fit-noodle-8606107907925.png",
-    "nutriscore": "A"
+    "nutriscore": "A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Proteinske Vege Tagliatelle",
@@ -584,7 +604,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["protein", "bez šećera", "vegan"],
     "imageUrl": "proteinske-vege-tagliatelle-8606112581080.png",
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "RISO Pasta",
@@ -599,7 +620,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "riso-pasta-8606107907925.png",
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Tagliatelle di RISO",
@@ -614,7 +636,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "tagliatelle-di-riso-8606107907109.png",
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
    {
     "name": "Tagliatelle di RISO",
@@ -629,7 +652,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "tagliatelle-di-riso-8606107907109.png", 
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Premium Tamna Gotova Smeša",
@@ -651,7 +675,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "premium-tamna-gotova-smesa-8606107907703.png", 
-    "nutriscore": "C"
+    "nutriscore": "C",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Taljatele sa Kurkumom",
@@ -672,7 +697,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "taljatele-sa-kurkumom-8606107907963.png",
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Testenina Života",
@@ -694,7 +720,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"], 
     "imageUrl": "testenina-zivota-8606107907567.png",
-    "nutriscore": "B"
+    "nutriscore": "B",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Brašno od Prosa",
@@ -709,7 +736,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "brasno-od-prosa-8606107907437.png",
-    "nutriscore": "B"
+    "nutriscore": "B",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Brašno od Pirinča",
@@ -724,7 +752,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "brašno-od-pirinca-8606107907642.png",
-    "nutriscore": "A"
+    "nutriscore": "A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Brašno od Heljde",
@@ -739,7 +768,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "brašno-od-heljde.png",
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Premium Palenta",
@@ -761,7 +791,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "premium-palenta-8606107907260.png",
-    "nutriscore": "C"
+    "nutriscore": "C",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Proteinski Pire",
@@ -779,7 +810,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["protein", "vegan"],
     "imageUrl": "proteinski-pire-8606112581004.png",
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Tapioka",
@@ -794,7 +826,8 @@ const rawProductsData = [
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "tapioka.png",
-    "nutriscore": "N/A"
+    "nutriscore": "N/A",
+    "Poreklo": "Srbija"
   },
   {
     "name": "Aleva Paprika Slatka Mlevena",
@@ -1081,7 +1114,7 @@ const rawProductsData = [
 ];
 
 export const placeholderProducts: Product[] = rawProductsData.map((p, index) => {
-  const originalTags = p.tags?.map(t => t.toLowerCase()) || []; // Ensure p.tags is defined
+  const originalTags = p.tags?.map(t => t.toLowerCase()) || []; 
   const isSugarFree = originalTags.includes('bez šećera');
   const isPosnoSource = originalTags.includes('vegan'); 
   const isProteinSource = originalTags.includes('protein');
@@ -1122,7 +1155,7 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   if (isPosnoSource) productTags.push('posno');
   if (isProteinSource) productTags.push('high-protein');
   
-  (p.tags || []).forEach(tag => { // Ensure p.tags is defined
+  (p.tags || []).forEach(tag => { 
     const lowerTag = tag.toLowerCase();
     if (lowerTag !== 'bez šećera' && lowerTag !== 'vegan' && lowerTag !== 'protein' && !productTags.includes(lowerTag)) {
       productTags.push(lowerTag);
@@ -1132,7 +1165,7 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   let category = 'Other';
   const lowerName = p.name.toLowerCase();
   const lowerLabelText = p.labelText ? p.labelText.toLowerCase() : '';
-  const jsonCategory = p.jsonCategory?.toLowerCase(); // Use the temp jsonCategory
+  const jsonCategory = p.jsonCategory?.toLowerCase(); 
 
   if (jsonCategory === 'brašno' || jsonCategory === 'drevna zrna') {
     category = 'Flours & Grains';
@@ -1187,11 +1220,21 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
     if (!productTags.includes('contains-barley')) productTags.push('contains-barley');
     if (!productTags.includes('contains-gluten')) productTags.push('contains-gluten');
   }
+   // Specific fix for "Integralno brašno od polbe" and "Zrno polbe glazirano"
+  if (p.name.toLowerCase().includes("polbe")) {
+    const glutenFreeIndex = productTags.indexOf('gluten-free');
+    if (glutenFreeIndex > -1) {
+      productTags.splice(glutenFreeIndex, 1);
+    }
+    if (!productTags.includes('contains-wheat')) productTags.push('contains-wheat'); // Polba is a type of wheat
+    if (!productTags.includes('contains-gluten')) productTags.push('contains-gluten');
+  }
+
 
   const nutriScoreValue = p.nutriscore && p.nutriscore.toUpperCase() !== "N/A" ? p.nutriscore.toUpperCase() : undefined;
 
   return {
-    id: p.barcode || `product-${index}-${p.name.replace(/\s+/g, '-')}`, // Ensure unique ID
+    id: p.barcode || `product-${index}-${p.name.replace(/\s+/g, '-')}`, 
     name: p.name,
     brand: p.brand,
     barcode: p.barcode || undefined,
@@ -1233,28 +1276,46 @@ const explicitlyHandledTags = [
   'sugar-free', 'lactose-free', 'posno', 'high-protein'
 ];
 
+const PRODUCTS_PER_PAGE = 12;
+
 export default function ProductsPage() {
   const params = useParams();
   const locale = params.locale as string;
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [displayedProducts, setDisplayedProducts] = useState(placeholderProducts);
+  const [filteredProducts, setFilteredProducts] = useState(placeholderProducts);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    let filtered = placeholderProducts;
+    let newFilteredProducts = placeholderProducts;
     if (searchTerm.trim()) {
-      filtered = filtered.filter(product =>
+      newFilteredProducts = newFilteredProducts.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase().trim()) ||
         (product.brand && product.brand.toLowerCase().includes(searchTerm.toLowerCase().trim())) ||
         product.description.toLowerCase().includes(searchTerm.toLowerCase().trim())
       );
     }
     if (selectedCategory !== 'all') {
-      filtered = filtered.filter(product => product.category === selectedCategory);
+      newFilteredProducts = newFilteredProducts.filter(product => product.category === selectedCategory);
     }
-    setDisplayedProducts(filtered);
+    setFilteredProducts(newFilteredProducts);
+    setCurrentPage(1); // Reset to first page when filters change
   }, [searchTerm, selectedCategory]);
+
+  const indexOfLastProduct = currentPage * PRODUCTS_PER_PAGE;
+  const indexOfFirstProduct = indexOfLastProduct - PRODUCTS_PER_PAGE;
+  const currentProductsToDisplay = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  };
+
 
   return (
     <div className="flex min-h-screen">
@@ -1297,74 +1358,101 @@ export default function ProductsPage() {
             </div>
           </div>
 
-          {displayedProducts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {displayedProducts.map(product => {
-                const isGlutenFreeTag = product.tags?.includes('gluten-free');
-                const containsGlutenTag = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isGlutenFreeTag);
-                const mayContainGlutenTag = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
-                
-                return (
-                  <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col">
-                    <CardHeader className="p-0">
-                      <Image 
-                        src={product.imageUrl} 
-                        alt={product.name} 
-                        width={400} 
-                        height={200} 
-                        className="w-full h-48 object-cover"
-                        data-ai-hint={product.dataAiHint}
-                      />
-                    </CardHeader>
-                    <CardContent className="p-4 flex flex-col flex-grow">
-                      <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
-                      {product.brand && <CardDescription className="text-xs text-muted-foreground mb-1">{product.brand}</CardDescription>}
-                      <div className="flex justify-between items-center mb-2">
-                        <CardDescription className="text-sm text-muted-foreground">{product.category}</CardDescription>
-                        {product.nutriScore && (
-                          <span className={`px-2 py-0.5 rounded-md text-xs font-semibold border ${getNutriScoreClasses(product.nutriScore)}`}>
-                            {product.nutriScore}
-                          </span>
+          {currentProductsToDisplay.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {currentProductsToDisplay.map(product => {
+                  const isGlutenFreeTag = product.tags?.includes('gluten-free');
+                  const containsGlutenTag = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isGlutenFreeTag);
+                  const mayContainGlutenTag = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
+                  
+                  return (
+                    <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col">
+                      <CardHeader className="p-0">
+                        <Image 
+                          src={product.imageUrl} 
+                          alt={product.name} 
+                          width={400} 
+                          height={200} 
+                          className="w-full h-48 object-cover"
+                          data-ai-hint={product.dataAiHint}
+                        />
+                      </CardHeader>
+                      <CardContent className="p-4 flex flex-col flex-grow">
+                        <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
+                        {product.brand && <CardDescription className="text-xs text-muted-foreground mb-1">{product.brand}</CardDescription>}
+                        <div className="flex justify-between items-center mb-2">
+                          <CardDescription className="text-sm text-muted-foreground">{product.category}</CardDescription>
+                          {product.nutriScore && (
+                            <span className={`px-2 py-0.5 rounded-md text-xs font-semibold border ${getNutriScoreClasses(product.nutriScore)}`}>
+                              {product.nutriScore}
+                            </span>
+                          )}
+                        </div>
+                        
+                        {isGlutenFreeTag && (
+                          <div className="flex items-center text-green-600 text-xs mt-1 mb-1">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            <span>Gluten-Free</span>
+                          </div>
                         )}
-                      </div>
-                      
-                      {isGlutenFreeTag && (
-                        <div className="flex items-center text-green-600 text-xs mt-1 mb-1">
-                          <CheckCircle className="h-3 w-3 mr-1" />
-                          <span>Gluten-Free</span>
-                        </div>
-                      )}
-                      {containsGlutenTag && (
-                        <div className="flex items-center text-red-600 text-xs mt-1 mb-1">
-                          <AlertTriangle className="h-3 w-3 mr-1" />
-                          <span>Contains Gluten</span>
-                        </div>
-                      )}
-                      {mayContainGlutenTag && !isGlutenFreeTag && !containsGlutenTag && (
-                        <div className="flex items-center text-orange-500 text-xs mt-1 mb-1">
-                          <AlertTriangle className="h-3 w-3 mr-1" />
-                          <span>May Contain Traces</span>
-                        </div>
-                      )}
+                        {containsGlutenTag && (
+                          <div className="flex items-center text-red-600 text-xs mt-1 mb-1">
+                            <AlertTriangle className="h-3 w-3 mr-1" />
+                            <span>Contains Gluten</span>
+                          </div>
+                        )}
+                        {mayContainGlutenTag && !isGlutenFreeTag && !containsGlutenTag && (
+                          <div className="flex items-center text-orange-500 text-xs mt-1 mb-1">
+                            <AlertTriangle className="h-3 w-3 mr-1" />
+                            <span>May Contain Traces</span>
+                          </div>
+                        )}
 
-                      <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description}</p>
-                      <div className="flex flex-wrap gap-1 mb-3">
-                        {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Lactose-Free</Badge>}
-                        {product.isSugarFree && <Badge variant="secondary" className="text-xs">Sugar-Free</Badge>}
-                        {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
-                        {product.tags?.filter(tag => !explicitlyHandledTags.includes(tag.toLowerCase())).slice(0,2).map(tag => (
-                           <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
-                        ))}
-                         {product.tags?.includes('high-protein') && <Badge variant="secondary" className="text-xs">High Protein</Badge>}
-                      </div>
-                      <Button asChild variant="outline" size="sm" className="w-full mt-auto">
-                        <Link href={`/${locale}/products/${product.id}`}>View Details</Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
+                        <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description}</p>
+                        <div className="flex flex-wrap gap-1 mb-3">
+                          {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Lactose-Free</Badge>}
+                          {product.isSugarFree && <Badge variant="secondary" className="text-xs">Sugar-Free</Badge>}
+                          {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
+                          {product.tags?.filter(tag => !explicitlyHandledTags.includes(tag.toLowerCase())).slice(0,2).map(tag => (
+                            <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
+                          ))}
+                          {product.tags?.includes('high-protein') && <Badge variant="secondary" className="text-xs">High Protein</Badge>}
+                        </div>
+                        <Button asChild variant="outline" size="sm" className="w-full mt-auto">
+                          <Link href={`/${locale}/products/${product.id}`}>View Details</Link>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center space-x-4 mt-8">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    Previous
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+              )}
+            </>
           ) : (
             <div className="text-center py-12 text-muted-foreground">
               <PackageOpen className="mx-auto h-16 w-16 mb-4" />
@@ -1377,4 +1465,3 @@ export default function ProductsPage() {
     </div>
   );
 }
-
