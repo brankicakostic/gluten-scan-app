@@ -90,7 +90,8 @@ const analyzeDeclarationPrompt = ai.definePrompt({
   *   **Sirće** (Vinegar): Malt vinegar ('sladno sirće') contains gluten. Distilled vinegar is usually safe. If type is unclear, be cautious.
   *   **Alkohol** (Alcohol): If from barley (e.g., beer, some whiskies), it contains gluten (see exceptions for distillates below).
   *   **Arome / Prirodna aroma** (Flavors - natural/artificial): Generalno mogu sadržati nosače na bazi glutena (ječam, slad, derivati pšenice). Rizično ako nije specificirano kao bezglutensko ili ako 'labelingInfo' nije 'aoecs'.
-      *   *Posebna napomena za **Aroma vanile (Vanilla aroma):*** U većini slučajeva se smatra bezbednom. Međutim, u retkim situacijama može sadržati alkohol dobijen iz žitarica. Ako proizvod nema jasnu gluten-free oznaku (npr. 'labelingInfo' je 'none' ili 'unknown'), a sadrži aromu vanile, preporučuje se dodatna provera ili oprez.
+      *   *Posebna napomena za **Aroma vanile (Vanilla aroma):*** U većini slučajeva se smatra bezbednom. Međutim, u retkim situacijama može sadržati alkohol dobijen iz žitarica. Ako proizvod nema jasnu gluten-free oznaku (tj. 'labelingInfo' je 'none' ili 'unknown'), a sadrži 'aroma vanile' i ovo je JEDINI potencijalni problem, postavi 'hasGluten: true' ali sa 'confidence' između 0.4 i 0.6. U 'reason' objasni da je rizik nizak ali postoji zbog nepoznatog porekla alkohola u aromi i nedostatka GF deklaracije.
+  *   **Lecitin (ako izvor nije specificiran kao bezglutenski, npr. samo 'lecitin' ili 'E322'):** Ako izvor lecitina nije naveden (npr. nije 'sojin lecitin', 'suncokretov lecitin'), i nema GF oznake (tj. 'labelingInfo' je 'none' ili 'unknown'), ovo se smatra potencijalno rizičnim zbog teoretske mogućnosti da potiče od pšenice, iako retko. Ako je ovo JEDINI potencijalni problem, postavi 'hasGluten: true' ali sa 'confidence' između 0.4 i 0.6. U 'reason' objasni da, iako je lecitin često bezglutenski, nepoznato poreklo bez GF deklaracije nosi minimalan teoretski rizik kontaminacije.
   *   **Ekstrakt kvasca** (Yeast extract): Possible trace gluten. Risky if product not certified gluten-free (i.e. 'labelingInfo' is not 'aoecs').
   *   **Mladi ječam** (Young barley/barley grass): Gluten-free only if harvested before jointing and certified. Assume products with 'ječam' contain gluten unless explicitly stated otherwise under AOECS.
   *   **Rizični E-Brojevi (Risky E-Numbers):**
@@ -107,16 +108,17 @@ const analyzeDeclarationPrompt = ai.definePrompt({
   *   **Žitni destilati ili etil alkohol poljoprivrednog porekla za proizvodnju jakih alkoholnih pića dobijenih iz žita** (Cereal distillates or ethyl alcohol of agricultural origin for spirits from grains). *Applies to the spirit itself; gluten can be added post-distillation.*
 
   **4. Neutralni Sastojci (Generally Safe Ingredients):**
-  These are generally considered safe: Pirinač (rice), Kukuruz (corn), Proso (millet), Amarant (amaranth), Kinoa (quinoa), Heljda (buckwheat), Leblebija (chickpea), Tapioka skrob (tapioca starch), Kukuruzni skrob (corn starch), Krompirov skrob (potato starch), Sojin lecitin (Soy lecithin - generalno bezbedan osim ako nije izričito navedena kontaminacija glutenom).
+  These are generally considered safe: Pirinač (rice), Kukuruz (corn), Proso (millet), Amarant (amaranth), Kinoa (quinoa), Heljda (buckwheat), Leblebija (chickpea), Tapioka skrob (tapioca starch), Kukuruzni skrob (corn starch), Krompirov skrob (potato starch), **Sojin lecitin** (Soy lecithin - generalno bezbedan osim ako nije izričito navedena kontaminacija glutenom).
 
   **General Approach for Gluten Analysis (considering 'labelingInfo'):**
   1.  **Scan for Direktni Izvori Glutena:** If any are found (and not an exempt form like GF wheat starch under AOECS), set 'hasGluten' to true, list them, high confidence (0.9-1.0).
   2.  **Assess Rizični Sastojci:**
       *   **Ovas (Oats):** If present and NOT explicitly 'sertifikovan bezglutenski ovas' AND 'labelingInfo' is not 'aoecs' (which implies safe oats), set 'hasGluten' to true, list 'Ovas (nesertifikovan)', high confidence. If 'labelingInfo' is 'aoecs', assume oats are GF.
-      *   **Other Risky Ingredients (including E-numbers and specific note for Aroma vanile):** If found:
+      *   **Other Risky Ingredients (including E-numbers and specific note for Aroma vanile and unspecified Lecithin):** If found:
           *   Check if an exception under 'Dozvoljeni Izuzeci'. If yes, do not set 'hasGluten: true' solely on this.
           *   If 'labelingInfo' is 'aoecs', assume the ingredient is handled/sourced safely unless it's a non-exempt direct gluten source. Note this assumption in 'reason'.
-          *   If not an exception and 'labelingInfo' is not 'aoecs' (or is 'none'/'unknown'), set 'hasGluten' to true. Confidence 0.6-0.9.
+          *   If it's 'aroma vanile' or 'lecitin (nepoznatog porekla)' and 'labelingInfo' is 'none' or 'unknown', and these are the ONLY potential risks identified so far, set 'hasGluten: true' with 'confidence' 0.4-0.6. List the ingredient.
+          *   If not an exception and 'labelingInfo' is not 'aoecs' (or is 'none'/'unknown'), and it's another risky ingredient (not vanilla/lecithin as sole risk), set 'hasGluten' to true. Confidence 0.6-0.9.
   3.  **"Može sadržati tragove glutena" (May contain traces of gluten):** If this phrase (or similar) is in 'declarationText':
       *   If 'labelingInfo' is 'aoecs', this is permissible under the standard; 'hasGluten' should remain 'false' if no direct gluten is found. Note the advisory label in 'reason'. Confidence for 'false' should still be high (0.8-0.9) if this is the only concern.
       *   If 'labelingInfo' is not 'aoecs' (i.e., 'gf_text', 'none', 'unknown'), set 'hasGluten' to true, list 'Mogući tragovi glutena', confidence high (0.9).
@@ -125,7 +127,8 @@ const analyzeDeclarationPrompt = ai.definePrompt({
       *   1.0 for clear, direct, non-exempt gluten sources.
       *   0.9-1.0 if uncertified oats (and not AOECS) or "may contain traces" (and not AOECS) leads to 'hasGluten: true'.
       *   0.8-1.0 if 'labelingInfo' is 'aoecs' and no direct non-exempt gluten sources, 'hasGluten: false'.
-      *   Adjust confidence based on the interplay of ingredients and 'labelingInfo'.
+      *   0.4-0.6 if 'aroma vanile' or 'lecitin (nepoznatog porekla)' is the SOLE identified risk and 'labelingInfo' is 'none' or 'unknown'.
+      *   Adjust confidence based on the interplay of ingredients and 'labelingInfo'. If multiple risky items are present, confidence for 'hasGluten: true' should generally be higher than if only one low-risk item is present.
   6.  **GlutenIngredients List:** Populate with specific ingredients identified as problematic.
   7.  **Reason Field:** Clearly explain the decision for gluten, citing specific ingredients, rules applied, and how 'labelingInfo' (if provided) influenced the decision.
 
