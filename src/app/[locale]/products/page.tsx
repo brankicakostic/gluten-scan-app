@@ -121,8 +121,8 @@ const rawProductsData = [
   {
     "name": "Dvopek",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907671", // New barcode
-    "size": "220g", // Changed size
+    "barcode": "8606107907671", 
+    "size": "220g", 
     "ingredients": [
       "Brašno od pirinča",
       "kukuruzni skrob",
@@ -145,7 +145,7 @@ const rawProductsData = [
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
-    "imageUrl": "dvopek-8606107907666.png", // Assuming same image as the 110g version, adjust if different
+    "imageUrl": "dvopek-8606107907666.png", 
     "nutriscore": "B"
   },
   {
@@ -536,7 +536,7 @@ const rawProductsData = [
   {
     "name": "Proteinske Fit Noodle",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907925", // Note: Duplicate barcode with RISO Pasta
+    "barcode": "8606107907925", 
     "size": "320g",
     "ingredients": [
       "Brašno od pirinča",
@@ -589,7 +589,7 @@ const rawProductsData = [
   {
     "name": "RISO Pasta",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907925", // Note: Duplicate barcode with Proteinske Fit Noodle
+    "barcode": "8606107907925", 
     "size": "320g",
     "ingredients": ["Brašno od pirinča", "zgušnjivač ksantan guma"],
     "labelText": "pirinčane nudle",
@@ -619,8 +619,8 @@ const rawProductsData = [
    {
     "name": "Tagliatelle di RISO",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907949", // New barcode
-    "size": "210g", // Changed size
+    "barcode": "8606107907949", 
+    "size": "210g", 
     "ingredients": ["Brašno od pirinča", "zgušnjivač ksantan guma."],
     "labelText": "pirinčane taljatele",
     "license": false,
@@ -628,13 +628,13 @@ const rawProductsData = [
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
-    "imageUrl": "tagliatelle-di-riso-8606107907109.png", // Assuming same image as 350g, adjust if different
+    "imageUrl": "tagliatelle-di-riso-8606107907109.png", 
     "nutriscore": "N/A"
   },
   {
     "name": "Premium Tamna Gotova Smeša",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "8606107907703", // Corrected from 86061079007703 in previous data
+    "barcode": "8606107907703", 
     "size": "1kg",
     "ingredients": [
       "Brašno od pirinča",
@@ -650,7 +650,7 @@ const rawProductsData = [
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
     "tags": ["bez šećera", "vegan"],
-    "imageUrl": "premium-tamna-gotova-smesa-8606107907703.png", // Corrected filename
+    "imageUrl": "premium-tamna-gotova-smesa-8606107907703.png", 
     "nutriscore": "C"
   },
   {
@@ -682,7 +682,7 @@ const rawProductsData = [
     "ingredients": [
       "Brašno od pirinča",
       "kukuruzni skrob",
-      "brašno od prolećnog ječma 20%", // Contains barley
+      "brašno od prolećnog ječma 20%", 
       "brašno od heljde 10%",
       "zgušnjivač (ksantan guma)",
       "kurkuma"
@@ -692,7 +692,7 @@ const rawProductsData = [
     "manufacturerStatement": true,
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
-    "tags": ["bez šećera", "vegan"], // Will be overridden by barley detection
+    "tags": ["bez šećera", "vegan"], 
     "imageUrl": "testenina-zivota-8606107907567.png",
     "nutriscore": "B"
   },
@@ -795,6 +795,36 @@ const rawProductsData = [
     "tags": ["bez šećera", "vegan"],
     "imageUrl": "tapioka.png",
     "nutriscore": "N/A"
+  },
+  {
+    "name": "Aleva Paprika Slatka Mlevena",
+    "brand": "Aleva",
+    "barcode": "8600500000011",
+    "size": "100g",
+    "ingredients": ["Mlevena začinska paprika slatka 100%"],
+    "labelText": "Slatka začinska paprika",
+    "license": false,
+    "manufacturerStatement": true,
+    "verified": true,
+    "source": "Aleva.rs (primer)",
+    "tags": ["vegan"],
+    "imageUrl": "https://placehold.co/400x200.png",
+    "nutriscore": "A"
+  },
+  {
+    "name": "Aleva Kokošija Supa sa Rezancima",
+    "brand": "Aleva",
+    "barcode": "8600500000028",
+    "size": "65g",
+    "ingredients": ["Rezanci 58% (pšenična krupica, jaja u prahu)", "kuhinjska so 14.5%", "sušeno povrće 9.7% (šargarepa, crni luk, paškanat)", "palmina mast", "pojačivači arome (mononatrijum-glutaminat 4.5%, dinatrijum 5'-ribonukleotidi)", "šećer", "ekstrakt kvasca", "hidrolizovani biljni proteini soje", "arome (sadrže celer)", "začini (peršun list, biber)", "boja (karamel obični)", "kokošiji mesni ekstrakt 0.2%"],
+    "labelText": "Bistra kokošija supa sa rezancima",
+    "license": false,
+    "manufacturerStatement": false,
+    "verified": false,
+    "source": "Aleva.rs (primer)",
+    "tags": [], // Logic will add 'contains-wheat' and 'contains-gluten'
+    "imageUrl": "https://placehold.co/400x200.png",
+    "nutriscore": "D"
   }
 ];
 
@@ -809,12 +839,12 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   const ingredientsString = Array.isArray(p.ingredients) ? p.ingredients.join(' ').toLowerCase() : (typeof p.ingredients === 'string' ? p.ingredients.toLowerCase() : '');
   let containsKnownGlutenSource = false;
 
-  if (ingredientsString.includes('ječma') || ingredientsString.includes('barley')) {
+  if (ingredientsString.includes('ječma') || ingredientsString.includes('barley') || ingredientsString.includes('ječmenog slada') || ingredientsString.includes('ekstrakt slada')) {
     productTags.push('contains-barley');
     productTags.push('contains-gluten');
     containsKnownGlutenSource = true;
   }
-  if (ingredientsString.includes('pšenic') || ingredientsString.includes('wheat')) { 
+  if (ingredientsString.includes('pšenic') || ingredientsString.includes('wheat') || ingredientsString.includes('pšenična krupica') || ingredientsString.includes('pšenični skrob') || ingredientsString.includes('durum') || ingredientsString.includes('spelta') || ingredientsString.includes('kuskus')) { 
     productTags.push('contains-wheat');
     if (!productTags.includes('contains-gluten')) productTags.push('contains-gluten');
     containsKnownGlutenSource = true;
@@ -828,8 +858,6 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
     productTags.push('contains-oats');
   }
 
-  // Add 'gluten-free' tag only if manufacturer states it AND no direct gluten sources were detected from ingredients.
-  // Or if it contains oats but manufacturer states gluten-free (implying certified GF oats).
   if (p.manufacturerStatement) {
     if (productTags.includes('contains-oats') && !containsKnownGlutenSource) {
       productTags.push('gluten-free');
@@ -842,7 +870,6 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   if (isPosnoSource) productTags.push('posno');
   if (isProteinSource) productTags.push('high-protein');
   
-  // Add other miscellaneous tags from source, ensuring no duplicates
   p.tags.forEach(tag => {
     const lowerTag = tag.toLowerCase();
     if (lowerTag !== 'bez šećera' && lowerTag !== 'vegan' && lowerTag !== 'protein' && !productTags.includes(lowerTag)) {
@@ -867,30 +894,43 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
     category = 'Spreads & Creams';
   } else if (lowerName.includes('noodle') || lowerLabelText.includes('noodle') || lowerName.includes('pasta') || lowerLabelText.includes('pasta') || lowerName.includes('tagliatelle') || lowerLabelText.includes('tagliatelle') || lowerName.includes('taljatele') || lowerLabelText.includes('taljatele')) {
     category = 'Pasta & Noodles';
-  } else if (lowerName.includes('pire') || lowerLabelText.includes('pire')) {
-    category = 'Instant Meals';
+  } else if (lowerName.includes('pire') || lowerLabelText.includes('pire') || lowerName.includes('supa') || lowerLabelText.includes('supa')) {
+    category = 'Soups & Instant Meals';
+  } else if (lowerName.includes('začin') || lowerLabelText.includes('začin') || lowerName.includes('paprika') || lowerLabelText.includes('paprika') || lowerName.includes('biber') || lowerLabelText.includes('biber') || (lowerName.includes('so') && !lowerName.includes('sos'))) {
+    category = 'Spices & Seasonings';
   }
 
   let actualIsPosno = isPosnoSource;
   let actualIsLactoseFree = isPosnoSource; 
   
-  // Specific product overrides for posno/lactose-free based on ingredients
-  if (p.barcode === "8606112581172" && ingredientsString.includes('prah od sira')) { // Instant Palenta with cheese
+  if (p.barcode === "8606112581172" && ingredientsString.includes('prah od sira')) { 
     actualIsPosno = false; 
     actualIsLactoseFree = false;
     const posnoIndex = productTags.indexOf('posno');
     if (posnoIndex > -1) productTags.splice(posnoIndex, 1);
   }
-  if (p.barcode === "8606107907246" && ingredientsString.includes('mleko u prahu')) { // Proteinski Kakao Krem with milk powder
+  if (p.barcode === "8606107907246" && ingredientsString.includes('mleko u prahu')) { 
       actualIsPosno = false;
       actualIsLactoseFree = false;
       const posnoIndex = productTags.indexOf('posno');
       if (posnoIndex > -1) productTags.splice(posnoIndex, 1);
   }
+  if (p.barcode === "8600500000028" && (ingredientsString.includes('jaja u prahu') || ingredientsString.includes('kokošiji mesni ekstrakt'))) { // Aleva Supa
+      actualIsPosno = false;
+      actualIsLactoseFree = true; // Assuming no milk derivatives unless stated for this type of soup
+      const posnoIndex = productTags.indexOf('posno');
+      if (posnoIndex > -1) productTags.splice(posnoIndex, 1);
+      // Ensure lactose-free if no milk and it's not posno due to eggs/meat
+      if (!productTags.includes('lactose-free') && !ingredientsString.includes('mleko') && !ingredientsString.includes('surutk')) {
+        productTags.push('lactose-free');
+        actualIsLactoseFree = true;
+      }
+  }
   
-  const filename = p.imageUrl;
+  const isFullUrl = p.imageUrl.startsWith('http://') || p.imageUrl.startsWith('https://');
+  const finalImageUrl = isFullUrl ? p.imageUrl : `${firebaseStorageBaseUrl}${p.imageUrl}${p.imageUrl.includes('?') ? '' : firebaseStorageTokenPlaceholder}`;
 
-  // Specific override for "Testenina Života" due to barley content
+
   if (p.barcode === "8606107907567") { 
     const glutenFreeIndex = productTags.indexOf('gluten-free');
     if (glutenFreeIndex > -1) {
@@ -903,12 +943,12 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   const nutriScoreValue = p.nutriscore && p.nutriscore.toUpperCase() !== "N/A" ? p.nutriscore.toUpperCase() : undefined;
 
   return {
-    id: `product-${index}`,
+    id: p.barcode || `product-${index}`, // Use barcode as ID if available, otherwise fallback
     name: p.name,
     brand: p.brand,
     barcode: p.barcode || undefined,
     category: category,
-    imageUrl: `${firebaseStorageBaseUrl}${filename}${filename.includes('?') ? '' : firebaseStorageTokenPlaceholder}`,
+    imageUrl: finalImageUrl,
     description: `${p.labelText}${p.size ? ' - ' + p.size : ''}`,
     ingredientsText: Array.isArray(p.ingredients) ? p.ingredients.join(', ') : p.ingredients,
     labelText: p.labelText,
@@ -925,7 +965,7 @@ export const placeholderProducts: Product[] = rawProductsData.map((p, index) => 
   };
 });
 
-const productCategories = Array.from(new Set(placeholderProducts.map(p => p.category)));
+const productCategories = Array.from(new Set(placeholderProducts.map(p => p.category))).sort();
 
 const getNutriScoreClasses = (score?: string) => {
   if (!score) return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';
