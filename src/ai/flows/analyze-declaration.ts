@@ -106,7 +106,7 @@ const analyzeDeclarationPrompt = ai.definePrompt({
   *   **Žitni destilati ili etil alkohol poljoprivrednog porekla za proizvodnju jakih alkoholnih pića dobijenih iz žita** (Cereal distillates or ethyl alcohol of agricultural origin for spirits from grains). *Applies to the spirit itself; gluten can be added post-distillation.*
 
   **4. Neutralni Sastojci (Generally Safe Ingredients):**
-  These are generally considered safe: Pirinač (rice), Kukuruz (corn), Proso (millet), Amarant (amaranth), Kinoa (quinoa), Heljda (buckwheat), Leblebija (chickpea), Tapioka skrob (tapioca starch), Kukuruzni skrob (corn starch), Krompirov skrob (potato starch).
+  These are generally considered safe: Pirinač (rice), Kukuruz (corn), Proso (millet), Amarant (amaranth), Kinoa (quinoa), Heljda (buckwheat), Leblebija (chickpea), Tapioka skrob (tapioca starch), Kukuruzni skrob (corn starch), Krompirov skrob (potato starch), Sojin lecitin (Soy lecithin - generalno bezbedan osim ako nije izričito navedena kontaminacija glutenom).
 
   **General Approach for Gluten Analysis (considering 'labelingInfo'):**
   1.  **Scan for Direktni Izvori Glutena:** If any are found (and not an exempt form like GF wheat starch under AOECS), set 'hasGluten' to true, list them, high confidence (0.9-1.0).
