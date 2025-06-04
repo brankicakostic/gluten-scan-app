@@ -329,19 +329,14 @@ export default function HomePage() {
     }
     setShowLabelingQuestionModal(false); 
     
-    // If manualTextForAnalysis was the source, declarationText is already up-to-date.
-    // If ocrTextForAnalysis was the source, update declarationText for display purposes.
     if (ocrTextForAnalysis) {
         setDeclarationText(ocrTextForAnalysis);
     }
 
     await performAiAnalysis(textToAnalyze, selectedLabelingOption);
     
-    // Clear all specific input states AFTER analysis is kicked off
     setManualTextForAnalysis('');
     setOcrTextForAnalysis('');
-    // Do not clear declarationText here if it was manual input, allow user to see what was analyzed.
-    // It will be cleared by resetAnalysisInputs if "Clear Analysis & Inputs" is clicked.
     setSelectedFile(null);
     const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
     if (fileInput) fileInput.value = '';
@@ -779,6 +774,11 @@ export default function HomePage() {
                               <p className="text-center text-destructive-foreground text-sm">OCR Camera access is required. Please enable permissions in your browser settings.</p>
                             </div>
                           )}
+                          {hasOcrCameraPermission === true && (
+                            <p className="text-xs text-muted-foreground mt-1 text-center">
+                              Tap the video to focus if needed. Ensure good lighting for best results.
+                            </p>
+                          )}
                         </div>
                         <div className="flex gap-2">
                           <Button 
@@ -814,16 +814,15 @@ export default function HomePage() {
                         value={declarationText}
                         onChange={(e) => {
                             setDeclarationText(e.target.value);
-                            if (e.target.value.trim() !== manualTextForAnalysis) {
-                                setManualTextForAnalysis(''); // Invalidate pending manual analysis if text changes
-                            }
-                            if (selectedFile) {
+                            if (e.target.value.trim()) {
+                                setManualTextForAnalysis(''); 
                                 setSelectedFile(null);
                                 const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
                                 if (fileInput) fileInput.value = '';
+                                setIsTakingOcrPhoto(false);
+                                setOcrTextForAnalysis(''); 
+                                setSelectedLabelingOption('');
                             }
-                            if (isTakingOcrPhoto) setIsTakingOcrPhoto(false);
-                            if (ocrTextForAnalysis) setOcrTextForAnalysis(''); 
                         }}
                         rows={6}
                         className="resize-none"
@@ -998,5 +997,7 @@ export default function HomePage() {
     </div>
   );
 }
+
+    
 
     
