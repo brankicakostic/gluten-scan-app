@@ -1,6 +1,6 @@
 
 import type { LucideIcon } from 'lucide-react';
-import { Home, History, Heart, ShoppingBag, BookOpenText } from 'lucide-react'; // Added BookOpenText
+import { Home, History, Heart, ShoppingBag, BookOpenText, MapPin } from 'lucide-react'; // Added BookOpenText, MapPin
 
 export interface NavLink {
   href: string;
@@ -23,6 +23,12 @@ export const mainNavLinks: NavLink[] = [
     label: 'Browse Products',
     icon: ShoppingBag,
     tooltip: 'Browse All Products',
+  },
+  {
+    href: '/map', // Relative to locale
+    label: 'Mapa',
+    icon: MapPin,
+    tooltip: 'Mapa lokacija',
   },
   {
     href: '/edukacija', // Relative to locale

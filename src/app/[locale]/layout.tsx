@@ -2,10 +2,11 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import '../globals.css'; // Adjusted path
+import 'leaflet/dist/leaflet.css'; // Added Leaflet CSS
 import { Toaster } from '@/components/ui/toaster';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { FavoritesProvider } from '@/contexts/favorites-context';
-import { ScanLimiterProvider } from '@/contexts/scan-limiter-context'; // Added import
+import { ScanLimiterProvider } from '@/contexts/scan-limiter-context'; 
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -50,7 +51,7 @@ export default function LocaleLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SidebarProvider defaultOpen={true}>
           <FavoritesProvider>
-            <ScanLimiterProvider> {/* Added ScanLimiterProvider */}
+            <ScanLimiterProvider> 
               {children}
             </ScanLimiterProvider>
           </FavoritesProvider>
