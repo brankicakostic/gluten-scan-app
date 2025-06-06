@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="sr"> {/* Default to 'sr' here, [locale]/layout.tsx will override */}
+    <html lang="sr">
       <body>
         {children}
       </body>
