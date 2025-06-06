@@ -51,7 +51,7 @@ export default function MojaCelijakijaSvesnoZivljenjeClient({ locale }: MojaCeli
                 <h2 className="text-xl font-semibold pt-4 pb-2">Sa 33 godine, nakon što sam smršala 3 kg za mesec dana i krenule su dijareje, stigla je dijagnoza – celijakija.</h2>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Biopsija: potpuno zaravnjene crevne resice</li>
-                  <li>Antitela: 100x viša od normale</li>
+                  <li>Antitela: 12x viša od normale</li>
                   <li>Težina: 51–53 kg na visinu 177 cm</li>
                   <li>Ishrana: obilna, ali telo nije upijalo ništa</li>
                 </ul>
