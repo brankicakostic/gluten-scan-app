@@ -1,6 +1,6 @@
 
 import type { LucideIcon } from 'lucide-react';
-import { Home, History, Heart, ShoppingBag, FileText } from 'lucide-react'; // Added ShoppingBag and FileText (though FileText might not be used here directly if T&C is only in footer)
+import { Home, History, Heart, ShoppingBag, BookOpenText } from 'lucide-react'; // Added BookOpenText
 
 export interface NavLink {
   href: string;
@@ -23,6 +23,12 @@ export const mainNavLinks: NavLink[] = [
     label: 'Browse Products',
     icon: ShoppingBag,
     tooltip: 'Browse All Products',
+  },
+  {
+    href: '/edukacija', // Relative to locale
+    label: 'Edukacija',
+    icon: BookOpenText,
+    tooltip: 'Edukativni članci',
   },
   {
     href: '/history', // Relative to locale
