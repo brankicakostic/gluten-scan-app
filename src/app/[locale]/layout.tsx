@@ -47,7 +47,7 @@ export default function LocaleLayout({
   params: { locale: string };
 }>) {
   return (
-    <html lang={locale} suppressHydrationWarning> {/* suppressHydrationWarning might be needed if lang mismatch causes issues initially */}
+    <html lang={locale} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SidebarProvider defaultOpen={true}>
           <FavoritesProvider>
