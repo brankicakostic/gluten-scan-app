@@ -15,6 +15,11 @@ const articlesData = [
     slug: 'moja-celijakija-svesno-zivljenje',
     title: "Moja celijakija: Nije me uništila – naučila me je da živim svesno",
     description: "Lična priča o dijagnozi celijakije i putu ka svesnijem životu.",
+  },
+  {
+    slug: 'gluten-u-kozmetici',
+    title: "Da li je kozmetika sa glutenom štetna za osobe sa celijakijom?",
+    description: "Razjašnjenje o rizicima glutena u kozmetičkim proizvodima za osobe sa celijakijom.",
   }
   // Add more articles here in the future
 ];
