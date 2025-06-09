@@ -13,9 +13,16 @@ import { Label } from '@/components/ui/label';
 import { MapPin, Store, Utensils, Factory, Loader2 } from 'lucide-react';
 import type { LatLngExpression, Map as LeafletMapInstance } from 'leaflet';
 
+const MapContainerLoader = () => (
+  <div className="h-full w-full flex items-center justify-center bg-muted">
+    <Loader2 className="h-8 w-8 animate-spin text-primary"/> 
+    <p className="ml-2 text-muted-foreground">Učitavanje mape...</p>
+  </div> 
+);
+
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { 
   ssr: false,
-  loading: () => <div className="h-full w-full flex items-center justify-center bg-muted"><Loader2 className="h-8 w-8 animate-spin text-primary"/> <p className="ml-2">Loading map...</p></div> 
+  loading: () => <MapContainerLoader />
 });
 const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
 const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
@@ -72,20 +79,16 @@ const filterOptions: { id: LocationType; label: string; icon: React.ElementType 
 export default function MapPage() {
   const [activeFilters, setActiveFilters] = useState<LocationType[]>(['proizvodjac', 'radnja', 'restoran']);
   const [isClient, setIsClient] = useState(false);
-  const [mapReady, setMapReady] = useState(false);
   const [mapInstance, setMapInstance] = useState<LeafletMapInstance | null>(null);
   const mapIdKey = useId(); 
 
   useEffect(() => {
     setIsClient(true);
-    const timer = setTimeout(() => {
-      setMapReady(true);
-    }, 50);
-    return () => clearTimeout(timer);
   }, []); 
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && isClient && mapReady) { // Ensure L is only configured once map is ready
+    // Configure Leaflet's default icon paths only on the client side
+    if (isClient && typeof window !== 'undefined') {
       import('leaflet').then(L => {
         // @ts-ignore
         delete L.Icon.Default.prototype._getIconUrl;
@@ -94,9 +97,9 @@ export default function MapPage() {
           iconUrl: require('leaflet/dist/images/marker-icon.png').default?.src || require('leaflet/dist/images/marker-icon.png'),
           shadowUrl: require('leaflet/dist/images/marker-shadow.png').default?.src || require('leaflet/dist/images/marker-shadow.png'),
         });
-      });
+      }).catch(error => console.error("Failed to load Leaflet for icon setup:", error));
     }
-  }, [isClient, mapReady]);
+  }, [isClient]); // Depends only on isClient
 
   // Effect to clean up the map instance on unmount
   useEffect(() => {
@@ -154,14 +157,14 @@ export default function MapPage() {
 
           <Card>
             <CardContent className="p-0 h-[600px] w-full rounded-lg overflow-hidden">
-              {isClient && mapReady ? (
+              {isClient ? (
                 <MapContainer 
                   key={mapIdKey} 
                   center={[44.8125, 20.4612]} 
                   zoom={12} 
                   scrollWheelZoom={true} 
                   style={{ height: "100%", width: "100%" }}
-                  whenCreated={setMapInstance} // Capture the map instance
+                  whenCreated={setMapInstance} 
                 >
                   <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -190,10 +193,7 @@ export default function MapPage() {
                   ))}
                 </MapContainer>
               ) : (
-                <div className="h-full w-full flex items-center justify-center bg-muted">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary"/>
-                  <p className="ml-2 text-muted-foreground">Učitavanje mape...</p>
-                </div>
+                <MapContainerLoader />
               )}
             </CardContent>
           </Card>
@@ -202,3 +202,4 @@ export default function MapPage() {
     </div>
   );
 }
+
