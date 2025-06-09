@@ -14,10 +14,10 @@ import { MapPin, Store, Utensils, Factory, Loader2 } from 'lucide-react';
 import type { LatLngExpression } from 'leaflet';
 import L from 'leaflet'; // Import L directly
 
-// Pre-require icon image paths
-const iconRetinaUrl = require('leaflet/dist/images/marker-icon-2x.png').default;
-const iconUrl = require('leaflet/dist/images/marker-icon.png').default;
-const shadowUrl = require('leaflet/dist/images/marker-shadow.png').default;
+// CDN URLs for Leaflet default icons
+const iconUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png';
+const iconRetinaUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png';
+const shadowUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png';
 
 // Standalone loader component
 const MapViewLoader = ({ message }: { message: string }) => (
@@ -37,7 +37,6 @@ const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLaye
 });
 const LeafletMarker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { 
   ssr: false,
-  // No specific loader here, as individual markers are small. The container handles initial load.
 });
 const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { 
   ssr: false 
@@ -103,15 +102,25 @@ export default function MapPage() {
 
   useEffect(() => {
     if (isClient) {
-      // @ts-ignore This is a common workaround for Leaflet's icon path issue with bundlers
-      delete L.Icon.Default.prototype._getIconUrl;
+      // @ts-ignore This is a common workaround for Leaflet's icon path issue with bundlers when not using CDN
+      // delete L.Icon.Default.prototype._getIconUrl; 
+      // With CDN URLs, the above delete is often not necessary but kept for safety if there are mixed icon types.
+      // However, for pure CDN setup, it's cleaner to remove it.
+      
+      // Attempt to remove the _getIconUrl method if it exists, which can interfere.
+      // This is often needed when Leaflet tries to guess icon paths.
+      if (L.Icon.Default.prototype._getIconUrl) {
+        // @ts-ignore
+        delete L.Icon.Default.prototype._getIconUrl;
+      }
+
       L.Icon.Default.mergeOptions({
-        iconRetinaUrl,
-        iconUrl,
-        shadowUrl,
+        iconRetinaUrl: iconRetinaUrl,
+        iconUrl: iconUrl,
+        shadowUrl: shadowUrl,
       });
       setLeafletIconsConfigured(true);
-      console.log("Leaflet icons configured using direct L import.");
+      console.log("Leaflet icons configured using CDN URLs.");
     }
   }, [isClient]);
 
@@ -164,7 +173,7 @@ export default function MapPage() {
             <CardContent className="p-0 h-[600px] w-full rounded-lg overflow-hidden">
               {isClient && leafletIconsConfigured ? (
                 <MapContainer
-                  key={mapIdKey} 
+                  key={mapIdKey} // Ensures a new instance if MapPage itself is re-keyed or remounted
                   center={[44.8125, 20.4612]}
                   zoom={12}
                   scrollWheelZoom={true}
