@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { MapPin, Store, Utensils, Factory, Loader2 } from 'lucide-react';
-import type { LatLngExpression } from 'leaflet';
+import type { LatLngExpression, Map as LeafletMapInstance } from 'leaflet';
 
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { 
   ssr: false,
@@ -72,20 +72,20 @@ const filterOptions: { id: LocationType; label: string; icon: React.ElementType 
 export default function MapPage() {
   const [activeFilters, setActiveFilters] = useState<LocationType[]>(['proizvodjac', 'radnja', 'restoran']);
   const [isClient, setIsClient] = useState(false);
-  const [mapReady, setMapReady] = useState(false); // New state to delay map rendering
+  const [mapReady, setMapReady] = useState(false);
+  const [mapInstance, setMapInstance] = useState<LeafletMapInstance | null>(null);
   const mapIdKey = useId(); 
 
   useEffect(() => {
     setIsClient(true);
-    // Slightly delay map rendering to help with HMR/Strict Mode issues
     const timer = setTimeout(() => {
       setMapReady(true);
-    }, 50); // Small delay
+    }, 50);
     return () => clearTimeout(timer);
   }, []); 
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && isClient) { // Ensure this runs only client-side
+    if (typeof window !== 'undefined' && isClient && mapReady) { // Ensure L is only configured once map is ready
       import('leaflet').then(L => {
         // @ts-ignore
         delete L.Icon.Default.prototype._getIconUrl;
@@ -96,7 +96,16 @@ export default function MapPage() {
         });
       });
     }
-  }, [isClient]); // Rerun if isClient changes, though it should only be needed once
+  }, [isClient, mapReady]);
+
+  // Effect to clean up the map instance on unmount
+  useEffect(() => {
+    return () => {
+      if (mapInstance) {
+        mapInstance.remove();
+      }
+    };
+  }, [mapInstance]);
 
   const handleFilterChange = (type: LocationType) => {
     setActiveFilters(prev =>
@@ -145,8 +154,15 @@ export default function MapPage() {
 
           <Card>
             <CardContent className="p-0 h-[600px] w-full rounded-lg overflow-hidden">
-              {isClient && mapReady ? ( // Render MapContainer only when isClient and mapReady are true
-                <MapContainer key={mapIdKey} center={[44.8125, 20.4612]} zoom={12} scrollWheelZoom={true} style={{ height: "100%", width: "100%" }}>
+              {isClient && mapReady ? (
+                <MapContainer 
+                  key={mapIdKey} 
+                  center={[44.8125, 20.4612]} 
+                  zoom={12} 
+                  scrollWheelZoom={true} 
+                  style={{ height: "100%", width: "100%" }}
+                  whenCreated={setMapInstance} // Capture the map instance
+                >
                   <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -186,5 +202,3 @@ export default function MapPage() {
     </div>
   );
 }
-
-    
