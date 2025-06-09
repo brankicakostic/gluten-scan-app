@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo, useRef, useId } from 'react';
+import { useState, useEffect, useMemo, useId } from 'react';
 import dynamic from 'next/dynamic';
 import { SidebarInset, SidebarRail } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/navigation/app-sidebar';
@@ -12,7 +12,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { MapPin, Store, Utensils, Factory, Loader2 } from 'lucide-react';
 import type { LatLngExpression } from 'leaflet';
-import type { Map as LeafletMap } from 'leaflet'; // Import Map type
 
 // Standalone loader component
 const MapContainerLoader = () => (
@@ -27,7 +26,7 @@ const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapCo
   loading: () => <MapContainerLoader />,
 });
 const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
-const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
+const LeafletMarker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
 const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false });
 
 type LocationType = 'proizvodjac' | 'radnja' | 'restoran';
@@ -81,16 +80,15 @@ const filterOptions: { id: LocationType; label: string; icon: React.ElementType 
 export default function MapPage() {
   const [activeFilters, setActiveFilters] = useState<LocationType[]>(['proizvodjac', 'radnja', 'restoran']);
   const [isClient, setIsClient] = useState(false);
-  const mapIdKey = useId(); // Used for the key prop of MapContainer
+  const mapIdKey = useId();
+  const [leafletIconsConfigured, setLeafletIconsConfigured] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Effect for setting up Leaflet default icon paths
-  // This should run only once on the client after the component mounts
   useEffect(() => {
-    if (isClient) { // Ensure this runs only client-side
+    if (isClient) {
       import('leaflet').then(L => {
         // @ts-ignore This is a common workaround for Leaflet's icon path issue with bundlers
         delete L.Icon.Default.prototype._getIconUrl;
@@ -99,10 +97,12 @@ export default function MapPage() {
           iconUrl: require('leaflet/dist/images/marker-icon.png').default,
           shadowUrl: require('leaflet/dist/images/marker-shadow.png').default,
         });
-      }).catch(error => console.error("Failed to load Leaflet for icon setup:", error));
+        setLeafletIconsConfigured(true); 
+      }).catch(error => {
+        console.error("Failed to load Leaflet for icon setup:", error);
+      });
     }
-  }, [isClient]); // Depends on isClient to ensure it runs after client-side confirmation
-
+  }, [isClient]);
 
   const handleFilterChange = (type: LocationType) => {
     setActiveFilters(prev =>
@@ -150,15 +150,10 @@ export default function MapPage() {
           </Card>
 
           <Card>
-            <CardContent className="p-0 h-[600px] w-full rounded-lg overflow-hidden">
-              {/*
-                Conditionally render MapContainer only when isClient is true.
-                This ensures Leaflet-related code only runs on the client-side.
-                The key={mapIdKey} helps React differentiate instances if MapPage itself is remounted.
-              */}
+            <CardContent className="p-0 h-[600px] w-full rounded-lg overflow-hidden relative"> {/* Added relative positioning for loader */}
               {isClient ? (
                 <MapContainer
-                  key={mapIdKey} // Ensures a new instance if MapPage itself is re-keyed or remounted
+                  key={mapIdKey}
                   center={[44.8125, 20.4612]}
                   zoom={12}
                   scrollWheelZoom={true}
@@ -168,8 +163,8 @@ export default function MapPage() {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
-                  {filteredLocations.map(location => (
-                    <Marker key={location.id} position={location.position}>
+                  {leafletIconsConfigured && filteredLocations.map(location => (
+                    <LeafletMarker key={location.id} position={location.position}>
                       <Popup>
                         <div className="space-y-1">
                           <h3 className="font-semibold text-md">{location.name}</h3>
@@ -187,8 +182,14 @@ export default function MapPage() {
                           )}
                         </div>
                       </Popup>
-                    </Marker>
+                    </LeafletMarker>
                   ))}
+                  {!leafletIconsConfigured && (
+                     <div className="w-full h-full flex items-center justify-center absolute inset-0 bg-background/30 backdrop-blur-sm z-10">
+                        <Loader2 className="h-6 w-6 animate-spin text-primary"/>
+                        <p className="ml-2 text-muted-foreground">Učitavanje ikonica...</p>
+                    </div>
+                  )}
                 </MapContainer>
               ) : (
                 <MapContainerLoader />
@@ -200,3 +201,4 @@ export default function MapPage() {
     </div>
   );
 }
+    
