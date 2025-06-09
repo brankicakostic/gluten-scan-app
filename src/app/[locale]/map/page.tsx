@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo, useId } from 'react';
+import { useState, useEffect, useMemo, useRef, useId } from 'react';
 import dynamic from 'next/dynamic';
 import { SidebarInset, SidebarRail } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/navigation/app-sidebar';
@@ -12,8 +12,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { MapPin, Store, Utensils, Factory, Loader2 } from 'lucide-react';
 import type { LatLngExpression } from 'leaflet';
+import type { Map as LeafletMap } from 'leaflet'; // Import Map type
 
-// Standalone loader component, defined outside MapPage
+// Standalone loader component
 const MapContainerLoader = () => (
   <div className="h-full w-full flex items-center justify-center bg-muted">
     <Loader2 className="h-8 w-8 animate-spin text-primary"/>
@@ -23,7 +24,7 @@ const MapContainerLoader = () => (
 
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), {
   ssr: false,
-  loading: () => <MapContainerLoader />, // This loader is for the component code itself
+  loading: () => <MapContainerLoader />,
 });
 const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
 const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
@@ -80,25 +81,28 @@ const filterOptions: { id: LocationType; label: string; icon: React.ElementType 
 export default function MapPage() {
   const [activeFilters, setActiveFilters] = useState<LocationType[]>(['proizvodjac', 'radnja', 'restoran']);
   const [isClient, setIsClient] = useState(false);
-  const mapIdKey = useId(); // For unique key prop on MapContainer
+  const mapIdKey = useId(); // Used for the key prop of MapContainer
 
   useEffect(() => {
     setIsClient(true);
-  }, []); // Runs once on mount to confirm client-side
+  }, []);
 
+  // Effect for setting up Leaflet default icon paths
+  // This should run only once on the client after the component mounts
   useEffect(() => {
-    // This effect runs once on the client after initial mount to set up Leaflet icon paths.
-    // It does not need to depend on `isClient` because its empty dependency array ensures it runs after mount.
-    import('leaflet').then(L => {
-      // @ts-ignore This is a common workaround for Leaflet icon path issues with bundlers
-      delete L.Icon.Default.prototype._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default,
-        iconUrl: require('leaflet/dist/images/marker-icon.png').default,
-        shadowUrl: require('leaflet/dist/images/marker-shadow.png').default,
-      });
-    }).catch(error => console.error("Failed to load Leaflet for icon setup:", error));
-  }, []); // Empty dependency array ensures this runs once on mount
+    if (isClient) { // Ensure this runs only client-side
+      import('leaflet').then(L => {
+        // @ts-ignore This is a common workaround for Leaflet's icon path issue with bundlers
+        delete L.Icon.Default.prototype._getIconUrl;
+        L.Icon.Default.mergeOptions({
+          iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default,
+          iconUrl: require('leaflet/dist/images/marker-icon.png').default,
+          shadowUrl: require('leaflet/dist/images/marker-shadow.png').default,
+        });
+      }).catch(error => console.error("Failed to load Leaflet for icon setup:", error));
+    }
+  }, [isClient]); // Depends on isClient to ensure it runs after client-side confirmation
+
 
   const handleFilterChange = (type: LocationType) => {
     setActiveFilters(prev =>
@@ -148,13 +152,12 @@ export default function MapPage() {
           <Card>
             <CardContent className="p-0 h-[600px] w-full rounded-lg overflow-hidden">
               {/*
-                MapContainer is dynamically imported with ssr:false and its own loader.
-                The additional `isClient` check ensures that even if the component code is loaded,
-                we don't attempt to render it until the client-side environment is confirmed.
+                Conditionally render MapContainer only when isClient is true.
+                This ensures Leaflet-related code only runs on the client-side.
+                The key={mapIdKey} helps React differentiate instances if MapPage itself is remounted.
               */}
               {isClient ? (
                 <MapContainer
-                  id={mapIdKey} // Explicitly set the DOM ID
                   key={mapIdKey} // Ensures a new instance if MapPage itself is re-keyed or remounted
                   center={[44.8125, 20.4612]}
                   zoom={12}
@@ -165,7 +168,6 @@ export default function MapPage() {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
-                  {/* Markers are rendered only when isClient is true (implicitly, as MapContainer is) */}
                   {filteredLocations.map(location => (
                     <Marker key={location.id} position={location.position}>
                       <Popup>
@@ -189,7 +191,7 @@ export default function MapPage() {
                   ))}
                 </MapContainer>
               ) : (
-                <MapContainerLoader /> // Explicitly show loader if not client (and component code might still be loading via dynamic)
+                <MapContainerLoader />
               )}
             </CardContent>
           </Card>
