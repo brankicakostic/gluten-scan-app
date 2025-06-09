@@ -13,17 +13,22 @@ import { Label } from '@/components/ui/label';
 import { MapPin, Store, Utensils, Factory, Loader2 } from 'lucide-react';
 import type { LatLngExpression } from 'leaflet';
 
+// Pre-require icon image paths
+const iconRetinaUrl = require('leaflet/dist/images/marker-icon-2x.png').default;
+const iconUrl = require('leaflet/dist/images/marker-icon.png').default;
+const shadowUrl = require('leaflet/dist/images/marker-shadow.png').default;
+
 // Standalone loader component
-const MapContainerLoader = () => (
+const MapViewLoader = ({ message }: { message: string }) => (
   <div className="h-full w-full flex items-center justify-center bg-muted">
     <Loader2 className="h-8 w-8 animate-spin text-primary"/>
-    <p className="ml-2 text-muted-foreground">Učitavanje mape...</p>
+    <p className="ml-2 text-muted-foreground">{message}</p>
   </div>
 );
 
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), {
   ssr: false,
-  loading: () => <MapContainerLoader />,
+  loading: () => <MapViewLoader message="Učitavanje mape..." />,
 });
 const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
 const LeafletMarker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
@@ -80,8 +85,8 @@ const filterOptions: { id: LocationType; label: string; icon: React.ElementType 
 export default function MapPage() {
   const [activeFilters, setActiveFilters] = useState<LocationType[]>(['proizvodjac', 'radnja', 'restoran']);
   const [isClient, setIsClient] = useState(false);
-  const mapIdKey = useId();
   const [leafletIconsConfigured, setLeafletIconsConfigured] = useState(false);
+  const mapIdKey = useId(); // Used for the key prop on MapContainer
 
   useEffect(() => {
     setIsClient(true);
@@ -93,13 +98,14 @@ export default function MapPage() {
         // @ts-ignore This is a common workaround for Leaflet's icon path issue with bundlers
         delete L.Icon.Default.prototype._getIconUrl;
         L.Icon.Default.mergeOptions({
-          iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default,
-          iconUrl: require('leaflet/dist/images/marker-icon.png').default,
-          shadowUrl: require('leaflet/dist/images/marker-shadow.png').default,
+          iconRetinaUrl,
+          iconUrl,
+          shadowUrl,
         });
-        setLeafletIconsConfigured(true); 
+        setLeafletIconsConfigured(true);
       }).catch(error => {
-        console.error("Failed to load Leaflet for icon setup:", error);
+        console.error("Failed to load Leaflet or configure icons:", error);
+        // Optionally set an error state here to inform the user
       });
     }
   }, [isClient]);
@@ -150,10 +156,10 @@ export default function MapPage() {
           </Card>
 
           <Card>
-            <CardContent className="p-0 h-[600px] w-full rounded-lg overflow-hidden relative"> {/* Added relative positioning for loader */}
-              {isClient ? (
+            <CardContent className="p-0 h-[600px] w-full rounded-lg overflow-hidden">
+              {isClient && leafletIconsConfigured ? (
                 <MapContainer
-                  key={mapIdKey}
+                  key={mapIdKey} 
                   center={[44.8125, 20.4612]}
                   zoom={12}
                   scrollWheelZoom={true}
@@ -163,7 +169,7 @@ export default function MapPage() {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
-                  {leafletIconsConfigured && filteredLocations.map(location => (
+                  {filteredLocations.map(location => (
                     <LeafletMarker key={location.id} position={location.position}>
                       <Popup>
                         <div className="space-y-1">
@@ -184,15 +190,9 @@ export default function MapPage() {
                       </Popup>
                     </LeafletMarker>
                   ))}
-                  {!leafletIconsConfigured && (
-                     <div className="w-full h-full flex items-center justify-center absolute inset-0 bg-background/30 backdrop-blur-sm z-10">
-                        <Loader2 className="h-6 w-6 animate-spin text-primary"/>
-                        <p className="ml-2 text-muted-foreground">Učitavanje ikonica...</p>
-                    </div>
-                  )}
                 </MapContainer>
               ) : (
-                <MapContainerLoader />
+                <MapViewLoader message={!isClient ? "Učitavanje mape..." : "Konfigurisanje ikonica..."} />
               )}
             </CardContent>
           </Card>
@@ -201,4 +201,6 @@ export default function MapPage() {
     </div>
   );
 }
+    
+
     
