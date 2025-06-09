@@ -1,8 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo, useId } from 'react'; // Added useId
-import type { Metadata } from 'next';
+import { useState, useEffect, useMemo, useId } from 'react';
 import dynamic from 'next/dynamic';
 import { SidebarInset, SidebarRail } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/navigation/app-sidebar';
@@ -11,16 +10,14 @@ import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { MapPin, Store, Utensils, Factory } from 'lucide-react'; // Icons for map and filters
+import { MapPin, Store, Utensils, Factory } from 'lucide-react';
 import type { LatLngExpression } from 'leaflet';
 
-// Dynamically import React Leaflet components to avoid SSR issues
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
 const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
 const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
 const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false });
 
-// Define types for locations and filters
 type LocationType = 'proizvodjac' | 'radnja' | 'restoran';
 
 interface Location {
@@ -38,7 +35,7 @@ const staticLocations: Location[] = [
     id: '1',
     name: 'Granum (Proizvođač)',
     type: 'proizvodjac',
-    position: [44.8100, 20.4500], // Approx. Belgrade, adjust as needed
+    position: [44.8100, 20.4500], 
     address: 'Kumodraška 249, Beograd',
     description: 'Proizvođač bezglutenskih proizvoda.',
     link: 'https://granum.rs/',
@@ -47,7 +44,7 @@ const staticLocations: Location[] = [
     id: '2',
     name: 'Bio Špajz (Radnja)',
     type: 'radnja',
-    position: [44.8165, 20.4602], // Approx. Belgrade, adjust as needed
+    position: [44.8165, 20.4602], 
     address: 'Kalenićeva 3, Beograd',
     description: 'Prodavnica zdrave hrane sa bezglutenskim asortimanom.',
     link: 'https://www.biospajz.rs/',
@@ -56,7 +53,7 @@ const staticLocations: Location[] = [
     id: '3',
     name: 'GlutenNo Pizzeria (Restoran)',
     type: 'restoran',
-    position: [44.8040, 20.4651], // Approx. Belgrade, adjust as needed
+    position: [44.8040, 20.4651], 
     address: 'Žorža Klemansoa 19, Beograd',
     description: 'Pica i pasta bez glutena.',
     link: 'https://gluteno.rs',
@@ -72,17 +69,15 @@ const filterOptions: { id: LocationType; label: string; icon: React.ElementType 
 export default function MapPage() {
   const [activeFilters, setActiveFilters] = useState<LocationType[]>(['proizvodjac', 'radnja', 'restoran']);
   const [isClient, setIsClient] = useState(false);
-  const mapIdKey = useId(); // Generate a unique key for the MapContainer
+  const mapIdKey = useId(); 
 
   useEffect(() => {
-    setIsClient(true); // Ensure Leaflet components only render on client
+    setIsClient(true); 
   }, []);
 
-  // It's important to manage Leaflet's Icon default paths.
-  // This useEffect runs once on the client after mount to configure icons.
   useEffect(() => {
-    if (typeof window !== 'undefined' && isClient) {
-      // Dynamically import Leaflet only on the client side
+    // This effect runs only once on the client, after initial mount
+    if (typeof window !== 'undefined') { // Ensure window is defined (it will be in useEffect)
       import('leaflet').then(L => {
         // @ts-ignore
         delete L.Icon.Default.prototype._getIconUrl;
@@ -93,8 +88,7 @@ export default function MapPage() {
         });
       });
     }
-  }, [isClient]); // Re-run if isClient changes (though it only changes once)
-
+  }, []); // Empty dependency array ensures this runs once on mount client-side
 
   const handleFilterChange = (type: LocationType) => {
     setActiveFilters(prev =>
@@ -197,4 +191,3 @@ export default function MapPage() {
     </div>
   );
 }
-
