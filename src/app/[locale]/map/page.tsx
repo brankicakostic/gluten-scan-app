@@ -88,7 +88,7 @@ export default function MapPage() {
 
   useEffect(() => {
     // This effect runs once on the client after initial mount
-    if (isClient) { // Ensure Leaflet is imported and configured only on the client
+    if (isClient) { // Keep this check, as the effect depends on isClient
         import('leaflet').then(L => {
         // @ts-ignore This is a common workaround for Leaflet icon path issues with bundlers
         delete L.Icon.Default.prototype._getIconUrl;
@@ -99,7 +99,7 @@ export default function MapPage() {
         });
         }).catch(error => console.error("Failed to load Leaflet for icon setup:", error));
     }
-  }, [isClient]); // Run this effect when isClient changes
+  }, [isClient]); // Run this effect when isClient changes to true
 
   const handleFilterChange = (type: LocationType) => {
     setActiveFilters(prev =>
@@ -148,8 +148,14 @@ export default function MapPage() {
 
           <Card>
             <CardContent className="p-0 h-[600px] w-full rounded-lg overflow-hidden">
+              {/*
+                MapContainer is dynamically imported with ssr:false and its own loader.
+                The additional `isClient` check ensures that even if the component code is loaded,
+                we don't attempt to render it until the client-side environment is confirmed.
+              */}
               {isClient ? (
                 <MapContainer
+                  id={mapIdKey} // Explicitly set the DOM ID
                   key={mapIdKey} // Ensures a new instance if MapPage itself is re-keyed or remounted
                   center={[44.8125, 20.4612]}
                   zoom={12}
