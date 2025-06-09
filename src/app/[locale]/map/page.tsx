@@ -23,7 +23,7 @@ const MapContainerLoader = () => (
 
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), {
   ssr: false,
-  loading: () => <MapContainerLoader />,
+  loading: () => <MapContainerLoader />, // This loader is for the component code itself
 });
 const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
 const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
@@ -80,25 +80,26 @@ const filterOptions: { id: LocationType; label: string; icon: React.ElementType 
 export default function MapPage() {
   const [activeFilters, setActiveFilters] = useState<LocationType[]>(['proizvodjac', 'radnja', 'restoran']);
   const [isClient, setIsClient] = useState(false);
-  const mapIdKey = useId();
+  const mapIdKey = useId(); // For unique key prop on MapContainer
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
   useEffect(() => {
-    if (isClient) { // Ensure this runs only on the client side
-      import('leaflet').then(L => {
+    // This effect runs once on the client after initial mount
+    if (isClient) { // Ensure Leaflet is imported and configured only on the client
+        import('leaflet').then(L => {
         // @ts-ignore This is a common workaround for Leaflet icon path issues with bundlers
         delete L.Icon.Default.prototype._getIconUrl;
         L.Icon.Default.mergeOptions({
-          iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default?.src || require('leaflet/dist/images/marker-icon-2x.png'),
-          iconUrl: require('leaflet/dist/images/marker-icon.png').default?.src || require('leaflet/dist/images/marker-icon.png'),
-          shadowUrl: require('leaflet/dist/images/marker-shadow.png').default?.src || require('leaflet/dist/images/marker-shadow.png'),
+            iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default?.src || require('leaflet/dist/images/marker-icon-2x.png'),
+            iconUrl: require('leaflet/dist/images/marker-icon.png').default?.src || require('leaflet/dist/images/marker-icon.png'),
+            shadowUrl: require('leaflet/dist/images/marker-shadow.png').default?.src || require('leaflet/dist/images/marker-shadow.png'),
         });
-      }).catch(error => console.error("Failed to load Leaflet for icon setup:", error));
+        }).catch(error => console.error("Failed to load Leaflet for icon setup:", error));
     }
-  }, [isClient]); // This effect runs when isClient becomes true
+  }, [isClient]); // Run this effect when isClient changes
 
   const handleFilterChange = (type: LocationType) => {
     setActiveFilters(prev =>
@@ -147,44 +148,44 @@ export default function MapPage() {
 
           <Card>
             <CardContent className="p-0 h-[600px] w-full rounded-lg overflow-hidden">
-              {/*
-                MapContainer is dynamically imported with ssr: false and a loading component.
-                It will only render on the client-side.
-                The key={mapIdKey} helps React differentiate instances if MapPage itself is remounted.
-              */}
-              <MapContainer
-                key={mapIdKey}
-                center={[44.8125, 20.4612]}
-                zoom={12}
-                scrollWheelZoom={true}
-                style={{ height: "100%", width: "100%" }}
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                {isClient && filteredLocations.map(location => ( // Render markers only when client is ready and filters applied
-                  <Marker key={location.id} position={location.position}>
-                    <Popup>
-                      <div className="space-y-1">
-                        <h3 className="font-semibold text-md">{location.name}</h3>
-                        <p className="text-xs text-muted-foreground">{location.address}</p>
-                        <p className="text-sm">{location.description}</p>
-                        {location.link && (
-                          <a
-                            href={location.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline text-sm"
-                          >
-                            Poseti sajt
-                          </a>
-                        )}
-                      </div>
-                    </Popup>
-                  </Marker>
-                ))}
-              </MapContainer>
+              {isClient ? (
+                <MapContainer
+                  key={mapIdKey} // Ensures a new instance if MapPage itself is re-keyed or remounted
+                  center={[44.8125, 20.4612]}
+                  zoom={12}
+                  scrollWheelZoom={true}
+                  style={{ height: "100%", width: "100%" }}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  {/* Markers are rendered only when isClient is true (implicitly, as MapContainer is) */}
+                  {filteredLocations.map(location => (
+                    <Marker key={location.id} position={location.position}>
+                      <Popup>
+                        <div className="space-y-1">
+                          <h3 className="font-semibold text-md">{location.name}</h3>
+                          <p className="text-xs text-muted-foreground">{location.address}</p>
+                          <p className="text-sm">{location.description}</p>
+                          {location.link && (
+                            <a
+                              href={location.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary hover:underline text-sm"
+                            >
+                              Poseti sajt
+                            </a>
+                          )}
+                        </div>
+                      </Popup>
+                    </Marker>
+                  ))}
+                </MapContainer>
+              ) : (
+                <MapContainerLoader /> // Explicitly show loader if not client (and component code might still be loading via dynamic)
+              )}
             </CardContent>
           </Card>
         </main>
