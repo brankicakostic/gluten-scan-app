@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useId } from 'react'; // Added useId
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import { SidebarInset, SidebarRail } from '@/components/ui/sidebar';
@@ -72,6 +72,7 @@ const filterOptions: { id: LocationType; label: string; icon: React.ElementType 
 export default function MapPage() {
   const [activeFilters, setActiveFilters] = useState<LocationType[]>(['proizvodjac', 'radnja', 'restoran']);
   const [isClient, setIsClient] = useState(false);
+  const mapIdKey = useId(); // Generate a unique key for the MapContainer
 
   useEffect(() => {
     setIsClient(true); // Ensure Leaflet components only render on client
@@ -80,7 +81,7 @@ export default function MapPage() {
   // It's important to manage Leaflet's Icon default paths.
   // This useEffect runs once on the client after mount to configure icons.
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && isClient) {
       // Dynamically import Leaflet only on the client side
       import('leaflet').then(L => {
         // @ts-ignore
@@ -92,7 +93,7 @@ export default function MapPage() {
         });
       });
     }
-  }, []);
+  }, [isClient]); // Re-run if isClient changes (though it only changes once)
 
 
   const handleFilterChange = (type: LocationType) => {
@@ -161,7 +162,7 @@ export default function MapPage() {
           <Card>
             <CardContent className="p-0 h-[600px] w-full rounded-lg overflow-hidden">
               {isClient && (
-                <MapContainer center={[44.8125, 20.4612]} zoom={12} scrollWheelZoom={true} style={{ height: "100%", width: "100%" }}>
+                <MapContainer key={mapIdKey} center={[44.8125, 20.4612]} zoom={12} scrollWheelZoom={true} style={{ height: "100%", width: "100%" }}>
                   <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -196,3 +197,4 @@ export default function MapPage() {
     </div>
   );
 }
+
