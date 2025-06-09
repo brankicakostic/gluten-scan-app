@@ -12,6 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { MapPin, Store, Utensils, Factory, Loader2 } from 'lucide-react';
 import type { LatLngExpression } from 'leaflet';
+import L from 'leaflet'; // Import L directly
 
 // Pre-require icon image paths
 const iconRetinaUrl = require('leaflet/dist/images/marker-icon-2x.png').default;
@@ -28,11 +29,19 @@ const MapViewLoader = ({ message }: { message: string }) => (
 
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), {
   ssr: false,
-  loading: () => <MapViewLoader message="Učitavanje mape..." />,
+  loading: () => <MapViewLoader message="Učitavanje kontejnera mape..." />,
 });
-const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
-const LeafletMarker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
-const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false });
+const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { 
+  ssr: false,
+  loading: () => <MapViewLoader message="Učitavanje sloja mape..." />,
+});
+const LeafletMarker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { 
+  ssr: false,
+  // No specific loader here, as individual markers are small. The container handles initial load.
+});
+const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { 
+  ssr: false 
+});
 
 type LocationType = 'proizvodjac' | 'radnja' | 'restoran';
 
@@ -86,7 +95,7 @@ export default function MapPage() {
   const [activeFilters, setActiveFilters] = useState<LocationType[]>(['proizvodjac', 'radnja', 'restoran']);
   const [isClient, setIsClient] = useState(false);
   const [leafletIconsConfigured, setLeafletIconsConfigured] = useState(false);
-  const mapIdKey = useId(); // Used for the key prop on MapContainer
+  const mapIdKey = useId(); 
 
   useEffect(() => {
     setIsClient(true);
@@ -94,19 +103,15 @@ export default function MapPage() {
 
   useEffect(() => {
     if (isClient) {
-      import('leaflet').then(L => {
-        // @ts-ignore This is a common workaround for Leaflet's icon path issue with bundlers
-        delete L.Icon.Default.prototype._getIconUrl;
-        L.Icon.Default.mergeOptions({
-          iconRetinaUrl,
-          iconUrl,
-          shadowUrl,
-        });
-        setLeafletIconsConfigured(true);
-      }).catch(error => {
-        console.error("Failed to load Leaflet or configure icons:", error);
-        // Optionally set an error state here to inform the user
+      // @ts-ignore This is a common workaround for Leaflet's icon path issue with bundlers
+      delete L.Icon.Default.prototype._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl,
+        iconUrl,
+        shadowUrl,
       });
+      setLeafletIconsConfigured(true);
+      console.log("Leaflet icons configured using direct L import.");
     }
   }, [isClient]);
 
@@ -192,7 +197,7 @@ export default function MapPage() {
                   ))}
                 </MapContainer>
               ) : (
-                <MapViewLoader message={!isClient ? "Učitavanje mape..." : "Konfigurisanje ikonica..."} />
+                <MapViewLoader message={!isClient ? "Učitavanje podataka mape..." : "Konfigurisanje ikonica mape..."} />
               )}
             </CardContent>
           </Card>
@@ -201,6 +206,4 @@ export default function MapPage() {
     </div>
   );
 }
-    
-
     
