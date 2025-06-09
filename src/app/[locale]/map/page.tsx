@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { MapPin, Store, Utensils, Factory, Loader2 } from 'lucide-react';
 import type { LatLngExpression, Map as LeafletMapInstance } from 'leaflet';
 
+// Standalone loader component
 const MapContainerLoader = () => (
   <div className="h-full w-full flex items-center justify-center bg-muted">
     <Loader2 className="h-8 w-8 animate-spin text-primary"/> 
@@ -22,7 +23,7 @@ const MapContainerLoader = () => (
 
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { 
   ssr: false,
-  loading: () => <MapContainerLoader />
+  loading: () => <MapContainerLoader /> // Use the standalone loader here
 });
 const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
 const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
@@ -87,7 +88,7 @@ export default function MapPage() {
   }, []); 
 
   useEffect(() => {
-    // Configure Leaflet's default icon paths only on the client side
+    // Configure Leaflet's default icon paths only on the client side, once.
     if (isClient && typeof window !== 'undefined') {
       import('leaflet').then(L => {
         // @ts-ignore
@@ -99,13 +100,13 @@ export default function MapPage() {
         });
       }).catch(error => console.error("Failed to load Leaflet for icon setup:", error));
     }
-  }, [isClient]);
+  }, [isClient]); // Depends on isClient to run after client confirmation
 
   useEffect(() => {
     // Effect to clean up the map instance on unmount or if mapInstance changes
     return () => {
       if (mapInstance) {
-        console.log('Attempting to remove map instance:', mapInstance); // For debugging
+        console.log('Attempting to remove map instance:', mapInstance); 
         mapInstance.remove();
         setMapInstance(null); // Explicitly set to null after removal
       }
@@ -195,7 +196,7 @@ export default function MapPage() {
                   ))}
                 </MapContainer>
               ) : (
-                <MapContainerLoader />
+                <MapContainerLoader /> 
               )}
             </CardContent>
           </Card>
