@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { MapPin, Store, Utensils, Factory, Loader2 } from 'lucide-react';
-import type { LatLngExpression, Map as LeafletMapInstance } from 'leaflet';
+import type { LatLngExpression } from 'leaflet';
 
 // Standalone loader component
 const MapContainerLoader = () => (
@@ -23,7 +23,7 @@ const MapContainerLoader = () => (
 
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { 
   ssr: false,
-  loading: () => <MapContainerLoader /> // Use the standalone loader here
+  loading: () => <MapContainerLoader />
 });
 const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
 const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
@@ -80,7 +80,6 @@ const filterOptions: { id: LocationType; label: string; icon: React.ElementType 
 export default function MapPage() {
   const [activeFilters, setActiveFilters] = useState<LocationType[]>(['proizvodjac', 'radnja', 'restoran']);
   const [isClient, setIsClient] = useState(false);
-  const [mapInstance, setMapInstance] = useState<LeafletMapInstance | null>(null);
   const mapIdKey = useId(); 
 
   useEffect(() => {
@@ -100,18 +99,7 @@ export default function MapPage() {
         });
       }).catch(error => console.error("Failed to load Leaflet for icon setup:", error));
     }
-  }, [isClient]); // Depends on isClient to run after client confirmation
-
-  useEffect(() => {
-    // Effect to clean up the map instance on unmount or if mapInstance changes
-    return () => {
-      if (mapInstance) {
-        console.log('Attempting to remove map instance:', mapInstance); 
-        mapInstance.remove();
-        setMapInstance(null); // Explicitly set to null after removal
-      }
-    };
-  }, [mapInstance]);
+  }, [isClient]);
 
   const handleFilterChange = (type: LocationType) => {
     setActiveFilters(prev =>
@@ -167,7 +155,6 @@ export default function MapPage() {
                   zoom={12} 
                   scrollWheelZoom={true} 
                   style={{ height: "100%", width: "100%" }}
-                  whenCreated={setMapInstance} 
                 >
                   <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -205,4 +192,3 @@ export default function MapPage() {
     </div>
   );
 }
-
