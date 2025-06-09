@@ -84,22 +84,21 @@ export default function MapPage() {
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+  }, []); // Runs once on mount to confirm client-side
 
   useEffect(() => {
-    // This effect runs once on the client after initial mount
-    if (isClient) { // Keep this check, as the effect depends on isClient
-        import('leaflet').then(L => {
-        // @ts-ignore This is a common workaround for Leaflet icon path issues with bundlers
-        delete L.Icon.Default.prototype._getIconUrl;
-        L.Icon.Default.mergeOptions({
-            iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default?.src || require('leaflet/dist/images/marker-icon-2x.png'),
-            iconUrl: require('leaflet/dist/images/marker-icon.png').default?.src || require('leaflet/dist/images/marker-icon.png'),
-            shadowUrl: require('leaflet/dist/images/marker-shadow.png').default?.src || require('leaflet/dist/images/marker-shadow.png'),
-        });
-        }).catch(error => console.error("Failed to load Leaflet for icon setup:", error));
-    }
-  }, [isClient]); // Run this effect when isClient changes to true
+    // This effect runs once on the client after initial mount to set up Leaflet icon paths.
+    // It does not need to depend on `isClient` because its empty dependency array ensures it runs after mount.
+    import('leaflet').then(L => {
+      // @ts-ignore This is a common workaround for Leaflet icon path issues with bundlers
+      delete L.Icon.Default.prototype._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default,
+        iconUrl: require('leaflet/dist/images/marker-icon.png').default,
+        shadowUrl: require('leaflet/dist/images/marker-shadow.png').default,
+      });
+    }).catch(error => console.error("Failed to load Leaflet for icon setup:", error));
+  }, []); // Empty dependency array ensures this runs once on mount
 
   const handleFilterChange = (type: LocationType) => {
     setActiveFilters(prev =>
