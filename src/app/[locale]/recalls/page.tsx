@@ -20,15 +20,18 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { Button } from '@/components/ui/button';
-import { Siren, Search, Filter, PackageSearch, Info, MapPinIcon, TagIcon, Barcode } from 'lucide-react';
+import { Siren, Search, PackageSearch, Info, MapPinIcon, TagIcon, Barcode, Flag, ArrowUpDown, Filter } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import { useToast } from '@/hooks/use-toast';
 
 // Define the structure for a recall item
 interface RecallItem {
   id: string;
-  date: string;
+  date: string; // Assuming YYYY-MM-DD for easier sorting
   productName: string;
   productBrand?: string;
   productId?: string; // To link to product details page
@@ -46,7 +49,7 @@ interface RecallItem {
 const placeholderRecalls: RecallItem[] = [
   {
     id: '1',
-    date: '09.06.2025',
+    date: '2025-06-09',
     productName: 'Dr. Schär Mix It Dunkel Rustico',
     productBrand: 'Dr. Schär',
     productId: 'schar-mix-it-dunkel-1000g', // Example ID, can be used for linking
@@ -60,10 +63,9 @@ const placeholderRecalls: RecallItem[] = [
     sourceLink: 'https://www.schaer.com/hr-hr/p/obavijest-o-opozivu-proizvoda-mix-it-dunkel',
     advice: 'Potrošači koji su kupili navedeni proizvod, ukoliko se LOT broj na pakovanju podudara sa navedenim LOT brojevima, mole se da proizvod ne konzumiraju i da ga vrate na mesto kupovine.',
   },
-  // Example of another recall status
   {
     id: '2',
-    date: '15.05.2025',
+    date: '2025-05-15',
     productName: 'Bezglutenske Kukuruzne Pahuljice',
     productBrand: 'BioLife',
     productId: 'biolife-cornflakes-500g',
@@ -79,10 +81,9 @@ const placeholderRecalls: RecallItem[] = [
   },
   {
     id: '3',
-    date: '01.06.2025',
+    date: '2025-06-01',
     productName: 'Pirinčani Krekeri sa Susamom',
     productBrand: 'Zdravo Zalogaj',
-    // No productId if not in our DB
     productImageUrl: 'https://placehold.co/64x64.png',
     dataAiHint: 'rice crackers snack',
     status: 'check-suspicion',
@@ -101,18 +102,28 @@ const countries = ['Sve zemlje', 'Hrvatska', 'Srbija', 'EU', 'Ostalo'];
 
 export default function RecallsPage() {
   const params = useParams();
-  const locale = params.locale as string; // Ensure locale is available for links
+  const locale = params.locale as string; 
+  const { toast } = useToast();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Sve kategorije');
   const [selectedCountry, setSelectedCountry] = useState('Sve zemlje');
+  const [sortByDate, setSortByDate] = useState('newest'); // 'newest', 'oldest'
+  const [showOnlyGlobal, setShowOnlyGlobal] = useState(false);
   
-  // In a real app, filtering logic would go here
+  // In a real app, filtering and sorting logic would go here
   const filteredRecalls = placeholderRecalls.filter(recall => {
     const nameMatch = recall.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                       (recall.productBrand && recall.productBrand.toLowerCase().includes(searchTerm.toLowerCase()));
-    // Basic filtering example, more complex logic would be needed
+    // Basic filtering example, more complex logic would be needed for category, country, global status, and sorting.
     return nameMatch;
+  }).sort((a, b) => {
+    if (sortByDate === 'newest') {
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    }
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
   });
+
 
   const getStatusBadge = (status: RecallItem['status']) => {
     switch (status) {
@@ -125,6 +136,13 @@ export default function RecallsPage() {
       default:
         return <Badge variant="outline">Nepoznat status</Badge>;
     }
+  };
+
+  const handleReportProblem = () => {
+    toast({
+      title: "Prijava Problema",
+      description: "Funkcionalnost prijave problema će uskoro biti dostupna. Hvala na razumevanju!",
+    });
   };
 
 
@@ -141,27 +159,33 @@ export default function RecallsPage() {
             icon={Siren}
           />
 
+          <div className="mb-6">
+            <Button variant="outline" onClick={handleReportProblem}>
+              <Flag className="mr-2 h-4 w-4" /> Prijavi problem sa proizvodom
+            </Button>
+          </div>
+
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><Filter className="h-5 w-5 text-primary"/> Filteri i Pretraga Opoziva</CardTitle>
               <CardDescription>Pronađite specifične opozive koristeći filtere ispod.</CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-end">
               <div>
-                <label htmlFor="recall-search" className="text-sm font-medium mb-1 block">Pretraga (naziv, barkod)</label>
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input 
-                    id="recall-search" 
-                    placeholder="Unesi naziv ili barkod..." 
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-9"
-                  />
-                </div>
+                <Label htmlFor="recall-search" className="text-sm font-medium mb-1 block">
+                  <Search className="inline h-4 w-4 mr-1.5 text-muted-foreground"/>Pretraga (naziv, brend)
+                </Label>
+                <Input 
+                  id="recall-search" 
+                  placeholder="Unesi naziv ili brend..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
               <div>
-                <label htmlFor="recall-category" className="text-sm font-medium mb-1 block">Kategorija proizvoda</label>
+                <Label htmlFor="recall-category" className="text-sm font-medium mb-1 block">
+                  <TagIcon className="inline h-4 w-4 mr-1.5 text-muted-foreground"/>Kategorija proizvoda
+                </Label>
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                   <SelectTrigger id="recall-category">
                     <SelectValue placeholder="Izaberi kategoriju" />
@@ -174,7 +198,9 @@ export default function RecallsPage() {
                 </Select>
               </div>
               <div>
-                <label htmlFor="recall-country" className="text-sm font-medium mb-1 block">Zemlja</label>
+                <Label htmlFor="recall-country" className="text-sm font-medium mb-1 block">
+                 <MapPinIcon className="inline h-4 w-4 mr-1.5 text-muted-foreground"/> Zemlja
+                </Label>
                 <Select value={selectedCountry} onValueChange={setSelectedCountry}>
                   <SelectTrigger id="recall-country">
                     <SelectValue placeholder="Izaberi zemlju" />
@@ -185,6 +211,32 @@ export default function RecallsPage() {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+              <div>
+                 <Label htmlFor="recall-sort-date" className="text-sm font-medium mb-1 block">
+                   <ArrowUpDown className="inline h-4 w-4 mr-1.5 text-muted-foreground"/>Sortiraj po datumu
+                 </Label>
+                <Select value={sortByDate} onValueChange={setSortByDate}>
+                  <SelectTrigger id="recall-sort-date">
+                    <SelectValue placeholder="Sortiraj po datumu" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Najnoviji prvo</SelectItem>
+                    <SelectItem value="oldest">Najstariji prvo</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="md:col-span-2 flex items-end"> {/* Adjust span for layout */}
+                <div className="flex items-center space-x-2 pt-2">
+                  <Checkbox 
+                    id="show-global-recalls" 
+                    checked={showOnlyGlobal} 
+                    onCheckedChange={(checked) => setShowOnlyGlobal(!!checked)}
+                  />
+                  <Label htmlFor="show-global-recalls" className="text-sm font-medium cursor-pointer">
+                    Prikaži samo potpune opozive (global-recall)
+                  </Label>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -204,7 +256,7 @@ export default function RecallsPage() {
               <TableBody>
                 {filteredRecalls.length > 0 ? filteredRecalls.map((recall) => (
                   <TableRow key={recall.id}>
-                    <TableCell className="font-medium">{recall.date}</TableCell>
+                    <TableCell className="font-medium">{new Date(recall.date).toLocaleDateString(locale === 'sr' ? 'sr-RS' : 'en-GB')}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
                         {recall.productImageUrl && (
@@ -233,16 +285,28 @@ export default function RecallsPage() {
                     <TableCell className="text-xs">{recall.displayLotNumbers}</TableCell>
                     <TableCell>{recall.country}</TableCell>
                     <TableCell className="text-right">
-                       {/* Details button could open a modal or navigate to a recall details page in future */}
                       <Button variant="outline" size="sm" asChild>
-                         {/* For now, link to product if available, otherwise a placeholder action */}
                         {recall.productId ? (
                            <Link href={`/${locale}/products/${recall.productId}`}>
                             Vidi proizvod
                            </Link>
                         ) : (
-                          // In a real app, this might open a modal with recall.reason, recall.advice, recall.sourceLink
-                          <span onClick={() => alert(`Detalji opoziva za ${recall.productName}:\nRazlog: ${recall.reason}\nSavet: ${recall.advice}\nIzvor: ${recall.sourceLink || 'Nije naveden'}`)} className="cursor-pointer">
+                          <span 
+                            onClick={() => toast({
+                              title: `Opoziv: ${recall.productName}`,
+                              description: (
+                                <div className="text-xs space-y-1">
+                                  <p><strong>Razlog:</strong> {recall.reason || 'Nije naveden'}</p>
+                                  <p><strong>Savet:</strong> {recall.advice || 'Proveriti izvor.'}</p>
+                                  {recall.sourceLink && recall.sourceLink !== '#' && (
+                                    <p><strong>Izvor:</strong> <a href={recall.sourceLink} target="_blank" rel="noopener noreferrer" className="underline">Link</a></p>
+                                  )}
+                                </div>
+                              ),
+                              duration: 10000,
+                            })} 
+                            className="cursor-pointer"
+                          >
                              Info
                           </span>
                         )}
@@ -277,8 +341,9 @@ export default function RecallsPage() {
                 <h3 className="font-semibold text-foreground mb-1">Mogućnosti Filtracije:</h3>
                 <ul className="list-disc list-inside pl-4 space-y-1 text-muted-foreground">
                   <li><TagIcon className="inline h-4 w-4 mr-1.5 text-primary"/><strong>Kategorija proizvoda:</strong> Filtrirajte opozive po tipu proizvoda (npr. brašno, grickalice, testenine).</li>
-                  <li><Barcode className="inline h-4 w-4 mr-1.5 text-primary"/><strong>Pretraga po barkodu ili nazivu:</strong> Brzo pronađite specifičan proizvod.</li>
+                  <li><Search className="inline h-4 w-4 mr-1.5 text-primary"/><strong>Pretraga po nazivu ili brendu.</strong></li>
                   <li><MapPinIcon className="inline h-4 w-4 mr-1.5 text-primary"/><strong>Filter po zemlji:</strong> Pregledajte opozive relevantne za vaše tržište (HR, RS, EU, itd.).</li>
+                  <li><ArrowUpDown className="inline h-4 w-4 mr-1.5 text-primary"/><strong>Sortiranje po datumu.</strong></li>
                 </ul>
               </div>
               <div>
@@ -300,3 +365,4 @@ export default function RecallsPage() {
     </div>
   );
 }
+
