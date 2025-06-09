@@ -13,17 +13,17 @@ import { Label } from '@/components/ui/label';
 import { MapPin, Store, Utensils, Factory, Loader2 } from 'lucide-react';
 import type { LatLngExpression } from 'leaflet';
 
-// Standalone loader component
+// Standalone loader component, defined outside MapPage
 const MapContainerLoader = () => (
   <div className="h-full w-full flex items-center justify-center bg-muted">
-    <Loader2 className="h-8 w-8 animate-spin text-primary"/> 
+    <Loader2 className="h-8 w-8 animate-spin text-primary"/>
     <p className="ml-2 text-muted-foreground">Učitavanje mape...</p>
-  </div> 
+  </div>
 );
 
-const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { 
+const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), {
   ssr: false,
-  loading: () => <MapContainerLoader />
+  loading: () => <MapContainerLoader />,
 });
 const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
 const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
@@ -46,7 +46,7 @@ const staticLocations: Location[] = [
     id: '1',
     name: 'Granum (Proizvođač)',
     type: 'proizvodjac',
-    position: [44.8100, 20.4500], 
+    position: [44.8100, 20.4500],
     address: 'Kumodraška 249, Beograd',
     description: 'Proizvođač bezglutenskih proizvoda.',
     link: 'https://granum.rs/',
@@ -55,7 +55,7 @@ const staticLocations: Location[] = [
     id: '2',
     name: 'Bio Špajz (Radnja)',
     type: 'radnja',
-    position: [44.8165, 20.4602], 
+    position: [44.8165, 20.4602],
     address: 'Kalenićeva 3, Beograd',
     description: 'Prodavnica zdrave hrane sa bezglutenskim asortimanom.',
     link: 'https://www.biospajz.rs/',
@@ -64,7 +64,7 @@ const staticLocations: Location[] = [
     id: '3',
     name: 'GlutenNo Pizzeria (Restoran)',
     type: 'restoran',
-    position: [44.8040, 20.4651], 
+    position: [44.8040, 20.4651],
     address: 'Žorža Klemansoa 19, Beograd',
     description: 'Pica i pasta bez glutena.',
     link: 'https://gluteno.rs',
@@ -80,17 +80,16 @@ const filterOptions: { id: LocationType; label: string; icon: React.ElementType 
 export default function MapPage() {
   const [activeFilters, setActiveFilters] = useState<LocationType[]>(['proizvodjac', 'radnja', 'restoran']);
   const [isClient, setIsClient] = useState(false);
-  const mapIdKey = useId(); 
+  const mapIdKey = useId();
 
   useEffect(() => {
     setIsClient(true);
-  }, []); 
+  }, []);
 
   useEffect(() => {
-    // Configure Leaflet's default icon paths only on the client side, once.
-    if (isClient && typeof window !== 'undefined') {
+    if (isClient) { // Ensure this runs only on the client side
       import('leaflet').then(L => {
-        // @ts-ignore
+        // @ts-ignore This is a common workaround for Leaflet icon path issues with bundlers
         delete L.Icon.Default.prototype._getIconUrl;
         L.Icon.Default.mergeOptions({
           iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default?.src || require('leaflet/dist/images/marker-icon-2x.png'),
@@ -99,7 +98,7 @@ export default function MapPage() {
         });
       }).catch(error => console.error("Failed to load Leaflet for icon setup:", error));
     }
-  }, [isClient]);
+  }, [isClient]); // This effect runs when isClient becomes true
 
   const handleFilterChange = (type: LocationType) => {
     setActiveFilters(prev =>
@@ -110,7 +109,7 @@ export default function MapPage() {
   const filteredLocations = useMemo(() => {
     return staticLocations.filter(location => activeFilters.includes(location.type));
   }, [activeFilters]);
-  
+
   return (
     <div className="flex min-h-screen">
       <AppSidebar />
@@ -118,12 +117,12 @@ export default function MapPage() {
       <SidebarInset>
         <SiteHeader />
         <main className="flex-1 p-6 md:p-8">
-          <PageHeader 
+          <PageHeader
             title="Mapa Gluten-Free Lokacija"
             description="Pronađite proizvođače, radnje i restorane sa bezglutenskom ponudom."
             icon={MapPin}
           />
-          
+
           <Card className="mb-6">
             <CardHeader>
               <CardTitle>Filteri</CardTitle>
@@ -148,43 +147,44 @@ export default function MapPage() {
 
           <Card>
             <CardContent className="p-0 h-[600px] w-full rounded-lg overflow-hidden">
-              {isClient ? (
-                <MapContainer 
-                  key={mapIdKey} 
-                  center={[44.8125, 20.4612]} 
-                  zoom={12} 
-                  scrollWheelZoom={true} 
-                  style={{ height: "100%", width: "100%" }}
-                >
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
-                  {filteredLocations.map(location => (
-                    <Marker key={location.id} position={location.position}>
-                      <Popup>
-                        <div className="space-y-1">
-                          <h3 className="font-semibold text-md">{location.name}</h3>
-                          <p className="text-xs text-muted-foreground">{location.address}</p>
-                          <p className="text-sm">{location.description}</p>
-                          {location.link && (
-                            <a 
-                              href={location.link} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              className="text-primary hover:underline text-sm"
-                            >
-                              Poseti sajt
-                            </a>
-                          )}
-                        </div>
-                      </Popup>
-                    </Marker>
-                  ))}
-                </MapContainer>
-              ) : (
-                <MapContainerLoader /> 
-              )}
+              {/*
+                MapContainer is dynamically imported with ssr: false and a loading component.
+                It will only render on the client-side.
+                The key={mapIdKey} helps React differentiate instances if MapPage itself is remounted.
+              */}
+              <MapContainer
+                key={mapIdKey}
+                center={[44.8125, 20.4612]}
+                zoom={12}
+                scrollWheelZoom={true}
+                style={{ height: "100%", width: "100%" }}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                {isClient && filteredLocations.map(location => ( // Render markers only when client is ready and filters applied
+                  <Marker key={location.id} position={location.position}>
+                    <Popup>
+                      <div className="space-y-1">
+                        <h3 className="font-semibold text-md">{location.name}</h3>
+                        <p className="text-xs text-muted-foreground">{location.address}</p>
+                        <p className="text-sm">{location.description}</p>
+                        {location.link && (
+                          <a
+                            href={location.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline text-sm"
+                          >
+                            Poseti sajt
+                          </a>
+                        )}
+                      </div>
+                    </Popup>
+                  </Marker>
+                ))}
+              </MapContainer>
             </CardContent>
           </Card>
         </main>
