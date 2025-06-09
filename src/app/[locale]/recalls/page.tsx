@@ -27,6 +27,7 @@ import { Siren, Search, PackageSearch, Info, MapPinIcon, TagIcon, Barcode, Flag,
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // Define the structure for a recall item
 interface RecallItem {
@@ -126,16 +127,39 @@ export default function RecallsPage() {
 
 
   const getStatusBadge = (status: RecallItem['status']) => {
+    let badgeElement: JSX.Element;
+    let tooltipText: string;
+
     switch (status) {
       case 'lot-specific':
-        return <Badge variant="warning">Opoziv (LOT-spec.)</Badge>;
+        badgeElement = <Badge variant="warning">Opoziv (LOT-spec.)</Badge>;
+        tooltipText = "Opoziv se odnosi samo na navedene serije (LOT brojeve) proizvoda. Proverite LOT broj na pakovanju.";
+        break;
       case 'global-recall':
-        return <Badge variant="destructive">Potpuni opoziv</Badge>;
+        badgeElement = <Badge variant="destructive">Potpuni opoziv</Badge>;
+        tooltipText = "Proizvod povučen iz prodaje u svim serijama. Ne preporučuje se konzumacija.";
+        break;
       case 'check-suspicion':
-        return <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-300 hover:bg-blue-200">Proveriti (sumnja)</Badge>;
+        badgeElement = <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-300 hover:bg-blue-200">Proveriti (sumnja)</Badge>;
+        tooltipText = "Sumnja u bezbednost, ali bez zvanične potvrde – preporučuje se dodatna provera kod proizvođača.";
+        break;
       default:
-        return <Badge variant="outline">Nepoznat status</Badge>;
+        badgeElement = <Badge variant="outline">Nepoznat status</Badge>;
+        tooltipText = "Status opoziva nije poznat ili nije specificiran.";
     }
+
+    return (
+      <TooltipProvider delayDuration={300}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {badgeElement}
+          </TooltipTrigger>
+          <TooltipContent>
+            <p className="max-w-xs">{tooltipText}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
   };
 
   const handleReportProblem = () => {
