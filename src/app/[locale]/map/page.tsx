@@ -99,13 +99,15 @@ export default function MapPage() {
         });
       }).catch(error => console.error("Failed to load Leaflet for icon setup:", error));
     }
-  }, [isClient]); // Depends only on isClient
+  }, [isClient]);
 
-  // Effect to clean up the map instance on unmount
   useEffect(() => {
+    // Effect to clean up the map instance on unmount or if mapInstance changes
     return () => {
       if (mapInstance) {
+        console.log('Attempting to remove map instance:', mapInstance); // For debugging
         mapInstance.remove();
+        setMapInstance(null); // Explicitly set to null after removal
       }
     };
   }, [mapInstance]);
