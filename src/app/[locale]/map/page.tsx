@@ -20,24 +20,6 @@ const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLaye
 const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
 const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false });
 
-// It's important to manage Leaflet's Icon default paths, especially when using bundlers like Webpack (used by Next.js)
-// This ensures marker icons are loaded correctly.
-useEffect(() => {
-  if (typeof window !== 'undefined') {
-    // Dynamically import Leaflet only on the client side
-    import('leaflet').then(L => {
-      // @ts-ignore
-      delete L.Icon.Default.prototype._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default,
-        iconUrl: require('leaflet/dist/images/marker-icon.png').default,
-        shadowUrl: require('leaflet/dist/images/marker-shadow.png').default,
-      });
-    });
-  }
-}, []);
-
-
 // Define types for locations and filters
 type LocationType = 'proizvodjac' | 'radnja' | 'restoran';
 
@@ -87,11 +69,6 @@ const filterOptions: { id: LocationType; label: string; icon: React.ElementType 
   { id: 'restoran', label: 'Restorani', icon: Utensils },
 ];
 
-// export const metadata: Metadata = { // Metadata needs to be in a server component or generated via generateMetadata
-//   title: 'Mapa Gluten-Free Lokacija | Gluten Detective',
-//   description: 'Pronađite proizvođače, radnje i restorane sa bezglutenskom ponudom.',
-// };
-
 export default function MapPage() {
   const [activeFilters, setActiveFilters] = useState<LocationType[]>(['proizvodjac', 'radnja', 'restoran']);
   const [isClient, setIsClient] = useState(false);
@@ -99,6 +76,24 @@ export default function MapPage() {
   useEffect(() => {
     setIsClient(true); // Ensure Leaflet components only render on client
   }, []);
+
+  // It's important to manage Leaflet's Icon default paths.
+  // This useEffect runs once on the client after mount to configure icons.
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Dynamically import Leaflet only on the client side
+      import('leaflet').then(L => {
+        // @ts-ignore
+        delete L.Icon.Default.prototype._getIconUrl;
+        L.Icon.Default.mergeOptions({
+          iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default?.src || require('leaflet/dist/images/marker-icon-2x.png'),
+          iconUrl: require('leaflet/dist/images/marker-icon.png').default?.src || require('leaflet/dist/images/marker-icon.png'),
+          shadowUrl: require('leaflet/dist/images/marker-shadow.png').default?.src || require('leaflet/dist/images/marker-shadow.png'),
+        });
+      });
+    }
+  }, []);
+
 
   const handleFilterChange = (type: LocationType) => {
     setActiveFilters(prev =>
@@ -128,21 +123,6 @@ export default function MapPage() {
     );
   }
   
-  // Default icon setup (can be done once globally or per map instance if needed)
-  // This should be done before any Marker is rendered.
-  // Ensure this runs only on the client.
-  if (typeof window !== 'undefined') {
-      const L = require('leaflet');
-      // @ts-ignore
-      delete L.Icon.Default.prototype._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default.src,
-        iconUrl: require('leaflet/dist/images/marker-icon.png').default.src,
-        shadowUrl: require('leaflet/dist/images/marker-shadow.png').default.src,
-      });
-  }
-
-
   return (
     <div className="flex min-h-screen">
       <AppSidebar />
@@ -216,15 +196,3 @@ export default function MapPage() {
     </div>
   );
 }
-
-// Helper function to generate metadata - should be outside client component or in a server parent
-// This will not work directly in a 'use client' file.
-// For App Router, metadata should be exported from page.tsx (server component)
-// If this MapPage needs to be a client component entirely, metadata must be handled by its parent server component.
-// For now, I will comment it out from here. If you want to set metadata, we'd need a server component wrapper.
-// export async function generateMetadata(): Promise<Metadata> {
-//   return {
-//     title: 'Mapa Gluten-Free Lokacija | Gluten Detective',
-//     description: 'Pronađite proizvođače, radnje i restorane sa bezglutenskom ponudom.',
-//   };
-// }
