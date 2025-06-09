@@ -1,5 +1,5 @@
 
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import '../globals.css'; // Adjusted path
 import 'leaflet/dist/leaflet.css'; // Added Leaflet CSS
@@ -31,10 +31,14 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   return {
     title: title,
     description: params.locale === 'sr' ? 'Lako skenirajte i identifikujte proizvode bez glutena.' : 'Scan and identify gluten-free products easily.',
-    viewport: {
-      width: 'device-width',
-      initialScale: 1,
-    },
+  };
+}
+
+// Export viewport settings separately
+export async function generateViewport({ params }: { params: { locale: string } }): Promise<Viewport> {
+  return {
+    width: 'device-width',
+    initialScale: 1,
   };
 }
 
