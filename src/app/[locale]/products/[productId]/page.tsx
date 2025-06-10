@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Leaf, Info, ShieldCheck, FileText, GitBranch, Tag, Barcode, CircleAlert, Store, MapPin, ExternalLink, ListChecks, CalendarDays, SearchCheck } from 'lucide-react';
-import { placeholderProducts } from '@/app/[locale]/products/page'; 
+import { placeholderProducts } from '@/app/[locale]/products/page';
 import { Badge } from '@/components/ui/badge';
 import { useFavorites } from '@/contexts/favorites-context';
 import { useToast } from '@/hooks/use-toast';
@@ -26,20 +26,20 @@ export interface Product {
   name: string;
   brand?: string;
   barcode?: string;
-  category: string; 
+  category: string;
   imageUrl: string;
-  description: string; 
-  ingredientsText?: string; 
-  labelText?: string; 
-  hasAOECSLicense?: boolean; 
-  hasManufacturerStatement?: boolean; 
-  isVerifiedAdmin?: boolean; 
-  source?: string; 
-  tags?: string[]; 
-  nutriScore?: string; 
-  isLactoseFree?: boolean; 
-  isSugarFree?: boolean; 
-  isPosno?: boolean; 
+  description: string;
+  ingredientsText?: string;
+  labelText?: string;
+  hasAOECSLicense?: boolean;
+  hasManufacturerStatement?: boolean;
+  isVerifiedAdmin?: boolean;
+  source?: string;
+  tags?: string[];
+  nutriScore?: string;
+  isLactoseFree?: boolean;
+  isSugarFree?: boolean;
+  isPosno?: boolean;
   dataAiHint?: string;
   warning?: boolean;
   note?: string;
@@ -82,8 +82,8 @@ export default function ProductDetailPage() {
 
   const product = placeholderProducts.find(p => p.id === productId) as Product | undefined;
 
-  const { addFavorite, removeFavorite, isFavorite } = useFavorites(); 
-  const { toast } = useToast(); 
+  const { addFavorite, removeFavorite, isFavorite } = useFavorites();
+  const { toast } = useToast();
 
   if (!product) {
     return (
@@ -93,8 +93,8 @@ export default function ProductDetailPage() {
         <SidebarInset>
           <SiteHeader />
           <main className="flex-1 p-6 md:p-8">
-            <PageHeader 
-              title="Product Not Found" 
+            <PageHeader
+              title="Product Not Found"
               description="The product you are looking for does not exist or could not be loaded."
               icon={AlertTriangle}
             />
@@ -111,9 +111,9 @@ export default function ProductDetailPage() {
     );
   }
 
-  const isCurrentlyFavorite = isFavorite(product.id); 
+  const isCurrentlyFavorite = isFavorite(product.id);
 
-  const handleToggleFavorite = () => { 
+  const handleToggleFavorite = () => {
     if (isCurrentlyFavorite) {
       removeFavorite(product.id);
       toast({ title: `${product.name} removed from favorites.` });
@@ -143,7 +143,7 @@ export default function ProductDetailPage() {
     { term: 'orah', name: 'Walnuts' },
     { term: 'susam', name: 'Sesame' },
   ];
-  
+
   let mentionedNonGlutenAllergens: string[] = [];
   if (product.ingredientsText && typeof product.ingredientsText === 'string') {
     const ingredientsLower = product.ingredientsText.toLowerCase();
@@ -171,12 +171,12 @@ export default function ProductDetailPage() {
               </Link>
             </Button>
           </div>
-          <PageHeader 
+          <PageHeader
             title={product.name}
             description={product.brand ? `${product.brand} - Details for ${product.name}` : `Details for ${product.name}`}
             icon={Package}
           />
-          
+
           {product.warning && product.seriesAffected && (
             <ShadcnAlert variant="destructive" className="mb-6">
               <AlertTriangle className="h-5 w-5" />
@@ -204,11 +204,11 @@ export default function ProductDetailPage() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="md:col-span-1">
               <Card className={`overflow-hidden shadow-lg ${product.warning ? 'border-2 border-destructive' : ''}`}>
-                <Image 
-                  src={product.imageUrl} 
-                  alt={product.name} 
-                  width={600} 
-                  height={400} 
+                <Image
+                  src={product.imageUrl}
+                  alt={product.name}
+                  width={600}
+                  height={400}
                   className="w-full h-auto object-cover aspect-square"
                   data-ai-hint={product.dataAiHint}
                 />
@@ -245,7 +245,7 @@ export default function ProductDetailPage() {
                     <h3 className="text-md font-semibold mb-1">Description</h3>
                     <p className="text-sm text-muted-foreground">{product.description}</p>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <h3 className="text-md font-semibold mb-2">Gluten Information</h3>
@@ -307,13 +307,13 @@ export default function ProductDetailPage() {
                       </div>
                     </div>
                   )}
-                  
+
                   {!product.warning && ( // Don't show regular certifications if product is recalled
                     <div>
                       <h3 className="text-md font-semibold mb-2">Certifications &amp; Verifications</h3>
                       <div className="space-y-2">
                         {product.hasAOECSLicense && (
-                          <TooltipProvider delayDuration={300}>
+                          <TooltipProvider delayDuration={200}>
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <div className="flex items-center text-sm text-foreground cursor-help">
@@ -321,14 +321,14 @@ export default function ProductDetailPage() {
                                   <span>AOECS Licensed</span>
                                 </div>
                               </TooltipTrigger>
-                              <TooltipContent className="w-64 text-sm">
-                                <p>✅ AOECS sertifikat potvrđuje da je proizvod prošao strogu kontrolu i laboratorijska testiranja. Siguran je za osobe sa celijakijom i označen je simbolom prekriženog klasja.</p>
+                              <TooltipContent className="w-64 text-sm bg-popover text-popover-foreground border-border shadow-md p-2 rounded-md">
+                                <p>✅ AOECS sertifikat potvrđuje da je proizvod prošao strogu kontrolu i laboratorijska testiranja. Siguran je za osobe sa celijakijom i označen je simbolom prekriženog klasja pšenice.</p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
                         )}
                         {product.hasManufacturerStatement && (
-                          <TooltipProvider delayDuration={300}>
+                          <TooltipProvider delayDuration={200}>
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <div className="flex items-center text-sm text-foreground cursor-help">
@@ -336,8 +336,8 @@ export default function ProductDetailPage() {
                                   <span>Manufacturer Statement (Gluten-Free)</span>
                                 </div>
                               </TooltipTrigger>
-                              <TooltipContent className="w-64 text-sm">
-                                <p>ℹ️ Proizvođač tvrdi da proizvod ne sadrži gluten i da se pakuje bez kontaminacije. Ipak, bez sertifikata ili laboratorijskog testa, ovo se tretira kao informacija iz poverenja, ali ne kao garancija.</p>
+                              <TooltipContent className="w-64 text-sm bg-popover text-popover-foreground border-border shadow-md p-2 rounded-md">
+                                <p>ℹ️ Proizvođač tvrdi da ovaj proizvod ne sadrži gluten i da se pakuje na način koji sprečava kontaminaciju. Iako je ovo korisna informacija, bez zvaničnog sertifikata ili laboratorijskog testa, ovo se tretira kao izjava poverenja, a ne kao apsolutna garancija bezglutenskog statusa.</p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -351,11 +351,11 @@ export default function ProductDetailPage() {
                   {product.brand === "Aleksandrija Fruška Gora" && (
                     <div>
                       <div className="flex items-center mb-1">
-                        <Store className="h-4 w-4 mr-2 text-primary"/> 
+                        <Store className="h-4 w-4 mr-2 text-primary"/>
                         <h3 className="text-md font-semibold">Dostupno u</h3>
                       </div>
                       <p className="text-sm text-muted-foreground ml-6">DM, Maxi, Bio Špajz, online</p>
-                      
+
                       <div className="flex items-center mt-2 mb-1">
                         <MapPin className="h-4 w-4 mr-2 text-primary"/>
                         <h3 className="text-md font-semibold">Zemlja porekla</h3>
@@ -370,7 +370,7 @@ export default function ProductDetailPage() {
                       <p className="text-xs text-muted-foreground p-3 bg-muted rounded-md whitespace-pre-wrap">{product.ingredientsText}</p>
                     </div>
                   )}
-                  
+
                   <div className="border-t pt-4">
                     <h3 className="text-md font-semibold mb-2 flex items-center">
                         <CircleAlert className="h-4 w-4 mr-2 text-primary"/> Allergen Notes
@@ -387,7 +387,7 @@ export default function ProductDetailPage() {
                     {!product.warning && identifiedGlutenSources.length === 0 && isGlutenFreeTag && (
                         <p className="text-sm text-green-600">This product is generally considered gluten-free based on available information.</p>
                     )}
-                    
+
                     {mentionedNonGlutenAllergens.length > 0 && (
                       <div className="mt-2">
                         <p className="text-sm text-muted-foreground">
@@ -409,7 +409,7 @@ export default function ProductDetailPage() {
                       <p className="text-xs text-muted-foreground p-3 bg-muted rounded-md">{product.labelText}</p>
                     </div>
                   )}
-                  
+
                   {product.tags && product.tags.length > 0 && (
                     <div>
                       <h3 className="text-md font-semibold mb-1 flex items-center"><Tag className="h-4 w-4 mr-2 text-primary"/> Tags</h3>
@@ -427,7 +427,7 @@ export default function ProductDetailPage() {
                       <p className="text-sm text-muted-foreground">{product.source}</p>
                     </div>
                   )}
-                  
+
                   <Button size="lg" className="w-full mt-4" disabled={product.warning}>
                     <ShoppingBag className="mr-2 h-5 w-5" /> {product.warning ? "Product Recalled" : "Add to Shopping List (Example)"}
                   </Button>

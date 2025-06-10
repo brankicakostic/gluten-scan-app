@@ -853,20 +853,12 @@ const rawProductsData = [
     "ingredients": ["Integralno brašno od prosa 100%"], "labelText": "Integralno brašno od prosa", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode":"8606109176527", "name":"Integralno brašno od polbe", "size":"500g", "jsonCategory":"Brašno", "nutriscore":"B", "Poreklo":"Srbija",
-    "ingredients": ["Integralno brašno od polbe 100%"], "labelText": "Integralno brašno od polbe", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
-  },
-  {
     "brand": "Slavuj", "barcode":"8606109176329", "name":"Integralno brašno od heljde", "size":"500g", "jsonCategory":"Brašno", "nutriscore":"B", "Poreklo":"Srbija",
     "ingredients": ["Integralno brašno od heljde 100%"], "labelText": "Integralno brašno od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
     "brand": "Slavuj", "barcode":"8606109176497", "name":"Integralno brašno od prosa", "size":"5kg", "jsonCategory":"Brašno", "nutriscore":"B", "Poreklo":"Srbija",
     "ingredients": ["Integralno brašno od prosa 100%"], "labelText": "Integralno brašno od prosa", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
-  },
-  {
-    "brand": "Slavuj", "barcode":"8606109176503", "name":"Integralno brašno od polbe", "size":"5kg", "jsonCategory":"Brašno", "nutriscore":"B", "Poreklo":"Srbija",
-    "ingredients": ["Integralno brašno od polbe 100%"], "labelText": "Integralno brašno od polbe", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
     "brand": "Slavuj", "barcode":"8606109176473", "name":"Integralno brašno od heljde", "size":"5kg", "jsonCategory":"Brašno", "nutriscore":"B", "Poreklo":"Srbija",
@@ -919,10 +911,6 @@ const rawProductsData = [
   {
     "brand": "Slavuj", "barcode":"8606109176275", "name":"Heljda propržena", "size":"300g", "jsonCategory":"Drevna zrna", "nutriscore":"A", "Poreklo":"Srbija",
     "ingredients": ["Heljda propržena 100%"], "labelText": "Heljda propržena", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
-  },
-  {
-    "brand": "Slavuj", "barcode":"8606109176628", "name":"Zrno polbe glazirano", "size":"300g", "jsonCategory":"Drevna zrna", "nutriscore":"A", "Poreklo":"Srbija",
-    "ingredients": ["Zrno polbe glazirano 100%"], "labelText": "Zrno polbe glazirano", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
     "brand": "Slavuj", "barcode":"8606109176251", "name":"Proso", "size":"300g", "jsonCategory":"Drevna zrna", "nutriscore":"A", "Poreklo":"Srbija",
