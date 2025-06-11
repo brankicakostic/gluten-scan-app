@@ -99,27 +99,30 @@ const analyzeDeclarationPrompt = ai.definePrompt({
       *   *Specifični Skrobovi (Specific Starches - risky if source not specified as non-gluten, e.g., 'pšenični skrob' has gluten, 'kukuruzni skrob' is safe):* E1404 (oksidovani skrob), E1410 (monoskrobni fosfat), E1412 (diskrobni fosfat), E1413 (fosforilisani diskrobni fosfat), E1414 (acetilovani diskrobni fosfat), E1420 (acetilovani skrob), E1422 (acetilovani diskrobni adipat), E1440 (hidroksipropil skrob), E1442 (hidroksipropil diskrobni fosfat). (Other modified starches like E1450, E1451 are also risky if source not specified GF). If 'labelingInfo' is 'aoecs', assume GF source if not specified.
       *   *Antioksidanti (Antioxidants):* E575 (glukono-delta-lakton) - Can be from wheat or corn. Risky if source unknown and 'labelingInfo' is not 'aoecs'.
       *   *Veštačke boje - Karamel boje (Artificial Colors - Caramel Colors):* E150a (Plain Caramel), E150b (Caustic sulphite caramel), E150c (Ammonia caramel), E150d (Sulphite ammonia caramel). Risky if derived from gluten grains and not specified GF or 'labelingInfo' is not 'aoecs'.
+  *   **Opšti termini kao 'zgušnjivač', 'stabilizator', 'emulgator'**: Ako izvor ili E-broj nije precizno naveden (npr. nije 'zgušnjivač: guar guma' ili 'E412'), i ako proizvod nema jasnu 'aoecs' ili 'gf_text' oznaku, ovi termini nose rizik jer mogu prikrivati derivate glutena (npr. pšenični skrob kao zgušnjivač). U tom slučaju, postavi 'hasGluten: true' sa 'confidence' 0.5-0.7, navodeći generički termin kao problematičan. Ako je 'labelingInfo' 'aoecs' ili 'gf_text', pretpostaviti da su bezbednog porekla i ne označavati ih kao problematične samo na osnovu generičkog naziva.
+
 
   **3. Dozvoljeni Izuzeci / Važne Napomene o Prerađenim Sastojcima Iz Žitarica (Permitted Exceptions / Important Notes on Processed Ingredients from Cereals):**
   These ingredients, though derived from gluten grains, are generally considered safe for Celiacs due to processing that removes gluten, or are exempt from allergen labeling. **Their presence ALONE should NOT make the product 'hasGluten: true'.**
-  *   **Glukozni sirup na bazi pšenice, uključujući i dekstrozu** (Wheat-based glucose syrup, including dextrose).
+  *   **Glukozni sirup na bazi pšenice, uključujući i dekstrozu** (Wheat-based glucose syrup, including dextrose). This also covers "Glukozni sirup (iz pšenice, gluten free)".
   *   **Maltodekstrin na bazi pšenice** (Wheat-based maltodextrin). *If "maltodekstrin" without "na bazi pšenice" is listed and 'labelingInfo' is not 'aoecs' or 'gf_text', treat as RIZIČNI SASTOJAK.*
   *   **Glukozni sirup na bazi ječma** (Barley-based glucose syrup).
   *   **Žitni destilati ili etil alkohol poljoprivrednog porekla za proizvodnju jakih alkoholnih pića dobijenih iz žita** (Cereal distillates or ethyl alcohol of agricultural origin for spirits from grains). *Applies to the spirit itself; gluten can be added post-distillation.*
 
   **4. Neutralni Sastojci (Generally Safe Ingredients):**
-  These are generally considered safe: Pirinač (rice), Kukuruz (corn), Proso (millet), Amarant (amaranth), Kinoa (quinoa), Heljda (buckwheat), Leblebija (chickpea), Tapioka skrob (tapioca starch), Kukuruzni skrob (corn starch), Krompirov skrob (potato starch), **Sojin lecitin** (Soy lecithin - generalno bezbedan osim ako nije izričito navedena kontaminacija glutenom).
+  These are generally considered safe: Pirinač (rice), Kukuruz (corn), Proso (millet), Amarant (amaranth), Kinoa (quinoa), Heljda (buckwheat), Leblebija (chickpea), Tapioka skrob (tapioca starch), Kukuruzni skrob (corn starch), Krompirov skrob (potato starch), **Sojin lecitin** (Soy lecithin - generalno bezbedan osim ako nije izričito navedena kontaminacija glutenom), **Vanilin** (čist vanilin; za razliku od "aroma vanile" koja može imati nosače), Guar guma (E412), Ksantan guma (E415).
 
   **General Approach for Gluten Analysis (considering 'labelingInfo'):**
   1.  **Scan for Direktni Izvori Glutena:** If any are found (and not an exempt form like GF wheat starch under AOECS), set 'hasGluten' to true, list them, high confidence (0.9-1.0).
   2.  **Assess Rizični Sastojci:**
       *   **Ovas (Oats):** If present and NOT explicitly 'sertifikovan bezglutenski ovas' AND 'labelingInfo' is not 'aoecs' (which implies safe oats), set 'hasGluten' to true, list 'Ovas (nesertifikovan)', high confidence (0.9-1.0). If 'labelingInfo' is 'aoecs', assume oats are GF.
-      *   **Other Risky Ingredients (including E-numbers and specific notes for Aroma vanile and unspecified Lecithin):** If found:
+      *   **Other Risky Ingredients (including E-numbers, generic thickeners/emulsifiers/stabilizers, and specific notes for Aroma vanile and unspecified Lecithin):** If found:
           *   Check if an exception under 'Dozvoljeni Izuzeci'. If yes, do not set 'hasGluten: true' solely on this.
-          *   If 'labelingInfo' is 'aoecs', assume the ingredient is handled/sourced safely unless it's a non-exempt direct gluten source. Note this assumption in 'reason'.
+          *   If 'labelingInfo' is 'aoecs' or 'gf_text', assume the ingredient is handled/sourced safely unless it's a non-exempt direct gluten source. Note this assumption in 'reason'. This applies to generic thickeners/emulsifiers/stabilizers as well.
           *   If it's **'lecitin (nepoznatog porekla)'** and 'labelingInfo' is 'none' or 'unknown', and this is the SOLE potential risk identified so far, set 'hasGluten: true' with 'confidence' between **0.3 and 0.4**. List the ingredient.
           *   If it's **'aroma vanile'** and 'labelingInfo' is 'none' or 'unknown', and this is the SOLE potential risk identified so far, set 'hasGluten: true' with 'confidence' between 0.4 and 0.6. List the ingredient.
-          *   If not an exception and 'labelingInfo' is not 'aoecs' (or is 'none'/'unknown'), and it's another risky ingredient (not vanilla/lecithin as sole risk, e.g., unspecified maltodextrin), set 'hasGluten' to true. Confidence for most other risky ingredients (if not AOECS certified) will be 0.6-0.9.
+          *   If it's a **generic 'zgušnjivač', 'stabilizator', or 'emulgator'** (source/E-number not specified) and 'labelingInfo' is 'none' or 'unknown', set 'hasGluten' to true with 'confidence' 0.5-0.7. List the generic term.
+          *   If not an exception and 'labelingInfo' is not 'aoecs'/'gf_text' (or is 'none'/'unknown'), and it's another risky ingredient (e.g., unspecified maltodextrin), set 'hasGluten' to true. Confidence for most other risky ingredients (if not AOECS/GF certified) will be 0.6-0.9.
   3.  **"Može sadržati tragove glutena" (May contain traces of gluten):** If this phrase (or similar) is in 'declarationText':
       *   If 'labelingInfo' is 'aoecs', this is permissible under the standard; 'hasGluten' should remain 'false' if no direct gluten is found. Note the advisory label in 'reason'. Confidence for 'false' should still be high (0.8-0.9) if this is the only concern.
       *   If 'labelingInfo' is not 'aoecs' (i.e., 'gf_text', 'none', 'unknown'), set 'hasGluten' to true, list 'Mogući tragovi glutena', confidence high (0.9).
@@ -128,6 +131,7 @@ const analyzeDeclarationPrompt = ai.definePrompt({
       *   **1.0** for clear, direct, non-exempt gluten sources (e.g., pšenično brašno).
       *   **0.9-1.0** if uncertified oats (and not AOECS) or "may contain traces" (and not AOECS) leads to 'hasGluten: true'.
       *   **0.8-1.0** if 'labelingInfo' is 'aoecs' and no direct non-exempt gluten sources, 'hasGluten: false'.
+      *   **0.5-0.7** for generic 'zgušnjivač', 'stabilizator', 'emulgator' if source is unknown and 'labelingInfo' is 'none' or 'unknown'.
       *   **0.3-0.4** if 'lecitin (nepoznatog porekla)' is the SOLE identified risk and 'labelingInfo' is 'none' or 'unknown'.
       *   **0.4-0.6** if 'aroma vanile' is the SOLE identified risk and 'labelingInfo' is 'none' or 'unknown'.
       *   Adjust confidence based on the interplay of ingredients and 'labelingInfo'. If multiple risky items are present (e.g. unspecified maltodextrin AND unspecified modified starch, and no AOECS), confidence for 'hasGluten: true' should generally be higher (e.g., 0.7-0.9) than if only one low-risk item is present. High confidence (0.9-1.0) for 'hasGluten: true' should be reserved for direct gluten sources or explicit "may contain" type warnings without strong GF certification.
@@ -176,3 +180,5 @@ const analyzeDeclarationFlow = ai.defineFlow(
   }
 );
 
+
+    
