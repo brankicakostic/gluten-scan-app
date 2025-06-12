@@ -10,7 +10,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const AssessProductRiskInputSchema = z.object({
+const AssessProductRiskInputSchema = z.object({
   name: z.string().describe("Naziv proizvoda."),
   gfLabelOnPackaging: z.boolean().describe("Da li proizvod ima vidljivu gluten-free oznaku na pakovanju?"),
   labTestPerformed: z.boolean().describe("Da li je urađen laboratorijski test na gluten?"),
@@ -24,7 +24,7 @@ export const AssessProductRiskInputSchema = z.object({
 });
 export type AssessProductRiskInput = z.infer<typeof AssessProductRiskInputSchema>;
 
-export const AssessProductRiskOutputSchema = z.object({
+const AssessProductRiskOutputSchema = z.object({
   riskLevel: z.enum(["GREEN", "YELLOW", "RED"]).describe("Procena nivoa rizika: GREEN (bezbedan), YELLOW (potrebna dodatna provera), RED (rizičan/sadrži gluten)."),
   reasoning: z.string().describe("Obrazloženje za dodeljeni nivo rizika."),
 });
@@ -105,7 +105,7 @@ Ovas (Zob):
 
 Posebna pažnja za osetljive osobe (ako postoji GF oznaka/sertifikat):
 Ako proizvod ima jasnu GF oznaku ('gfLabelOnPackaging' je true) ili sertifikat ('hasLicenseOrCert' je true), ALI 'ingredientsList' sadrži sastojke kao što su 'maltodekstrin', 'dekstroza', ili 'glukozni sirup' BEZ navedenog bezglutenskog porekla (npr. NIJE 'maltodekstrin (pšenični)', 'dekstroza (pšenična)' koji su dozvoljeni izuzeci):
-  - `riskLevel` bi generalno trebalo da ostane GREEN zbog zvanične GF potvrde.
+  - \`riskLevel\` bi generalno trebalo da ostane GREEN zbog zvanične GF potvrde.
   - U 'reasoning', OBAVEZNO dodaj napomenu: "Proizvod poseduje zvaničnu gluten-free potvrdu. Sadrži [navedi_sastojak_poput_maltodekstrina] čije poreklo nije specificirano. Iako je proizvod sertifikovan kao bezglutenski, osobe sa izuzetno visokom osetljivošću na gluten mogu želeti da obrate pažnju na ovu informaciju." Primer: "Proizvod poseduje zvaničnu gluten-free potvrdu. Sadrži maltodekstrin čije poreklo nije specificirano. Iako je proizvod sertifikovan kao bezglutenski, osobe sa izuzetno visokom osetljivošću na gluten mogu želeti da obrate pažnju na ovu informaciju."
   - Nemoj automatski oceniti kao YELLOW ili RED samo zbog ovoga ako postoji jaka GF potvrda, osim ako postoje drugi jači negativni faktori koji bi to opravdali (npr. dodatna napomena "proizvedeno u pogonu gde se koristi pšenica" a da nije AOECS).
 
