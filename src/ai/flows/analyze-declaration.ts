@@ -110,28 +110,48 @@ Ako je prisutna neka od sledećih fraza, dodaj je kao poseban 'sastojak' u 'rezu
 2.  Inače, ako postoji "Necertifikovana/neoznačena zob/ovas" sa 'ocena: "nije bezbedno"' -> 'ukupnaProcenaBezbednosti: "nije bezbedno"'. 'poverenjeUkupneProcene': 0.95.
 3.  Inače, ako postoji RIZIČNA FRAZA sa 'ocena: "rizično – proveriti poreklo"' I 'labelingInfo' NIJE 'aoecs' -> 'ukupnaProcenaBezbednosti: "rizično"'. 'poverenjeUkupneProcene': 0.9.
 4.  Inače, ako bilo koji 'sastojak' ima 'ocena: "rizično – proveriti poreklo"' -> 'ukupnaProcenaBezbednosti: "rizično"'. 'poverenjeUkupneProcene': 0.6-0.8 (više ako ima više takvih sastojaka).
-5.  Inače, ako je prisutna "Sertifikovana/označena bezglutenska zob/ovas" (i sve ostalo je "sigurno") -> 'ukupnaProcenaBezbednosti: "potrebna pažnja"'. 'poverenjeUkupneProcene': 0.85. 'finalnoObrazlozenje' mora sadržati napomenu o osetljivosti na avenin.
+5.  Inače, ako je prisutna "Sertifikovana/označena bezglutenska zob/ovas" (i sve ostalo je "sigurno") -> 'ukupnaProcenaBezbednosti: "potrebna pažnja"'. 'poverenjeUkupneProcene': 0.85.
 6.  Inače (svi sastojci su "sigurno", nema rizičnih fraza koje nisu pokrivene AOECS-om):
     *   Ako je 'labelingInfo' 'aoecs' ili 'gf_text' -> 'ukupnaProcenaBezbednosti: "sigurno"'. 'poverenjeUkupneProcene': 0.9-1.0.
     *   Ako je 'labelingInfo' 'none' ili 'unknown' -> 'ukupnaProcenaBezbednosti: "sigurno"'. 'poverenjeUkupneProcene': 0.7-0.8 (zbog opšteg nedeklarisanog rizika).
 7.  Ako je RIZIČNA FRAZA prisutna ALI 'labelingInfo' JE 'aoecs', i nema drugih problema, 'ukupnaProcenaBezbednosti' može biti "sigurno" ili "potrebna pažnja" uz napomenu da AOECS standardi mogu dozvoljavati takve izjave. 'poverenjeUkupneProcene': 0.8-0.9.
 
 **'finalnoObrazlozenje':**
-*   Mora sumirati zašto je proizvod dobio određenu 'ukupnaProcenaBezbednosti'.
+*   Mora sumirati zašto je proizvod dobio određenu 'ukupnaProcenaBezbednosti', na osnovu 'poverenjeUkupneProcene' i analize sastojaka.
 *   Mora eksplicitno navesti uticaj 'labelingInfo'.
 *   Ako je ovas/zob prisutan, uključi relevantnu napomenu (o riziku kontaminacije ili osetljivosti na avenin).
 *   Ako su prisutni mlečni alergeni (npr. mleko, laktoza, surutka, kazein, kajmak, maslac, sir), dodaj napomenu na kraju, npr.: "Napomena o mleku: Sadrži mleko u prahu." Ovo ne utiče na procenu glutena.
+
+Generiši 'finalnoObrazlozenje' prema sledećim smernicama, zavisno od 'ukupnaProcenaBezbednosti' i 'poverenjeUkupneProcene':
+
+    *   **Ako je 'ukupnaProcenaBezbednosti' "sigurno" I 'poverenjeUkupneProcene' >= 0.9:**
+        Koristi obrazac: "Proizvod ne sadrži sastojke koji sadrže gluten niti sumnjive dodatke. Jasno je označen kao bezglutenski ili sadrži relevantnu sertifikaciju ('labelingInfo': {{{labelingInfo}}}). Nema identifikovanih rizičnih sastojaka na osnovu dostavljene liste."
+        Ako je 'labelingInfo' 'none' ili 'unknown' a ipak je procenjeno kao "sigurno" (npr. zbog kompletno "zelene" liste sastojaka), prilagodi: "Proizvod ne sadrži direktne izvore glutena na osnovu dostavljene liste. Iako nema eksplicitne GF oznake ('labelingInfo': {{{labelingInfo}}}), analiza sastojaka ukazuje na verovatnu bezbednost. Za potpunu sigurnost, preporučuje se provera sa proizvođačem."
+
+    *   **Ako je 'ukupnaProcenaBezbednosti' "rizično" ILI "potrebna pažnja" (i 'poverenjeUkupneProcene' je između 0.6 i 0.89 ILI je 'potrebna pažnja' zbog sertifikovanog ovsa):**
+        Koristi obrazac: "Proizvod ne sadrži direktne izvore glutena, ali uključuje sastojke čije poreklo nije potvrđeno kao bezglutensko (npr. {{#each (filter rezultat ocena='rizično – proveriti poreklo')}}{{sastojak}}{{#unless @last}}, {{/unless}}{{/each}}). Prisutna GF oznaka ('labelingInfo': {{{labelingInfo}}}). Postoji {{#if (test poverenjeUkupneProcene '>=' 0.8)}}umeren{{else if (test poverenjeUkupneProcene '>=' 0.7)}}umeren do nizak{{else}}nizak{{/if}} rizik. Tipovi rizika: {{#if (contains resultat.sastojak 'Fraza:')}}moguća unakrsna kontaminacija (zbog fraza 'može sadržati'); {{/if}}{{#if (filter rezultat ocena='rizično – proveriti poreklo' napomena_contains='Poreklo nije potvrđeno')}}nepoznat izvor sastojaka; {{/if}}{{#if (test labelingInfo '==' 'none')}}nedostatak GF deklaracije; {{/if}}{{#if (test labelingInfo '==' 'unknown')}}nedostatak informacija o GF deklaraciji; {{/if}}{{#if (contains rezultat.sastojak 'Sertifikovana/označena bezglutenska zob/ovas')}}potrebna pažnja zbog ovsa (avenin).{{/if}}"
+        Obavezno navedi relevantne rizične sastojke i tipove rizika. Ako je 'labelingInfo' 'none' ili 'unknown', to je regulatorni rizik. Ako postoje "može sadržati" fraze, to je rizik unakrsne kontaminacije. Ako postoje sastojci sa narandžaste liste bez GF potvrde, to je rizik nepoznatog izvora. Ako je 'potrebna pažnja' zbog sertifikovanog ovsa, to treba naglasiti.
+
+    *   **Ako je 'ukupnaProcenaBezbednosti' "nije bezbedno" (i 'poverenjeUkupneProcene' >= 0.9):**
+        Koristi obrazac: "Proizvod sadrži sastojke koji su poznati izvori glutena (npr. {{#each (filter rezultat ocena='nije bezbedno')}}{{sastojak}}{{#unless @last}}, {{/unless}}{{/each}}). Nije bezglutenski i nije pogodan za osobe sa celijakijom. Prisutna GF oznaka ('labelingInfo': {{{labelingInfo}}})."
+        Ako je 'labelingInfo' 'aoecs' ili 'gf_text' a ipak je ocenjen kao "nije bezbedno", dodaj: "Uprkos GF oznaci, prisustvo {{#each (filter rezultat ocena='nije bezbedno')}}{{sastojak}}{{#unless @last}}, {{/unless}}{{/each}} čini proizvod nebezbednim."
+
+Obavezno prilagodi ove obrasce konkretnim nalazima iz 'rezultat' niza i vrednosti 'labelingInfo'. Ako nema rizičnih sastojaka za nabrajanje, izostavi taj deo rečenice.
 
 **Primeri za AI:**
 *   Ulaz: declarationText: "gluten-free wheat starch, sugar, salt", labelingInfo: "gf_text"
     Očekivani deo 'rezultat': [{"sastojak": "gluten-free wheat starch", "ocena": "sigurno", "napomena": "Deklarisano kao bezglutensko."}]
     Očekivana 'ukupnaProcenaBezbednosti': "sigurno"
+    Očekivano 'finalnoObrazlozenje': "Proizvod ne sadrži sastojke koji sadrže gluten niti sumnjive dodatke. Jasno je označen kao bezglutenski ili sadrži relevantnu sertifikaciju ('labelingInfo': gf_text). Nema identifikovanih rizičnih sastojaka na osnovu dostavljene liste."
 *   Ulaz: declarationText: "ječmeni slad, šećer", labelingInfo: "none"
     Očekivani deo 'rezultat': [{"sastojak": "ječmeni slad", "ocena": "nije bezbedno", "napomena": "Ječam sadrži gluten."}]
     Očekivana 'ukupnaProcenaBezbednosti': "nije bezbedno"
+    Očekivano 'finalnoObrazlozenje': "Proizvod sadrži sastojke koji su poznati izvori glutena (npr. ječmeni slad). Nije bezglutenski i nije pogodan za osobe sa celijakijom. Prisutna GF oznaka ('labelingInfo': none)."
 *   Ulaz: declarationText: "pirinčano brašno, može sadržati tragove pšenice", labelingInfo: "none"
     Očekivani deo 'rezultat': [{"sastojak": "pirinčano brašno", "ocena": "sigurno"}, {"sastojak": "Fraza: može sadržati tragove pšenice", "ocena": "rizično – proveriti poreklo", "napomena": "Ukazuje na moguću unakrsnu kontaminaciju."}]
     Očekivana 'ukupnaProcenaBezbednosti': "rizično"
+    Očekivano 'finalnoObrazlozenje': "Proizvod ne sadrži direktne izvore glutena, ali uključuje sastojke čije poreklo nije potvrđeno kao bezglutensko (npr. Fraza: može sadržati tragove pšenice). Prisutna GF oznaka ('labelingInfo': none). Postoji visok rizik. Tipovi rizika: moguća unakrsna kontaminacija (zbog fraza 'može sadržati'); nedostatak GF deklaracije; "
+
 
 Lista sastojaka za analizu:
 \`{{{declarationText}}}\`
@@ -162,3 +182,6 @@ const analyzeDeclarationFlow = ai.defineFlow(
 );
     
 
+
+
+    
