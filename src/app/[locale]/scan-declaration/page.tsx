@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert';
-import { ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, Star, AlertTriangle } from 'lucide-react'; // Added AlertTriangle
+import { ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, Star, AlertTriangle } from 'lucide-react'; 
 import { analyzeDeclaration, type AnalyzeDeclarationOutput } from '@/ai/flows/analyze-declaration';
 import { useToast } from '@/hooks/use-toast';
 import { useScanLimiter } from '@/contexts/scan-limiter-context';
@@ -54,11 +54,11 @@ export default function ScanDeclarationPage() {
     } catch (err) {
       console.error('Error analyzing declaration:', err);
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
-      setError(\`Failed to analyze declaration: \${errorMessage}\`);
+      setError(`Failed to analyze declaration: ${errorMessage}`);
       toast({
         variant: "destructive",
         title: "Analysis Failed",
-        description: \`Could not analyze declaration. \${errorMessage}\`,
+        description: `Could not analyze declaration. ${errorMessage}`,
       });
     } finally {
       setIsLoading(false);
@@ -67,6 +67,57 @@ export default function ScanDeclarationPage() {
 
   const userCanCurrentlyScan = canScan();
   const currentRemainingScans = getRemainingScans();
+
+  const getAssessmentAlert = (result: AnalyzeDeclarationOutput) => {
+    const confidenceText = `Poverenje: ${result.poverenjeUkupneProcene !== undefined ? Math.round(result.poverenjeUkupneProcene * 100) : 'N/A'}%`;
+    switch (result.ukupnaProcenaBezbednosti) {
+      case 'sigurno':
+        return (
+          <ShadcnAlert variant='default' className='border-green-500 bg-green-50 dark:bg-green-900/30'>
+            <CheckCircle className="h-5 w-5 text-green-600" />
+            <ShadcnAlertTitle className='text-green-700 dark:text-green-400'>Verovatno bez glutena</ShadcnAlertTitle>
+            <ShadcnAlertDescription className="text-green-600 dark:text-green-300">{confidenceText}</ShadcnAlertDescription>
+          </ShadcnAlert>
+        );
+      case 'potrebna pažnja':
+        return (
+          <ShadcnAlert variant='default' className='border-yellow-500 bg-yellow-50 dark:bg-yellow-900/30'>
+            <AlertTriangle className="h-5 w-5 text-yellow-600" />
+            <ShadcnAlertTitle className='text-yellow-700 dark:text-yellow-400'>Potrebna pažnja / Verovatno bezbedno uz oprez</ShadcnAlertTitle>
+            <ShadcnAlertDescription className="text-yellow-600 dark:text-yellow-300">{confidenceText}</ShadcnAlertDescription>
+          </ShadcnAlert>
+        );
+      case 'rizično':
+        return (
+          <ShadcnAlert variant='default' className="border-orange-500 bg-orange-50 dark:bg-orange-900/30">
+            <AlertTriangle className="h-5 w-5 text-orange-600" />
+            <ShadcnAlertTitle className="text-orange-700 dark:text-orange-400">Rizično / Mogući tragovi glutena</ShadcnAlertTitle>
+            <ShadcnAlertDescription className="text-orange-600 dark:text-orange-300">{confidenceText}</ShadcnAlertDescription>
+          </ShadcnAlert>
+        );
+      case 'nije bezbedno':
+        return (
+          <ShadcnAlert variant='destructive'>
+            <AlertCircle className="h-5 w-5" />
+            <ShadcnAlertTitle>Nije bezbedno / Sadrži gluten</ShadcnAlertTitle>
+            <ShadcnAlertDescription>{confidenceText}</ShadcnAlertDescription>
+          </ShadcnAlert>
+        );
+      default:
+        return (
+          <ShadcnAlert variant='default'>
+            <Info className="h-5 w-5" />
+            <ShadcnAlertTitle>Status nepoznat</ShadcnAlertTitle>
+            <ShadcnAlertDescription>{confidenceText}</ShadcnAlertDescription>
+          </ShadcnAlert>
+        );
+    }
+  };
+
+  const problematicIngredients = analysisResult?.rezultat?.filter(
+    item => item.ocena === 'nije bezbedno' || item.ocena === 'rizično – proveriti poreklo'
+  ) || [];
+
 
   return (
     <div className="flex min-h-screen">
@@ -158,58 +209,38 @@ export default function ScanDeclarationPage() {
                 )}
                 {analysisResult && (
                   <>
-                    {analysisResult.hasGluten && analysisResult.confidence < 0.4 ? (
-                      <ShadcnAlert variant="default" className="border-orange-500 bg-orange-50 dark:bg-orange-900/30">
-                        <AlertTriangle className="h-5 w-5 text-orange-600" />
-                        <ShadcnAlertTitle className="text-orange-700 dark:text-orange-400">
-                          Nizak rizik / Proveri dodatno
-                        </ShadcnAlertTitle>
-                        <ShadcnAlertDescription className="text-orange-600 dark:text-orange-300">
-                          Poverenje: {Math.round(analysisResult.confidence * 100)}%.<br />
-                          Ovaj sastojak (ili sastojci) se u većini slučajeva smatra bezbednim. Rizik je teorijski i ne zahteva akciju, osim ako postoji dodatni podatak o kontaminaciji.
-                        </ShadcnAlertDescription>
-                      </ShadcnAlert>
-                    ) : analysisResult.hasGluten ? (
-                      <ShadcnAlert variant='destructive'>
-                        <AlertCircle className="h-5 w-5" />
-                        <ShadcnAlertTitle>
-                          Potential Gluten Detected
-                        </ShadcnAlertTitle>
-                        <ShadcnAlertDescription>Confidence: {Math.round(analysisResult.confidence * 100)}%</ShadcnAlertDescription>
-                      </ShadcnAlert>
-                    ) : (
-                      <ShadcnAlert variant='default' className='border-green-500 bg-green-50 dark:bg-green-900/30'>
-                        <CheckCircle className="h-5 w-5 text-green-600" />
-                        <ShadcnAlertTitle className='text-green-700 dark:text-green-400'>
-                          Likely Gluten-Free
-                        </ShadcnAlertTitle>
-                        <ShadcnAlertDescription className="text-green-600 dark:text-green-300">Confidence: {Math.round(analysisResult.confidence * 100)}%</ShadcnAlertDescription>
-                      </ShadcnAlert>
-                    )}
+                    {getAssessmentAlert(analysisResult)}
                     
                     <div>
-                      <h4 className="font-semibold mb-1">Reasoning:</h4>
-                      <p className="text-sm text-muted-foreground p-3 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.reason}</p>
+                      <h4 className="font-semibold mb-1">Obrazloženje:</h4>
+                      <p className="text-sm text-muted-foreground p-3 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.finalnoObrazlozenje}</p>
                     </div>
 
-                    {analysisResult.glutenIngredients && analysisResult.glutenIngredients.length > 0 && (
+                    {problematicIngredients.length > 0 && (
                       <div>
-                        <h4 className="font-semibold mb-1">
-                           {analysisResult.hasGluten && analysisResult.confidence < 0.4
-                            ? "Sastojci označeni kao niskorizični:"
-                            : "Potential Gluten Ingredients Found:"}
-                        </h4>
-                        <ul className="list-disc list-inside text-sm space-y-1">
-                          {analysisResult.glutenIngredients.map((ing, index) => (
-                            <li 
-                              key={index} 
-                              className={
-                                analysisResult.hasGluten && analysisResult.confidence < 0.4
-                                  ? "text-orange-800 dark:text-orange-300 bg-orange-100 dark:bg-orange-700/40 px-1.5 py-0.5 rounded-sm"
-                                  : "text-destructive-foreground bg-destructive/80 px-1.5 py-0.5 rounded-sm"
-                              }
+                        <h4 className="font-semibold mb-1">Analizirani sastojci (problematični ili rizični):</h4>
+                        <ul className="list-none space-y-2 text-sm">
+                          {problematicIngredients.map((item, index) => (
+                             <li key={index} 
+                                className={`p-2 rounded-md ${
+                                  item.ocena === 'nije bezbedno' ? 'bg-destructive/10 border border-destructive/30' 
+                                  : item.ocena === 'rizično – proveriti poreklo' ? 'bg-orange-500/10 border border-orange-500/30' 
+                                  : ''
+                                }`}
                             >
-                              {ing}
+                              <strong className={
+                                  item.ocena === 'nije bezbedno' ? 'text-destructive' 
+                                  : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600' 
+                                  : ''
+                                }>{item.sastojak}</strong>: 
+                              <span className={`ml-1 font-medium ${
+                                  item.ocena === 'nije bezbedno' ? 'text-destructive' 
+                                  : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
+                                  : 'text-muted-foreground' 
+                                }`}>
+                                {item.ocena}
+                              </span>
+                              {item.napomena && <p className="text-muted-foreground/80 text-xs italic mt-0.5">Napomena: {item.napomena}</p>}
                             </li>
                           ))}
                         </ul>
@@ -255,3 +286,6 @@ export default function ScanDeclarationPage() {
     </div>
   );
 }
+
+
+    
