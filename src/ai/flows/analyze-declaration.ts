@@ -67,43 +67,54 @@ Koristi sledeća pravila za analizu svakog sastojka i određivanje 'ocena':
 
 **🔴 CRVENA LISTA (Zabranjeni sastojci):**
 Ako je sastojak na ovoj listi, njegova 'ocena' je "nije bezbedno".
-*   pšenica (uključujući pšenično brašno, pšenične bobice, durum, farina, graham, semolina, spelta, einkorn, emmer, kamut)
-*   raž
-*   ječam
-*   tritikale
-*   slad (sirup, ekstrakt, aroma) (osim ako je jasno navedeno da je bezglutenski i deo AOECS sertifikata)
-*   pivski kvasac
+*   pšenica (uključujući pšenično brašno, pšenične klice, durum, farina, graham, semolina, spelta, einkorn, emmer, kamut, wheat)
+*   raž (rye)
+*   ječam (barley)
+*   tritikale (triticale)
+*   slad (ekstrakt slada, sladni sirup, aroma slada / malt, malt extract, malt syrup, malt flavor) (osim ako je jasno navedeno da je bezglutenski i deo AOECS sertifikata)
+*   pivski kvasac (brewer’s yeast)
+*   pšenični skrob (wheat starch) - ako NIJE eksplicitno deklarisan kao "bezglutenski pšenični skrob" ili ako proizvod nema 'aoecs'/'gf_text' oznaku koja pokriva ovaj sastojak. Bezglutenski pšenični skrob koji zadovoljava EU regulativu (<20ppm) je siguran.
 
 **🟠 NARANDŽASTA LISTA (Uslovno dozvoljeni sastojci):**
-*   Ako je 'labelingInfo' 'aoecs' ili 'gf_text', ILI ako je sastojak eksplicitno deklarisan kao bezglutenski (npr. "bezglutenski pšenični skrob"): 'ocena' je "sigurno", 'napomena' treba da objasni zašto (npr. "Smatra se bezbednim zbog GF oznake/sertifikata.").
+Ovi sastojci zahtevaju proveru 'labelingInfo' ili eksplicitnu GF deklaraciju na samom sastojku.
+*   Ako je 'labelingInfo' 'aoecs' ili 'gf_text', ILI ako je sastojak eksplicitno deklarisan kao bezglutenski (npr. "bezglutenski pšenični skrob", "dekstrin (kukuruzni)"): 'ocena' je "sigurno", 'napomena' treba da objasni zašto (npr. "Smatra se bezbednim zbog GF oznake/sertifikata.").
 *   Ako 'labelingInfo' nije 'aoecs' ili 'gf_text' (tj. 'none' ili 'unknown') I sastojak NIJE eksplicitno deklarisan kao bezglutenski: 'ocena' je "rizično – proveriti poreklo", 'napomena' treba da ukaže na potencijalni rizik (npr. "Poreklo/prerada nije potvrđena kao bezglutenska.").
-    *   Primeri: pšenični skrob (ako nije deklarisan kao bezglutenski), karamel boja, dekstrin (ako nije jasno iz kukuruza/krompira), maltodekstrin (ako nije jasno iz kukuruza/krompira), prirodne arome, ekstrakt kvasca, aroma vanile (ne vanilin), glukozni sirup (ako izvor nije GF ili nije izuzetak po EU regulativi), modifikovani skrob (ako izvor nije GF).
+    *   Primeri: karamel boja (caramel color), dekstrin (dextrin - ako nije jasno iz kukuruza/krompira), maltodekstrin (maltodextrin - ako nije jasno iz kukuruza/krompira), prirodne arome (natural flavors), ekstrakt kvasca (yeast extract), aroma vanile (vanilla flavor - ne vanilin).
     *   Specifično za "pšenični dekstrin" ili "dekstrin (pšenica)": ako nije jasno navedeno da je bezbedan za celijakiju (npr. obrađen da bude GF ili izuzetak), 'ocena' je "nije bezbedno". Ako je navedeno "dekstrin (kukuruzni)", onda je "sigurno".
     *   Specifično za "glukozni sirup (pšenica)" ili "maltodekstrin (pšenica)": prema EU regulativi, ovi su često bezbedni. Ako je 'labelingInfo' 'aoecs'/'gf_text', 'ocena' je "sigurno". Ako nema GF oznake, 'ocena' je "rizično – proveriti poreklo" uz napomenu da su često bezbedni ali da se preporučuje oprez bez potvrde.
-    *   "Vanilin": Ako je naveden samo kao "vanilin", 'ocena' je "sigurno". Ako je "aroma vanile", primeni opšte pravilo za arome.
+    *   "Vanilin": Ako je naveden samo kao "vanilin", 'ocena' je "sigurno". Ako je "aroma vanile", primeni opšte pravilo za arome sa narandžaste liste.
     *   Generički termini kao "zgušnjivač", "stabilizator", "emulgator": Ako 'labelingInfo' nije 'aoecs' ili 'gf_text', 'ocena' je "rizično – proveriti poreklo" sa napomenom "Potrebno proveriti poreklo [termina]". Ako je 'labelingInfo' 'aoecs' ili 'gf_text', 'ocena' je "sigurno".
 
 **✅ ZELENA LISTA (Generalno bezbedni sastojci):**
 'Ocena' je "sigurno".
-*   Prirodno bezglutenske žitarice: pirinač, kukuruz, kinoa, proso, sirak, heljda, amarant, krompir, tapioka, aru prah, tef, juka.
-*   Ostala prirodno bezglutenska hrana: meso, riba, jaja, mlečni proizvodi (osim sladnog mleka), povrće, voće, mahunarke, orašasti plodovi.
+*   Prirodno bezglutenske žitarice: pirinač (rice), kukuruz (corn), kinoa (quinoa), proso (millet), sirak (sorghum), heljda (buckwheat), amarant (amaranth), krompir (potato), tapioka (tapioca), aru prah (arrowroot), tef (teff), juka (yucca).
+*   Ostala prirodno bezglutenska hrana: meso, riba, jaja, mlečni proizvodi (osim sladnog mleka), povrće, voće, mahunarke, orašasti plodovi (nuts).
 *   Čist vanilin ekstrakt, sintetički vanilin.
 *   Zgušnjivač E415 (ksantan guma) je obično "sigurno". Sojin lecitin je "sigurno".
 
 **🔍 RIZIČNE FRAZE (Ukazuju na moguću kontaminaciju):**
-Ako je prisutna neka od sledećih fraza, dodaj je kao poseban 'sastojak' u 'rezultat' niz:
-*   “može sadržati pšenicu/gluten” / “može sadržati tragove pšenice/glutena”
-*   “proizvedeno na opremi koja se koristi i za proizvode sa pšenicom”
-*   “proizvedeno u pogonu gde se prerađuje pšenica”
+Ako je prisutna neka od sledećih fraza (ili sličnih), dodaj je kao poseban 'sastojak' u 'rezultat' niz:
+*   “može sadržati pšenicu/gluten” / “may contain wheat/gluten”
+*   “može sadržati tragove pšenice/glutena” / “may contain traces of wheat/gluten”
+*   “proizvedeno na opremi koja se koristi i za proizvode sa pšenicom” / “made on shared equipment with wheat”
+*   “proizvedeno u pogonu gde se prerađuje pšenica” / “produced in a facility that processes wheat”
     *   'ocena' za ove fraze: "rizično – proveriti poreklo".
     *   'napomena': "Ukazuje na moguću unakrsnu kontaminaciju."
     *   Ove fraze utiču na 'ukupnaProcenaBezbednosti', čineći je "rizično" osim ako 'labelingInfo' nije 'aoecs' (u tom slučaju AOECS sertifikat može pokrivati ovaj rizik).
 
-**🌿 OVAS (ZOB):**
-*   Ako deklaracija sadrži "ovas" ili "zob" I ('labelingInfo' je 'none' ili 'unknown' ILI nije eksplicitno navedeno "bezglutenska zob" ili "certified gluten-free oats"):
+**🌿 OVAS (ZOB / OATS):**
+*   Ako deklaracija sadrži "ovas" ili "zob" (ili "oats") I ('labelingInfo' je 'none' ili 'unknown' ILI nije eksplicitno navedeno "bezglutenska zob" ili "certified gluten-free oats"):
     *   Dodaj u 'rezultat': {'sastojak': "Necertifikovana/neoznačena zob/ovas", 'ocena': "nije bezbedno", 'napomena': "Visok rizik od unakrsne kontaminacije. Nije bezbedno za celijakičare osim ako nije sertifikovano kao bezglutensko."}
-*   Ako deklaracija sadrži "ovas" ili "zob" I ('labelingInfo' je 'aoecs' ili 'gf_text' ILI je eksplicitno navedeno "bezglutenska zob" ili "certified gluten-free oats"):
+*   Ako deklaracija sadrži "ovas" ili "zob" (ili "oats") I ('labelingInfo' je 'aoecs' ili 'gf_text' ILI je eksplicitno navedeno "bezglutenska zob" ili "certified gluten-free oats"):
     *   Dodaj u 'rezultat': {'sastojak': "Sertifikovana/označena bezglutenska zob/ovas", 'ocena': "sigurno", 'napomena': "Smatra se bezbednim. Ipak, mala grupa celijakičara može biti osetljiva na avenin. Konsultovati lekara ako postoje nedoumice."}
+
+**💡 DODATNA POMOĆ ZA KLASIFIKACIJU RIZIKA (koristi ovo da informišeš svoju ocenu i napomene):**
+*   **Visok rizik (🛑):** Opisuje poznate izvore glutena – sastojci koji sadrže gluten ili su visoko kontaminirani. Ocena je generalno "nije bezbedno".
+    *   Primeri: pšenično brašno, ječam, raž, ječmeni slad, pšenični skrob (bez GF potvrde).
+*   **Umeren rizik (⚠️):** Opisuje sastojke nepoznatog porekla – često su bez glutena, ali nema garancije. Ako nema GF potvrde, ocena je "rizično – proveriti poreklo".
+    *   Primeri: glukozni sirup (ako izvor nije GF ili nije izuzetak), modifikovani skrob (ako izvor nije GF), emulgator E471, arome (ako izvor nije GF), E472b (estri mono- i diglicerida masnih kiselina sa mlečnom kiselinom - mogu biti problematični ako su na bazi glutenskih žitarica).
+*   **Nizak rizik (🟡):** Opisuje sastojke koji su uglavnom bez glutena, ali ne uvek potvrđeno – treba obratiti pažnju. Ako nema GF potvrde, ocena je često "rizično – proveriti poreklo", ali uz napomenu da je rizik manji ili da je sastojak obično bezbedan.
+    *   Primeri: E410 (karuba guma/locust bean gum), E412 (guar guma), ekstrakt vanile (proveriti nosač i alkohol), karagenan (E407), guma arabika (E414).
 
 **Određivanje 'ukupnaProcenaBezbednosti' i 'poverenjeUkupneProcene':**
 1.  Ako bilo koji 'sastojak' u 'rezultat' nizu ima 'ocena: "nije bezbedno"' -> 'ukupnaProcenaBezbednosti: "nije bezbedno"'. 'poverenjeUkupneProcene': 0.9-1.0.
@@ -140,7 +151,7 @@ Obavezno prilagodi ove obrasce konkretnim nalazima iz 'rezultat' niza i vrednost
 
 **Primeri za AI:**
 *   Ulaz: declarationText: "gluten-free wheat starch, sugar, salt", labelingInfo: "gf_text"
-    Očekivani deo 'rezultat': [{"sastojak": "gluten-free wheat starch", "ocena": "sigurno", "napomena": "Deklarisano kao bezglutensko."}]
+    Očekivani deo 'rezultat': [{"sastojak": "bezglutenski pšenični skrob", "ocena": "sigurno", "napomena": "Deklarisano kao bezglutensko i zadovoljava EU regulativu."}]
     Očekivana 'ukupnaProcenaBezbednosti': "sigurno"
     Očekivano 'finalnoObrazlozenje': "Proizvod ne sadrži sastojke koji sadrže gluten niti sumnjive dodatke. Jasno je označen kao bezglutenski ili sadrži relevantnu sertifikaciju (GF oznaka: gf_text). Nema identifikovanih rizičnih sastojaka na osnovu dostavljene liste."
 *   Ulaz: declarationText: "ječmeni slad, šećer", labelingInfo: "none"
