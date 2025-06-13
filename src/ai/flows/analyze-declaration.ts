@@ -24,19 +24,19 @@ const AnalyzeDeclarationInputSchema = z.object({
 export type AnalyzeDeclarationInput = z.infer<typeof AnalyzeDeclarationInputSchema>;
 
 const IngredientAssessmentSchema = z.object({
-  sastojak: z.string().describe("Naziv analiziranog sastojka ili fraze iz deklaracije."),
+  sastojak: z.string().describe("Naziv analiziranog sastojka ili fraze iz deklaracije (uvek na srpskom)."),
   ocena: z.enum(["sigurno", "rizično – proveriti poreklo", "nije bezbedno"])
     .describe("Ocena bezbednosti sastojka: 'sigurno' (safe), 'rizično – proveriti poreklo' (risky - check origin), ili 'nije bezbedno' (not safe)."),
-  napomena: z.string().optional().describe("Objašnjenje za ocenu sastojka (npr., zašto je rizičan, ili ako je uslovno siguran pod kojim uslovima).")
+  napomena: z.string().optional().describe("Objašnjenje za ocenu sastojka na srpskom (npr., zašto je rizičan, ili ako je uslovno siguran pod kojim uslovima).")
 });
 
 const AnalyzeDeclarationOutputSchema = z.object({
   rezultat: z.array(IngredientAssessmentSchema)
-    .describe("Lista pojedinačno analiziranih sastojaka sa njihovim ocenama i napomenama."),
+    .describe("Lista pojedinačno analiziranih sastojaka sa njihovim ocenama i napomenama (sve na srpskom)."),
   ukupnaProcenaBezbednosti: z.enum(["sigurno", "rizično", "nije bezbedno", "potrebna pažnja"])
     .describe("Ukupna procena bezbednosti celog proizvoda na osnovu analize svih sastojaka: 'sigurno', 'rizično', 'nije bezbedno', 'potrebna pažnja' (safe, risky, not safe, caution needed)."),
   finalnoObrazlozenje: z.string()
-    .describe("Kratko sumarno obrazloženje za ukupnu procenu bezbednosti, uključujući važne napomene (npr. o ovsu, mlečnim alergenima, ili uticaju GF oznaka)."),
+    .describe("Kratko sumarno obrazloženje za ukupnu procenu bezbednosti na srpskom, uključujući važne napomene (npr. o ovsu, mlečnim alergenima, ili uticaju GF oznaka)."),
   poverenjeUkupneProcene: z.number().min(0).max(1).describe("Poverenje u ukupnu ocenu (0-1).")
 });
 export type AnalyzeDeclarationOutput = z.infer<typeof AnalyzeDeclarationOutputSchema>;
@@ -52,13 +52,15 @@ const analyzeDeclarationPrompt = ai.definePrompt({
   output: {schema: AnalyzeDeclarationOutputSchema},
   prompt: `Ti si AI asistent specijalizovan za analizu lista sastojaka prehrambenih proizvoda kako bi detektovao gluten, sa fokusom na bezbednost za osobe sa celijakijom.
 Tvoj zadatak je da analiziraš dati 'declarationText' (listu sastojaka) i 'labelingInfo' (informacije o GF oznakama na pakovanju).
+Lista sastojaka ('declarationText') može biti na srpskom, hrvatskom, bosanskom ili engleskom jeziku. Prilagodi analizu jeziku na kojem je napisana lista. Svi nazivi sastojaka i obrazloženja u tvom odgovoru moraju biti na srpskom jeziku.
+
 Na osnovu analize, treba da generišeš JSON objekat sa sledećom strukturom:
 1.  'rezultat': Niz objekata. Svaki objekat predstavlja jedan analizirani sastojak ili frazu iz deklaracije i treba da sadrži:
-    *   'sastojak': (string) Naziv analiziranog sastojka ili fraze.
+    *   'sastojak': (string) Naziv analiziranog sastojka ili fraze (na srpskom).
     *   'ocena': (enum: "sigurno", "rizično – proveriti poreklo", "nije bezbedno") Procena bezbednosti tog sastojka.
-    *   'napomena': (string, opciono) Objašnjenje za 'ocena' (npr. zašto je rizičan, ili ako je uslovno siguran pod kojim uslovima).
+    *   'napomena': (string, opciono) Objašnjenje za 'ocena' na srpskom (npr. zašto je rizičan, ili ako je uslovno siguran pod kojim uslovima).
 2.  'ukupnaProcenaBezbednosti': (enum: "sigurno", "rizično", "nije bezbedno", "potrebna pažnja") Ukupna procena bezbednosti celog proizvoda.
-3.  'finalnoObrazlozenje': (string) Kratko sumarno obrazloženje za 'ukupnaProcenaBezbednosti', koje mora uključiti napomene o ovsu (ako je prisutan), mlečnim alergenima (ako su prisutni), i kako je 'labelingInfo' uticao na odluku.
+3.  'finalnoObrazlozenje': (string) Kratko sumarno obrazloženje za 'ukupnaProcenaBezbednosti' na srpskom, koje mora uključiti napomene o ovsu (ako je prisutan), mlečnim alergenima (ako su prisutni), i kako je 'labelingInfo' uticao na odluku.
 4.  'poverenjeUkupneProcene': (broj, 0-1) Tvoje poverenje u 'ukupnaProcenaBezbednosti'.
 
 Koristi sledeća pravila za analizu svakog sastojka i određivanje 'ocena':
@@ -159,3 +161,4 @@ const analyzeDeclarationFlow = ai.defineFlow(
   }
 );
     
+
