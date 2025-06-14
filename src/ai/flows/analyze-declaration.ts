@@ -61,15 +61,11 @@ export async function analyzeDeclaration(input: AnalyzeDeclarationInput): Promis
     output.poverenjeUkupneProcene = 0.5; // Default ako nedostaje ili nije broj
   }
   
-  // Ensure all rezultat items have nivoRizika and kategorijaRizika, and correct types
   if (output && output.rezultat) {
     output.rezultat.forEach(item => {
-      // Ensure 'ocena' is one of the allowed enum values, default if not.
       const validOcena: IngredientAssessment['ocena'][] = ["sigurno", "rizično – proveriti poreklo", "nije bezbedno"];
       if (!validOcena.includes(item.ocena)) {
         // Fallback or error handling for invalid 'ocena'
-        // For now, let's assume AI provides valid 'ocena' based on prompt, or set a default
-        // item.ocena = "rizično – proveriti poreklo"; // Example fallback
       }
 
       if (!item.nivoRizika) {
@@ -84,8 +80,6 @@ export async function analyzeDeclaration(input: AnalyzeDeclarationInput): Promis
                if (item.sastojak.toLowerCase().includes("pšenice") || item.sastojak.toLowerCase().includes("glutena") || item.sastojak.toLowerCase().includes("ječma") || item.sastojak.toLowerCase().includes("raži")) {
                 item.kategorijaRizika = "unakrsna kontaminacija glutenom";
                } else {
-                // If "može sadržati" refers to other allergens, this category might be different or handled in napomena.
-                // For now, let's assume if it's a risk related to this flow, it's gluten.
                 item.kategorijaRizika = "unakrsna kontaminacija"; 
                }
           } else {
@@ -188,19 +182,35 @@ Ako je prisutna neka od sledećih fraza (ili sličnih) KOJA UKLJUČUJE GLUTENSKE
 **'finalnoObrazlozenje' (FOKUS NA GLUTEN, uz napomene o drugim alergenima):**
 Generiši kratko sumarno obrazloženje na srpskom na osnovu 'ukupnaProcenaBezbednosti' i ključnih nalaza iz 'rezultat' niza.
 Obrazloženje (uzmi u obzir i 'labelingInfo' i 'poverenjeUkupneProcene' i 'rezultat'):
+
 - Ako je 'ukupnaProcenaBezbednosti' "sigurno":
-  "Proizvod ne sadrži sastojke koji predstavljaju rizik od glutena. {{#if labelingInfo}} {{#if (eq labelingInfo 'aoecs')}}Proizvod ima AOECS sertifikat.{{else if (eq labelingInfo 'gf_text')}}Proizvod ima gluten-free oznaku.{{else if (eq labelingInfo 'none')}}Nema eksplicitne GF oznake, ali analiza sastojaka ukazuje na visoku verovatnoću bezbednosti od glutena.{{else if (eq labelingInfo 'unknown')}}Status GF oznake nije poznat, ali analiza sastojaka ukazuje na visoku verovatnoću bezbednosti od glutena.{{/if}} {{else}}Analiza sastojaka ukazuje na visoku verovatnoću bezbednosti od glutena.{{/if}} Nema identifikovanih rizičnih sastojaka za gluten."
-  (Ako 'rezultat' sadrži "Sertifikovana/označena bezglutenska zob/ovas", dodaj: "Sadrži sertifikovanu bezglutensku zob, koja je generalno bezbedna za osobe sa celijakijom, ali osobe sa posebnom osetljivošću na avenin treba da budu oprezne.")
+  Započni sa: "Proizvod ne sadrži sastojke koji predstavljaju rizik od glutena."
+  Zatim, na osnovu vrednosti '{{{labelingInfo}}}':
+    Ako je 'aoecs', dodaj: "Proizvod ima AOECS sertifikat."
+    Ako je 'gf_text', dodaj: "Proizvod ima gluten-free oznaku."
+    Ako je 'none', dodaj: "Nema eksplicitne GF oznake, ali analiza sastojaka ukazuje na visoku verovatnoću bezbednosti od glutena."
+    Ako je 'unknown', dodaj: "Status GF oznake nije poznat, ali analiza sastojaka ukazuje na visoku verovatnoću bezbednosti od glutena."
+  Završi sa: "Nema identifikovanih rizičnih sastojaka za gluten."
+  Ako 'rezultat' sadrži unos za "Sertifikovana/označena bezglutenska zob/ovas", dodaj: "Sadrži sertifikovanu bezglutensku zob, koja je generalno bezbedna za osobe sa celijakijom, ali osobe sa posebnom osetljivošću na avenin treba da budu oprezne."
   (AI: Ovde dodaj rečenicu ako postoje drugi alergeni, npr. "Napomena: Proizvod sadrži [soju/kikiriki] ili može sadržati tragove [orašastih plodova/mleka], što je važno za osobe sa tim alergijama ali ne utiče na GF status.")
+
 - Ako je 'ukupnaProcenaBezbednosti' "potrebna pažnja":
-  "Proizvod je označen kao 'potrebna pažnja' sa aspekta glutena. (AI: Ovde objasni zašto, npr. zbog prisustva sastojaka sa narandžaste liste bez GF potvrde koji mogu nositi rizik od glutena, ili zbog 'labelingInfo' koji sugeriše oprez iako nema direktnih izvora glutena. Navedi ključne sastojke iz 'rezultat' koji su doprineli ovoj oceni, npr. 'Sadrži sastojke kao što su [sastojak1], [sastojak2] koji zahtevaju proveru porekla zbog mogućeg glutena.'). Informacija o GF oznaci: {{labelingInfo}}."
+  Započni sa: "Proizvod je označen kao 'potrebna pažnja' sa aspekta glutena."
+  (AI: Ovde objasni zašto, npr. zbog prisustva sastojaka sa narandžaste liste bez GF potvrde koji mogu nositi rizik od glutena, ili zbog 'labelingInfo' ('{{labelingInfo}}') koji sugeriše oprez iako nema direktnih izvora glutena. Navedi ključne sastojke iz 'rezultat' koji su doprineli ovoj oceni, npr. 'Sadrži sastojke kao što su [sastojak1], [sastojak2] koji zahtevaju proveru porekla zbog mogućeg glutena.')
+  Dodaj rečenicu o GF oznaci na osnovu vrednosti '{{{labelingInfo}}}' (npr. "Informacija o GF oznaci: AOECS sertifikat." ili "Informacija o GF oznaci: Nema GF oznake.").
   (AI: Ovde dodaj rečenicu ako postoje drugi alergeni.)
+
 - Ako je 'ukupnaProcenaBezbednosti' "rizično":
-  "Proizvod je označen kao 'rizično' sa aspekta glutena. (AI: Ovde objasni zašto, npr. zbog prisustva fraza o unakrsnoj kontaminaciji GLUTENOM ili većeg broja rizičnih sastojaka bez GF potvrde. Navedi ključne sastojke ili fraze iz 'rezultat' koji su doprineli ovoj oceni, npr. 'Upozorenje o mogućim tragovima GLUTENA ([fraza]) je prisutno.' ili 'Sadrži rizične sastojke kao što su [sastojak1] koji mogu sadržati gluten.'). Informacija o GF oznaci: {{labelingInfo}}."
-  (Ako 'rezultat' sadrži "Necertifikovana/neoznačena zob/ovas", dodaj: "Prisutna je necertifikovana zob, što predstavlja visok rizik od glutena.")
+  Započni sa: "Proizvod je označen kao 'rizično' sa aspekta glutena."
+  (AI: Ovde objasni zašto, npr. zbog prisustva fraza o unakrsnoj kontaminaciji GLUTENOM ili većeg broja rizičnih sastojaka bez GF potvrde. Navedi ključne sastojke ili fraze iz 'rezultat' koji su doprineli ovoj oceni, npr. 'Upozorenje o mogućim tragovima GLUTENA ([fraza]) je prisutno.' ili 'Sadrži rizične sastojke kao što su [sastojak1] koji mogu sadržati gluten.')
+  Dodaj rečenicu o GF oznaci na osnovu vrednosti '{{{labelingInfo}}}'.
+  Ako 'rezultat' sadrži unos za "Necertifikovana/neoznačena zob/ovas", dodaj: "Prisutna je necertifikovana zob, što predstavlja visok rizik od glutena."
   (AI: Ovde dodaj rečenicu ako postoje drugi alergeni.)
+
 - Ako je 'ukupnaProcenaBezbednosti' "nije bezbedno":
-  "Proizvod SADRŽI GLUTEN ili sastojke visokog rizika od glutena i NIJE BEZBEDAN za osobe sa celijakijom. (AI: Navedi ključne sastojke iz 'rezultat' sa ocenom 'nije bezbedno' koji su doveli do ove procene, npr. 'Identifikovani su sledeći izvori glutena: [sastojak1], [sastojak2].'). Informacija o GF oznaci: {{labelingInfo}}."
+  Započni sa: "Proizvod SADRŽI GLUTEN ili sastojke visokog rizika od glutena i NIJE BEZBEDAN za osobe sa celijakijom."
+  (AI: Navedi ključne sastojke iz 'rezultat' sa ocenom 'nije bezbedno' koji su doveli do ove procene, npr. 'Identifikovani su sledeći izvori glutena: [sastojak1], [sastojak2].').
+  Dodaj rečenicu o GF oznaci na osnovu vrednosti '{{{labelingInfo}}}'.
   (AI: Ovde dodaj rečenicu ako postoje drugi alergeni.)
 
 Obavezno prilagodi ove obrasce konkretnim nalazima iz 'rezultat' niza i vrednosti 'labelingInfo'. Ako nema rizičnih ili nebezbednih sastojaka za nabrajanje u specifičnoj kategoriji, izostavi taj deo rečenice ili ga prikladno prilagodi.
