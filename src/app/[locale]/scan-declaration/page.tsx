@@ -11,10 +11,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert';
-import { ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, Star, AlertTriangle } from 'lucide-react'; 
-import { analyzeDeclaration, type AnalyzeDeclarationOutput } from '@/ai/flows/analyze-declaration';
+import { ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, Star, AlertTriangle, ShieldAlert } from 'lucide-react'; 
+import { analyzeDeclaration, type AnalyzeDeclarationOutput, type IngredientAssessment } from '@/ai/flows/analyze-declaration';
 import { useToast } from '@/hooks/use-toast';
 import { useScanLimiter } from '@/contexts/scan-limiter-context';
+import { countRelevantGlutenIssues } from '@/lib/analysis-utils';
 
 export default function ScanDeclarationPage() {
   const [declarationText, setDeclarationText] = useState<string>('');
@@ -115,8 +116,10 @@ export default function ScanDeclarationPage() {
   };
 
   const problematicIngredients = analysisResult?.rezultat?.filter(
-    item => item.ocena === 'nije bezbedno' || item.ocena === 'rizično – proveriti poreklo'
+    (item): item is IngredientAssessment => item.ocena === 'nije bezbedno' || item.ocena === 'rizično – proveriti poreklo'
   ) || [];
+  
+  const relevantGlutenIssueCount = analysisResult?.rezultat ? countRelevantGlutenIssues(analysisResult.rezultat as IngredientAssessment[]) : 0;
 
 
   return (
@@ -211,6 +214,13 @@ export default function ScanDeclarationPage() {
                   <>
                     {getAssessmentAlert(analysisResult)}
                     
+                     {relevantGlutenIssueCount > 0 && (
+                        <div className="mt-3 p-2 bg-destructive/10 rounded-md text-sm text-destructive flex items-center gap-2">
+                            <ShieldAlert className="h-5 w-5"/>
+                            <span>Identifikovano {relevantGlutenIssueCount} kritičnih stavki vezanih za gluten.</span>
+                        </div>
+                     )}
+
                     <div>
                       <h4 className="font-semibold mb-1">Obrazloženje:</h4>
                       <p className="text-sm text-muted-foreground p-3 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.finalnoObrazlozenje}</p>
@@ -228,18 +238,16 @@ export default function ScanDeclarationPage() {
                                   : ''
                                 }`}
                             >
-                              <strong className={
-                                  item.ocena === 'nije bezbedno' ? 'text-destructive' 
-                                  : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600' 
-                                  : ''
-                                }>{item.sastojak}</strong>: 
-                              <span className={`ml-1 font-medium ${
-                                  item.ocena === 'nije bezbedno' ? 'text-destructive' 
-                                  : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
-                                  : 'text-muted-foreground' 
-                                }`}>
-                                {item.ocena}
-                              </span>
+                              <div className="font-semibold">
+                                {item.sastojak}
+                                <span className={`ml-1 font-medium text-xs ${
+                                    item.ocena === 'nije bezbedno' ? 'text-destructive' 
+                                    : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
+                                    : 'text-muted-foreground' 
+                                  }`}>
+                                  ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
+                                </span>
+                              </div>
                               {item.napomena && <p className="text-muted-foreground/80 text-xs italic mt-0.5">Napomena: {item.napomena}</p>}
                             </li>
                           ))}
@@ -286,6 +294,4 @@ export default function ScanDeclarationPage() {
     </div>
   );
 }
-
-
     

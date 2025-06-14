@@ -18,13 +18,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw } from 'lucide-react';
-import { analyzeDeclaration, type AnalyzeDeclarationOutput } from '@/ai/flows/analyze-declaration';
+import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert } from 'lucide-react';
+import { analyzeDeclaration, type AnalyzeDeclarationOutput, type IngredientAssessment } from '@/ai/flows/analyze-declaration';
 import { getDailyCeliacTip, type DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import { ocrDeclaration, type OcrDeclarationOutput } from '@/ai/flows/ocr-declaration-flow';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { useScanLimiter } from '@/contexts/scan-limiter-context'; 
+import { countRelevantGlutenIssues } from '@/lib/analysis-utils';
 
 import { placeholderProducts as allProducts, type Product } from './products/page'; 
 
@@ -484,8 +485,10 @@ export default function HomePage() {
   };
 
   const problematicIngredients = analysisResult?.rezultat?.filter(
-    item => item.ocena === 'nije bezbedno' || item.ocena === 'rizično – proveriti poreklo'
+    (item): item is IngredientAssessment => item.ocena === 'nije bezbedno' || item.ocena === 'rizično – proveriti poreklo'
   ) || [];
+
+  const relevantGlutenIssueCount = analysisResult?.rezultat ? countRelevantGlutenIssues(analysisResult.rezultat as IngredientAssessment[]) : 0;
 
 
   return (
@@ -914,6 +917,13 @@ export default function HomePage() {
                   <>
                     {getAssessmentAlert(analysisResult)}
 
+                     {relevantGlutenIssueCount > 0 && (
+                        <div className="mt-3 p-2 bg-destructive/10 rounded-md text-sm text-destructive flex items-center gap-2">
+                            <ShieldAlert className="h-5 w-5"/>
+                            <span>Identifikovano {relevantGlutenIssueCount} kritičnih stavki vezanih za gluten.</span>
+                        </div>
+                     )}
+
                     <div className="mt-3">
                       <h4 className="font-semibold mb-1 text-sm">Obrazloženje:</h4>
                       <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.finalnoObrazlozenje}</p>
@@ -931,18 +941,16 @@ export default function HomePage() {
                                   : ''
                                 }`}
                             >
-                              <strong className={
-                                  item.ocena === 'nije bezbedno' ? 'text-destructive' 
-                                  : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600' 
-                                  : ''
-                                }>{item.sastojak}</strong>: 
-                              <span className={`ml-1 font-medium ${
-                                  item.ocena === 'nije bezbedno' ? 'text-destructive' 
-                                  : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
-                                  : 'text-muted-foreground' 
-                                }`}>
-                                {item.ocena}
-                              </span>
+                              <div className="font-semibold">
+                                {item.sastojak}
+                                <span className={`ml-1 font-medium text-xs ${
+                                    item.ocena === 'nije bezbedno' ? 'text-destructive' 
+                                    : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
+                                    : 'text-muted-foreground' 
+                                  }`}>
+                                  ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
+                                </span>
+                              </div>
                               {item.napomena && <p className="text-muted-foreground/80 text-xs italic mt-0.5">Napomena: {item.napomena}</p>}
                             </li>
                           ))}
@@ -1028,9 +1036,4 @@ export default function HomePage() {
     </div>
   );
 }
-
-    
-
-    
-
     
