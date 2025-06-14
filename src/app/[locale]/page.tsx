@@ -905,7 +905,7 @@ export default function HomePage() {
             </CardContent>
             
             {(analysisResult || isLoadingDeclaration || isLoadingAnyAnalysisProcess) && !showLabelingQuestionModal && (
-              <CardContent className="mt-6 border-t pt-6">
+              <CardContent className="mt-6 border-t pt-6 max-h-[60vh] md:max-h-none overflow-y-auto md:overflow-y-visible">
                 <CardTitle className="text-lg mb-2">AI Analysis Report</CardTitle>
                 {(isLoadingDeclaration || isLoadingOcr) && !showLabelingQuestionModal && (
                   <div className="flex flex-col items-center justify-center h-24 text-muted-foreground">
@@ -1037,3 +1037,4 @@ export default function HomePage() {
   );
 }
     
+
