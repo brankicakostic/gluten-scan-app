@@ -196,7 +196,7 @@ export default function ScanDeclarationPage() {
                 <CardTitle>AI Analysis Report</CardTitle>
                 <CardDescription>Results of the gluten detection analysis.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4 max-h-[60vh] md:max-h-none overflow-y-auto md:overflow-y-visible">
+              <CardContent className="space-y-4">
                 {isLoading && (
                   <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
                     <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
@@ -295,4 +295,3 @@ export default function ScanDeclarationPage() {
   );
 }
     
-
