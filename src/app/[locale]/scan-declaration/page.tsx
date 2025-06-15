@@ -16,7 +16,7 @@ import { analyzeDeclaration, type AnalyzeDeclarationOutput, type IngredientAsses
 import { useToast } from '@/hooks/use-toast';
 import { useScanLimiter } from '@/contexts/scan-limiter-context';
 import { countRelevantGlutenIssues } from '@/lib/analysis-utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"; // Added
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export default function ScanDeclarationPage() {
   const [declarationText, setDeclarationText] = useState<string>('');
@@ -230,7 +230,6 @@ export default function ScanDeclarationPage() {
                     {problematicIngredients.length > 0 && (
                       <div className="mt-3">
                         <h4 className="font-semibold mb-1">Analizirani sastojci (problematični ili rizični):</h4>
-                        <TooltipProvider delayDuration={300}>
                           <ul className="list-none space-y-2 text-sm">
                             {problematicIngredients.map((item, index) => (
                                <li key={index} 
@@ -241,23 +240,23 @@ export default function ScanDeclarationPage() {
                                   }`}
                               >
                                 {item.napomena ? (
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <div className="font-semibold cursor-help">
+                                  <Popover>
+                                    <PopoverTrigger asChild>
+                                      <div className="font-semibold cursor-pointer hover:underline">
                                         {item.sastojak}
                                         <span className={`ml-1 font-medium text-xs ${
                                             item.ocena === 'nije bezbedno' ? 'text-destructive' 
                                             : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
                                             : 'text-muted-foreground' 
                                           }`}>
-                                          ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
+                                          ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''}) <Info className="inline h-3 w-3 text-blue-500"/>
                                         </span>
                                       </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent className="max-w-xs bg-popover text-popover-foreground border shadow-lg p-2 rounded-md">
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto max-w-xs text-sm p-2" side="top" align="start">
                                       <p>{item.napomena}</p>
-                                    </TooltipContent>
-                                  </Tooltip>
+                                    </PopoverContent>
+                                  </Popover>
                                 ) : (
                                   <div className="font-semibold">
                                     {item.sastojak}
@@ -273,7 +272,6 @@ export default function ScanDeclarationPage() {
                               </li>
                             ))}
                           </ul>
-                        </TooltipProvider>
                       </div>
                     )}
                     <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => {
