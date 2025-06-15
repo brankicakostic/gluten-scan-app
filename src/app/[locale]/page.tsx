@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert } from 'lucide-react';
+import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert, Barcode as BarcodeIcon } from 'lucide-react';
 import { analyzeDeclaration, type AnalyzeDeclarationOutput, type IngredientAssessment } from '@/ai/flows/analyze-declaration';
 import { getDailyCeliacTip, type DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import { ocrDeclaration, type OcrDeclarationOutput } from '@/ai/flows/ocr-declaration-flow';
@@ -32,6 +32,7 @@ import { placeholderProducts as allProducts, type Product } from './products/pag
 
 interface BarcodeScanResult {
   name: string;
+  barcode?: string; // Added barcode field
   tags?: string[]; 
   ingredientsText?: string;
   imageUrl: string;
@@ -153,21 +154,31 @@ export default function HomePage() {
           if (barcodeVideoRef.current) {
             barcodeVideoRef.current.srcObject = currentStream;
           }
+          // Improved simulation: try to "find" a product with a barcode
           setTimeout(() => {
-            const randomProduct = allProducts[Math.floor(Math.random() * allProducts.length)];
-            const isProductFound = Math.random() > 0.3; 
+            const productsWithBarcode = allProducts.filter(p => p.barcode && p.barcode.trim() !== '');
+            let foundProduct: Product | null = null;
 
-            if (isProductFound && randomProduct) {
+            if (productsWithBarcode.length > 0) {
+              // Simulate 80% chance of finding a product if one exists with a barcode
+              if (Math.random() < 0.8) { 
+                foundProduct = productsWithBarcode[Math.floor(Math.random() * productsWithBarcode.length)];
+              }
+            }
+
+            if (foundProduct) {
                  setBarcodeScanResult({ 
-                    name: randomProduct.name, 
-                    tags: randomProduct.tags,
-                    ingredientsText: randomProduct.ingredientsText || "Ingredients not available.", 
-                    imageUrl: randomProduct.imageUrl,
-                    dataAiHint: randomProduct.dataAiHint || "scanned product"
+                    name: foundProduct.name, 
+                    barcode: foundProduct.barcode,
+                    tags: foundProduct.tags,
+                    ingredientsText: foundProduct.ingredientsText || "Ingredients not available.", 
+                    imageUrl: foundProduct.imageUrl,
+                    dataAiHint: foundProduct.dataAiHint || "scanned product"
                   });
             } else {
                  setBarcodeScanResult({ 
                     name: "Unknown Product Scanned", 
+                    barcode: "N/A",
                     tags: ['unknown-barcode'],
                     ingredientsText: "No product information found for this barcode. Try analyzing the declaration.", 
                     imageUrl: "https://placehold.co/300x200.png",
@@ -176,7 +187,7 @@ export default function HomePage() {
             }
             incrementScanCount();
             setIsScanningBarcode(false); 
-            toast({ title: "Barcode Scan Simulated", description: "Product details loaded."});
+            toast({ title: "Barcode Scan Simulated", description: foundProduct ? "Product details loaded." : "Barcode not found in database."});
           }, 3000);
         } catch (error) {
           console.error('Error accessing barcode camera:', error);
@@ -673,6 +684,12 @@ export default function HomePage() {
                       </div>
                     </CardHeader>
                     <CardContent>
+                      {barcodeScanResult.barcode && barcodeScanResult.barcode !== "N/A" && (
+                        <div className="flex items-center text-sm text-muted-foreground mb-2">
+                           <BarcodeIcon className="h-4 w-4 mr-2" />
+                           <span>{barcodeScanResult.barcode}</span>
+                        </div>
+                      )}
                       <h4 className="font-semibold mb-1 text-sm">Ingredients:</h4>
                       <p className="text-xs text-muted-foreground">{barcodeScanResult.ingredientsText || 'Not available'}</p>
                       <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => { setBarcodeScanResult(null); setErrorBarcode(null);}}>Scan Another Barcode</Button>
@@ -1057,6 +1074,8 @@ export default function HomePage() {
     </div>
   );
 }
+    
+
     
 
     
