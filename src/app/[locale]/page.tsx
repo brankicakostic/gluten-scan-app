@@ -26,6 +26,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { useScanLimiter } from '@/contexts/scan-limiter-context'; 
 import { countRelevantGlutenIssues } from '@/lib/analysis-utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"; // Added
 
 import { placeholderProducts as allProducts, type Product } from './products/page'; 
 
@@ -932,29 +933,50 @@ export default function HomePage() {
                     {problematicIngredients.length > 0 && (
                       <div className="mt-3">
                         <h4 className="font-semibold mb-1 text-sm">Analizirani sastojci (problematični ili rizični):</h4>
-                        <ul className="list-none space-y-2 text-xs">
-                          {problematicIngredients.map((item, index) => (
-                            <li key={index} 
-                                className={`p-2 rounded-md ${
-                                  item.ocena === 'nije bezbedno' ? 'bg-destructive/10 border border-destructive/30' 
-                                  : item.ocena === 'rizično – proveriti poreklo' ? 'bg-orange-500/10 border border-orange-500/30' 
-                                  : ''
-                                }`}
-                            >
-                              <div className="font-semibold">
-                                {item.sastojak}
-                                <span className={`ml-1 font-medium text-xs ${
-                                    item.ocena === 'nije bezbedno' ? 'text-destructive' 
-                                    : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
-                                    : 'text-muted-foreground' 
-                                  }`}>
-                                  ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
-                                </span>
-                              </div>
-                              {item.napomena && <p className="text-muted-foreground/80 text-xs italic mt-0.5">Napomena: {item.napomena}</p>}
-                            </li>
-                          ))}
-                        </ul>
+                        <TooltipProvider delayDuration={300}>
+                          <ul className="list-none space-y-2 text-xs">
+                            {problematicIngredients.map((item, index) => (
+                              <li key={index} 
+                                  className={`p-2 rounded-md ${
+                                    item.ocena === 'nije bezbedno' ? 'bg-destructive/10 border border-destructive/30' 
+                                    : item.ocena === 'rizično – proveriti poreklo' ? 'bg-orange-500/10 border border-orange-500/30' 
+                                    : ''
+                                  }`}
+                              >
+                                {item.napomena ? (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="font-semibold cursor-help">
+                                        {item.sastojak}
+                                        <span className={`ml-1 font-medium text-xs ${
+                                            item.ocena === 'nije bezbedno' ? 'text-destructive' 
+                                            : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
+                                            : 'text-muted-foreground' 
+                                          }`}>
+                                          ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
+                                        </span>
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs bg-popover text-popover-foreground border shadow-lg p-2 rounded-md">
+                                      <p>{item.napomena}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                ) : (
+                                  <div className="font-semibold">
+                                    {item.sastojak}
+                                    <span className={`ml-1 font-medium text-xs ${
+                                        item.ocena === 'nije bezbedno' ? 'text-destructive' 
+                                        : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
+                                        : 'text-muted-foreground' 
+                                      }`}>
+                                      ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
+                                    </span>
+                                  </div>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        </TooltipProvider>
                       </div>
                     )}
                      <Button variant="outline" size="sm" className="mt-4 w-full" onClick={resetAnalysisInputs}>
