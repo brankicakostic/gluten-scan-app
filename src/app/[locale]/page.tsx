@@ -945,15 +945,16 @@ export default function HomePage() {
                                 {item.napomena ? (
                                   <Popover>
                                     <PopoverTrigger asChild>
-                                      <div className="font-semibold cursor-pointer hover:underline">
+                                      <div className="font-semibold cursor-pointer hover:underline flex items-center gap-1">
                                         {item.sastojak}
                                         <span className={`ml-1 font-medium text-xs ${
                                             item.ocena === 'nije bezbedno' ? 'text-destructive' 
                                             : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
                                             : 'text-muted-foreground' 
                                           }`}>
-                                          ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''}) <Info className="inline h-3 w-3 text-blue-500"/>
+                                          ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
                                         </span>
+                                        <Info className="inline h-3 w-3 text-blue-500 shrink-0" />
                                       </div>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-auto max-w-xs text-sm p-2" side="top" align="start">
