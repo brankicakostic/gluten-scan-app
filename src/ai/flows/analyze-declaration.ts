@@ -58,32 +58,30 @@ export async function analyzeDeclaration(input: AnalyzeDeclarationInput): Promis
   if (output && typeof output.poverenjeUkupneProcene === 'number') {
     output.poverenjeUkupneProcene = Math.max(0, Math.min(1, parseFloat(output.poverenjeUkupneProcene as any)));
   } else if (output) {
-    output.poverenjeUkupneProcene = 0.5; // Default ako nedostaje ili nije broj
+    output.poverenjeUkupneProcene = 0.5;
   }
-  
+
   if (output && output.rezultat) {
     output.rezultat.forEach(item => {
-      const validOcena: IngredientAssessment['ocena'][] = ["sigurno", "rizično – proveriti poreklo", "nije bezbedno"];
-      if (!validOcena.includes(item.ocena)) {
-        // Fallback or error handling for invalid 'ocena'
-      }
-
       if (!item.nivoRizika) {
         if (item.ocena === "nije bezbedno") item.nivoRizika = "visok";
         else if (item.ocena === "rizično – proveriti poreklo") item.nivoRizika = "umeren";
         else item.nivoRizika = "nizak";
       }
       if (item.nivoRizika !== "nizak" && !item.kategorijaRizika) {
-          if (item.sastojak.toLowerCase().includes("gluten") || item.sastojak.toLowerCase().includes("pšeni") || item.sastojak.toLowerCase().includes("ječm") || item.sastojak.toLowerCase().includes("raž")) {
+          const lowerSastojak = item.sastojak.toLowerCase();
+          if (lowerSastojak.includes("gluten") || lowerSastojak.includes("pšeni") || lowerSastojak.includes("ječm") || lowerSastojak.includes("raž")) {
               item.kategorijaRizika = "gluten";
-          } else if (item.sastojak.toLowerCase().includes("može sadržati") || item.sastojak.toLowerCase().includes("tragove")) {
-               if (item.sastojak.toLowerCase().includes("pšenice") || item.sastojak.toLowerCase().includes("glutena") || item.sastojak.toLowerCase().includes("ječma") || item.sastojak.toLowerCase().includes("raži")) {
+          } else if (lowerSastojak.includes("može sadržati") || lowerSastojak.includes("tragove")) {
+               if (lowerSastojak.includes("pšenice") || lowerSastojak.includes("glutena") || lowerSastojak.includes("ječma") || lowerSastojak.includes("raži")) {
                 item.kategorijaRizika = "unakrsna kontaminacija glutenom";
                } else {
-                item.kategorijaRizika = "unakrsna kontaminacija"; 
+                item.kategorijaRizika = "unakrsna kontaminacija";
                }
-          } else {
+          } else if (item.ocena === "rizično – proveriti poreklo"){
               item.kategorijaRizika = "nepoznato poreklo (rizik od glutena)";
+          } else {
+             item.kategorijaRizika = "aditiv (rizik od glutena)";
           }
       }
     });
@@ -122,39 +120,40 @@ Ako je sastojak na ovoj listi, njegova 'ocena' je "nije bezbedno", 'nivoRizika' 
 *   tritikale (triticale)
 *   Malt (uključujući malt extract, malt flavor, malt syrup, slad, ekstrakt slada, sladni sirup, aroma slada) - UVEK sadrži gluten, ne podleže GF oznakama za izuzimanje.
 *   pivski kvasac (brewer’s yeast)
-*   pšenični skrob (wheat starch) - ako NIJE eksplicitno deklarisan kao "bezglutenski pšenični skrob" ILI ako proizvod nema 'aoecs'/'gf_text' oznaku koja pokriva ovaj sastojak. Ako jeste deklarisan kao GF, ide na Zelenu listu.
+*   pšenični skrob (wheat starch) - ako NIJE eksplicitno deklarisan kao "bezglutenski pšenični skrob" ILI ako proizvod nema 'aoecs'/'gf_text' oznaku koja pokriva ovaj sastojak. Ako jeste deklarisan kao GF ili ga pokriva GF sertifikat, ide na Zelenu listu.
 *   Ovas/Zob (oats) - ako NIJE eksplicitno deklarisan kao "bezglutenski ovas/zob" ili "sertifikovani bezglutenski ovas/zob" i proizvod nema 'aoecs'/'gf_text' oznaku. Vidi posebna pravila za OVAS.
 
 **🟠 NARANDŽASTA LISTA (Sastojci koji mogu biti rizični zbog glutena, zahtevaju proveru):**
 Ovi sastojci zahtevaju proveru 'labelingInfo' ili eksplicitnu GF deklaraciju na samom sastojku.
 *   **Opšte pravilo za Narandžastu listu (fokus na gluten):**
-    *   Ako je 'labelingInfo' 'aoecs' ili 'gf_text', ILI ako je sastojak eksplicitno deklarisan kao bezglutenski (npr. "dekstrin (kukuruzni)", "modifikovani skrob (kukuruzni)"): 'ocena' je "sigurno", 'nivoRizika' je "nizak". Napomena treba da objasni zašto (npr. "Smatra se bezbednim zbog GF oznake/sertifikata.").
-    *   Ako 'labelingInfo' NIJE 'aoecs' ili 'gf_text' (tj. 'none' ili 'unknown') I sastojak NIJE eksplicitno deklarisan kao bezglutenski: 'ocena' je "rizično – proveriti poreklo", 'nivoRizika' je "umeren", 'kategorijaRizika' je "nepoznato poreklo (rizik od glutena)" ili "aditiv (nepotvrđeno GF poreklo)". Napomena treba da ukaže na potencijalni rizik od glutena (npr. "Poreklo/prerada nije potvrđena kao bezglutenska.").
+    *   Ako je sastojak eksplicitno deklarisan kao bezglutenski (npr. "dekstrin (kukuruzni)", "modifikovani skrob (kukuruzni)", "glukozni sirup (kukuruzni)", "aroma (bez glutena)") ILI ako je 'labelingInfo' 'aoecs' ili 'gf_text' (i smatra se da ta oznaka pokriva dati sastojak): 'ocena' je "sigurno", 'nivoRizika' je "nizak". Napomena treba da objasni zašto (npr. "Smatra se bezbednim zbog GF oznake/sertifikata.", ili "Poreklo (kukuruzno) je bezglutensko.").
+    *   Ako 'labelingInfo' NIJE 'aoecs' ili 'gf_text' (tj. 'none' ili 'unknown') I sastojak NIJE eksplicitno deklarisan kao bezglutenski (npr. piše samo "glukozni sirup", "modifikovani skrob", "aroma"): 'ocena' je "rizično – proveriti poreklo", 'nivoRizika' je "umeren". Kategorija rizika i napomena zavise od specifičnog sastojka ispod.
 *   **Specifični sastojci za Narandžastu listu (primeniti Opšte pravilo uz dodatne napomene FOKUSIRANE NA GLUTEN):**
-    *   **Caramel colors (karamel boja E150a, E150b, E150c, E150d):** Primeni Opšte pravilo. Dodatna napomena ako je rizično: "Generalno bezbedne sa aspekta glutena, osim ako nisu dobijene iz ječma." Kategorija rizika ako je umeren: "aditiv (nepotvrđeno GF)".
-    *   **Dextrin (dekstrin):**
-        *   Ako je eksplicitno "dekstrin (kukuruzni)", "dekstrin (pirinčani)", "dekstrin (krompirov)": 'ocena': "sigurno", 'nivoRizika': "nizak".
-        *   Ako je eksplicitno "pšenični dekstrin" ili "dekstrin (pšenica)" I NIJE jasno navedeno da je bezglutenski: 'ocena': "nije bezbedno", 'nivoRizika': "visok", 'kategorijaRizika': "gluten", 'napomena': "Pšenični dekstrin se smatra izvorom glutena osim ako nije eksplicitno deklarisan kao bezglutenski."
-        *   Ako je samo "dekstrin" (generički): primeni Opšte pravilo. Dodatna napomena ako je rizično: "Bezbedan ako nije od pšeničnog porekla (koje bi nosilo gluten)." Kategorija rizika ako je umeren: "aditiv (nepotvrđeno GF)".
-    *   **Natural flavors (prirodne arome) / Arome (generički):** Primeni Opšte pravilo. Dodatna napomena ako je rizično: "Proveriti da li je korišćen nosač glutena (npr. alkohol iz žitarica ili pšenični skrob). Bezbedne sa aspekta glutena, osim ako ne potiču iz ječma (npr. malt flavor)." Kategorija rizika ako je umeren: "aditiv (nepotvrđeno GF)".
-    *   **Yeast extract (ekstrakt kvasca):** Primeni Opšte pravilo. Dodatna napomena ako je rizično: "Potencijalno rizičan sa aspekta glutena ako je dobijen iz ječma (pivski kvasac)." Kategorija rizika ako je umeren: "aditiv (nepotvrđeno GF)".
-    *   **Modifikovani skrob (modified starch) (ako nije eksplicitno GF ili sa Zelene liste, ili specifičan E-broj sa posebnim pravilima):** Primeni Opšte pravilo. Dodatna napomena ako je rizično: "Poreklo nije navedeno. Može biti od pšenice ili drugih glutenskih žitarica." Kategorija rizika ako je umeren: "nepoznato poreklo (rizik od glutena)". Obuhvata E-brojeve kao E1404, E1410, E1412, E1413, E1414, E1420, E1422, E1440, E1442 ako nije specificirano drugačije i izvor nije GF.
-    *   **Generički termini kao "zgušnjivač", "stabilizator", "emulgator" (ako nisu specifični E-brojevi sa Zelene liste ili drugim pravilima):** Primeni Opšte pravilo. Dodatna napomena: "Potrebno proveriti poreklo [termina] radi rizika od glutena." Kategorija rizika ako je umeren: "nepoznato poreklo (rizik od glutena)".
-    *   **E471 (Mono- i digliceridi masnih kiselina):** Primeni Opšte pravilo. Dodatna napomena ako je rizično: "E471 može biti biljnog ili životinjskog porekla. Ako je iz pšenice, može sadržati gluten. Preporučuje se dodatna provera." Kategorija rizika ako je umeren: "aditiv (nepotvrđeno GF poreklo)".
-    *   **Glukozni sirup (ako nije navedeno poreklo):** Primeni Opšte pravilo. Dodatna napomena ako je rizično: "Poreklo nije navedeno. Ako je na bazi pšenice ili ječma, a proizvod nije GF sertifikovan, postoji teorijska mogućnost tragova glutena, iako EU regulativa uglavnom smatra prerađene sirupe od pšenice/ječma bezbednim." Kategorija rizika ako je umeren: "nepoznato poreklo (rizik od glutena)".
-
+    *   **glukozni sirup (glucose syrup)** (ako nije eksplicitno deklarisan kao GF ili od kukuruza/pirinča/krompira): 'kategorijaRizika': "nepoznato poreklo (rizik od glutena)". 'napomena': "Poreklo nije navedeno. Ako je na bazi pšenice ili ječma, a proizvod nije GF sertifikovan, postoji teorijska mogućnost tragova glutena, iako EU regulativa uglavnom smatra prerađene sirupe od pšenice/ječma bezbednim."
+    *   **dekstroza (dextrose)** (ako nije eksplicitno deklarisana kao GF ili od kukuruza/pirinča/krompira): 'kategorijaRizika': "nepoznato poreklo (rizik od glutena)". 'napomena': "Ako nije jasno naznačeno poreklo (npr. kukuruzna) ili da je bezglutenska, a proizvod nema GF sertifikat, postoji rizik ako je pšeničnog porekla."
+    *   **maltodekstrin (maltodextrin)** (ako nije eksplicitno deklarisan kao GF ili od kukuruza/pirinča/krompira): 'kategorijaRizika': "nepoznato poreklo (rizik od glutena)". 'napomena': "Ako nije jasno naznačeno poreklo (npr. kukuruzni) ili da je bezglutenski, a proizvod nema GF sertifikat, postoji rizik ako je pšeničnog porekla."
+    *   **skrob (starch) / modifikovani skrob (modified starch)** (ako nije eksplicitno deklarisan kao GF ili od kukuruza/pirinča/krompira/tapioke, ili specifičan E-broj sa liste E1404-1451): 'kategorijaRizika': "nepoznato poreklo (rizik od glutena)". 'napomena': "Poreklo nije navedeno. Može biti od pšenice ili drugih glutenskih žitarica. Proveriti poreklo."
+    *   **E1404, E1410, E1412, E1413, E1414, E1420, E1422, E1440, E1442, E1450, E1451 (modifikovani skrobovi)**: 'kategorijaRizika': "aditiv (modifikovani skrob - rizik od glutena)". 'napomena': "Ovaj aditiv (modifikovani skrob) može biti bez glutena, ali poreklo treba proveriti zbog mogućnosti žitarica kao izvora."
+    *   **aroma (flavour/flavoring) / prirodna aroma (natural flavour/flavoring)** (ako nije eksplicitno deklarisana kao GF): 'kategorijaRizika': "aditiv (aroma - nepotvrđeno GF)". 'napomena': "Proveriti da li je korišćen nosač glutena (npr. alkohol iz žitarica ili pšenični skrob). Bezbedne sa aspekta glutena, osim ako ne potiču iz ječma (npr. malt flavor) ili pšenice."
+    *   **E471 (Mono- i digliceridi masnih kiselina)**: 'kategorijaRizika': "aditiv (E471 - nepotvrđeno GF poreklo)". 'napomena': "E471 može biti biljnog ili životinjskog porekla. Ako je iz pšenice, može sadržati gluten. Preporučuje se dodatna provera."
+    *   **E472a, E472b, E472c, E472e (estri masnih kiselina)**: 'kategorijaRizika': "aditiv (emulgator - rizik od glutena)". 'napomena': "Ovaj aditiv (emulgator) može biti bez glutena, ali poreklo treba proveriti zbog mogućnosti žitarica kao izvora."
+    *   **karamel (caramel color) / karamelizovani šećer (caramelized sugar)** (uključujući E150a, E150b, E150c, E150d): 'kategorijaRizika': "aditiv (karamel - nepotvrđeno GF)". 'napomena': "Neki oblici karamel boje mogu biti napravljeni od ili sadržati nosače iz žitarica – provera poželjna ako proizvod nije GF."
+    *   **E160b(ii) (Anato, biksin, norbiksin)**: 'kategorijaRizika': "aditiv (anato - rizik od glutena)". 'napomena': "Ovaj aditiv može biti bez glutena, ali poreklo treba proveriti zbog mogućnosti žitarica kao izvora ili nosača."
+    *   **Yeast extract (ekstrakt kvasca)**: 'kategorijaRizika': "aditiv (ekstrakt kvasca - nepotvrđeno GF)". 'napomena': "Potencijalno rizičan sa aspekta glutena ako je dobijen iz ječma (pivski kvasac)."
+    *   **Generički termini kao "zgušnjivač", "stabilizator", "emulgator"** (ako nisu specifični E-brojevi sa Zelene liste ili drugim pravilima): 'kategorijaRizika': "nepoznato poreklo (rizik od glutena)". 'napomena': "Potrebno proveriti poreklo [termina] radi rizika od glutena."
+    *   **Žitni destilat (cereal distillate)**: 'kategorijaRizika': "aditiv (žitni destilat - rizik od glutena)". 'napomena': "Etanol na bazi žitarica može zadržati tragove glutena – zavisi od stepena pročišćenja. Ako se koristi u hrani, potreban oprez ako proizvod nije GF sertifikovan."
 
 **✅ ZELENA LISTA (Generalno bezbedni sastojci sa aspekta glutena):**
 'Ocena' je "sigurno", 'nivoRizika' je "nizak". 'KategorijaRizika' se može izostaviti.
 *   Prirodno bezglutenske žitarice: pirinač (rice), kukuruz (corn), kinoa (quinoa), proso (millet), sirak (sorghum), heljda (buckwheat), amarant (amaranth), krompir (potato), tapioka (tapioca), aru prah (arrowroot), tef (teff), juka (yucca).
 *   Ostala prirodno bezglutenska hrana: meso, riba, jaja, mlečni proizvodi (osim sladnog mleka), povrće, voće, mahunarke, orašasti plodovi (nuts) - **osim ako nisu kontaminirani glutenom u preradi, što bi se reflektovalo kroz rizične fraze.**
-*   **Bezglutenski pšenični skrob (wheat starch labeled gluten-free):** 'ocena': "sigurno", 'nivoRizika': "nizak", 'napomena': "Deklarisano kao bezglutensko i zadovoljava EU regulativu."
-*   **Maltodekstrin (maltodextrin) (ako je na bazi kukuruza, pirinča, krompira, ILI ako je na bazi pšenice ali je proizvod GF sertifikovan ('aoecs'/'gf_text')):** 'ocena': "sigurno", 'nivoRizika': "nizak", 'napomena': "Prema EU regulativi, maltodekstrin na bazi pšenice je bezbedan. Na bazi kukuruza je takođe bezbedan. GF oznaka potvrđuje bezbednost."
-*   **Glukozni sirup (glucose syrup) na bazi pšenice, ječma ili kukuruza:** 'ocena': "sigurno", 'nivoRizika': "nizak", 'napomena': "Prema EU regulativi, glukozni sirup na bazi pšenice ili ječma je bezbedan. Na bazi kukuruza je takođe bezbedan."
+*   **Bezglutenski pšenični skrob (wheat starch labeled gluten-free) / Pšenični skrob ako je 'labelingInfo' 'aoecs' ili 'gf_text'**: 'ocena': "sigurno", 'nivoRizika': "nizak", 'napomena': "Deklarisano kao bezglutensko ili pokriveno GF sertifikatom i zadovoljava EU regulativu."
+*   **Maltodekstrin (maltodextrin)** (ako je eksplicitno deklarisan kao bezglutenski ILI na bazi kukuruza, pirinča, krompira, ILI ako je na bazi pšenice ali je proizvod GF sertifikovan ('aoecs'/'gf_text')):** 'ocena': "sigurno", 'nivoRizika': "nizak", 'napomena': "Prema EU regulativi, maltodekstrin na bazi pšenice je bezbedan. Na bazi kukuruza je takođe bezbedan. GF oznaka potvrđuje bezbednost."
+*   **Glukozni sirup (glucose syrup) / Dekstroza (dextrose)** (ako je eksplicitno deklarisan kao bezglutenski ILI na bazi kukuruza, pirinča, krompira, ILI ako je na bazi pšenice ili ječma a proizvod je GF sertifikovan ('aoecs'/'gf_text')):** 'ocena': "sigurno", 'nivoRizika': "nizak", 'napomena': "Prema EU regulativi, glukozni sirup/dekstroza na bazi pšenice ili ječma su bezbedni. Na bazi kukuruza takođe. GF oznaka potvrđuje bezbednost."
 *   **Destilovano sirće (distilled vinegar):** 'ocena': "sigurno", 'nivoRizika': "nizak", 'napomena': "Destilacija uklanja gluten."
 *   **Maltoza (maltose):** 'ocena': "sigurno", 'nivoRizika': "nizak", 'napomena': "Prirodni šećer, ne sadrži gluten."
 *   **Vanilin, Vanilla flavor (aroma vanile):** 'ocena': "sigurno", 'nivoRizika': "nizak", 'napomena': "Sintetički vanilin ili čist ekstrakt/aroma vanile su bezbedni sa aspekta glutena. Uvek je dobro proveriti da nosač arome nije na bazi glutena, mada je to retko za vanilin."
-*   **E575 (glukonodelta lakton):** 'ocena': "sigurno", 'nivoRizika': "nizak", 'napomena': "Generalno se smatra bezbednim sa aspekta glutena."
+*   **E575 (glukonodelta lakton):** 'ocena': "sigurno", 'nivoRizika': "nizak", 'napomena': "Generalno se smatra bezbednim sa aspekta glutena." (Iako je bio na listi za proveru, opšta praksa ga smatra sigurnim, osim ako postoje specifične sumnje).
 *   Zgušnjivač E415 (ksantan guma). Sojin lecitin (bezbedan sa aspekta glutena, ali napomeni ako je alergen).
 
 **🔍 RIZIČNE FRAZE (Ukazuju na moguću KONTAMINACIJU GLUTENOM):**
@@ -178,41 +177,41 @@ Ako je prisutna neka od sledećih fraza (ili sličnih) KOJA UKLJUČUJE GLUTENSKE
 
 **Određivanje 'ukupnaProcenaBezbednosti' (SA ASPEKTA GLUTENA) i 'poverenjeUkupneProcene':**
 *   Ako bilo koji sastojak ima 'ocena': "nije bezbedno" (zbog glutena), onda je 'ukupnaProcenaBezbednosti': "nije bezbedno". 'PoverenjeUkupneProcene' treba da bude visoko (npr. 0.9-1.0).
-*   Inače, ako bilo koji sastojak ima 'ocena': "rizično – proveriti poreklo" (zbog glutena) ILI ako je prisutna rizična fraza o kontaminaciji GLUTENOM (osim ako 'labelingInfo' nije 'aoecs'), onda je 'ukupnaProcenaBezbednosti': "rizično". 'PoverenjeUkupneProcene' zavisi od broja i vrste rizičnih stavki (npr. 0.6-0.85). Ako je 'labelingInfo' 'aoecs' i prisutne su samo fraze o kontaminaciji GLUTENOM, proizvod može biti "potrebna pažnja" umesto "rizično".
-*   Inače, ako su svi sastojci "sigurno" (sa aspekta glutena, ili pokriveni 'aoecs'/'gf_text'), ali 'labelingInfo' je 'none' ili 'unknown', a postoje sastojci sa narandžaste liste koji su zbog toga dobili ocenu "sigurno" (ali bi bez GF oznake bili rizični ZBOG GLUTENA), 'ukupnaProcenaBezbednosti' može biti "potrebna pažnja". 'PoverenjeUkupneProcene' (npr. 0.7-0.8).
-*   Inače (svi sastojci sigurni sa aspekta glutena, i/ili 'labelingInfo' je 'aoecs' ili 'gf_text' i nema nerešenih rizika od glutena), 'ukupnaProcenaBezbednosti': "sigurno". 'PoverenjeUkupneProcene' (npr. 0.85-1.0).
+*   Inače, ako bilo koji sastojak ima 'ocena': "rizično – proveriti poreklo" (zbog glutena) ILI ako je prisutna rizična fraza o kontaminaciji GLUTENOM (osim ako 'labelingInfo' nije 'aoecs' i pokriva taj rizik), onda je 'ukupnaProcenaBezbednosti': "rizično". 'PoverenjeUkupneProcene' zavisi od broja i vrste rizičnih stavki (npr. 0.6-0.85).
+*   Inače, ako 'labelingInfo' nije 'aoecs', a postoje sastojci sa Narandžaste liste koji su dobili ocenu "sigurno" samo zbog pretpostavke da ih 'gf_text' oznaka pokriva (ali bi bez nje bili rizični ZBOG GLUTENA), ILI ako je 'labelingInfo' 'none' ili 'unknown' a postoje sastojci sa Narandžaste liste, 'ukupnaProcenaBezbednosti' treba da bude "potrebna pažnja". Ovo je važno zbog napomene: "Ako proizvod nema AOECS oznaku ili drugi pouzdan sertifikat, ne označavaj ga kao 'bezbedan' samo zato što nema direktan gluten – proveri i skrivene izvore." 'PoverenjeUkupneProcene' (npr. 0.7-0.8).
+*   Inače (svi sastojci sigurni sa aspekta glutena, i 'labelingInfo' je 'aoecs' i nema nerešenih rizika od glutena, ili 'labelingInfo' je 'gf_text' i svi sumnjivi sastojci su pokriveni tom oznakom), 'ukupnaProcenaBezbednosti': "sigurno". 'PoverenjeUkupneProcene' (npr. 0.85-1.0).
 
 **'finalnoObrazlozenje' (FOKUS NA GLUTEN, uz napomene o drugim alergenima):**
 Generiši kratko sumarno obrazloženje na srpskom na osnovu 'ukupnaProcenaBezbednosti' i ključnih nalaza iz 'rezultat' niza.
-Obrazloženje (uzmi u obzir i 'labelingInfo' i 'poverenjeUkupneProcene' i 'rezultat'):
+Prilikom sastavljanja obrazloženja, koristi sledeće smernice:
 
-- Ako je 'ukupnaProcenaBezbednosti' "sigurno":
-  Započni sa: "Proizvod ne sadrži sastojke koji predstavljaju rizik od glutena." ili "Proizvod je verovatno bezbedan za osobe sa celijakijom."
-  Ako je '{{{labelingInfo}}}' 'aoecs', dodaj: "Proizvod ima AOECS sertifikat."
-  Ako je '{{{labelingInfo}}}' 'gf_text', dodaj: "Proizvod ima gluten-free oznaku."
-  Ako je ('{{{labelingInfo}}}' 'none' ili '{{{labelingInfo}}}' 'unknown') i poverenjeUkupneProcene >= 0.85, dodaj: "Iako nema eksplicitne GF oznake, analiza sastojaka ukazuje na visoku verovatnoću bezbednosti od glutena."
-  Završi sa: "Nema identifikovanih rizičnih sastojaka za gluten."
-  Ako 'rezultat' sadrži unos za "Sertifikovana/označena bezglutenska zob/ovas", dodaj: "Sadrži sertifikovanu bezglutensku zob, koja je generalno bezbedna za osobe sa celijakijom, ali osobe sa posebnom osetljivošću na avenin treba da budu oprezne."
-  (AI: Ovde dodaj rečenicu ako postoje drugi alergeni koji NISU gluten, npr. "Napomena: Proizvod sadrži [soju/kikiriki] ili može sadržati tragove [orašastih plodova/mleka], što je važno za osobe sa tim alergijama ali ne utiče na GF status.")
+- Za status "sigurno" (Poverenje: ≥0.85, idealno >0.9 ako je 'aoecs'):
+  Počni sa: "Proizvod ne sadrži sastojke koji predstavljaju rizik od glutena."
+  Zatim, ako je 'labelingInfo' 'aoecs', dodaj: "Proizvod ima AOECS sertifikat."
+  Ako je 'labelingInfo' 'gf_text', dodaj: "Proizvod ima gluten-free oznaku."
+  Ako je 'labelingInfo' 'none' ili 'unknown' ali poverenjeUkupneProcene je >= 0.85, dodaj: "Iako nema eksplicitne GF oznake, analiza sastojaka ukazuje na visoku verovatnoću bezbednosti od glutena."
+  Nastavi sa: "Nema identifikovanih rizičnih sastojaka za gluten."
+  Ako 'rezultat' sadrži unos za 'Sertifikovana/označena bezglutenska zob/ovas', dodaj: "Sadrži sertifikovanu bezglutensku zob, koja je generalno bezbedna za osobe sa celijakijom, ali osobe sa posebnom osetljivošću na avenin treba da budu oprezne."
+  Ako postoje drugi alergeni koji NISU gluten (npr. soja, kikiriki), dodaj: "Napomena: Proizvod sadrži [navedi alergene] ili može sadržati tragove [orašastih plodova/mleka], što je važno za osobe sa tim alergijama ali ne utiče na GF status."
 
-- Ako je 'ukupnaProcenaBezbednosti' "potrebna pažnja":
-  Započni sa: "Proizvod je označen kao 'potrebna pažnja' sa aspekta glutena."
-  (AI: Ovde objasni zašto, npr. zbog prisustva sastojaka sa narandžaste liste bez GF potvrde koji mogu nositi rizik od glutena, ili zbog 'labelingInfo' koji sugeriše oprez iako nema direktnih izvora glutena. Navedi ključne sastojke iz 'rezultat' koji su doprineli ovoj oceni, npr. 'Sadrži sastojke kao što su [sastojak1], [sastojak2] koji zahtevaju proveru porekla zbog mogućeg glutena.' Ili, ako je proizvod AOECS sertifikovan ali sadrži frazu o unakrsnoj kontaminaciji glutenom, navedi da sertifikat pokriva taj rizik, ali je opreznost savetovana.)
-  Dodaj rečenicu o GF oznaci na osnovu vrednosti '{{{labelingInfo}}}' (npr. "Informacija o GF oznaci: AOECS sertifikat." ili "Informacija o GF oznaci: Nema GF oznake.").
-  (AI: Ovde dodaj rečenicu ako postoje drugi alergeni koji NISU gluten.)
+- Za status "potrebna pažnja" (Poverenje: 0.7-0.85):
+  Počni sa: "Proizvod je označen kao 'potrebna pažnja' sa aspekta glutena."
+  Objasni zašto, na primer: "zbog prisustva sastojaka sa narandžaste liste bez GF potvrde koji mogu nositi rizik od glutena (npr. sadrži sastojke kao što su [sastojak1], [sastojak2] koji zahtevaju proveru porekla zbog mogućeg glutena)" ILI "zbog 'labelingInfo' ('Nema GF oznake.') koji sugeriše oprez iako nema direktnih izvora glutena."
+  Ako je proizvod AOECS sertifikovan ali sadrži frazu o unakrsnoj kontaminaciji glutenom, navedi da sertifikat pokriva taj rizik, ali je opreznost savetovana.
+  Ako postoje drugi alergeni koji NISU gluten, dodaj napomenu o njima.
 
-- Ako je 'ukupnaProcenaBezbednosti' "rizično":
-  Započni sa: "Proizvod je označen kao 'rizično' sa aspekta glutena."
-  (AI: Ovde objasni zašto, npr. zbog prisustva fraza o unakrsnoj kontaminaciji GLUTENOM ili većeg broja rizičnih sastojaka bez GF potvrde. Navedi ključne sastojke ili fraze iz 'rezultat' koji su doprineli ovoj oceni, npr. 'Upozorenje o mogućim tragovima GLUTENA ([fraza]) je prisutno.' ili 'Sadrži rizične sastojke kao što su [sastojak1] koji mogu sadržati gluten.')
-  Dodaj rečenicu o GF oznaci na osnovu vrednosti '{{{labelingInfo}}}'.
-  Ako 'rezultat' sadrži unos za "Necertifikovana/neoznačena zob/ovas", dodaj: "Prisutna je necertifikovana zob, što predstavlja visok rizik od glutena."
-  (AI: Ovde dodaj rečenicu ako postoje drugi alergeni koji NISU gluten.)
+- Za status "rizično" (Poverenje: 0.6-0.85):
+  Počni sa: "Proizvod je označen kao 'rizično' sa aspekta glutena."
+  Objasni zašto, na primer: "zbog prisustva fraza o unakrsnoj kontaminaciji GLUTENOM (npr. 'Upozorenje o mogućim tragovima GLUTENA ([fraza]) je prisutno.')" ILI "zbog većeg broja rizičnih sastojaka bez GF potvrde (npr. 'Sadrži rizične sastojke kao što su [sastojak1] koji mogu sadržati gluten.')."
+  Ako 'rezultat' sadrži unos za 'Necertifikovana/neoznačena zob/ovas', dodaj: "Prisutna je necertifikovana zob, što predstavlja visok rizik od glutena."
+  Navedi: "Informacija o GF oznaci: {{{labelingInfo}}}."
+  Ako postoje drugi alergeni koji NISU gluten, dodaj napomenu o njima.
 
-- Ako je 'ukupnaProcenaBezbednosti' "nije bezbedno":
-  Započni sa: "Proizvod SADRŽI GLUTEN ili sastojke visokog rizika od glutena i NIJE BEZBEDAN za osobe sa celijakijom."
-  (AI: Navedi ključne sastojke iz 'rezultat' sa ocenom 'nije bezbedno' koji su doveli do ove procene, npr. 'Identifikovani su sledeći izvori glutena: [sastojak1], [sastojak2].').
-  Dodaj rečenicu o GF oznaci na osnovu vrednosti '{{{labelingInfo}}}'.
-  (AI: Ovde dodaj rečenicu ako postoje drugi alergeni koji NISU gluten.)
+- Za status "nije bezbedno" (Poverenje: ≥0.9):
+  Počni sa: "Proizvod SADRŽI GLUTEN ili sastojke visokog rizika od glutena i NIJE BEZBEDAN za osobe sa celijakijom."
+  Navedi ključne sastojke iz 'rezultat' sa ocenom 'nije bezbedno': "Identifikovani su sledeći izvori glutena ili visokorizični sastojci: [navedi sastojke]."
+  Navedi: "Informacija o GF oznaci: {{{labelingInfo}}}."
+  Ako postoje drugi alergeni koji NISU gluten, dodaj napomenu o njima.
 
 Obavezno prilagodi ove obrasce konkretnim nalazima iz 'rezultat' niza i vrednosti 'labelingInfo'. Ako nema rizičnih ili nebezbednih sastojaka za nabrajanje u specifičnoj kategoriji, izostavi taj deo rečenice ili ga prikladno prilagodi.
 
@@ -230,43 +229,40 @@ const analyzeDeclarationFlow = ai.defineFlow(
     outputSchema: AnalyzeDeclarationOutputSchema,
   },
   async (input) => {
-    // Prepare input for the prompt, defaulting labelingInfo if not provided
     const promptInput = {
       declarationText: input.declarationText,
-      labelingInfo: input.labelingInfo || 'unknown', // Default to 'unknown'
+      labelingInfo: input.labelingInfo || 'unknown',
     };
 
-    // Call the prompt
     const {output} = await analyzeDeclarationPrompt(promptInput);
 
-    // Post-process confidence score to ensure it's between 0 and 1
     if (output && typeof output.poverenjeUkupneProcene === 'number') {
       output.poverenjeUkupneProcene = Math.max(0, Math.min(1, parseFloat(output.poverenjeUkupneProcene as any)));
     } else if (output) {
-      output.poverenjeUkupneProcene = 0.5; // Default if missing or not a number
+      output.poverenjeUkupneProcene = 0.5;
     }
-    
-    // Post-process individual ingredient assessments
+
     if (output && output.rezultat) {
       output.rezultat.forEach(item => {
-        // Ensure 'nivoRizika' is set based on 'ocena' if not provided by AI
         if (!item.nivoRizika) {
           if (item.ocena === "nije bezbedno") item.nivoRizika = "visok";
           else if (item.ocena === "rizično – proveriti poreklo") item.nivoRizika = "umeren";
           else item.nivoRizika = "nizak";
         }
-        // Ensure 'kategorijaRizika' is set for non-low risk items if not provided
         if (item.nivoRizika !== "nizak" && !item.kategorijaRizika) {
-            if (item.sastojak.toLowerCase().includes("gluten") || item.sastojak.toLowerCase().includes("pšeni") || item.sastojak.toLowerCase().includes("ječm") || item.sastojak.toLowerCase().includes("raž")) {
+            const lowerSastojak = item.sastojak.toLowerCase();
+            if (lowerSastojak.includes("gluten") || lowerSastojak.includes("pšeni") || lowerSastojak.includes("ječm") || lowerSastojak.includes("raž")) {
                 item.kategorijaRizika = "gluten";
-            } else if (item.sastojak.toLowerCase().includes("može sadržati") || item.sastojak.toLowerCase().includes("tragove")) {
-                 if (item.sastojak.toLowerCase().includes("pšenice") || item.sastojak.toLowerCase().includes("glutena") || item.sastojak.toLowerCase().includes("ječma") || item.sastojak.toLowerCase().includes("raži")) {
+            } else if (lowerSastojak.includes("može sadržati") || lowerSastojak.includes("tragove")) {
+                 if (lowerSastojak.includes("pšenice") || lowerSastojak.includes("glutena") || lowerSastojak.includes("ječma") || lowerSastojak.includes("raži")) {
                     item.kategorijaRizika = "unakrsna kontaminacija glutenom";
                  } else {
-                    item.kategorijaRizika = "unakrsna kontaminacija"; // Generic, could be other allergens
+                    item.kategorijaRizika = "unakrsna kontaminacija";
                  }
+            } else if (item.ocena === "rizično – proveriti poreklo"){
+               item.kategorijaRizika = "nepoznato poreklo (rizik od glutena)";
             } else {
-                item.kategorijaRizika = "nepoznato poreklo (rizik od glutena)";
+                item.kategorijaRizika = "aditiv (rizik od glutena)";
             }
         }
       });
@@ -276,5 +272,3 @@ const analyzeDeclarationFlow = ai.defineFlow(
 );
 
     
- 
-
