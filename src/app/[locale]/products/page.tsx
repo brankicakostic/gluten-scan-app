@@ -555,7 +555,7 @@ const rawProductsData = [
   {
     "name": "Proteinske Fit Noodle",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "",
+    "barcode": "8606112581124", //netacan
     "size": "70g",
     "ingredients": [
       "Brašno od pirinča",
@@ -758,7 +758,7 @@ const rawProductsData = [
   {
     "name": "Brašno od Heljde",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "", // No barcode provided
+    "barcode": "8606107907741",
     "size": "500g",
     "ingredients": ["Brašno od heljde 100%"],
     "labelText": "brašno od heljde",
@@ -816,7 +816,7 @@ const rawProductsData = [
   {
     "name": "Tapioka",
     "brand": "Aleksandrija Fruška Gora",
-    "barcode": "", // No barcode
+    "barcode": "8606107907307",
     "size": "500g",
     "ingredients": ["Skrob od tapioke 100%"],
     "labelText": "tapioka",
