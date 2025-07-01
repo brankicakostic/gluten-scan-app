@@ -922,92 +922,97 @@ export default function HomePage() {
               </div>
             </CardContent>
             
-            {(analysisResult || isLoadingDeclaration || isLoadingAnyAnalysisProcess) && !showLabelingQuestionModal && (
-              <CardContent className="mt-6 border-t pt-6">
-                <CardTitle className="text-lg mb-2">AI Analysis Report</CardTitle>
-                {(isLoadingDeclaration || isLoadingOcr) && !showLabelingQuestionModal && (
-                  <div className="flex flex-col items-center justify-center h-24 text-muted-foreground">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
-                    <p>{isLoadingOcr ? 'Processing Image...' : 'Analyzing Ingredients...'}</p>
-                  </div>
-                )}
-                {analysisResult && !isLoadingDeclaration && !isLoadingOcr && (
-                  <>
-                    {getAssessmentAlert(analysisResult)}
-
-                     {relevantGlutenIssueCount > 0 && (
-                        <div className="mt-3 p-2 bg-destructive/10 rounded-md text-sm text-destructive flex items-center gap-2">
-                            <ShieldAlert className="h-5 w-5"/>
-                            <span>Identifikovano {relevantGlutenIssueCount} kritičnih stavki vezanih za gluten.</span>
-                        </div>
-                     )}
-
-                    <div className="mt-3">
-                      <h4 className="font-semibold mb-1 text-sm">Obrazloženje:</h4>
-                      <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.finalnoObrazlozenje}</p>
+            <div 
+              aria-live="polite" 
+              aria-busy={isLoadingAnyAnalysisProcess}
+            >
+              {(analysisResult || isLoadingDeclaration || isLoadingAnyAnalysisProcess) && !showLabelingQuestionModal && (
+                <CardContent className="mt-6 border-t pt-6">
+                  <CardTitle className="text-lg mb-2">AI Analysis Report</CardTitle>
+                  {(isLoadingDeclaration || isLoadingOcr) && !showLabelingQuestionModal && (
+                    <div className="flex flex-col items-center justify-center h-24 text-muted-foreground">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
+                      <p>{isLoadingOcr ? 'Processing Image...' : 'Analyzing Ingredients...'}</p>
                     </div>
+                  )}
+                  {analysisResult && !isLoadingDeclaration && !isLoadingOcr && (
+                    <>
+                      {getAssessmentAlert(analysisResult)}
 
-                    {problematicIngredients.length > 0 && (
+                       {relevantGlutenIssueCount > 0 && (
+                          <div className="mt-3 p-2 bg-destructive/10 rounded-md text-sm text-destructive flex items-center gap-2">
+                              <ShieldAlert className="h-5 w-5"/>
+                              <span>Identifikovano {relevantGlutenIssueCount} kritičnih stavki vezanih za gluten.</span>
+                          </div>
+                       )}
+
                       <div className="mt-3">
-                        <h4 className="font-semibold mb-1 text-sm">Analizirani sastojci (problematični ili rizični):</h4>
-                          <ul className="list-none space-y-2 text-xs">
-                            {problematicIngredients.map((item, index) => (
-                              <li key={index} 
-                                  className={`p-2 rounded-md ${
-                                    item.ocena === 'nije bezbedno' ? 'bg-destructive/10 border border-destructive/30' 
-                                    : item.ocena === 'rizično – proveriti poreklo' ? 'bg-orange-500/10 border border-orange-500/30' 
-                                    : ''
-                                  }`}
-                              >
-                                {item.napomena ? (
-                                  <Popover>
-                                    <PopoverTrigger asChild>
-                                      <div className="font-semibold cursor-pointer hover:underline flex items-center gap-1">
-                                        {item.sastojak}
-                                        <span className={`ml-1 font-medium text-xs ${
-                                            item.ocena === 'nije bezbedno' ? 'text-destructive' 
-                                            : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
-                                            : 'text-muted-foreground' 
-                                          }`}>
-                                          ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
-                                        </span>
-                                        <Info className="inline h-3 w-3 text-blue-500 shrink-0" />
-                                      </div>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto max-w-xs text-sm p-2" side="top" align="start">
-                                      <p>{item.napomena}</p>
-                                    </PopoverContent>
-                                  </Popover>
-                                ) : (
-                                  <div className="font-semibold">
-                                    {item.sastojak}
-                                    <span className={`ml-1 font-medium text-xs ${
-                                        item.ocena === 'nije bezbedno' ? 'text-destructive' 
-                                        : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
-                                        : 'text-muted-foreground' 
-                                      }`}>
-                                      ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
-                                    </span>
-                                  </div>
-                                )}
-                              </li>
-                            ))}
-                          </ul>
+                        <h4 className="font-semibold mb-1 text-sm">Obrazloženje:</h4>
+                        <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.finalnoObrazlozenje}</p>
                       </div>
-                    )}
-                     <Button variant="outline" size="sm" className="mt-4 w-full" onClick={resetAnalysisInputs}>
-                       Clear Analysis & Inputs
-                     </Button>
-                  </>
-                )}
-              </CardContent>
-            )}
-             {!isLoadingAnyAnalysisProcess && !analysisResult && !errorDeclaration && (declarationText || selectedFile || isTakingOcrPhoto) && !showLabelingQuestionModal && (
-                   <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md mt-4 mx-6 mb-6">
-                    <Info className="mx-auto h-8 w-8 mb-2 text-primary" />
-                    <p className="text-sm">Analysis results will appear here once submitted.</p>
-                  </div>
+
+                      {problematicIngredients.length > 0 && (
+                        <div className="mt-3">
+                          <h4 className="font-semibold mb-1 text-sm">Analizirani sastojci (problematični ili rizični):</h4>
+                            <ul className="list-none space-y-2 text-xs">
+                              {problematicIngredients.map((item, index) => (
+                                <li key={index} 
+                                    className={`p-2 rounded-md ${
+                                      item.ocena === 'nije bezbedno' ? 'bg-destructive/10 border border-destructive/30' 
+                                      : item.ocena === 'rizično – proveriti poreklo' ? 'bg-orange-500/10 border border-orange-500/30' 
+                                      : ''
+                                    }`}
+                                >
+                                  {item.napomena ? (
+                                    <Popover>
+                                      <PopoverTrigger asChild>
+                                        <div className="font-semibold cursor-pointer hover:underline flex items-center gap-1">
+                                          {item.sastojak}
+                                          <span className={`ml-1 font-medium text-xs ${
+                                              item.ocena === 'nije bezbedno' ? 'text-destructive' 
+                                              : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
+                                              : 'text-muted-foreground' 
+                                            }`}>
+                                            ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
+                                          </span>
+                                          <Info className="inline h-3 w-3 text-blue-500 shrink-0" />
+                                        </div>
+                                      </PopoverTrigger>
+                                      <PopoverContent className="w-auto max-w-xs text-sm p-2" side="top" align="start">
+                                        <p>{item.napomena}</p>
+                                      </PopoverContent>
+                                    </Popover>
+                                  ) : (
+                                    <div className="font-semibold">
+                                      {item.sastojak}
+                                      <span className={`ml-1 font-medium text-xs ${
+                                          item.ocena === 'nije bezbedno' ? 'text-destructive' 
+                                          : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
+                                          : 'text-muted-foreground' 
+                                        }`}>
+                                        ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
+                                      </span>
+                                    </div>
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                        </div>
+                      )}
+                       <Button variant="outline" size="sm" className="mt-4 w-full" onClick={resetAnalysisInputs}>
+                         Clear Analysis & Inputs
+                       </Button>
+                    </>
+                  )}
+                </CardContent>
               )}
+               {!isLoadingAnyAnalysisProcess && !analysisResult && !errorDeclaration && (declarationText || selectedFile || isTakingOcrPhoto) && !showLabelingQuestionModal && (
+                     <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md mt-4 mx-6 mb-6">
+                      <Info className="mx-auto h-8 w-8 mb-2 text-primary" />
+                      <p className="text-sm">Analysis results will appear here once submitted.</p>
+                    </div>
+                )}
+            </div>
           </Card>
 
           <AlertDialog open={showScanLimitModal} onOpenChange={setShowScanLimitModal}>
