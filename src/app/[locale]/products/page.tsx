@@ -1566,7 +1566,7 @@ export default function ProductsPage() {
                             <span>May Contain Traces</span>
                           </div>
                         ) : (
-                          <div className="flex items-center text-muted-foreground text-xs mt-1 mb-1">
+                           <div className="flex items-center text-muted-foreground text-xs mt-1 mb-1">
                             <AlertTriangle className="h-3 w-3 mr-1" />
                             <span>Proveriti sastav</span>
                           </div>

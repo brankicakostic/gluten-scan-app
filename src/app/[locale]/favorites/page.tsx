@@ -9,7 +9,7 @@ import { SiteHeader } from '@/components/site-header';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, StarOff, ShoppingBag, CheckCircle, AlertTriangle, Trash2 } from 'lucide-react'; // Added AlertTriangle
+import { Heart, StarOff, ShoppingBag, CheckCircle, AlertTriangle, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useFavorites } from '@/contexts/favorites-context';
 import type { Product } from '@/app/[locale]/products/[productId]/page';
@@ -87,24 +87,27 @@ export default function FavoritesPage() {
                     {product.brand && <CardDescription className="text-xs text-muted-foreground mb-1">{product.brand}</CardDescription>}
                     <CardDescription className="text-sm text-muted-foreground mb-2">{product.category}</CardDescription>
                     
-                    {isGlutenFreeTag && (
-                        <div className="flex items-center text-green-600 dark:text-green-400 text-xs mt-1 mb-1">
-                          <CheckCircle className="h-3 w-3 mr-1" />
-                          <span>Gluten-Free</span>
-                        </div>
-                      )}
-                      {containsGlutenTag && (
-                        <div className="flex items-center text-red-600 dark:text-red-500 text-xs mt-1 mb-1">
-                          <AlertTriangle className="h-3 w-3 mr-1" />
-                          <span>Contains Gluten</span>
-                        </div>
-                      )}
-                      {mayContainGlutenTag && !isGlutenFreeTag && !containsGlutenTag && (
-                        <div className="flex items-center text-orange-500 dark:text-orange-400 text-xs mt-1 mb-1">
-                          <AlertTriangle className="h-3 w-3 mr-1" />
-                          <span>May Contain Traces</span>
-                        </div>
-                      )}
+                    {isGlutenFreeTag ? (
+                      <div className="flex items-center text-green-600 dark:text-green-400 text-xs mt-1 mb-1">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        <span>Gluten-Free</span>
+                      </div>
+                    ) : containsGlutenTag ? (
+                      <div className="flex items-center text-red-600 dark:text-red-500 text-xs mt-1 mb-1">
+                        <AlertTriangle className="h-3 w-3 mr-1" />
+                        <span>Contains Gluten</span>
+                      </div>
+                    ) : mayContainGlutenTag ? (
+                      <div className="flex items-center text-orange-500 dark:text-orange-400 text-xs mt-1 mb-1">
+                        <AlertTriangle className="h-3 w-3 mr-1" />
+                        <span>May Contain Traces</span>
+                      </div>
+                    ) : (
+                       <div className="flex items-center text-muted-foreground text-xs mt-1 mb-1">
+                        <AlertTriangle className="h-3 w-3 mr-1" />
+                        <span>Proveriti sastav</span>
+                      </div>
+                    )}
                     <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description}</p>
                      <Button asChild variant="outline" size="sm" className="w-full mt-auto">
                         <Link href={`/${locale}/products/${product.id}`}>View Details</Link>

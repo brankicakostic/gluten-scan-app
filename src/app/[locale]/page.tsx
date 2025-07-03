@@ -744,22 +744,25 @@ export default function HomePage() {
                           )}
                         </div>
 
-                        {isGlutenFreeTag && (
+                        {isGlutenFreeTag ? (
                           <div className="flex items-center text-green-600 dark:text-green-400 text-xs mt-1 mb-1">
                             <CheckCircle className="h-3 w-3 mr-1" />
                             <span>Gluten-Free</span>
                           </div>
-                        )}
-                        {containsGlutenTag && (
+                        ) : containsGlutenTag ? (
                           <div className="flex items-center text-red-600 dark:text-red-500 text-xs mt-1 mb-1">
                             <AlertTriangle className="h-3 w-3 mr-1" />
                             <span>Contains Gluten</span>
                           </div>
-                        )}
-                        {mayContainGlutenTag && !isGlutenFreeTag && !containsGlutenTag && (
+                        ) : mayContainGlutenTag ? (
                           <div className="flex items-center text-orange-500 dark:text-orange-400 text-xs mt-1 mb-1">
                             <AlertTriangle className="h-3 w-3 mr-1" />
                             <span>May Contain Traces</span>
+                          </div>
+                        ) : (
+                           <div className="flex items-center text-muted-foreground text-xs mt-1 mb-1">
+                            <AlertTriangle className="h-3 w-3 mr-1" />
+                            <span>Proveriti sastav</span>
                           </div>
                         )}
                         
@@ -939,37 +942,26 @@ export default function HomePage() {
                                         : ''
                                       }`}
                                   >
-                                    {item.napomena ? (
-                                      <Popover>
-                                        <PopoverTrigger asChild>
-                                          <div className="font-semibold cursor-pointer hover:underline flex items-center gap-1">
-                                            {item.sastojak}
-                                            <span className={`ml-1 font-medium text-xs ${
-                                                item.ocena === 'nije bezbedno' ? 'text-destructive' 
-                                                : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600 dark:text-orange-400'
-                                                : 'text-muted-foreground' 
-                                              }`}>
-                                              ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
-                                            </span>
-                                            <Info className="inline h-3 w-3 text-blue-500 shrink-0" />
-                                          </div>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto max-w-xs text-sm p-2" side="top" align="start">
-                                          <p>{item.napomena}</p>
-                                        </PopoverContent>
-                                      </Popover>
-                                    ) : (
-                                      <div className="font-semibold">
-                                        {item.sastojak}
-                                        <span className={`ml-1 font-medium text-xs ${
-                                            item.ocena === 'nije bezbedno' ? 'text-destructive' 
-                                            : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600 dark:text-orange-400'
-                                            : 'text-muted-foreground' 
-                                          }`}>
-                                          ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
-                                        </span>
-                                      </div>
-                                    )}
+                                    <Popover>
+                                      <PopoverTrigger asChild>
+                                        <div className="font-semibold cursor-pointer hover:underline flex items-center gap-1">
+                                          {item.sastojak}
+                                          <span className={`ml-1 font-medium text-xs ${
+                                              item.ocena === 'nije bezbedno' ? 'text-destructive' 
+                                              : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600 dark:text-orange-400'
+                                              : 'text-muted-foreground' 
+                                            }`}>
+                                            ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
+                                          </span>
+                                          {item.napomena && <Info className="inline h-3 w-3 text-blue-500 shrink-0" />}
+                                        </div>
+                                      </PopoverTrigger>
+                                      {item.napomena && (
+                                          <PopoverContent className="w-auto max-w-xs text-sm p-2" side="top" align="start">
+                                            <p>{item.napomena}</p>
+                                          </PopoverContent>
+                                      )}
+                                    </Popover>
                                   </li>
                                 ))}
                               </ul>
