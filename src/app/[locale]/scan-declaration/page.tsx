@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert';
-import { ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, Star, AlertTriangle, ShieldAlert } from 'lucide-react'; 
+import { ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, Star, AlertTriangle, ShieldAlert, Send, RotateCcw } from 'lucide-react'; 
 import { analyzeDeclaration, type AnalyzeDeclarationOutput, type IngredientAssessment } from '@/ai/flows/analyze-declaration';
 import { useToast } from '@/hooks/use-toast';
 import { useScanLimiter } from '@/contexts/scan-limiter-context';
@@ -71,6 +71,13 @@ export default function ScanDeclarationPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+  
+  const handleSendInquiry = () => {
+    toast({
+      title: 'Funkcionalnost u pripremi',
+      description: 'Mogućnost slanja upita proizvođaču će uskoro biti dostupna.',
+    });
   };
 
   const getAssessmentAlert = (result: AnalyzeDeclarationOutput) => {
@@ -288,11 +295,20 @@ export default function ScanDeclarationPage() {
                           </ul>
                       </div>
                     )}
-                    <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => {
-                       setAnalysisResult(null);
-                       setDeclarationText('');
-                       setError(null);
-                     }}>Clear Analysis & Input</Button>
+                     <div className="mt-6 flex flex-col sm:flex-row gap-2">
+                       <Button variant="outline" className="w-full" onClick={() => {
+                         setAnalysisResult(null);
+                         setDeclarationText('');
+                         setError(null);
+                       }}>
+                         <RotateCcw className="mr-2 h-4 w-4" />
+                         Očisti i počni ponovo
+                       </Button>
+                       <Button className="w-full" onClick={handleSendInquiry}>
+                         <Send className="mr-2 h-4 w-4" />
+                         Pošalji proizvođaču upit
+                       </Button>
+                     </div>
                   </>
                 )}
               </CardContent>

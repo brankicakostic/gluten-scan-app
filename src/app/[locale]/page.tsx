@@ -19,7 +19,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert, Barcode as BarcodeIcon, X, FileText } from 'lucide-react';
+import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert, Barcode as BarcodeIcon, X, FileText, Send } from 'lucide-react';
 import { analyzeDeclaration, type AnalyzeDeclarationOutput, type IngredientAssessment } from '@/ai/flows/analyze-declaration';
 import { getDailyCeliacTip, type DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import { ocrDeclaration, type OcrDeclarationOutput } from '@/ai/flows/ocr-declaration-flow';
@@ -449,6 +449,13 @@ export default function HomePage() {
   
   const handleCancelBarcodeScanning = () => {
     setIsScanningBarcode(false);
+  };
+  
+  const handleSendInquiry = () => {
+    toast({
+      title: 'Funkcionalnost u pripremi',
+      description: 'Mogućnost slanja upita proizvođaču će uskoro biti dostupna.',
+    });
   };
 
   const isLoadingAnyAnalysisProcess = isLoadingOcr || isLoadingDeclaration || showLabelingQuestionModal;
@@ -967,9 +974,16 @@ export default function HomePage() {
                               </ul>
                           </div>
                         )}
-                        <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => resetAnalysisInputs()}>
-                           Clear Analysis & Inputs
-                        </Button>
+                        <div className="mt-6 flex flex-col sm:flex-row gap-2">
+                          <Button variant="outline" className="w-full" onClick={() => resetAnalysisInputs()}>
+                            <RotateCcw className="mr-2 h-4 w-4" />
+                            Clear & Start Over
+                          </Button>
+                          <Button className="w-full" onClick={handleSendInquiry}>
+                            <Send className="mr-2 h-4 w-4" />
+                            Pošalji proizvođaču upit
+                          </Button>
+                        </div>
                       </div>
                     )}
                    </CardContent>
