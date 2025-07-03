@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, type FormEvent, useEffect } from 'react';
@@ -356,6 +357,10 @@ export default function ScanDeclarationPage() {
                           </AlertDialogContent>
                         </AlertDialog>
                      </div>
+                     <p className="text-xs text-muted-foreground mt-4 text-center">
+                      <Info className="inline h-3 w-3 mr-1" />
+                      Ova analiza je informativna i ne zamenjuje zvaničnu potvrdu proizvođača. Ako imate sumnje, pošaljite upit direktno preko aplikacije.
+                    </p>
                   </>
                 )}
               </CardContent>
