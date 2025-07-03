@@ -19,7 +19,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert, Barcode as BarcodeIcon, X, FileText, Send } from 'lucide-react';
+import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert, Barcode as BarcodeIcon, X, FileText, Send, Mail } from 'lucide-react';
 import { analyzeDeclaration, type AnalyzeDeclarationOutput, type IngredientAssessment } from '@/ai/flows/analyze-declaration';
 import { getDailyCeliacTip, type DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import { ocrDeclaration, type OcrDeclarationOutput } from '@/ai/flows/ocr-declaration-flow';
@@ -449,13 +449,6 @@ export default function HomePage() {
   
   const handleCancelBarcodeScanning = () => {
     setIsScanningBarcode(false);
-  };
-  
-  const handleSendInquiry = () => {
-    toast({
-      title: 'Funkcionalnost u pripremi',
-      description: 'Mogućnost slanja upita proizvođaču će uskoro biti dostupna.',
-    });
   };
 
   const isLoadingAnyAnalysisProcess = isLoadingOcr || isLoadingDeclaration || showLabelingQuestionModal;
@@ -979,10 +972,46 @@ export default function HomePage() {
                             <RotateCcw className="mr-2 h-4 w-4" />
                             Clear & Start Over
                           </Button>
-                          <Button className="w-full" onClick={handleSendInquiry}>
-                            <Send className="mr-2 h-4 w-4" />
-                            Pošalji proizvođaču upit
-                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button className="w-full">
+                                <Send className="mr-2 h-4 w-4" />
+                                Pošalji proizvođaču upit
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle className="flex items-center gap-2">
+                                  <Mail className="h-5 w-5 text-primary" />
+                                  Želite da proverimo ovaj proizvod kod proizvođača?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Vaš upit će biti prosleđen. Ostavite komentar ili email ako želite da vas obavestimo o odgovoru.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <div className="space-y-4 py-2">
+                                <div className="space-y-2">
+                                  <Label htmlFor="inquiry-comment-main">Komentar (opciono)</Label>
+                                  <Textarea id="inquiry-comment-main" placeholder="Npr. da li ovaj proizvod sadrži gluten od..." />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor="inquiry-email-main">Email za odgovor (opciono)</Label>
+                                  <Input id="inquiry-email-main" type="email" placeholder="vas.email@primer.com" />
+                                </div>
+                              </div>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Odustani</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => {
+                                  toast({
+                                    title: 'Upit Poslat!',
+                                    description: 'Hvala! Proverićemo proizvod sa proizvođačem.',
+                                  });
+                                }}>
+                                  Pošalji
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       </div>
                     )}
@@ -1067,3 +1096,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+    

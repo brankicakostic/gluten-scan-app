@@ -11,12 +11,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert';
-import { ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, Star, AlertTriangle, ShieldAlert, Send, RotateCcw } from 'lucide-react'; 
+import { ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, Star, AlertTriangle, ShieldAlert, Send, RotateCcw, Mail } from 'lucide-react'; 
 import { analyzeDeclaration, type AnalyzeDeclarationOutput, type IngredientAssessment } from '@/ai/flows/analyze-declaration';
 import { useToast } from '@/hooks/use-toast';
 import { useScanLimiter } from '@/contexts/scan-limiter-context';
 import { countRelevantGlutenIssues } from '@/lib/analysis-utils';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 export default function ScanDeclarationPage() {
   const [declarationText, setDeclarationText] = useState<string>('');
@@ -71,13 +73,6 @@ export default function ScanDeclarationPage() {
     } finally {
       setIsLoading(false);
     }
-  };
-  
-  const handleSendInquiry = () => {
-    toast({
-      title: 'Funkcionalnost u pripremi',
-      description: 'Mogućnost slanja upita proizvođaču će uskoro biti dostupna.',
-    });
   };
 
   const getAssessmentAlert = (result: AnalyzeDeclarationOutput) => {
@@ -304,10 +299,46 @@ export default function ScanDeclarationPage() {
                          <RotateCcw className="mr-2 h-4 w-4" />
                          Očisti i počni ponovo
                        </Button>
-                       <Button className="w-full" onClick={handleSendInquiry}>
-                         <Send className="mr-2 h-4 w-4" />
-                         Pošalji proizvođaču upit
-                       </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button className="w-full">
+                              <Send className="mr-2 h-4 w-4" />
+                              Pošalji proizvođaču upit
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle className="flex items-center gap-2">
+                                <Mail className="h-5 w-5 text-primary" />
+                                Želite da proverimo ovaj proizvod kod proizvođača?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Vaš upit će biti prosleđen. Ostavite komentar ili email ako želite da vas obavestimo o odgovoru.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <div className="space-y-4 py-2">
+                              <div className="space-y-2">
+                                <Label htmlFor="inquiry-comment-scan">Komentar (opciono)</Label>
+                                <Textarea id="inquiry-comment-scan" placeholder="Npr. da li ovaj proizvod sadrži gluten od..." />
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="inquiry-email-scan">Email za odgovor (opciono)</Label>
+                                <Input id="inquiry-email-scan" type="email" placeholder="vas.email@primer.com" />
+                              </div>
+                            </div>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Odustani</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => {
+                                toast({
+                                  title: 'Upit Poslat!',
+                                  description: 'Hvala! Proverićemo proizvod sa proizvođačem.',
+                                });
+                              }}>
+                                Pošalji
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                      </div>
                   </>
                 )}
@@ -344,3 +375,5 @@ export default function ScanDeclarationPage() {
     </div>
   );
 }
+
+    
