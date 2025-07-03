@@ -12,7 +12,7 @@ import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogTrigger, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -643,7 +643,7 @@ export default function HomePage() {
                     onClick={handleStartBarcodeScanning} 
                     className="w-full" 
                     size="lg" 
-                    disabled={!hasMounted || !canScan() || isLoadingAnyAnalysisProcess || isTakingOcrPhoto}
+                    disabled={!hasMounted || (hasMounted && !canScan()) || isLoadingAnyAnalysisProcess || isTakingOcrPhoto}
                   >
                     <QrCode className="mr-2 h-5 w-5" /> Start Barcode Scanning
                   </Button>
