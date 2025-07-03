@@ -9,9 +9,9 @@ import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert';
-import { ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, Star, AlertTriangle, ShieldAlert, Send, RotateCcw, Mail } from 'lucide-react'; 
+import { ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, Star, AlertTriangle, ShieldAlert, Send, RotateCcw, Mail, XCircle } from 'lucide-react'; 
 import { analyzeDeclaration, type AnalyzeDeclarationOutput, type IngredientAssessment } from '@/ai/flows/analyze-declaration';
 import { useToast } from '@/hooks/use-toast';
 import { useScanLimiter } from '@/contexts/scan-limiter-context';
@@ -121,10 +121,6 @@ export default function ScanDeclarationPage() {
     }
   };
 
-  const problematicIngredients = analysisResult?.rezultat?.filter(
-    (item): item is IngredientAssessment => item.ocena === 'nije bezbedno' || item.ocena === 'rizično – proveriti poreklo'
-  ) || [];
-  
   const relevantGlutenIssueCount = analysisResult?.rezultat ? countRelevantGlutenIssues(analysisResult.rezultat as IngredientAssessment[]) : 0;
 
 
@@ -242,52 +238,60 @@ export default function ScanDeclarationPage() {
                       <p className="text-sm text-muted-foreground p-3 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.finalnoObrazlozenje}</p>
                     </div>
 
-                    {problematicIngredients.length > 0 && (
+                    {analysisResult.rezultat.length > 0 && (
                       <div className="mt-3">
-                        <h4 className="font-semibold mb-1">Analizirani sastojci (problematični ili rizični):</h4>
-                          <ul className="list-none space-y-2 text-sm">
-                            {problematicIngredients.map((item, index) => (
-                               <li key={index} 
-                                  className={`p-2 rounded-md ${
-                                    item.ocena === 'nije bezbedno' ? 'bg-destructive/10 border border-destructive/30' 
-                                    : item.ocena === 'rizično – proveriti poreklo' ? 'bg-orange-500/10 border border-orange-500/30' 
-                                    : ''
-                                  }`}
-                              >
-                                {item.napomena ? (
-                                  <Popover>
-                                    <PopoverTrigger asChild>
-                                      <div className="font-semibold cursor-pointer hover:underline flex items-center gap-1">
-                                        {item.sastojak}
-                                        <span className={`ml-1 font-medium text-xs ${
-                                            item.ocena === 'nije bezbedno' ? 'text-destructive' 
-                                            : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600 dark:text-orange-400'
-                                            : 'text-muted-foreground' 
-                                          }`}>
-                                          ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
-                                        </span>
-                                         <Info className="inline h-3 w-3 text-blue-500 shrink-0" />
+                        <h4 className="font-semibold mb-2 text-md">Analizirani sastojci:</h4>
+                        <ul className="list-none space-y-2 text-sm">
+                          {analysisResult.rezultat.map((item, index) => {
+                            let icon;
+                            let colorClasses;
+                            let textColor;
+                    
+                            switch (item.ocena) {
+                              case 'sigurno':
+                                icon = <CheckCircle className="h-5 w-5 text-green-600" />;
+                                colorClasses = 'border-green-400/50 bg-green-50 dark:bg-green-900/20';
+                                textColor = 'text-green-700 dark:text-green-300';
+                                break;
+                              case 'nije bezbedno':
+                                icon = <XCircle className="h-5 w-5 text-red-600" />;
+                                colorClasses = 'border-red-400/50 bg-red-50 dark:bg-red-900/20';
+                                textColor = 'text-red-700 dark:text-red-300';
+                                break;
+                              case 'rizično – proveriti poreklo':
+                              default:
+                                icon = <AlertTriangle className="h-5 w-5 text-orange-500" />;
+                                colorClasses = 'border-orange-400/50 bg-orange-50 dark:bg-orange-900/20';
+                                textColor = 'text-orange-700 dark:text-orange-300';
+                                break;
+                            }
+                    
+                            return (
+                              <li key={index} className={`p-3 rounded-lg border ${colorClasses}`}>
+                                <Popover>
+                                  <PopoverTrigger asChild disabled={!item.napomena}>
+                                    <div className={`flex items-start gap-3 ${item.napomena ? 'cursor-pointer' : ''}`}>
+                                      <div className="pt-0.5">{icon}</div>
+                                      <div className="flex-1">
+                                        <p className="font-semibold text-foreground">{item.sastojak}</p>
+                                        <p className={`text-xs ${textColor}`}>
+                                          {item.ocena} (Nivo rizika: {item.nivoRizika})
+                                        </p>
                                       </div>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto max-w-xs text-sm p-2" side="top" align="start">
-                                      <p>{item.napomena}</p>
+                                      {item.napomena && <Info className="h-4 w-4 text-blue-500 shrink-0" />}
+                                    </div>
+                                  </PopoverTrigger>
+                                  {item.napomena && (
+                                    <PopoverContent className="w-auto max-w-[300px] text-sm p-3" side="top" align="start">
+                                      <p className="font-bold mb-1">{item.kategorijaRizika || 'Napomena'}</p>
+                                      <p className="text-muted-foreground">{item.napomena}</p>
                                     </PopoverContent>
-                                  </Popover>
-                                ) : (
-                                  <div className="font-semibold">
-                                    {item.sastojak}
-                                    <span className={`ml-1 font-medium text-xs ${
-                                        item.ocena === 'nije bezbedno' ? 'text-destructive' 
-                                        : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600 dark:text-orange-400'
-                                        : 'text-muted-foreground' 
-                                      }`}>
-                                      ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
-                                    </span>
-                                  </div>
-                                )}
+                                  )}
+                                </Popover>
                               </li>
-                            ))}
-                          </ul>
+                            );
+                          })}
+                        </ul>
                       </div>
                     )}
                      <div className="mt-6 flex flex-col sm:flex-row gap-2">
@@ -375,5 +379,3 @@ export default function ScanDeclarationPage() {
     </div>
   );
 }
-
-    
