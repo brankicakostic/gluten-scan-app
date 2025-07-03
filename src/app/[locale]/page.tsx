@@ -500,6 +500,9 @@ export default function HomePage() {
   };
 
   const relevantGlutenIssueCount = analysisResult?.rezultat ? countRelevantGlutenIssues(analysisResult.rezultat as IngredientAssessment[]) : 0;
+  
+  const problematicIngredients = analysisResult?.rezultat.filter(item => item.ocena !== 'sigurno') || [];
+  const safeIngredients = analysisResult?.rezultat.filter(item => item.ocena === 'sigurno') || [];
 
 
   return (
@@ -923,24 +926,19 @@ export default function HomePage() {
 
                         <div>
                           <h4 className="font-semibold mb-1 text-sm">Obrazloženje:</h4>
-                          <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.finalnoObrazloženje}</p>
+                          <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.finalnoObrazlozenje}</p>
                         </div>
                         
-                        {analysisResult.rezultat.length > 0 && (
+                        {problematicIngredients.length > 0 && (
                           <div>
-                            <h4 className="font-semibold mb-2 text-md">Analizirani sastojci:</h4>
+                            <h4 className="font-semibold mb-2 text-md">Analiza rizičnih sastojaka:</h4>
                             <ul className="list-none space-y-2 text-sm">
-                              {analysisResult.rezultat.map((item, index) => {
+                              {problematicIngredients.map((item, index) => {
                                 let icon;
                                 let colorClasses;
                                 let textColor;
                         
                                 switch (item.ocena) {
-                                  case 'sigurno':
-                                    icon = <CheckCircle className="h-5 w-5 text-green-600" />;
-                                    colorClasses = 'border-green-400/50 bg-green-50 dark:bg-green-900/20';
-                                    textColor = 'text-green-700 dark:text-green-300';
-                                    break;
                                   case 'nije bezbedno':
                                     icon = <XCircle className="h-5 w-5 text-red-600" />;
                                     colorClasses = 'border-red-400/50 bg-red-50 dark:bg-red-900/20';
@@ -982,6 +980,20 @@ export default function HomePage() {
                             </ul>
                           </div>
                         )}
+                        
+                        {safeIngredients.length > 0 && (
+                           <Accordion type="single" collapsible className="w-full mt-4">
+                            <AccordionItem value="safe-ingredients">
+                              <AccordionTrigger>Prikaži {safeIngredients.length} bezbednih sastojaka</AccordionTrigger>
+                              <AccordionContent>
+                                <p className="text-sm text-muted-foreground p-2 bg-muted/50 rounded-md">
+                                  {safeIngredients.map(item => item.sastojak).join(', ')}
+                                </p>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                        )}
+
                         <div className="mt-6 flex flex-col sm:flex-row gap-2">
                           <Button variant="outline" className="w-full" onClick={() => resetAnalysisInputs()}>
                             <RotateCcw className="mr-2 h-4 w-4" />
