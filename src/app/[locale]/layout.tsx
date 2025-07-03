@@ -6,7 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { FavoritesProvider } from '@/contexts/favorites-context';
 import { ScanLimiterProvider } from '@/contexts/scan-limiter-context'; 
-import { ThemeProvider } from '@/components/theme-provider';
+// ThemeProvider is removed as it's now in the root layout.
 
 // This function is needed for static site generation (SSG) if you plan to pre-render locales.
 export async function generateStaticParams() {
@@ -46,12 +46,7 @@ export default function LocaleLayout({
   params: { locale: string };
 }>) {
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
+    <>
       <SidebarProvider defaultOpen={true}>
         <FavoritesProvider>
           <ScanLimiterProvider> 
@@ -60,6 +55,6 @@ export default function LocaleLayout({
         </FavoritesProvider>
       </SidebarProvider>
       <Toaster />
-    </ThemeProvider>
+    </>
   );
 }

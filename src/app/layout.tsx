@@ -2,6 +2,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
+import { ThemeProvider } from '@/components/theme-provider';
 
 // This is the root layout. It must define <html> and <body>.
 export const metadata: Metadata = {
@@ -25,11 +26,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // The lang attribute is intentionally omitted here to avoid hardcoding a wrong value.
-    // The dynamic locale from the URL cannot be accessed in this root layout with the current file structure.
-    <html>
+    // The lang attribute is hardcoded to "en" for now to ensure a valid HTML structure.
+    // suppressHydrationWarning is crucial for next-themes to work without errors.
+    <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
