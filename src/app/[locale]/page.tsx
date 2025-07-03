@@ -767,9 +767,9 @@ export default function HomePage() {
                         
                         <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description}</p>
                          <div className="flex flex-wrap gap-1 mb-3">
+                          {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
                           {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Lactose-Free</Badge>}
                           {product.isSugarFree && <Badge variant="secondary" className="text-xs">Sugar-Free</Badge>}
-                          {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
                            {product.tags?.filter(tag => !explicitlyHandledTags.includes(tag.toLowerCase())).slice(0,1).map(tag => (
                               <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
                            ))}

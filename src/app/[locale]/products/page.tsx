@@ -29,6 +29,7 @@ const rawProductsData = [
   {
     "name": "Instant Palenta",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606112581172",
     "size": "60g",
     "ingredients": [
@@ -49,6 +50,7 @@ const rawProductsData = [
   {
     "name": "Pirinčani Griz",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907321",
     "size": "300g",
     "ingredients": ["pirinčani griz 100%"],
@@ -65,6 +67,7 @@ const rawProductsData = [
   {
     "name": "Prezle",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907765",
     "size": "300g",
     "ingredients": [
@@ -94,6 +97,7 @@ const rawProductsData = [
   {
     "name": "Dvopek",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907666",
     "size": "110g",
     "ingredients": [
@@ -125,6 +129,7 @@ const rawProductsData = [
   {
     "name": "Dvopek",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907671",
     "size": "220g",
     "ingredients": [
@@ -156,6 +161,7 @@ const rawProductsData = [
   {
     "name": "Dvopek",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107904434",
     "size": "110g",
     "ingredients": [
@@ -185,6 +191,7 @@ const rawProductsData = [
   {
     "name": "Cookies",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907482",
     "size": "200g",
     "ingredients": [
@@ -217,6 +224,7 @@ const rawProductsData = [
   {
     "name": "Čajni Kolutići",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907062",
     "size": "300g",
     "ingredients": [
@@ -246,6 +254,7 @@ const rawProductsData = [
   {
     "name": "KO-GO",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907291",
     "size": "200g",
     "ingredients": [
@@ -280,6 +289,7 @@ const rawProductsData = [
   {
     "name": "Keks Života",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907680",
     "size": "300g",
     "ingredients": [
@@ -308,6 +318,7 @@ const rawProductsData = [
   {
     "name": "Happy Life",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907819",
     "size": "300g",
     "ingredients": [
@@ -333,6 +344,7 @@ const rawProductsData = [
   {
     "name": "Pusa",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907543",
     "size": "150g",
     "ingredients": [
@@ -362,6 +374,7 @@ const rawProductsData = [
   {
     "name": "Premium Univerzal Mix",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907710",
     "size": "1kg",
     "ingredients": [
@@ -385,6 +398,7 @@ const rawProductsData = [
   {
     "name": "Vanilice",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907918",
     "size": "180g",
     "ingredients": [
@@ -417,6 +431,7 @@ const rawProductsData = [
   {
     "name": "Integralni Štapići",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907130",
     "size": "130g",
     "ingredients": [
@@ -443,6 +458,7 @@ const rawProductsData = [
   {
     "name": "Chia",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907222",
     "size": "140g",
     "ingredients": [
@@ -470,6 +486,7 @@ const rawProductsData = [
   {
     "name": "ALEX",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907536",
     "size": "150g",
     "ingredients": [
@@ -499,6 +516,7 @@ const rawProductsData = [
   {
     "name": "Proteinski Kakao Krem",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907246",
     "size": "250g",
     "ingredients": [
@@ -527,6 +545,7 @@ const rawProductsData = [
   {
     "name": "Vege Proteinski Kakao Krem",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606112581127",
     "size": "200g",
     "ingredients": [
@@ -555,6 +574,7 @@ const rawProductsData = [
   {
     "name": "Proteinske Fit Noodle",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606112581124", //netacan
     "size": "70g",
     "ingredients": [
@@ -585,6 +605,7 @@ const rawProductsData = [
   {
     "name": "Proteinske Vege Tagliatelle",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606112581080",
     "size": "200g",
     "ingredients": [
@@ -610,6 +631,7 @@ const rawProductsData = [
   {
     "name": "RISO Pasta",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907925", // Note: Same barcode as "Proteinske Fit Noodle", potentially an error in data
     "size": "320g",
     "ingredients": ["Brašno od pirinča", "zgušnjivač ksantan guma"],
@@ -626,6 +648,7 @@ const rawProductsData = [
   {
     "name": "Tagliatelle di RISO",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907109",
     "size": "350g",
     "ingredients": ["Brašno od pirinča", "zgušnjivač ksantan guma."],
@@ -642,6 +665,7 @@ const rawProductsData = [
   {
     "name": "Tagliatelle di RISO",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907949",
     "size": "210g",
     "ingredients": ["Brašno od pirinča", "zgušnjivač ksantan guma."],
@@ -658,6 +682,7 @@ const rawProductsData = [
   {
     "name": "Premium Tamna Gotova Smeša",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907703",
     "size": "1kg",
     "ingredients": [
@@ -681,6 +706,7 @@ const rawProductsData = [
   {
     "name": "Taljatele sa Kurkumom",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907963",
     "size": "280g",
     "ingredients": [
@@ -703,6 +729,7 @@ const rawProductsData = [
   {
     "name": "Testenina Života",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907567",
     "size": "350g",
     "ingredients": [
@@ -726,6 +753,7 @@ const rawProductsData = [
   {
     "name": "Brašno od Prosa",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907437",
     "size": "500g",
     "ingredients": ["Brašno od prosa 100%"],
@@ -742,6 +770,7 @@ const rawProductsData = [
   {
     "name": "Brašno od Pirinča",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907642",
     "size": "500g",
     "ingredients": ["Brašno od pirinča 100%"],
@@ -758,6 +787,7 @@ const rawProductsData = [
   {
     "name": "Brašno od Heljde",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907741",
     "size": "500g",
     "ingredients": ["Brašno od heljde 100%"],
@@ -774,6 +804,7 @@ const rawProductsData = [
   {
     "name": "Premium Palenta",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907260",
     "size": "500g",
     "ingredients": [
@@ -797,6 +828,7 @@ const rawProductsData = [
   {
     "name": "Proteinski Pire",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606112581004",
     "size": "180g",
     "ingredients": [
@@ -816,6 +848,7 @@ const rawProductsData = [
   {
     "name": "Tapioka",
     "brand": "Aleksandrija Fruška Gora",
+    "Dostupnost": "DM, Maxi, Bio Špajz, online",
     "barcode": "8606107907307",
     "size": "500g",
     "ingredients": ["Skrob od tapioke 100%"],
@@ -833,6 +866,7 @@ const rawProductsData = [
   {
     "name": "Aleva Paprika Slatka Mlevena",
     "brand": "Aleva",
+    "Dostupnost": "",
     "barcode": "8600500000011",
     "size": "100g",
     "ingredients": ["Mlevena začinska paprika slatka 100%"],
@@ -849,79 +883,79 @@ const rawProductsData = [
   },
   // Slavuj products
   {
-    "brand": "Slavuj", "barcode": "8606109176510", "name": "Integralno brašno od prosa", "size": "500g", "jsonCategory": "Brašno", "nutriscore": "B", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176510", "name": "Integralno brašno od prosa", "size": "500g", "jsonCategory": "Brašno", "nutriscore": "B", "Poreklo": "Srbija",
     "ingredients": ["Integralno brašno od prosa 100%"], "labelText": "Integralno brašno od prosa", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109176329", "name": "Integralno brašno od heljde", "size": "500g", "jsonCategory": "Brašno", "nutriscore": "B", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176329", "name": "Integralno brašno od heljde", "size": "500g", "jsonCategory": "Brašno", "nutriscore": "B", "Poreklo": "Srbija",
     "ingredients": ["Integralno brašno od heljde 100%"], "labelText": "Integralno brašno od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109176497", "name": "Integralno brašno od prosa", "size": "5kg", "jsonCategory": "Brašno", "nutriscore": "B", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176497", "name": "Integralno brašno od prosa", "size": "5kg", "jsonCategory": "Brašno", "nutriscore": "B", "Poreklo": "Srbija",
     "ingredients": ["Integralno brašno od prosa 100%"], "labelText": "Integralno brašno od prosa", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109176473", "name": "Integralno brašno od heljde", "size": "5kg", "jsonCategory": "Brašno", "nutriscore": "B", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176473", "name": "Integralno brašno od heljde", "size": "5kg", "jsonCategory": "Brašno", "nutriscore": "B", "Poreklo": "Srbija",
     "ingredients": ["Integralno brašno od heljde 100%"], "labelText": "Integralno brašno od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109176459", "name": "Pahuljice od sirove heljde", "size": "300g", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176459", "name": "Pahuljice od sirove heljde", "size": "300g", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
     "ingredients": ["Pahuljice od sirove heljde 100%"], "labelText": "Pahuljice od sirove heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109176138", "name": "Pahuljice od heljde", "size": "300g", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176138", "name": "Pahuljice od heljde", "size": "300g", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
     "ingredients": ["Pahuljice od heljde 100%"], "labelText": "Pahuljice od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109176022", "name": "Pahuljice od prosa", "size": "300g", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176022", "name": "Pahuljice od prosa", "size": "300g", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
     "ingredients": ["Pahuljice od prosa 100%"], "labelText": "Pahuljice od prosa", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109176015", "name": "Pahuljice od pirinča", "size": "300g", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176015", "name": "Pahuljice od pirinča", "size": "300g", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
     "ingredients": ["Pahuljice od pirinča 100%"], "labelText": "Pahuljice od pirinča", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109176039", "name": "Pahuljice od graška", "size": "300g", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176039", "name": "Pahuljice od graška", "size": "300g", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
     "ingredients": ["Pahuljice od graška 100%"], "labelText": "Pahuljice od graška", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109176084", "name": "Pahuljice od kukuruza", "size": "300g", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176084", "name": "Pahuljice od kukuruza", "size": "300g", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
     "ingredients": ["Pahuljice od kukuruza 100%"], "labelText": "Pahuljice od kukuruza", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109176008", "name": "Pahuljice od heljde", "size": "500g", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176008", "name": "Pahuljice od heljde", "size": "500g", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
     "ingredients": ["Pahuljice od heljde 100%"], "labelText": "Pahuljice od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109176768", "name": "Pahuljice od kukuruza", "size": "3kg", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176768", "name": "Pahuljice od kukuruza", "size": "3kg", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
     "ingredients": ["Pahuljice od kukuruza 100%"], "labelText": "Pahuljice od kukuruza", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109176183", "name": "Pahuljice od prosa", "size": "3kg", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176183", "name": "Pahuljice od prosa", "size": "3kg", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
     "ingredients": ["Pahuljice od prosa 100%"], "labelText": "Pahuljice od prosa", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109176176", "name": "Pahuljice od kukuruza", "size": "3kg", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176176", "name": "Pahuljice od kukuruza", "size": "3kg", "jsonCategory": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
     "ingredients": ["Pahuljice od kukuruza 100%"], "labelText": "Pahuljice od kukuruza", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109177628", "name": "Heljda oljuštena-sirova", "size": "300g", "jsonCategory": "Drevna zrna", "nutriscore": "A", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109177628", "name": "Heljda oljuštena-sirova", "size": "300g", "jsonCategory": "Drevna zrna", "nutriscore": "A", "Poreklo": "Srbija",
     "ingredients": ["Heljda oljuštena-sirova 100%"], "labelText": "Heljda oljuštena-sirova", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109176275", "name": "Heljda propržena", "size": "300g", "jsonCategory": "Drevna zrna", "nutriscore": "A", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176275", "name": "Heljda propržena", "size": "300g", "jsonCategory": "Drevna zrna", "nutriscore": "A", "Poreklo": "Srbija",
     "ingredients": ["Heljda propržena 100%"], "labelText": "Heljda propržena", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109176251", "name": "Proso", "size": "300g", "jsonCategory": "Drevna zrna", "nutriscore": "A", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176251", "name": "Proso", "size": "300g", "jsonCategory": "Drevna zrna", "nutriscore": "A", "Poreklo": "Srbija",
     "ingredients": ["Proso 100%"], "labelText": "Proso", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109177669", "name": "Prirodni med od heljde", "size": "900g", "jsonCategory": "Med", "nutriscore": "C", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109177669", "name": "Prirodni med od heljde", "size": "900g", "jsonCategory": "Med", "nutriscore": "C", "Poreklo": "Srbija",
     "ingredients": ["Prirodni med od heljde 100%"], "labelText": "Prirodni med od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "brand": "Slavuj", "barcode": "8606109176893", "name": "Prirodni med od heljde", "size": "400g", "jsonCategory": "Med", "nutriscore": "C", "Poreklo": "Srbija",
+    "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176893", "name": "Prirodni med od heljde", "size": "400g", "jsonCategory": "Med", "nutriscore": "C", "Poreklo": "Srbija",
     "ingredients": ["Prirodni med od heljde 100%"], "labelText": "Prirodni med od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan"], "imageUrl": "https://placehold.co/400x200.png"
   },
   // Molendini Products
@@ -929,6 +963,7 @@ const rawProductsData = [
     "barcode": 8600955501298,
     "name": "Keks sa voćnim punjenjem od aronije, šljive i jabuke",
     "size": "180g",
+    "Dostupnost": "",
     "ingredients": [
       "voćno punjenje - aronija, šljiva i jabuka 27 % (voćna kaša - aronija 30 %, šljiva 30 % i jabuka 15 %, šećer, zgušnjivač: agar i limunska kiselina), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so."
     ],
@@ -940,13 +975,13 @@ const rawProductsData = [
     "imageUrl": "molendini/keks-sa-vocnim-punjenjem-od-aronije-sljive-i-jabuke-8600955501298.jpg",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
-    "Poreklo": "Srbija",
-    "Dostupnost": ""
+    "Poreklo": "Srbija"
   },
   {
     "barcode": 8600955501281,
     "name": "Keks sa voćnim punjenjem od kajsije i jabuke",
     "size": "180g",
+    "Dostupnost": "",
     "ingredients": [
       "voćno punjenje - kajsija i jabuka 27 % (voćna kaša - kajsija 30 % i jabuka 30 %, šećer, glukozni sirup i limunska kiselina), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so."
     ],
@@ -958,13 +993,13 @@ const rawProductsData = [
     "imageUrl": "molendini/keks-sa-vocnim-punjenjem-od-kajsije-i-jabuke-8600955501281.jpg",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
-    "Poreklo": "Srbija",
-    "Dostupnost": ""
+    "Poreklo": "Srbija"
   },
   {
     "barcode": 8600955501311,
     "name": "Keks sa voćnim punjenjem od višnje i jabuke",
     "size": "180g",
+    "Dostupnost": "",
     "ingredients": [
       "voćno punjenje - višnja i jabuka 27 % (voćna kaša - višnja 30 % i jabuka 30 %, šećer, glukozni sirup i limunska kiselina), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so."
     ],
@@ -976,13 +1011,13 @@ const rawProductsData = [
     "imageUrl": "molendini/keks-sa-vocnim-punjenjem-od-visnje-i-jabuke-8600955501311.jpg",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
-    "Poreklo": "Srbija",
-    "Dostupnost": ""
+    "Poreklo": "Srbija"
   },
   {
     "barcode": 8600955501274,
     "name": "Keks punjen kremom",
     "size": "180g",
+    "Dostupnost": "",
     "ingredients": [
       "punjenje – krem 23 % (šećer, nehidrogenizovana biljna ulja i masti (ulja (suncokreta), masti (palme)), kakao prah sa redukovanim sadržajem kakao maslaca (16,5 %), lešnici, kukuruzni skrob, emulgator (suncokretov lecitin) i aroma (vanilin)), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so."
     ],
@@ -994,13 +1029,13 @@ const rawProductsData = [
     "imageUrl": "molendini/keks-punjen-kremom-8600955501274.jpg",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
-    "Poreklo": "Srbija",
-    "Dostupnost": ""
+    "Poreklo": "Srbija"
   },
   {
     "barcode": 8600955501526,
     "name": "Keks punjen belim kremom",
     "size": "180g",
+    "Dostupnost": "",
     "ingredients": [
       "punjenje – beli krem 23 % (šećer, nehidrogenizovana biljna ulja i masti (ulja (suncokreta), masti (palme)), bela čokolada 10 % ( šećer, mleko u prahu, kakao maslac), mleko u prahu, kukuruzni skrob, emulgator (suncokretov lecitin) i aroma), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so."
     ],
@@ -1012,13 +1047,13 @@ const rawProductsData = [
     "imageUrl": "molendini/keks-punjen-belim-kremom-8600955501526.jpg",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
-    "Poreklo": "Srbija",
-    "Dostupnost": ""
+    "Poreklo": "Srbija"
   },
   {
     "barcode": 8600955501519,
     "name": "Keks punjen kremom sa lešnikom",
     "size": "180g",
+    "Dostupnost": "",
     "ingredients": [
       "punjenje – krem proizvod sa dodatkom lešnika 23 % (šećer, nehidrogenizovana biljna ulja i masti (ulja (suncokreta), masti (palme)), kakao prah sa redukovanim sadržajem kakao maslaca 5,8%, obrano mleko u prahu 5,35%, lešnici 5,3 %, surutka u prahu, sojino brašno, emulgator (sojin lecitin) i aroma), invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), med, mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so."
     ],
@@ -1030,13 +1065,13 @@ const rawProductsData = [
     "imageUrl": "molendini/keks-punjen-kremom-sa-lesnikom-8600955501519.jpg",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
-    "Poreklo": "Srbija",
-    "Dostupnost": ""
+    "Poreklo": "Srbija"
   },
   {
     "barcode": 8600955501304,
     "name": "Keks sa šumskim voćem",
     "size": "180g",
+    "Dostupnost": "",
     "ingredients": [
       "invertni šećerni sirup, brašno (heljdino brašno, pirinčano brašno, ekstrudirano kukuruzno brašno i kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), šumsko voće 4,4 % (kandirana brusnica 1,6 %, kandirana aronija 1,6 %, kandirana kupina 0,4 %, kandirana jagoda 0,4 %, kandirana malina 0,4 %), surogat čokolade u granulama 4 % (šećer, potpuno hidrogenizovane biljne masti palminog jezgra, kakao prah sa redukovanim sadržajem kakao maslaca 16 %, emulgator - sojin lecitin, aroma – vanilin), med, kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin), aroma šumskog voća i so."
     ],
@@ -1048,13 +1083,13 @@ const rawProductsData = [
     "imageUrl": "molendini/keks-sa-sumskim-vocem-8600955501304.jpg",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
-    "Poreklo": "Srbija",
-    "Dostupnost": ""
+    "Poreklo": "Srbija"
   },
   {
     "barcode": 8600955501809,
     "name": "Keks Frollini sa kremom",
     "size": "120g",
+    "Dostupnost": "",
     "ingredients": [
       "brašno (pirinčano brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno, obezmašćeno sojino brašno), punjenje – krem 13 % (šećer, nehidrogenizovana biljna ulja i masti (ulja (suncokreta), masti (palme)), kakao prah sa redukovanim sadržajem kakao maslaca (16,5 %), lešnici, kukuruzni skrob, emulgator (suncokretov lecitin) i aroma (vanilin)), biljna (palmina) mast, invertni šećerni sirup, kukuruzni skrob, šećer, med, belance u prahu, sredstva za dizanje testa (natrijum-hidrogenkarbonat i natrijum-pirofosfat), so, limunska kiselina, konzervans (kalijum-sorbat), stabilizator (guar guma), emulgator (sojin lecitin) i  aroma slatke pavlake."
     ],
@@ -1066,13 +1101,13 @@ const rawProductsData = [
     "imageUrl": "molendini/keks-frollini-sa-kremom-8600955501809.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
-    "Poreklo": "Srbija",
-    "Dostupnost": ""
+    "Poreklo": "Srbija"
   },
   {
     "barcode": 8600955501816,
     "name": "Keks Frollini sa belim kremom",
     "size": "120g",
+    "Dostupnost": "",
     "ingredients": [
       "brašno (pirinčano brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno, obezmašćeno sojino brašno), punjenje – beli krem 13 % (šećer, nehidrogenizovana biljna ulja i masti (ulja (suncokreta), masti (palme)), bela čokolada 10 % ( šećer, mleko u prahu, kakao maslac), mleko u prahu, kukuruzni skrob, emulgator (suncokretov lecitin) i aroma), biljna (palmina) mast, invertni šećerni sirup, kukuruzni skrob, šećer, med, belance u prahu,  sredstva za dizanje testa (natrijum hidrogenkarbonat i natrijum pirofosfat), so, kakao prah sa redukovanim sadržajem kakao maslaca, limunska kiselina, konzervans (kalijum-sorbat), aroma čokolade, stabilizator (guar guma),  emulgator (sojin lecitin), aroma slatke pavlake i prirodna boja (oksid gvožđa). "
     ],
@@ -1084,13 +1119,13 @@ const rawProductsData = [
     "imageUrl": "molendini/keks-frollini-sa-belim-kremom-8600955501816.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
-    "Poreklo": "Srbija",
-    "Dostupnost": ""
+    "Poreklo": "Srbija"
   },
   {
     "barcode": 8600955501861,
     "name": "Keks sa urmom punjen šljivom",
     "size": "180g",
+    "Dostupnost": "",
     "ingredients": [
       "urma (mlevena) 27 %, voćno punjenje - šljiva 20 % (voćna kaša – šljiva 99,4 % i zgušnjivač: agar), brašno (heljdino brašno, pirinčano brašno i ekstrudirano kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, belance u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so."
     ],
@@ -1102,13 +1137,13 @@ const rawProductsData = [
     "imageUrl": "molendini/keks-sa-urmom-punjen-sljivom-8600955501861.jpg",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
-    "Poreklo": "Srbija",
-    "Dostupnost": ""
+    "Poreklo": "Srbija"
   },
   {
     "barcode": 8600955501878,
     "name": "Keks sa urmom punjen višnjom",
     "size": "180g",
+    "Dostupnost": "",
     "ingredients": [
       "urma (mlevena) 27%, voćno punjenje - višnja 20 % (voćna kaša – višnja 99,4 % i zgušnjivač: agar), brašno (heljdino brašno, pirinčano brašno i ekstrudirano kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), mešavina začina (cimet, karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, belance u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so."
     ],
@@ -1120,13 +1155,13 @@ const rawProductsData = [
     "imageUrl": "molendini/keks-sa-urmom-punjen-visnjom-8600955501878.jpg",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
-    "Poreklo": "Srbija",
-    "Dostupnost": ""
+    "Poreklo": "Srbija"
   },
   {
     "barcode": 8600955501885,
     "name": "Keks sa urmom punjen smokvom",
     "size": "180g",
+    "Dostupnost": "",
     "ingredients": [
       "urma (mlevena) 27 %, voćno punjenje - smokva 20 % (voćna kaša – smokva 99,4 % i zgušnjivač: agar), brašno (heljdino brašno, pirinčano brašno i ekstrudirano kukuruzno brašno), biljna (palmina) mast, mlevene semenke biljke chia (Salvia hispanica), mešavina začina (cimet i karanfilić), kakao prah sa redukovanim sadržajem kakao maslaca, jaja u prahu, belance u prahu, konzervans (kalijum-sorbat), limunska kiselina, sredstva za dizanje testa (amonijum-bikarbonat i natrijum-hidrogenkarbonat), stabilizator (guar guma), emulgator (sojin lecitin) i so."
     ],
@@ -1138,13 +1173,13 @@ const rawProductsData = [
     "imageUrl": "molendini/keks-sa-urmom-punjen-smokvom-8600955501885.jpg",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
-    "Poreklo": "Srbija",
-    "Dostupnost": ""
+    "Poreklo": "Srbija"
   },
   {
     "barcode": 8600955501991,
     "name": "Kreker sa đumbirom",
     "size": "120g",
+    "Dostupnost": "",
     "ingredients": [
       "brašno (pirinčano/rižino brašno, heljdino brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno i brašno od prosa), biljna (palmina) mast, kukuruzni skrob,                               mlevene/mljevene semenke/sjemenke biljke chia (Salvia hispanica), citrusna vlakna, so/sol, đumbir u prahu 1%, kiselina/kisjelina (limunska kiselina/kisjelina), konzervans (kalijum-sorbat), sredstva za dizanje testa/tijesta (natrijum-hidrogenkarbonat i natrijum-pirofosfat), stabilizator (guar guma), emulgator (sojin lecitin) i aroma đumbir. "
     ],
@@ -1156,13 +1191,13 @@ const rawProductsData = [
     "imageUrl": "molendini/kreker-sa-djumbirom-8600955501991.jpg",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
-    "Poreklo": "Srbija",
-    "Dostupnost": ""
+    "Poreklo": "Srbija"
   },
   {
     "barcode": 8600955501977,
     "name": "Kreker sa belim lukom ",
     "size": "120g",
+    "Dostupnost": "",
     "ingredients": [
       "brašno (pirinčano/rižino brašno, heljdino brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno i brašno od prosa), biljna (palmina) mast, kukuruzni skrob, mlevene/mljevene semenke/sjemenke biljke chia (Salvia hispanica), citrusna vlakana, so/sol, beli/bijeli luk u prahu 0,65%, kiselina/kisjelina (limunska kiselina/kisjelina), konzervans (kalijum-sorbat), sredstva za dizanje testa/tijesta (natrijum-hidrogenkarbonat i natrijum-pirofosfat), stabilizator (guar guma) i emulgator (sojin lecitin)."
     ],
@@ -1174,13 +1209,13 @@ const rawProductsData = [
     "imageUrl": "molendini/kreker-sa-belim-lukom-8600955501977.jpg",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
-    "Poreklo": "Srbija",
-    "Dostupnost": ""
+    "Poreklo": "Srbija"
   },
   {
     "barcode": 8600955501984,
     "name": "Kreker sa čilijem",
     "size": "120g",
+    "Dostupnost": "",
     "ingredients": [
       "brašno (pirinčano/rižino brašno, heljdino brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno i brašno od prosa), biljna (palmina) mast, kukuruzni skrob,                               mlevene/mljevene semenke/sjemenke biljke chia (Salvia hispanica), citrusna vlakna, so/sol, kiselina/kisjelina (limunska kiselina/kisjelina), konzervans (kalijum-sorbat), sredstva za dizanje testa/tijesta (natrijum-hidrogenkarbonat i natrijum-pirofosfat), čili u prahu 0,4%, stabilizator (guar guma) i emulgator (sojin lecitin)."
     ],
@@ -1192,13 +1227,13 @@ const rawProductsData = [
     "imageUrl": "molendini/kreker-sa-cilijem-8600955501984.jpg",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
-    "Poreklo": "Srbija",
-    "Dostupnost": ""
+    "Poreklo": "Srbija"
   },
   {
     "barcode": 8600955502004,
     "name": "Kreker sa kikirikijem",
     "size": "120g",
+    "Dostupnost": "",
     "ingredients": [
       "brašno (pirinčano/rižino brašno, heljdino brašno, kukuruzno brašno, ekstrudirano kukuruzno brašno i brašno od prosa), biljna (palmina) mast, kukuruzni skrob,                               mleveni/mljeveni kikiriki 4,5 %, mlevene/mljevene semenke/sjemenke biljke chia (Salvia hispanica), citrusna vlakna, so/sol, kiselina/kisjelina (limunska kiselina/kisjelina), konzervans (kalijum-sorbat), sredstva za dizanje testa/tijesta (natrijum-hidrogenkarbonat i natrijum-pirofosfat), stabilizator (guar guma), emulgator (sojin lecitin) i aroma kikirikija."
     ],
@@ -1210,13 +1245,13 @@ const rawProductsData = [
     "imageUrl": "molendini/kreker-sa-kikirikijem-8600955502004.jpg",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
-    "Poreklo": "Srbija",
-    "Dostupnost": ""
+    "Poreklo": "Srbija"
   },
   // Scitec Nutrition Product with Recall
   {
     "brand": "Scitec Nutrition",
     "name": "Choco Pro Bar 50g - Salted Caramel",
+    "Dostupnost": "",
     "barcode": "5999100025684",
     "size": "50g",
     "ingredients": ["Sastojci nisu dostupni za ovaj unos. VAŽNO: Serija 1281203 (Salted Caramel) je povučena zbog prisustva glutena."],
@@ -1407,6 +1442,7 @@ export const placeholderProducts: Product[] = rawProductsData.flat().map((p, ind
     dataAiHint: sanitizeForDataAiHint(p.name, `product ${p.brand?.toLowerCase() || 'item'} ${index}`),
     warning: p.warning,
     note: p.note,
+    stores: p.Dostupnost ? p.Dostupnost.split(',').map((s: string) => s.trim()) : undefined,
     seriesAffected: p.seriesAffected,
   };
 });
@@ -1575,13 +1611,13 @@ export default function ProductsPage() {
 
                         <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description.length > 100 && product.warning ? product.note : product.description}</p>
                         <div className="flex flex-wrap gap-1 mb-3">
+                          {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
                           {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Lactose-Free</Badge>}
                           {product.isSugarFree && <Badge variant="secondary" className="text-xs">Sugar-Free</Badge>}
-                          {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
+                          {product.tags?.includes('high-protein') && <Badge variant="secondary" className="text-xs">High Protein</Badge>}
                           {product.tags?.filter(tag => !explicitlyHandledTags.includes(tag.toLowerCase())).slice(0, 2).map(tag => (
                             <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
                           ))}
-                          {product.tags?.includes('high-protein') && <Badge variant="secondary" className="text-xs">High Protein</Badge>}
                         </div>
                         <Button asChild variant="outline" size="sm" className="w-full mt-auto">
                           <Link href={`/${locale}/products/${product.id}`}>View Details</Link>

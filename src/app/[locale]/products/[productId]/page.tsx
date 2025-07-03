@@ -43,6 +43,7 @@ export interface Product {
   dataAiHint?: string;
   warning?: boolean;
   note?: string;
+  stores?: string[];
   seriesAffected?: {
     lotNumbers: string[];
     expiry: string;
@@ -213,6 +214,16 @@ export default function ProductDetailPage() {
                   data-ai-hint={product.dataAiHint}
                 />
               </Card>
+              {product.stores && product.stores.length > 0 && (
+                <Card className="mt-4">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center"><Store className="h-5 w-5 mr-2 text-primary"/> Gde kupiti</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">{product.stores.join(', ')}</p>
+                  </CardContent>
+                </Card>
+              )}
                {product.barcode && (
                 <Card className="mt-4">
                   <CardHeader>
@@ -301,9 +312,9 @@ export default function ProductDetailPage() {
                     <div>
                       <h3 className="text-md font-semibold mb-2">Other Dietary Information</h3>
                       <div className="space-y-2">
+                        <DietaryTag label="Posno (Lenten)" icon={Leaf} present={product.isPosno} />
                         <DietaryTag label="Lactose-Free" icon={CheckCircle} present={product.isLactoseFree} />
                         <DietaryTag label="Sugar-Free" icon={CheckCircle} present={product.isSugarFree} />
-                        <DietaryTag label="Posno (Lenten)" icon={Leaf} present={product.isPosno} />
                       </div>
                     </div>
                   )}
