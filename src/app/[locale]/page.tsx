@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, type FormEvent, useRef, useEffect, ChangeEvent } from 'react';
@@ -855,7 +854,7 @@ export default function HomePage() {
                 )}
               </CardContent>
               <CardFooter>
-                 <Button onClick={handleAnalyzeStagedImage} disabled={!stagedImage || isLoadingAnyAnalysisProcess || !hasMounted || (hasMounted && !canScan())} className="w-full">
+                 <Button onClick={handleAnalyzeStagedImage} size="lg" disabled={!stagedImage || isLoadingAnyAnalysisProcess || !hasMounted || (hasMounted && !canScan())} className="w-full">
                     {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                     Analyze with AI
                  </Button>
@@ -885,6 +884,7 @@ export default function HomePage() {
                         disabled={!hasMounted || (hasMounted && !canScan()) || isLoadingAnyAnalysisProcess}
                       />
                     <Button type="submit" 
+                      size="lg"
                       disabled={!hasMounted || (hasMounted && !canScan()) || isLoadingDeclaration || !declarationText.trim() || isLoadingAnyAnalysisProcess} 
                       className="w-full"
                     >
