@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, useEffect } from 'react';
 import { SidebarInset, SidebarRail } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/navigation/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
@@ -26,6 +26,12 @@ export default function ScanDeclarationPage() {
   const { toast } = useToast();
   const { canScan, incrementScanCount, getRemainingScans, scanLimit } = useScanLimiter();
   const [showScanLimitModal, setShowScanLimitModal] = useState<boolean>(false);
+
+  // State to track client-side mounting to prevent hydration errors
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -66,9 +72,6 @@ export default function ScanDeclarationPage() {
       setIsLoading(false);
     }
   };
-
-  const userCanCurrentlyScan = canScan();
-  const currentRemainingScans = getRemainingScans();
 
   const getAssessmentAlert = (result: AnalyzeDeclarationOutput) => {
     const confidenceText = `Poverenje: ${result.poverenjeUkupneProcene !== undefined ? Math.round(result.poverenjeUkupneProcene * 100) : 'N/A'}%`;
@@ -138,17 +141,23 @@ export default function ScanDeclarationPage() {
 
           <Card className="mb-6 bg-muted/30 border-muted/50">
             <CardContent className="p-3">
-              <div className="flex items-center justify-between text-sm">
-                {userCanCurrentlyScan ? (
-                  <div className="flex items-center text-primary">
-                    <CheckCircle className="h-4 w-4 mr-1.5" />
-                    <span>{currentRemainingScans} of {scanLimit} free scans remaining.</span>
-                  </div>
+              <div className="flex items-center justify-between text-sm min-h-[20px]">
+                {hasMounted ? (
+                  <>
+                    {canScan() ? (
+                      <div className="flex items-center text-primary">
+                        <CheckCircle className="h-4 w-4 mr-1.5" />
+                        <span>{getRemainingScans()} of {scanLimit} free scans remaining.</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center text-destructive">
+                        <AlertCircle className="h-4 w-4 mr-1.5" />
+                        <span>No free scans remaining. Upgrade for unlimited scans.</span>
+                      </div>
+                    )}
+                  </>
                 ) : (
-                  <div className="flex items-center text-destructive">
-                    <AlertCircle className="h-4 w-4 mr-1.5" />
-                    <span>No free scans remaining. Upgrade for unlimited scans.</span>
-                  </div>
+                   <div className="h-5 w-56 bg-muted rounded animate-pulse" />
                 )}
               </div>
             </CardContent>
@@ -169,7 +178,7 @@ export default function ScanDeclarationPage() {
                     rows={10}
                     className="resize-none"
                     aria-label="Product Declaration Input"
-                    disabled={!userCanCurrentlyScan || isLoading}
+                    disabled={!hasMounted || (hasMounted && !canScan()) || isLoading}
                   />
                   {error && (
                     <ShadcnAlert variant="destructive" className="mt-4">
@@ -180,7 +189,7 @@ export default function ScanDeclarationPage() {
                   )}
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" disabled={!userCanCurrentlyScan || isLoading || !declarationText.trim()} className="w-full">
+                  <Button type="submit" disabled={!hasMounted || (hasMounted && !canScan()) || isLoading || !declarationText.trim()} className="w-full">
                     {isLoading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
@@ -319,6 +328,3 @@ export default function ScanDeclarationPage() {
     </div>
   );
 }
-    
-
-    

@@ -66,6 +66,12 @@ export default function HomePage() {
   const { toast } = useToast();
   const { canScan, incrementScanCount, getRemainingScans, scanLimit, resetScanCount } = useScanLimiter();
 
+  // State to track client-side mounting to prevent hydration errors
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
   const [declarationText, setDeclarationText] = useState<string>('');
   const [analysisResult, setAnalysisResult] = useState<AnalyzeDeclarationOutput | null>(null);
   const [isLoadingDeclaration, setIsLoadingDeclaration] = useState<boolean>(false);
@@ -100,9 +106,6 @@ export default function HomePage() {
   const [errorTip, setErrorTip] = useState<string | null>(null);
   const [showTipDetailsModal, setShowTipDetailsModal] = useState<boolean>(false);
   const [showScanLimitModal, setShowScanLimitModal] = useState<boolean>(false);
-
-  const userCanCurrentlyScan = canScan();
-  const currentRemainingScans = getRemainingScans();
 
   useEffect(() => {
     const fetchTip = async () => {
@@ -517,27 +520,34 @@ export default function HomePage() {
           />
           
            <Card className="mb-6 bg-muted/30 border-muted/50">
-            <CardContent className="p-3">
-              <div className="flex items-center justify-between text-sm">
-                {userCanCurrentlyScan ? (
-                  <div className="flex items-center text-primary">
-                    <CheckCircle className="h-4 w-4 mr-1.5" />
-                    <span>{currentRemainingScans} of {scanLimit} free scans remaining.</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center text-destructive">
-                    <AlertCircle className="h-4 w-4 mr-1.5" />
-                    <span>No free scans remaining. Upgrade for unlimited scans.</span>
-                  </div>
-                )}
-                {process.env.NODE_ENV === 'development' && (
-                  <Button variant="outline" size="sm" onClick={resetScanCount} title="Reset Scan Count (Dev Only)">
-                    <RotateCcw className="h-3 w-3" />
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+             <CardContent className="p-3">
+               <div className="flex items-center justify-between text-sm min-h-[28px]">
+                 {hasMounted ? (
+                   <>
+                     {canScan() ? (
+                       <div className="flex items-center text-primary">
+                         <CheckCircle className="h-4 w-4 mr-1.5" />
+                         <span>{getRemainingScans()} of {scanLimit} free scans remaining.</span>
+                       </div>
+                     ) : (
+                       <div className="flex items-center text-destructive">
+                         <AlertCircle className="h-4 w-4 mr-1.5" />
+                         <span>No free scans remaining. Upgrade for unlimited scans.</span>
+                       </div>
+                     )}
+                   </>
+                 ) : (
+                   <div className="h-5 w-56 bg-muted rounded animate-pulse" /> // Skeleton placeholder
+                 )}
+                 
+                 {process.env.NODE_ENV === 'development' && (
+                   <Button variant="outline" size="sm" onClick={resetScanCount} title="Reset Scan Count (Dev Only)">
+                     <RotateCcw className="h-3 w-3" />
+                   </Button>
+                 )}
+               </div>
+             </CardContent>
+           </Card>
 
           <div className="mb-8">
             {isLoadingTip && (
@@ -633,7 +643,7 @@ export default function HomePage() {
                     onClick={handleStartBarcodeScanning} 
                     className="w-full" 
                     size="lg" 
-                    disabled={!userCanCurrentlyScan || isLoadingAnyAnalysisProcess || isTakingOcrPhoto}
+                    disabled={!hasMounted || !canScan() || isLoadingAnyAnalysisProcess || isTakingOcrPhoto}
                   >
                     <QrCode className="mr-2 h-5 w-5" /> Start Barcode Scanning
                   </Button>
@@ -843,7 +853,7 @@ export default function HomePage() {
                 )}
               </CardContent>
               <CardFooter>
-                 <Button onClick={handleAnalyzeStagedImage} disabled={!stagedImage || isLoadingAnyAnalysisProcess} className="w-full">
+                 <Button onClick={handleAnalyzeStagedImage} disabled={!stagedImage || isLoadingAnyAnalysisProcess || !hasMounted || (hasMounted && !canScan())} className="w-full">
                     {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                     Analyze with AI
                  </Button>
@@ -870,10 +880,10 @@ export default function HomePage() {
                         rows={6}
                         className="resize-none"
                         aria-label="Product Declaration Input"
-                        disabled={!userCanCurrentlyScan || isLoadingAnyAnalysisProcess}
+                        disabled={!hasMounted || (hasMounted && !canScan()) || isLoadingAnyAnalysisProcess}
                       />
                     <Button type="submit" 
-                      disabled={!userCanCurrentlyScan || isLoadingDeclaration || !declarationText.trim() || isLoadingAnyAnalysisProcess} 
+                      disabled={!hasMounted || (hasMounted && !canScan()) || isLoadingDeclaration || !declarationText.trim() || isLoadingAnyAnalysisProcess} 
                       className="w-full"
                     >
                       {isLoadingDeclaration && !isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
@@ -914,7 +924,7 @@ export default function HomePage() {
 
                         <div>
                           <h4 className="font-semibold mb-1 text-sm">Obrazloženje:</h4>
-                          <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.finalnoObrazlozenje}</p>
+                          <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.finalnoObrazloženje}</p>
                         </div>
 
                         {problematicIngredients.length > 0 && (
