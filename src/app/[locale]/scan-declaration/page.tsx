@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, type FormEvent, useEffect } from 'react';
+import { useState, type FormEvent, useEffect, useRef } from 'react';
 import { SidebarInset, SidebarRail } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/navigation/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
@@ -29,12 +29,20 @@ export default function ScanDeclarationPage() {
   const { toast } = useToast();
   const { canScan, incrementScanCount, getRemainingScans, scanLimit } = useScanLimiter();
   const [showScanLimitModal, setShowScanLimitModal] = useState<boolean>(false);
+  const analysisReportRef = useRef<HTMLDivElement>(null);
 
   // State to track client-side mounting to prevent hydration errors
   const [hasMounted, setHasMounted] = useState(false);
   useEffect(() => {
     setHasMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (analysisResult && analysisReportRef.current) {
+      analysisReportRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [analysisResult]);
+
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -203,7 +211,7 @@ export default function ScanDeclarationPage() {
               </form>
             </Card>
 
-            <Card className={analysisResult || isLoading || error ? 'opacity-100' : 'opacity-50'}>
+            <Card ref={analysisReportRef} className={analysisResult || isLoading || error ? 'opacity-100' : 'opacity-50'}>
               <CardHeader>
                 <CardTitle>AI Analysis Report</CardTitle>
                 <CardDescription>Results of the gluten detection analysis.</CardDescription>

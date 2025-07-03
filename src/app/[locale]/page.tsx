@@ -107,6 +107,14 @@ export default function HomePage() {
   const [showTipDetailsModal, setShowTipDetailsModal] = useState<boolean>(false);
   const [showScanLimitModal, setShowScanLimitModal] = useState<boolean>(false);
 
+  const analysisReportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (analysisResult && analysisReportRef.current) {
+      analysisReportRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [analysisResult]);
+
   useEffect(() => {
     const fetchTip = async () => {
       setIsLoadingTip(true);
@@ -898,6 +906,7 @@ export default function HomePage() {
             </Accordion>
             
             <div
+              ref={analysisReportRef}
               aria-live="polite" 
               aria-busy={isLoadingAnyAnalysisProcess}
               className="mt-6"
