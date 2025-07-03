@@ -250,32 +250,32 @@ export default function ProductDetailPage() {
                     <div>
                         <h3 className="text-md font-semibold mb-2">Gluten Information</h3>
                         {product.warning ? (
-                            <div className="flex items-center text-red-600 font-semibold">
+                            <div className="flex items-center text-red-600 dark:text-red-400 font-semibold">
                                 <AlertTriangle className="h-5 w-5 mr-2" />
                                 <span>SADRŽI GLUTEN (Povučena serija)</span>
                             </div>
                         ) : product.hasAOECSLicense ? (
-                          <div className="flex items-center text-green-600">
+                          <div className="flex items-center text-green-600 dark:text-green-400">
                             <ShieldCheck className="h-5 w-5 mr-2" />
                             <span>AOECS Licensed Gluten-Free</span>
                           </div>
                         ) : product.hasManufacturerStatement && isGlutenFreeTag ? (
-                          <div className="flex items-center text-green-600">
+                          <div className="flex items-center text-green-600 dark:text-green-400">
                             <FileText className="h-5 w-5 mr-2" />
                             <span>Manufacturer Declares Gluten-Free</span>
                           </div>
                         ) : isGlutenFreeTag ? (
-                          <div className="flex items-center text-green-600">
+                          <div className="flex items-center text-green-600 dark:text-green-400">
                             <CheckCircle className="h-5 w-5 mr-2" />
                             <span>Considered Gluten-Free</span>
                           </div>
                         ) : containsGluten ? (
-                          <div className="flex items-center text-red-600">
+                          <div className="flex items-center text-red-600 dark:text-red-500">
                             <AlertTriangle className="h-5 w-5 mr-2" />
                             <span>Contains Gluten</span>
                           </div>
                         ) : mayContainGluten ? (
-                          <div className="flex items-center text-orange-500">
+                          <div className="flex items-center text-orange-500 dark:text-orange-400">
                             <AlertTriangle className="h-5 w-5 mr-2" />
                             <span>May Contain Gluten Traces</span>
                           </div>
@@ -376,16 +376,16 @@ export default function ProductDetailPage() {
                         <CircleAlert className="h-4 w-4 mr-2 text-primary"/> Allergen Notes
                     </h3>
                     {product.warning && identifiedGlutenSources.length === 0 && ( // If warning is generic but no specific gluten source listed in tags
-                        <p className="text-sm text-red-600"><strong>Upozorenje:</strong> Ovaj proizvod (ili određena serija) može sadržati gluten. Molimo proverite detalje o povlačenju.</p>
+                        <p className="text-sm text-red-600 dark:text-red-400"><strong>Upozorenje:</strong> Ovaj proizvod (ili određena serija) može sadržati gluten. Molimo proverite detalje o povlačenju.</p>
                     )}
                     {!product.warning && identifiedGlutenSources.length > 0 && (
-                        <p className="text-sm text-red-600"><strong>Contains Gluten Sources:</strong> {identifiedGlutenSources.join(', ')}.</p>
+                        <p className="text-sm text-red-600 dark:text-red-500"><strong>Contains Gluten Sources:</strong> {identifiedGlutenSources.join(', ')}.</p>
                     )}
                     {!product.warning && identifiedGlutenSources.length === 0 && mayContainGluten && !isGlutenFreeTag && (
-                         <p className="text-sm text-orange-600"><strong>Advisory:</strong> May contain traces of gluten.</p>
+                         <p className="text-sm text-orange-600 dark:text-orange-400"><strong>Advisory:</strong> May contain traces of gluten.</p>
                     )}
                     {!product.warning && identifiedGlutenSources.length === 0 && isGlutenFreeTag && (
-                        <p className="text-sm text-green-600">This product is generally considered gluten-free based on available information.</p>
+                        <p className="text-sm text-green-600 dark:text-green-400">This product is generally considered gluten-free based on available information.</p>
                     )}
 
                     {mentionedNonGlutenAllergens.length > 0 && (
@@ -440,4 +440,3 @@ export default function ProductDetailPage() {
     </div>
   );
 }
-

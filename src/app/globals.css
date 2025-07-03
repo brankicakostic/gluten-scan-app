@@ -56,34 +56,34 @@ body {
   }
 
   .dark {
-    /* Inspired Palette (Dark Mode) */
-    --background: 30 10% 15%; /* Dark Brown/Charcoal */
-    --foreground: 40 50% 97%; /* Light Beige */
+    /* New Dark Palette */
+    --background: 0 0% 7%; /* #121212 - very close to #111 */
+    --foreground: 0 0% 95%; /* Light gray */
 
-    --card: 30 10% 15%; /* Dark Brown/Charcoal */
-    --card-foreground: 40 50% 97%; /* Light Beige */
+    --card: 0 0% 10%; /* #1a1a1a */
+    --card-foreground: 0 0% 95%;
 
-    --popover: 30 10% 15%; /* Dark Brown/Charcoal */
-    --popover-foreground: 40 50% 97%; /* Light Beige */
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 28 90% 65%; /* Vibrant Orange (slightly brighter for dark mode) */
+    --primary: 28 95% 58%; /* Intense Orange */
     --primary-foreground: 30 10% 10%; /* Very Dark Brown (text on Orange in dark) */
 
-    --secondary: 150 25% 35%; /* Dark Muted Green */
-    --secondary-foreground: 40 50% 97%; /* Light Beige */
+    --secondary: 150 25% 25%; /* Darker Muted Green */
+    --secondary-foreground: 0 0% 95%;
 
-    --muted: 50 40% 25%; /* Dark Muted Yellow */
-    --muted-foreground: 40 20% 70%; /* Lighter muted text */
+    --muted: 0 0% 15%; /* Dark Gray */
+    --muted-foreground: 0 0% 65%; /* Lighter muted text */
 
-    --accent: 150 25% 35%; /* Dark Muted Green */
-    --accent-foreground: 40 50% 97%; /* Light Beige */
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 95%;
 
-    --destructive: 0 62.8% 30.6%; /* Standard dark red */
-    --destructive-foreground: 0 0% 98%; /* Light text on destructive */
+    --destructive: 0 75% 55%; /* Intense Red */
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 30 10% 20%; /* Darker Shade of Background */
-    --input: 30 10% 20%; /* Darker Shade of Background */
-    --ring: 28 90% 65%; /* Vibrant Orange (primary color for focus rings) */
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 28 95% 58%; /* Intense Orange (primary color for focus rings) */
     
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -92,14 +92,14 @@ body {
     --chart-5: 340 75% 55%;
 
     /* Sidebar specific theme (Dark Mode) */
-    --sidebar-background: 30 10% 15%; /* Dark Brown/Charcoal */
-    --sidebar-foreground: 40 50% 97%; /* Light Beige */
-    --sidebar-primary: 28 90% 65%;    /* Orange (active/selected items) */
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 28 95% 58%;    /* Intense Orange (active/selected items) */
     --sidebar-primary-foreground: 30 10% 10%; /* Very Dark Brown (text on active) */
     --sidebar-accent: 28 90% 70%;     /* Lighter Orange (hover items) */
     --sidebar-accent-foreground: 30 10% 10%; /* Very Dark Brown (text on hover) */
-    --sidebar-border: 30 10% 20%;   /* Darker Shade of Background */
-    --sidebar-ring: 28 90% 65%;      /* Orange (focus rings) */
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 28 95% 58%;
   }
 }
 

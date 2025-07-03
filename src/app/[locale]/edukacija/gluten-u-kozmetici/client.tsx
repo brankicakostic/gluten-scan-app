@@ -89,7 +89,7 @@ export default function GlutenUKozmeticiClient({ locale }: GlutenUKozmeticiClien
 
                 <hr className="my-6 border-border" />
 
-                <h2 className="text-xl font-semibold flex items-center gap-2"><CheckCircle className="text-green-500 h-6 w-6" /> Zaključak:</h2>
+                <h2 className="text-xl font-semibold flex items-center gap-2"><CheckCircle className="text-green-600 dark:text-green-400 h-6 w-6" /> Zaključak:</h2>
                 <ul className="list-disc pl-5 space-y-2">
                   <li>Ako ne dolazi u kontakt sa ustima, kozmetika sa glutenom nije opasna za osobe sa celijakijom.</li>
                   <li>Obrati pažnju na proizvode koji se koriste oko usta.</li>

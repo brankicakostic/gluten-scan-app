@@ -456,7 +456,7 @@ export default function HomePage() {
       case 'sigurno':
         return (
           <ShadcnAlert variant='default' className='border-green-500 bg-green-50 dark:bg-green-900/30'>
-            <CheckCircle className="h-5 w-5 text-green-600" />
+            <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
             <ShadcnAlertTitle className='text-green-700 dark:text-green-400'>Verovatno bez glutena</ShadcnAlertTitle>
             <ShadcnAlertDescription className="text-green-600 dark:text-green-300">{confidenceText}</ShadcnAlertDescription>
           </ShadcnAlert>
@@ -464,7 +464,7 @@ export default function HomePage() {
       case 'potrebna pažnja':
         return (
           <ShadcnAlert variant='default' className='border-yellow-500 bg-yellow-50 dark:bg-yellow-900/30'>
-            <AlertTriangle className="h-5 w-5 text-yellow-600" />
+            <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
             <ShadcnAlertTitle className='text-yellow-700 dark:text-yellow-400'>Potrebna pažnja / Verovatno bezbedno uz oprez</ShadcnAlertTitle>
             <ShadcnAlertDescription className="text-yellow-600 dark:text-yellow-300">{confidenceText}</ShadcnAlertDescription>
           </ShadcnAlert>
@@ -472,7 +472,7 @@ export default function HomePage() {
       case 'rizično':
         return (
           <ShadcnAlert variant='default' className="border-orange-500 bg-orange-50 dark:bg-orange-900/30">
-            <AlertTriangle className="h-5 w-5 text-orange-600" />
+            <AlertTriangle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
             <ShadcnAlertTitle className="text-orange-700 dark:text-orange-400">Rizično / Mogući tragovi glutena</ShadcnAlertTitle>
             <ShadcnAlertDescription className="text-orange-600 dark:text-orange-300">{confidenceText}</ShadcnAlertDescription>
           </ShadcnAlert>
@@ -670,13 +670,13 @@ export default function HomePage() {
                       <div>
                         <CardTitle className="text-xl">{barcodeScanResult.name}</CardTitle>
                         {barcodeScanResult.tags?.includes('gluten-free') && (
-                          <div className="flex items-center text-green-600 mt-1"><CheckCircle className="h-5 w-5 mr-1" /><span>Likely Gluten-Free</span></div>
+                          <div className="flex items-center text-green-600 dark:text-green-400 mt-1"><CheckCircle className="h-5 w-5 mr-1" /><span>Likely Gluten-Free</span></div>
                         )}
                         {(barcodeScanResult.tags?.includes('contains-gluten') || barcodeScanResult.tags?.includes('contains-wheat') || barcodeScanResult.tags?.includes('contains-barley') || barcodeScanResult.tags?.includes('contains-rye') || (barcodeScanResult.tags?.includes('contains-oats') && !barcodeScanResult.tags?.includes('gluten-free'))) && (
-                          <div className="flex items-center text-red-600 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>Contains Gluten</span></div>
+                          <div className="flex items-center text-red-600 dark:text-red-500 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>Contains Gluten</span></div>
                         )}
                         {barcodeScanResult.tags?.includes('may-contain-gluten') && !barcodeScanResult.tags?.includes('gluten-free') && !barcodeScanResult.tags?.includes('contains-gluten') && (
-                           <div className="flex items-center text-orange-500 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>May Contain Traces</span></div>
+                           <div className="flex items-center text-orange-500 dark:text-orange-400 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>May Contain Traces</span></div>
                         )}
                          {barcodeScanResult.tags?.includes('unknown-barcode') && (
                            <div className="flex items-center text-muted-foreground mt-1"><Info className="h-5 w-5 mr-1" /><span>Barcode Not Found</span></div>
@@ -735,19 +735,19 @@ export default function HomePage() {
                         </div>
 
                         {isGlutenFreeTag && (
-                          <div className="flex items-center text-green-600 text-xs mt-1 mb-1">
+                          <div className="flex items-center text-green-600 dark:text-green-400 text-xs mt-1 mb-1">
                             <CheckCircle className="h-3 w-3 mr-1" />
                             <span>Gluten-Free</span>
                           </div>
                         )}
                         {containsGlutenTag && (
-                          <div className="flex items-center text-red-600 text-xs mt-1 mb-1">
+                          <div className="flex items-center text-red-600 dark:text-red-500 text-xs mt-1 mb-1">
                             <AlertTriangle className="h-3 w-3 mr-1" />
                             <span>Contains Gluten</span>
                           </div>
                         )}
                         {mayContainGlutenTag && !isGlutenFreeTag && !containsGlutenTag && (
-                          <div className="flex items-center text-orange-500 text-xs mt-1 mb-1">
+                          <div className="flex items-center text-orange-500 dark:text-orange-400 text-xs mt-1 mb-1">
                             <AlertTriangle className="h-3 w-3 mr-1" />
                             <span>May Contain Traces</span>
                           </div>
@@ -922,12 +922,13 @@ export default function HomePage() {
               </div>
             </CardContent>
             
-            <div 
+            <CardContent
               aria-live="polite" 
               aria-busy={isLoadingAnyAnalysisProcess}
+              className="mt-6 border-t pt-6"
             >
               {(analysisResult || isLoadingDeclaration || isLoadingAnyAnalysisProcess) && !showLabelingQuestionModal && (
-                <CardContent className="mt-6 border-t pt-6">
+                <>
                   <CardTitle className="text-lg mb-2">AI Analysis Report</CardTitle>
                   {(isLoadingDeclaration || isLoadingOcr) && !showLabelingQuestionModal && (
                     <div className="flex flex-col items-center justify-center h-24 text-muted-foreground">
@@ -970,7 +971,7 @@ export default function HomePage() {
                                           {item.sastojak}
                                           <span className={`ml-1 font-medium text-xs ${
                                               item.ocena === 'nije bezbedno' ? 'text-destructive' 
-                                              : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
+                                              : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600 dark:text-orange-400'
                                               : 'text-muted-foreground' 
                                             }`}>
                                             ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
@@ -987,7 +988,7 @@ export default function HomePage() {
                                       {item.sastojak}
                                       <span className={`ml-1 font-medium text-xs ${
                                           item.ocena === 'nije bezbedno' ? 'text-destructive' 
-                                          : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
+                                          : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600 dark:text-orange-400'
                                           : 'text-muted-foreground' 
                                         }`}>
                                         ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
@@ -1004,15 +1005,15 @@ export default function HomePage() {
                        </Button>
                     </>
                   )}
-                </CardContent>
+                </>
               )}
                {!isLoadingAnyAnalysisProcess && !analysisResult && !errorDeclaration && (declarationText || selectedFile || isTakingOcrPhoto) && !showLabelingQuestionModal && (
                      <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md mt-4 mx-6 mb-6">
-                      <Info className="mx-auto h-8 w-8 mb-2 text-primary" />
+                      <Info className="mx-auto h-8 w-8 text-primary" />
                       <p className="text-sm">Analysis results will appear here once submitted.</p>
                     </div>
                 )}
-            </div>
+            </CardContent>
           </Card>
 
           <AlertDialog open={showScanLimitModal} onOpenChange={setShowScanLimitModal}>

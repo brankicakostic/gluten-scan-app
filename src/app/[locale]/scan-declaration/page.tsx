@@ -76,7 +76,7 @@ export default function ScanDeclarationPage() {
       case 'sigurno':
         return (
           <ShadcnAlert variant='default' className='border-green-500 bg-green-50 dark:bg-green-900/30'>
-            <CheckCircle className="h-5 w-5 text-green-600" />
+            <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
             <ShadcnAlertTitle className='text-green-700 dark:text-green-400'>Verovatno bez glutena</ShadcnAlertTitle>
             <ShadcnAlertDescription className="text-green-600 dark:text-green-300">{confidenceText}</ShadcnAlertDescription>
           </ShadcnAlert>
@@ -84,7 +84,7 @@ export default function ScanDeclarationPage() {
       case 'potrebna pažnja':
         return (
           <ShadcnAlert variant='default' className='border-yellow-500 bg-yellow-50 dark:bg-yellow-900/30'>
-            <AlertTriangle className="h-5 w-5 text-yellow-600" />
+            <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
             <ShadcnAlertTitle className='text-yellow-700 dark:text-yellow-400'>Potrebna pažnja / Verovatno bezbedno uz oprez</ShadcnAlertTitle>
             <ShadcnAlertDescription className="text-yellow-600 dark:text-yellow-300">{confidenceText}</ShadcnAlertDescription>
           </ShadcnAlert>
@@ -92,7 +92,7 @@ export default function ScanDeclarationPage() {
       case 'rizično':
         return (
           <ShadcnAlert variant='default' className="border-orange-500 bg-orange-50 dark:bg-orange-900/30">
-            <AlertTriangle className="h-5 w-5 text-orange-600" />
+            <AlertTriangle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
             <ShadcnAlertTitle className="text-orange-700 dark:text-orange-400">Rizično / Mogući tragovi glutena</ShadcnAlertTitle>
             <ShadcnAlertDescription className="text-orange-600 dark:text-orange-300">{confidenceText}</ShadcnAlertDescription>
           </ShadcnAlert>
@@ -250,7 +250,7 @@ export default function ScanDeclarationPage() {
                                         {item.sastojak}
                                         <span className={`ml-1 font-medium text-xs ${
                                             item.ocena === 'nije bezbedno' ? 'text-destructive' 
-                                            : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
+                                            : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600 dark:text-orange-400'
                                             : 'text-muted-foreground' 
                                           }`}>
                                           ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
@@ -267,7 +267,7 @@ export default function ScanDeclarationPage() {
                                     {item.sastojak}
                                     <span className={`ml-1 font-medium text-xs ${
                                         item.ocena === 'nije bezbedno' ? 'text-destructive' 
-                                        : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600'
+                                        : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600 dark:text-orange-400'
                                         : 'text-muted-foreground' 
                                       }`}>
                                       ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})

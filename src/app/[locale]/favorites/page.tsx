@@ -88,19 +88,19 @@ export default function FavoritesPage() {
                     <CardDescription className="text-sm text-muted-foreground mb-2">{product.category}</CardDescription>
                     
                     {isGlutenFreeTag && (
-                        <div className="flex items-center text-green-600 text-xs mt-1 mb-1">
+                        <div className="flex items-center text-green-600 dark:text-green-400 text-xs mt-1 mb-1">
                           <CheckCircle className="h-3 w-3 mr-1" />
                           <span>Gluten-Free</span>
                         </div>
                       )}
                       {containsGlutenTag && (
-                        <div className="flex items-center text-red-600 text-xs mt-1 mb-1">
+                        <div className="flex items-center text-red-600 dark:text-red-500 text-xs mt-1 mb-1">
                           <AlertTriangle className="h-3 w-3 mr-1" />
                           <span>Contains Gluten</span>
                         </div>
                       )}
                       {mayContainGlutenTag && !isGlutenFreeTag && !containsGlutenTag && (
-                        <div className="flex items-center text-orange-500 text-xs mt-1 mb-1">
+                        <div className="flex items-center text-orange-500 dark:text-orange-400 text-xs mt-1 mb-1">
                           <AlertTriangle className="h-3 w-3 mr-1" />
                           <span>May Contain Traces</span>
                         </div>

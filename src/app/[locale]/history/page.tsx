@@ -59,7 +59,7 @@ export default function HistoryPage() {
                       ) : (
                         <CheckCircle className="h-5 w-5 text-green-500" />
                       )}
-                      <span className={'text-sm font-medium ' + (item.status === 'contains_gluten' ? 'text-red-600' : 'text-green-600')}>
+                      <span className={'text-sm font-medium ' + (item.status === 'contains_gluten' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400')}>
                         {item.status === 'contains_gluten' ? 'May Contain Gluten' : 'Likely Gluten-Free'}
                       </span>
                     </div>

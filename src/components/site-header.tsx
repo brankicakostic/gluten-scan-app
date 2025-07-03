@@ -1,5 +1,6 @@
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { ScanLine } from 'lucide-react'; // Changed from Wheat to ScanLine
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export function SiteHeader() {
   return (
@@ -14,6 +15,9 @@ export function SiteHeader() {
         </div>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           {/* Placeholder for potential user nav or other header items */}
+          <div className="flex items-center space-x-2">
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </header>

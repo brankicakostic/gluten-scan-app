@@ -7,6 +7,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { FavoritesProvider } from '@/contexts/favorites-context';
 import { ScanLimiterProvider } from '@/contexts/scan-limiter-context'; 
+import { ThemeProvider } from '@/components/theme-provider'; // Import ThemeProvider
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -29,7 +30,10 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   // You would typically fetch translations for this
   const title = params.locale === 'sr' ? 'Gluten Detektiv' : 'Gluten Detective'; // Updated app name
   return {
-    title: title,
+    title: {
+      default: title,
+      template: `%s | ${title}`,
+    },
     description: params.locale === 'sr' ? 'Lako skenirajte i identifikujte proizvode bez glutena.' : 'Scan and identify gluten-free products easily.',
   };
 }
@@ -39,6 +43,10 @@ export async function generateViewport({ params }: { params: { locale: string } 
   return {
     width: 'device-width',
     initialScale: 1,
+    themeColor: [
+        { media: '(prefers-color-scheme: light)', color: 'white' },
+        { media: '(prefers-color-scheme: dark)', color: 'black' },
+      ],
   };
 }
 
@@ -53,14 +61,21 @@ export default function LocaleLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
-        <SidebarProvider defaultOpen={true}>
-          <FavoritesProvider>
-            <ScanLimiterProvider> 
-              {children}
-            </ScanLimiterProvider>
-          </FavoritesProvider>
-        </SidebarProvider>
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SidebarProvider defaultOpen={true}>
+            <FavoritesProvider>
+              <ScanLimiterProvider> 
+                {children}
+              </ScanLimiterProvider>
+            </FavoritesProvider>
+          </SidebarProvider>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

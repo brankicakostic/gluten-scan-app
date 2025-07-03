@@ -1386,10 +1386,10 @@ export const placeholderProducts: Product[] = rawProductsData.flat().map((p, ind
   }
 
   return {
-    id: p.barcode || `product-${index}-${p.name.replace(/\s+/g, '-')}`,
+    id: p.barcode?.toString() || `product-${index}-${p.name.replace(/\s+/g, '-')}`,
     name: p.name,
     brand: p.brand,
-    barcode: p.barcode || undefined,
+    barcode: p.barcode?.toString() || undefined,
     category: category,
     imageUrl: finalImageUrl,
     description: description,
@@ -1546,22 +1546,22 @@ export default function ProductsPage() {
                         </div>
 
                         {product.warning ? (
-                          <div className="flex items-center text-red-600 text-xs mt-1 mb-1 font-semibold">
+                          <div className="flex items-center text-red-600 dark:text-red-400 text-xs mt-1 mb-1 font-semibold">
                             <AlertTriangle className="h-3.5 w-3.5 mr-1" />
                             <span>UPOZORENJE: Problematična serija!</span>
                           </div>
                         ) : isGlutenFreeTag ? (
-                          <div className="flex items-center text-green-600 text-xs mt-1 mb-1">
+                          <div className="flex items-center text-green-600 dark:text-green-400 text-xs mt-1 mb-1">
                             <CheckCircle className="h-3 w-3 mr-1" />
                             <span>Gluten-Free</span>
                           </div>
                         ) : containsGlutenTag ? (
-                          <div className="flex items-center text-red-600 text-xs mt-1 mb-1">
+                          <div className="flex items-center text-red-600 dark:text-red-500 text-xs mt-1 mb-1">
                             <AlertTriangle className="h-3 w-3 mr-1" />
                             <span>Contains Gluten</span>
                           </div>
                         ) : mayContainGlutenTag ? (
-                          <div className="flex items-center text-orange-500 text-xs mt-1 mb-1">
+                          <div className="flex items-center text-orange-500 dark:text-orange-400 text-xs mt-1 mb-1">
                             <AlertTriangle className="h-3 w-3 mr-1" />
                             <span>May Contain Traces</span>
                           </div>
@@ -1629,5 +1629,3 @@ export default function ProductsPage() {
     </div>
   );
 }
-
-
