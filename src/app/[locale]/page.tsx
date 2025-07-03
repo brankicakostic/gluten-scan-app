@@ -12,13 +12,14 @@ import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert, Barcode as BarcodeIcon } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert, Barcode as BarcodeIcon, X, FileText } from 'lucide-react';
 import { analyzeDeclaration, type AnalyzeDeclarationOutput, type IngredientAssessment } from '@/ai/flows/analyze-declaration';
 import { getDailyCeliacTip, type DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import { ocrDeclaration, type OcrDeclarationOutput } from '@/ai/flows/ocr-declaration-flow';
@@ -72,6 +73,7 @@ export default function HomePage() {
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoadingOcr, setIsLoadingOcr] = useState<boolean>(false); 
+  const [stagedImage, setStagedImage] = useState<string | null>(null);
   
   const [barcodeScanResult, setBarcodeScanResult] = useState<BarcodeScanResult | null>(null);
   const [isScanningBarcode, setIsScanningBarcode] = useState<boolean>(false);
@@ -290,19 +292,26 @@ export default function HomePage() {
         return;
     }
     setManualTextForAnalysis(declarationText);
-    setOcrTextForAnalysis(''); // Clear any OCR text
-    setSelectedFile(null); // Clear any selected file
+    resetAnalysisInputs(true); // Reset OCR states
     setSelectedLabelingOption('');
     setShowLabelingQuestionModal(true);
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      setSelectedFile(event.target.files[0]);
-      setErrorDeclaration(null); 
-      setDeclarationText(''); 
+      const file = event.target.files[0];
+      setSelectedFile(file);
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setStagedImage(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      setErrorDeclaration(null);
       setAnalysisResult(null);
       setIsTakingOcrPhoto(false); 
+      setDeclarationText(''); // Reset text area if file is chosen
     }
   };
   
@@ -310,8 +319,7 @@ export default function HomePage() {
     setIsLoadingOcr(true);
     setErrorDeclaration(null);
     setAnalysisResult(null); 
-    setDeclarationText(''); 
-    setManualTextForAnalysis(''); // Clear manual text if OCR is used
+    setManualTextForAnalysis('');
     try {
       const ocrResult: OcrDeclarationOutput = await ocrDeclaration({ imageDataUri });
       if (ocrResult.extractedText.trim()) {
@@ -333,6 +341,18 @@ export default function HomePage() {
       setIsLoadingOcr(false); 
     }
   };
+  
+  const handleAnalyzeStagedImage = async () => {
+    if (!canScan()) {
+      setShowScanLimitModal(true);
+      return;
+    }
+    if (!stagedImage) {
+      setErrorDeclaration('Please select or capture an image first.');
+      return;
+    }
+    await processOcrData(stagedImage);
+  };
 
   const handleLabelingChoiceSubmit = async () => {
     const textToAnalyze = manualTextForAnalysis || ocrTextForAnalysis;
@@ -342,26 +362,28 @@ export default function HomePage() {
     }
     setShowLabelingQuestionModal(false); 
     
+    // Set the declaration text to be visible in the results area if it came from OCR
     if (ocrTextForAnalysis) {
         setDeclarationText(ocrTextForAnalysis);
     }
 
     await performAiAnalysis(textToAnalyze, selectedLabelingOption);
     
+    // Clear the specific analysis source text
     setManualTextForAnalysis('');
     setOcrTextForAnalysis('');
-    setSelectedFile(null);
-    const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
-    setIsTakingOcrPhoto(false); 
     setSelectedLabelingOption('');
+    // Keep staged image and selected file so user can see what they analyzed, will be cleared by resetAnalysisInputs
   };
   
-  const resetAnalysisInputs = () => {
-    setDeclarationText('');
+  const resetAnalysisInputs = (keepManualText: boolean = false) => {
+    if (!keepManualText) {
+      setDeclarationText('');
+    }
     setAnalysisResult(null);
     setErrorDeclaration(null);
     setSelectedFile(null);
+    setStagedImage(null);
     const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
     if (fileInput) fileInput.value = '';
     setIsTakingOcrPhoto(false);
@@ -371,28 +393,6 @@ export default function HomePage() {
     setShowLabelingQuestionModal(false); 
   };
 
-
-  const handleOcrScanAndAnalyzeFile = async () => {
-    if (!canScan()) {
-      setShowScanLimitModal(true);
-      return;
-    }
-    if (!selectedFile) {
-      setErrorDeclaration('Please select an image file first.');
-      return;
-    }
-    
-    const reader = new FileReader();
-    reader.readAsDataURL(selectedFile);
-    reader.onload = async () => {
-      await processOcrData(reader.result as string);
-    };
-    reader.onerror = (error) => {
-      console.error('Error reading file:', error);
-      setErrorDeclaration('Failed to read the image file.');
-      toast({ variant: "destructive", title: "File Read Error", description: "Could not read the selected image." });
-    };
-  };
 
   const handleInitiateOcrPhotoCapture = () => {
     if (!canScan()) {
@@ -421,7 +421,7 @@ export default function HomePage() {
     if (context) {
         context.drawImage(ocrVideoRef.current, 0, 0, canvas.width, canvas.height);
         const imageDataUri = canvas.toDataURL('image/jpeg'); 
-        await processOcrData(imageDataUri);
+        setStagedImage(imageDataUri);
     } else {
         setErrorDeclaration("Could not capture image from camera.");
     }
@@ -779,129 +779,99 @@ export default function HomePage() {
               </div>
             )}
           </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><ScanSearch className="h-5 w-5" /> Analyze Ingredients</CardTitle>
-              <CardDescription>Paste ingredients, upload an image, or take a picture of the ingredient list for AI analysis.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {!isTakingOcrPhoto && !isScanningBarcode && !showLabelingQuestionModal && (
-                  <div>
-                    <Label htmlFor="ocr-file-input" className="text-sm font-medium">Upload Ingredient List Image</Label>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        id="ocr-file-input"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="flex-grow"
-                        disabled={!userCanCurrentlyScan || isLoadingAnyAnalysisProcess}
-                      />
-                      <Button onClick={handleOcrScanAndAnalyzeFile} 
-                        disabled={!selectedFile || !userCanCurrentlyScan || isLoadingAnyAnalysisProcess} 
-                        variant="outline"
-                      >
-                        {isLoadingOcr && selectedFile ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UploadCloud className="mr-2 h-4 w-4" />}
-                        Scan Image
-                      </Button>
+          
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><ScanSearch className="h-5 w-5" /> Analyze Ingredients from Image</CardTitle>
+                <CardDescription>Upload an image of an ingredient list, or take a picture for AI analysis.</CardDescription>
+              </CardHeader>
+              <CardContent className="min-h-[220px]">
+                {isTakingOcrPhoto ? (
+                  <div className="space-y-2">
+                    <div className="aspect-video bg-muted rounded-md flex flex-col items-center justify-center text-muted-foreground p-1 relative">
+                      <video ref={ocrVideoRef} className="w-full h-full object-cover rounded-md" autoPlay playsInline muted />
+                      {hasOcrCameraPermission === null && <Loader2 className="absolute h-8 w-8 animate-spin text-primary"/>}
+                      {hasOcrCameraPermission === false && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 p-4 rounded-md">
+                          <CameraOff className="h-10 w-10 mb-2 text-destructive" />
+                          <p className="text-center text-destructive-foreground text-sm">OCR Camera access is required.</p>
+                        </div>
+                      )}
                     </div>
-                    {selectedFile && <p className="text-xs text-muted-foreground mt-1">Selected: {selectedFile.name}</p>}
+                    <div className="flex gap-2">
+                      <Button onClick={handleCaptureOcrPhoto} disabled={!hasOcrCameraPermission || isLoadingOcr} className="flex-grow">
+                        {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Camera className="mr-2 h-4 w-4"/>}
+                         Capture Photo
+                      </Button>
+                      <Button onClick={handleCancelOcrPhotoCapture} variant="outline" className="flex-grow">Cancel</Button>
+                    </div>
                   </div>
-                )}
-
-                {!isTakingOcrPhoto && !isScanningBarcode && !showLabelingQuestionModal && (
-                  <div className="flex items-center gap-2">
-                    <div className="flex-grow border-t"></div>
-                    <span className="text-xs text-muted-foreground">OR</span>
-                    <div className="flex-grow border-t"></div>
-                  </div>
-                )}
-                
-                {!isScanningBarcode && !showLabelingQuestionModal && ( 
-                  <div>
-                    {!isTakingOcrPhoto && (
-                      <>
-                        <Label htmlFor="ocr-take-picture-button" className="text-sm font-medium sr-only">Take Picture of Ingredient List</Label>
+                ) : stagedImage ? (
+                   <div className="space-y-2 text-center">
+                    <div className="relative w-full max-w-sm mx-auto aspect-video rounded-md overflow-hidden border">
+                       <Image src={stagedImage} alt="Staged image for analysis" layout="fill" objectFit="contain" />
                         <Button 
-                          id="ocr-take-picture-button"
-                          onClick={handleInitiateOcrPhotoCapture} 
-                          disabled={!userCanCurrentlyScan || isLoadingAnyAnalysisProcess} 
-                          variant="outline" 
-                          className="w-full"
+                          variant="destructive" 
+                          size="icon" 
+                          className="absolute top-2 right-2 h-7 w-7"
+                          onClick={() => resetAnalysisInputs()}
                         >
-                          <Camera className="mr-2 h-4 w-4" /> Take Picture
+                          <X className="h-4 w-4" />
+                          <span className="sr-only">Clear Image</span>
                         </Button>
-                      </>
-                    )}
-                    {isTakingOcrPhoto && (
-                      <div className="space-y-2">
-                        <div className="aspect-video bg-muted rounded-md flex flex-col items-center justify-center text-muted-foreground p-1 relative">
-                          <video ref={ocrVideoRef} className="w-full h-full object-cover rounded-md" autoPlay playsInline muted />
-                          {hasOcrCameraPermission === null && <Loader2 className="absolute h-8 w-8 animate-spin text-primary"/>}
-                          {hasOcrCameraPermission === false && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 p-4 rounded-md">
-                              <CameraOff className="h-10 w-10 mb-2 text-destructive" />
-                              <p className="text-center text-destructive-foreground text-sm">OCR Camera access is required. Please enable permissions in your browser settings.</p>
-                            </div>
-                          )}
-                          {hasOcrCameraPermission === true && (
-                            <p className="text-xs text-muted-foreground mt-1 text-center">
-                              Tap the video to focus if needed. Ensure good lighting for best results.
-                            </p>
-                          )}
-                        </div>
-                        <div className="flex gap-2">
-                          <Button 
-                            onClick={handleCaptureOcrPhoto} 
-                            disabled={!hasOcrCameraPermission || isLoadingOcr}
-                            className="flex-grow"
-                          >
-                            {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Camera className="mr-2 h-4 w-4"/>}
-                             Capture & Scan Photo
-                          </Button>
-                          <Button onClick={handleCancelOcrPhotoCapture} variant="outline" className="flex-grow">Cancel</Button>
-                        </div>
-                      </div>
-                    )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">Image ready for analysis.</p>
+                   </div>
+                ) : (
+                  <div className="space-y-4 text-center">
+                    <Label htmlFor="ocr-file-input" className="group cursor-pointer w-full border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center hover:border-primary hover:bg-muted/50 transition-colors">
+                      <UploadCloud className="h-8 w-8 text-muted-foreground group-hover:text-primary" />
+                      <span className="mt-2 text-sm font-semibold">Choose File</span>
+                      <Input id="ocr-file-input" type="file" className="sr-only" onChange={handleFileChange} accept="image/*" disabled={isLoadingAnyAnalysisProcess}/>
+                    </Label>
+                     <div className="flex items-center gap-2">
+                        <div className="flex-grow border-t"></div>
+                        <span className="text-xs text-muted-foreground">OR</span>
+                        <div className="flex-grow border-t"></div>
+                     </div>
+                     <Button variant="outline" className="w-full" onClick={handleInitiateOcrPhotoCapture} disabled={isLoadingAnyAnalysisProcess}>
+                        <Camera className="mr-2 h-4 w-4" />
+                        Take Picture
+                     </Button>
                   </div>
                 )}
-                
-                 {!isTakingOcrPhoto && !isScanningBarcode && !showLabelingQuestionModal && (
-                  <div className="flex items-center gap-2">
-                    <div className="flex-grow border-t"></div>
-                    <span className="text-xs text-muted-foreground">OR</span>
-                    <div className="flex-grow border-t"></div>
-                  </div>
-                )}
+              </CardContent>
+              <CardFooter>
+                 <Button onClick={handleAnalyzeStagedImage} disabled={!stagedImage || isLoadingAnyAnalysisProcess} className="w-full">
+                    {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                    Analyze with AI
+                 </Button>
+              </CardFooter>
+            </Card>
 
-                {!isTakingOcrPhoto && !isScanningBarcode && !showLabelingQuestionModal && (
-                  <form onSubmit={handleDeclarationSubmit} className="space-y-4">
-                    <div>
-                      <Label htmlFor="declaration-text-area" className="text-sm font-medium">Paste Ingredient List</Label>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1">
+                <AccordionTrigger>
+                   <div className="flex items-center gap-2">
+                     <FileText className="h-5 w-5"/> Or Paste Text Manually
+                   </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <form onSubmit={handleDeclarationSubmit} className="space-y-4 pt-2">
                       <Textarea
                         id="declaration-text-area"
                         placeholder="e.g., Wheat flour, sugar, salt, yeast, barley malt extract..."
                         value={declarationText}
                         onChange={(e) => {
-                            setDeclarationText(e.target.value);
-                            if (e.target.value.trim()) {
-                                setManualTextForAnalysis(''); 
-                                setSelectedFile(null);
-                                const fileInput = document.getElementById('ocr-file-input') as HTMLInputElement;
-                                if (fileInput) fileInput.value = '';
-                                setIsTakingOcrPhoto(false);
-                                setOcrTextForAnalysis(''); 
-                                setSelectedLabelingOption('');
-                            }
+                           setDeclarationText(e.target.value);
+                           if(e.target.value) { resetAnalysisInputs(true); }
                         }}
                         rows={6}
                         className="resize-none"
                         aria-label="Product Declaration Input"
                         disabled={!userCanCurrentlyScan || isLoadingAnyAnalysisProcess}
                       />
-                    </div>
                     <Button type="submit" 
                       disabled={!userCanCurrentlyScan || isLoadingDeclaration || !declarationText.trim() || isLoadingAnyAnalysisProcess} 
                       className="w-full"
@@ -910,111 +880,109 @@ export default function HomePage() {
                       Analyze Text with AI
                     </Button>
                   </form>
-                )}
-                
-                {errorDeclaration && !showLabelingQuestionModal && (
-                  <ShadcnAlert variant="destructive" className="mt-2">
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+            
+            <div
+              aria-live="polite" 
+              aria-busy={isLoadingAnyAnalysisProcess}
+              className="mt-6"
+            >
+              {(analysisResult || isLoadingDeclaration || (isLoadingOcr && !isTakingOcrPhoto)) && !showLabelingQuestionModal && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg mb-2">AI Analysis Report</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {(isLoadingDeclaration || (isLoadingOcr && !isTakingOcrPhoto)) && (
+                      <div className="flex flex-col items-center justify-center h-24 text-muted-foreground">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
+                        <p>{isLoadingOcr ? 'Processing Image...' : 'Analyzing Ingredients...'}</p>
+                      </div>
+                    )}
+                    {analysisResult && !isLoadingDeclaration && !isLoadingOcr && (
+                      <div className="space-y-4">
+                        {getAssessmentAlert(analysisResult)}
+
+                         {relevantGlutenIssueCount > 0 && (
+                            <div className="mt-3 p-2 bg-destructive/10 rounded-md text-sm text-destructive flex items-center gap-2">
+                                <ShieldAlert className="h-5 w-5"/>
+                                <span>Identifikovano {relevantGlutenIssueCount} kritičnih stavki vezanih za gluten.</span>
+                            </div>
+                         )}
+
+                        <div>
+                          <h4 className="font-semibold mb-1 text-sm">Obrazloženje:</h4>
+                          <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.finalnoObrazlozenje}</p>
+                        </div>
+
+                        {problematicIngredients.length > 0 && (
+                          <div>
+                            <h4 className="font-semibold mb-1 text-sm">Analizirani sastojci (problematični ili rizični):</h4>
+                              <ul className="list-none space-y-2 text-xs">
+                                {problematicIngredients.map((item, index) => (
+                                  <li key={index} 
+                                      className={`p-2 rounded-md ${
+                                        item.ocena === 'nije bezbedno' ? 'bg-destructive/10 border border-destructive/30' 
+                                        : item.ocena === 'rizično – proveriti poreklo' ? 'bg-orange-500/10 border border-orange-500/30' 
+                                        : ''
+                                      }`}
+                                  >
+                                    {item.napomena ? (
+                                      <Popover>
+                                        <PopoverTrigger asChild>
+                                          <div className="font-semibold cursor-pointer hover:underline flex items-center gap-1">
+                                            {item.sastojak}
+                                            <span className={`ml-1 font-medium text-xs ${
+                                                item.ocena === 'nije bezbedno' ? 'text-destructive' 
+                                                : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600 dark:text-orange-400'
+                                                : 'text-muted-foreground' 
+                                              }`}>
+                                              ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
+                                            </span>
+                                            <Info className="inline h-3 w-3 text-blue-500 shrink-0" />
+                                          </div>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto max-w-xs text-sm p-2" side="top" align="start">
+                                          <p>{item.napomena}</p>
+                                        </PopoverContent>
+                                      </Popover>
+                                    ) : (
+                                      <div className="font-semibold">
+                                        {item.sastojak}
+                                        <span className={`ml-1 font-medium text-xs ${
+                                            item.ocena === 'nije bezbedno' ? 'text-destructive' 
+                                            : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600 dark:text-orange-400'
+                                            : 'text-muted-foreground' 
+                                          }`}>
+                                          ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
+                                        </span>
+                                      </div>
+                                    )}
+                                  </li>
+                                ))}
+                              </ul>
+                          </div>
+                        )}
+                        <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => resetAnalysisInputs()}>
+                           Clear Analysis & Inputs
+                        </Button>
+                      </div>
+                    )}
+                   </CardContent>
+                </Card>
+              )}
+               {errorDeclaration && !showLabelingQuestionModal && (
+                  <ShadcnAlert variant="destructive" className="mt-4">
                     <AlertCircle className="h-4 w-4" />
                     <ShadcnAlertTitle>Error</ShadcnAlertTitle>
                     <ShadcnAlertDescription>{errorDeclaration}</ShadcnAlertDescription>
                   </ShadcnAlert>
                 )}
-              </div>
-            </CardContent>
-            
-            <CardContent
-              aria-live="polite" 
-              aria-busy={isLoadingAnyAnalysisProcess}
-              className="mt-6 border-t pt-6"
-            >
-              {(analysisResult || isLoadingDeclaration || isLoadingAnyAnalysisProcess) && !showLabelingQuestionModal && (
-                <>
-                  <CardTitle className="text-lg mb-2">AI Analysis Report</CardTitle>
-                  {(isLoadingDeclaration || isLoadingOcr) && !showLabelingQuestionModal && (
-                    <div className="flex flex-col items-center justify-center h-24 text-muted-foreground">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
-                      <p>{isLoadingOcr ? 'Processing Image...' : 'Analyzing Ingredients...'}</p>
-                    </div>
-                  )}
-                  {analysisResult && !isLoadingDeclaration && !isLoadingOcr && (
-                    <>
-                      {getAssessmentAlert(analysisResult)}
-
-                       {relevantGlutenIssueCount > 0 && (
-                          <div className="mt-3 p-2 bg-destructive/10 rounded-md text-sm text-destructive flex items-center gap-2">
-                              <ShieldAlert className="h-5 w-5"/>
-                              <span>Identifikovano {relevantGlutenIssueCount} kritičnih stavki vezanih za gluten.</span>
-                          </div>
-                       )}
-
-                      <div className="mt-3">
-                        <h4 className="font-semibold mb-1 text-sm">Obrazloženje:</h4>
-                        <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.finalnoObrazlozenje}</p>
-                      </div>
-
-                      {problematicIngredients.length > 0 && (
-                        <div className="mt-3">
-                          <h4 className="font-semibold mb-1 text-sm">Analizirani sastojci (problematični ili rizični):</h4>
-                            <ul className="list-none space-y-2 text-xs">
-                              {problematicIngredients.map((item, index) => (
-                                <li key={index} 
-                                    className={`p-2 rounded-md ${
-                                      item.ocena === 'nije bezbedno' ? 'bg-destructive/10 border border-destructive/30' 
-                                      : item.ocena === 'rizično – proveriti poreklo' ? 'bg-orange-500/10 border border-orange-500/30' 
-                                      : ''
-                                    }`}
-                                >
-                                  {item.napomena ? (
-                                    <Popover>
-                                      <PopoverTrigger asChild>
-                                        <div className="font-semibold cursor-pointer hover:underline flex items-center gap-1">
-                                          {item.sastojak}
-                                          <span className={`ml-1 font-medium text-xs ${
-                                              item.ocena === 'nije bezbedno' ? 'text-destructive' 
-                                              : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600 dark:text-orange-400'
-                                              : 'text-muted-foreground' 
-                                            }`}>
-                                            ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
-                                          </span>
-                                          <Info className="inline h-3 w-3 text-blue-500 shrink-0" />
-                                        </div>
-                                      </PopoverTrigger>
-                                      <PopoverContent className="w-auto max-w-xs text-sm p-2" side="top" align="start">
-                                        <p>{item.napomena}</p>
-                                      </PopoverContent>
-                                    </Popover>
-                                  ) : (
-                                    <div className="font-semibold">
-                                      {item.sastojak}
-                                      <span className={`ml-1 font-medium text-xs ${
-                                          item.ocena === 'nije bezbedno' ? 'text-destructive' 
-                                          : item.ocena === 'rizično – proveriti poreklo' ? 'text-orange-600 dark:text-orange-400'
-                                          : 'text-muted-foreground' 
-                                        }`}>
-                                        ({item.ocena} - {item.nivoRizika} rizik{item.kategorijaRizika ? ` / ${item.kategorijaRizika}` : ''})
-                                      </span>
-                                    </div>
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
-                        </div>
-                      )}
-                       <Button variant="outline" size="sm" className="mt-4 w-full" onClick={resetAnalysisInputs}>
-                         Clear Analysis & Inputs
-                       </Button>
-                    </>
-                  )}
-                </>
-              )}
-               {!isLoadingAnyAnalysisProcess && !analysisResult && !errorDeclaration && (declarationText || selectedFile || isTakingOcrPhoto) && !showLabelingQuestionModal && (
-                     <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md mt-4 mx-6 mb-6">
-                      <Info className="mx-auto h-8 w-8 text-primary" />
-                      <p className="text-sm">Analysis results will appear here once submitted.</p>
-                    </div>
-                )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
+          
 
           <AlertDialog open={showScanLimitModal} onOpenChange={setShowScanLimitModal}>
             <AlertDialogContent>
@@ -1039,7 +1007,10 @@ export default function HomePage() {
             </AlertDialogContent>
           </AlertDialog>
 
-          <AlertDialog open={showLabelingQuestionModal} onOpenChange={setShowLabelingQuestionModal}>
+          <AlertDialog open={showLabelingQuestionModal} onOpenChange={(open) => {
+            if (!open) { resetAnalysisInputs(); } // Reset everything if modal is closed without action
+            setShowLabelingQuestionModal(open);
+          }}>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Product Labeling Information</AlertDialogTitle>
@@ -1066,7 +1037,7 @@ export default function HomePage() {
                 </RadioGroup>
               </div>
               <AlertDialogFooter>
-                <AlertDialogCancel onClick={resetAnalysisInputs}>Cancel Scan</AlertDialogCancel>
+                <AlertDialogCancel>Cancel Scan</AlertDialogCancel>
                 <AlertDialogAction onClick={handleLabelingChoiceSubmit} disabled={!selectedLabelingOption || isLoadingDeclaration}>
                   {isLoadingDeclaration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Continue to AI Analysis
@@ -1080,8 +1051,3 @@ export default function HomePage() {
     </div>
   );
 }
-    
-
-    
-
-    
