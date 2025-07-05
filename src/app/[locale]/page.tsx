@@ -112,8 +112,6 @@ export default function HomePage() {
   // State for the report error form
   const [showReportErrorModal, setShowReportErrorModal] = useState(false);
   const [reportComment, setReportComment] = useState('');
-  const [isErrorInAnalysis, setIsErrorInAnalysis] = useState(false);
-  const [isCeliac, setIsCeliac] = useState(false);
   const [wantsContact, setWantsContact] = useState(false);
   const [contactEmail, setContactEmail] = useState('');
   const [reportPriority, setReportPriority] = useState('');
@@ -1039,8 +1037,6 @@ export default function HomePage() {
                                setShowReportErrorModal(open);
                                if (!open) {
                                    setReportComment('');
-                                   setIsErrorInAnalysis(false);
-                                   setIsCeliac(false);
                                    setWantsContact(false);
                                    setContactEmail('');
                                    setReportPriority('');
@@ -1099,48 +1095,23 @@ export default function HomePage() {
                                          <RadioGroup value={errorType} onValueChange={setErrorType} className="mt-2 space-y-1">
                                           <div className="flex items-center space-x-2">
                                             <RadioGroupItem value="sastav" id="type-sastav" />
-                                            <Label htmlFor="type-sastav" className="font-normal">Sastav / Klasifikacija</Label>
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="ocr" id="type-ocr" />
-                                            <Label htmlFor="type-ocr" className="font-normal">OCR (Prepoznavanje teksta sa slike)</Label>
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="ui" id="type-ui" />
-                                            <Label htmlFor="type-ui" className="font-normal">UI (Izgled aplikacije)</Label>
+                                            <Label htmlFor="type-sastav" className="font-normal">Greška u sastavu / AI analizi</Label>
                                           </div>
                                           <div className="flex items-center space-x-2">
                                             <RadioGroupItem value="drugo" id="type-drugo" />
-                                            <Label htmlFor="type-drugo" className="font-normal">Drugo</Label>
+                                            <Label htmlFor="type-drugo" className="font-normal">Ostalo</Label>
                                           </div>
                                         </RadioGroup>
                                       </div>
 
-                                     <div className="flex items-center space-x-2">
-                                       <Checkbox id="error-type" onCheckedChange={(checked) => setIsErrorInAnalysis(!!checked)} />
-                                       <Label htmlFor="error-type" className="font-medium">Greška je u sastavu / oceni</Label>
-                                        <TooltipProvider>
-                                          <Tooltip>
-                                            <TooltipTrigger asChild>
-                                              <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                              <p>Ako ste primetili da je neki sastojak pogrešno<br/>klasifikovan kao rizičan ili bezbedan.</p>
-                                            </TooltipContent>
-                                          </Tooltip>
-                                        </TooltipProvider>
-                                     </div>
                                      <div className="space-y-2">
                                        <Label htmlFor="report-comment">Komentar (opciono)</Label>
                                        <Textarea id="report-comment" placeholder="Npr. Brašno od rogača je bez glutena, a označeno je kao rizično." onChange={(e) => setReportComment(e.target.value)} />
                                      </div>
-                                     <div className="flex items-center space-x-2">
-                                       <Checkbox id="is-celiac" onCheckedChange={(checked) => setIsCeliac(!!checked)} />
-                                       <Label htmlFor="is-celiac">Imam celijakiju / na bezglutenskoj sam dijeti.</Label>
-                                     </div>
+                                     
                                      <div className="flex items-center space-x-2">
                                        <Checkbox id="wants-contact" onCheckedChange={(checked) => setWantsContact(!!checked)} />
-                                       <Label htmlFor="wants-contact">Želim da me kontaktirate povodom ove greške.</Label>
+                                       <Label htmlFor="wants-contact">Želim da me kontaktirate povodom ove prijave.</Label>
                                      </div>
                                      {wantsContact && (
                                        <div className="space-y-2 pl-6">
