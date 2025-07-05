@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert';
-import { ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, Star, AlertTriangle, ShieldAlert, RotateCcw, Flag, XCircle } from 'lucide-react'; 
+import { ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, Star, AlertTriangle, ShieldAlert, RotateCcw, Flag, XCircle, Send } from 'lucide-react'; 
 import { analyzeDeclaration, type AnalyzeDeclarationOutput, type IngredientAssessment } from '@/ai/flows/analyze-declaration';
 import { useToast } from '@/hooks/use-toast';
 import { useScanLimiter } from '@/contexts/scan-limiter-context';
@@ -22,6 +22,8 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 
 export default function ScanDeclarationPage() {
@@ -34,13 +36,21 @@ export default function ScanDeclarationPage() {
   const [showScanLimitModal, setShowScanLimitModal] = useState<boolean>(false);
   const analysisReportRef = useRef<HTMLDivElement>(null);
 
-  // State for the new report error form
+  // State for the report error form
   const [showReportErrorModal, setShowReportErrorModal] = useState(false);
   const [reportComment, setReportComment] = useState('');
   const [isErrorInAnalysis, setIsErrorInAnalysis] = useState(false);
   const [isCeliac, setIsCeliac] = useState(false);
   const [wantsContact, setWantsContact] = useState(false);
   const [contactEmail, setContactEmail] = useState('');
+  const [reportPriority, setReportPriority] = useState('');
+  const [errorType, setErrorType] = useState('');
+  const [submissionStatus, setSubmissionStatus] = useState('idle');
+
+  // State for the manufacturer inquiry form
+  const [showInquiryModal, setShowInquiryModal] = useState(false);
+  const [inquiryComment, setInquiryComment] = useState('');
+  const [inquiryEmail, setInquiryEmail] = useState('');
 
 
   // State to track client-side mounting to prevent hydration errors
@@ -94,6 +104,14 @@ export default function ScanDeclarationPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleReportSubmit = () => {
+    setSubmissionStatus('submitting');
+    // Simulate API call
+    setTimeout(() => {
+        setSubmissionStatus('success');
+    }, 1000);
   };
 
   const getAssessmentAlert = (result: AnalyzeDeclarationOutput) => {
@@ -344,6 +362,9 @@ export default function ScanDeclarationPage() {
                                    setIsCeliac(false);
                                    setWantsContact(false);
                                    setContactEmail('');
+                                   setReportPriority('');
+                                   setErrorType('');
+                                   setSubmissionStatus('idle');
                                }
                            }}>
                           <DialogTrigger asChild>
@@ -353,53 +374,154 @@ export default function ScanDeclarationPage() {
                             </Button>
                           </DialogTrigger>
                           <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Prijavi grešku u analizi</DialogTitle>
-                              <DialogDescription>
-                                Hvala vam što pomažete da poboljšamo tačnost aplikacije. Vaše povratne informacije su dragocene.
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="space-y-4 py-2">
-                              <div className="flex items-center space-x-2">
-                                <Checkbox id="error-type-scan" onCheckedChange={(checked) => setIsErrorInAnalysis(!!checked)} />
-                                <Label htmlFor="error-type-scan" className="font-medium">Da li je greška u sastavu / oceni?</Label>
-                              </div>
-                              <div className="space-y-2">
-                                <Label htmlFor="report-comment-scan">Komentar (opciono)</Label>
-                                <Textarea id="report-comment-scan" placeholder="Npr. Brašno od rogača je bez glutena, a označeno je kao rizično." onChange={(e) => setReportComment(e.target.value)} />
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <Checkbox id="is-celiac-scan" onCheckedChange={(checked) => setIsCeliac(!!checked)} />
-                                <Label htmlFor="is-celiac-scan">Imam celijakiju / na bezglutenskoj sam dijeti.</Label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <Checkbox id="wants-contact-scan" onCheckedChange={(checked) => setWantsContact(!!checked)} />
-                                <Label htmlFor="wants-contact-scan">Želim da me kontaktirate povodom ove greške.</Label>
-                              </div>
-                              {wantsContact && (
-                                <div className="space-y-2 pl-6">
-                                  <Label htmlFor="contact-email-scan">Email za odgovor</Label>
-                                  <Input id="contact-email-scan" type="email" placeholder="vas.email@primer.com" onChange={(e) => setContactEmail(e.target.value)} />
-                                </div>
+                            {submissionStatus === 'success' ? (
+                                 <div className="flex flex-col items-center justify-center text-center p-4">
+                                   <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+                                   <DialogTitle className="text-xl">Prijava je poslata!</DialogTitle>
+                                   <DialogDescription className="mt-2">
+                                     Hvala što si deo GlutenScan zajednice. 💛 Ako si ostavio/la kontakt, možemo ti se javiti kad proverimo.
+                                   </DialogDescription>
+                                   <DialogFooter className="mt-6 w-full">
+                                     <Button className="w-full" onClick={() => setShowReportErrorModal(false)}>Zatvori</Button>
+                                   </DialogFooter>
+                                 </div>
+                               ) : (
+                                <>
+                                  <DialogHeader>
+                                    <DialogTitle>Prijavi grešku u analizi</DialogTitle>
+                                    <DialogDescription>
+                                      Tvoje povratne informacije nam pomažu da poboljšamo tačnost aplikacije.
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <div className="space-y-4 py-2 text-sm">
+                                      <div>
+                                        <Label className="font-semibold">Koliko je ova greška ozbiljna za vas? (opciono)</Label>
+                                        <RadioGroup value={reportPriority} onValueChange={setReportPriority} className="mt-2 space-y-1">
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="niska" id="priority-low-scan" />
+                                            <Label htmlFor="priority-low-scan" className="font-normal">Niska (čisto informacija)</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="srednja" id="priority-medium-scan" />
+                                            <Label htmlFor="priority-medium-scan" className="font-normal">Srednja (važno mi je)</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="visoka" id="priority-high-scan" />
+                                            <Label htmlFor="priority-high-scan" className="font-normal">Visoka (utiče na moju bezbednost)</Label>
+                                          </div>
+                                        </RadioGroup>
+                                      </div>
+                                      <div>
+                                        <Label className="font-semibold">Tip greške (opciono)</Label>
+                                         <RadioGroup value={errorType} onValueChange={setErrorType} className="mt-2 space-y-1">
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="sastav" id="type-sastav-scan" />
+                                            <Label htmlFor="type-sastav-scan" className="font-normal">Sastav / Klasifikacija</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="ocr" id="type-ocr-scan" />
+                                            <Label htmlFor="type-ocr-scan" className="font-normal">OCR (Prepoznavanje teksta sa slike)</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="ui" id="type-ui-scan" />
+                                            <Label htmlFor="type-ui-scan" className="font-normal">UI (Izgled aplikacije)</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="drugo" id="type-drugo-scan" />
+                                            <Label htmlFor="type-drugo-scan" className="font-normal">Drugo</Label>
+                                          </div>
+                                        </RadioGroup>
+                                      </div>
+                                    <div className="flex items-center space-x-2">
+                                      <Checkbox id="error-type-scan" onCheckedChange={(checked) => setIsErrorInAnalysis(!!checked)} />
+                                      <Label htmlFor="error-type-scan" className="font-medium">Greška je u sastavu / oceni</Label>
+                                       <TooltipProvider>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                              <p>Ako ste primetili da je neki sastojak pogrešno<br/>klasifikovan kao rizičan ili bezbedan.</p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label htmlFor="report-comment-scan">Komentar (opciono)</Label>
+                                      <Textarea id="report-comment-scan" placeholder="Npr. Brašno od rogača je bez glutena, a označeno je kao rizično." onChange={(e) => setReportComment(e.target.value)} />
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <Checkbox id="is-celiac-scan" onCheckedChange={(checked) => setIsCeliac(!!checked)} />
+                                      <Label htmlFor="is-celiac-scan">Imam celijakiju / na bezglutenskoj sam dijeti.</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <Checkbox id="wants-contact-scan" onCheckedChange={(checked) => setWantsContact(!!checked)} />
+                                      <Label htmlFor="wants-contact-scan">Želim da me kontaktirate povodom ove greške.</Label>
+                                    </div>
+                                    {wantsContact && (
+                                      <div className="space-y-2 pl-6">
+                                        <Label htmlFor="contact-email-scan">Email za odgovor</Label>
+                                        <Input id="contact-email-scan" type="email" placeholder="vas.email@primer.com" onChange={(e) => setContactEmail(e.target.value)} />
+                                      </div>
+                                    )}
+                                    <p className="text-xs text-muted-foreground">
+                                      Napomena: Uz prijavu se automatski šalje i analizirani tekst radi lakše provere.
+                                    </p>
+                                  </div>
+                                  <DialogFooter>
+                                    <Button variant="outline" onClick={() => setShowReportErrorModal(false)}>Odustani</Button>
+                                    <Button onClick={handleReportSubmit} disabled={submissionStatus === 'submitting'}>
+                                      {submissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Pošalji prijavu'}
+                                    </Button>
+                                  </DialogFooter>
+                                </>
                               )}
-                              <p className="text-xs text-muted-foreground">
-                                Napomena: Uz prijavu se automatski šalje i analizirani tekst radi lakše provere.
-                              </p>
-                            </div>
-                            <DialogFooter>
-                              <Button variant="outline" onClick={() => setShowReportErrorModal(false)}>Odustani</Button>
-                              <Button onClick={() => {
-                                toast({
-                                  title: 'Greška prijavljena!',
-                                  description: 'Hvala vam! Pregledaćemo vašu prijavu uskoro.',
-                                });
-                                setShowReportErrorModal(false);
-                              }}>
-                                Pošalji prijavu
-                              </Button>
-                            </DialogFooter>
                           </DialogContent>
                         </Dialog>
+                          <Dialog open={showInquiryModal} onOpenChange={(open) => {
+                             setShowInquiryModal(open);
+                             if (!open) {
+                               setInquiryComment('');
+                               setInquiryEmail('');
+                             }
+                           }}>
+                            <DialogTrigger asChild>
+                              <Button variant="secondary" className="w-full">
+                                <Send className="mr-2 h-4 w-4" /> Pošalji proizvođaču upit
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>✉️ Želite da proverimo ovaj proizvod kod proizvođača?</DialogTitle>
+                                <DialogDescription>
+                                  Ponekad je direktan upit proizvođaču najbolji način da se otklone sumnje. Rado ćemo to uraditi za vas.
+                                </DialogDescription>
+                              </DialogHeader>
+                              <div className="space-y-4 py-2">
+                                <div className="space-y-2">
+                                  <Label htmlFor="inquiry-comment-scan">Ostavi komentar (opciono)</Label>
+                                  <Textarea id="inquiry-comment-scan" placeholder="Npr. 'Zanima me da li je aroma na bazi pšenice' ili 'Molim vas proverite rizik od unakrsne kontaminacije'." onChange={(e) => setInquiryComment(e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor="inquiry-email-scan">Email za odgovor (opciono)</Label>
+                                  <Input id="inquiry-email-scan" type="email" placeholder="vas.email@primer.com" onChange={(e) => setInquiryEmail(e.target.value)} />
+                                  <p className="text-xs text-muted-foreground">Ako unesete email, javićemo vam direktno kada dobijemo odgovor.</p>
+                                </div>
+                              </div>
+                              <DialogFooter>
+                                <Button variant="outline" onClick={() => setShowInquiryModal(false)}>Odustani</Button>
+                                <Button onClick={() => {
+                                  toast({
+                                    title: "Upit se šalje!",
+                                    description: "Hvala! Poslaćemo upit proizvođaču i obavestiti vas.",
+                                  });
+                                  setShowInquiryModal(false);
+                                }}>
+                                  <Send className="mr-2 h-4 w-4" /> Pošalji
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
                      </div>
                      <p className="text-xs text-muted-foreground mt-4 text-center">
                       <Info className="inline h-3 w-3 mr-1" />
