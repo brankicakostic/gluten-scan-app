@@ -2,8 +2,8 @@
 // This file uses client-side rendering.
 'use client';
 
-import type { Product } from '@/app/[locale]/products/[productId]/page';
-import { placeholderProducts } from '@/app/[locale]/products/page';
+import type { Product } from '@/lib/products';
+import { placeholderProducts } from '@/lib/products';
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
 interface FavoritesContextType {

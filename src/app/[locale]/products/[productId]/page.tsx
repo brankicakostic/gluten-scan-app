@@ -13,45 +13,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Leaf, Info, ShieldCheck, FileText, GitBranch, Tag, Barcode, CircleAlert, Store, MapPin, ExternalLink, ListChecks, CalendarDays, SearchCheck } from 'lucide-react';
-import { placeholderProducts } from '@/app/[locale]/products/page';
+import { placeholderProducts, type Product } from '@/lib/products';
 import { Badge } from '@/components/ui/badge';
 import { useFavorites } from '@/contexts/favorites-context';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-
-
-// Updated Product interface to align with schema including recall info
-export interface Product {
-  id: string;
-  name: string;
-  brand?: string;
-  barcode?: string;
-  category: string;
-  imageUrl: string;
-  description: string;
-  ingredientsText?: string;
-  labelText?: string;
-  hasAOECSLicense?: boolean;
-  hasManufacturerStatement?: boolean;
-  isVerifiedAdmin?: boolean;
-  source?: string;
-  tags?: string[];
-  nutriScore?: string;
-  isLactoseFree?: boolean;
-  isSugarFree?: boolean;
-  isPosno?: boolean;
-  dataAiHint?: string;
-  warning?: boolean;
-  note?: string;
-  stores?: string[];
-  seriesAffected?: {
-    lotNumbers: string[];
-    expiry: string;
-    finding: string;
-    status: string;
-    sourceLink?: string;
-  };
-}
 
 const getNutriScoreClasses = (score?: string) => {
   if (!score) return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';

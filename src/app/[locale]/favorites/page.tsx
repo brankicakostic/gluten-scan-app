@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Heart, StarOff, ShoppingBag, CheckCircle, AlertTriangle, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useFavorites } from '@/contexts/favorites-context';
-import type { Product } from '@/app/[locale]/products/[productId]/page';
+import type { Product } from '@/lib/products';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';

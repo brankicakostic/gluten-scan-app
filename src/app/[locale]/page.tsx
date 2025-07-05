@@ -28,8 +28,7 @@ import { Badge } from '@/components/ui/badge';
 import { useScanLimiter } from '@/contexts/scan-limiter-context'; 
 import { countRelevantGlutenIssues } from '@/lib/analysis-utils';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-
-import { placeholderProducts as allProducts, type Product } from './products/page'; 
+import { placeholderProducts as allProducts, type Product } from '@/lib/products'; 
 
 interface BarcodeScanResult {
   name: string;
