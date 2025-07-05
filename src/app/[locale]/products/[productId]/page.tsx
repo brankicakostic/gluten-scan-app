@@ -1,10 +1,10 @@
-
 // This file uses client-side rendering.
 'use client';
 
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { SidebarInset, SidebarRail } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/navigation/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
@@ -51,6 +51,11 @@ export default function ProductDetailPage() {
 
   const { addFavorite, removeFavorite, isFavorite } = useFavorites();
   const { toast } = useToast();
+  
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   if (!product) {
     return (
@@ -78,7 +83,7 @@ export default function ProductDetailPage() {
     );
   }
 
-  const isCurrentlyFavorite = isFavorite(product.id);
+  const isCurrentlyFavorite = hasMounted && isFavorite(product.id);
 
   const handleToggleFavorite = () => {
     if (isCurrentlyFavorite) {
