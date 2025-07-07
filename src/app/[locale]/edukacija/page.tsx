@@ -25,7 +25,7 @@ const articlesData = [
 ];
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
-  const title = params.locale === 'sr' ? 'Edukacija o Celijakiji | Gluten Detective' : 'Celiac Disease Education | Gluten Detective';
+  const title = params.locale === 'sr' ? 'Edukacija o Celijakiji | Gluten Scan' : 'Celiac Disease Education | Gluten Scan';
   const description = params.locale === 'sr' ? 'Saznajte više o celijakiji, bezglutenskoj ishrani i pročitajte lične priče.' : 'Learn more about celiac disease, gluten-free diet, and read personal stories.';
   return {
     title,

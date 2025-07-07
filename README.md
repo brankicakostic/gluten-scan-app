@@ -1,10 +1,11 @@
-# Gluten Detective in Firebase Studio
+
+# Gluten Scan in Firebase Studio
 
 This is a NextJS starter project being built in Firebase Studio.
 
 ## Pregled Projekta i Tehnologije
 
-Ovaj projekat je web aplikacija "Gluten Detective", dizajnirana da pomogne korisnicima sa celijakijom i intolerancijom na gluten da lakše identifikuju bezbedne proizvode. Aplikacija je razvijena sa modernim tehnologijama, sa fokusom na brzinu, korisničko iskustvo i pametne funkcionalnosti.
+Ovaj projekat je web aplikacija "Gluten Scan", dizajnirana da pomogne korisnicima sa celijakijom i intolerancijom na gluten da lakše identifikuju bezbedne proizvode. Aplikacija je razvijena sa modernim tehnologijama, sa fokusom na brzinu, korisničko iskustvo i pametne funkcionalnosti.
 
 ### Osnovni Tehnološki Stack (Tech Stack)
 

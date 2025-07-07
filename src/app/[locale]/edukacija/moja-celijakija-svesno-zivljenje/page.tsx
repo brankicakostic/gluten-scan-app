@@ -8,8 +8,8 @@ export async function generateMetadata({ params }: { params: { locale: string; s
   const postDescriptionBase = "Lična priča o dijagnozi celijakije, putu ka svesnijem životu i borbi za zdravlje.";
   
   const title = params.locale === 'sr' 
-    ? `${postTitleBase} | Gluten Detective Edukacija` 
-    : `My Celiac Disease: It Taught Me to Live Consciously | Gluten Detective Education`;
+    ? `${postTitleBase} | Gluten Scan Edukacija` 
+    : `My Celiac Disease: It Taught Me to Live Consciously | Gluten Scan Education`;
   
   const description = params.locale === 'sr' 
     ? postDescriptionBase

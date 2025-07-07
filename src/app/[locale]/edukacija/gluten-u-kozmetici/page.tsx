@@ -8,8 +8,8 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   const postDescriptionBase = "Detaljno objašnjenje o uticaju glutena u kozmetici na osobe sa celijakijom.";
   
   const title = params.locale === 'sr' 
-    ? `${postTitleBase} | Gluten Detective Edukacija` 
-    : `Is Gluten in Cosmetics Harmful for Celiacs? | Gluten Detective Education`;
+    ? `${postTitleBase} | Gluten Scan Edukacija` 
+    : `Is Gluten in Cosmetics Harmful for Celiacs? | Gluten Scan Education`;
   
   const description = params.locale === 'sr' 
     ? postDescriptionBase

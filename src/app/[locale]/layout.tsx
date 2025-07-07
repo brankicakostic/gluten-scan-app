@@ -17,7 +17,7 @@ export async function generateStaticParams() {
 
 // Metadata can be dynamic based on locale if needed
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
-  const title = params.locale === 'sr' ? 'Gluten Detektiv' : 'Gluten Detective';
+  const title = 'Gluten Scan';
   return {
     title: {
       default: title,

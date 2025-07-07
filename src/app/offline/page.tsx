@@ -14,7 +14,7 @@ export default function OfflinePage() {
         <ShieldAlert className="h-10 w-10 text-primary mx-auto mb-4" />
         <h2 className="text-lg font-semibold">Keširan sadržaj</h2>
         <p className="text-muted-foreground text-sm mt-2">
-          Još uvek možete pregledati stranice koje ste nedavno posetili. Molimo vas da se povežete na internet da biste pristupili svim funkcijama Gluten Detective aplikacije.
+          Još uvek možete pregledati stranice koje ste nedavno posetili. Molimo vas da se povežete na internet da biste pristupili svim funkcijama Gluten Scan aplikacije.
         </p>
       </div>
     </main>
