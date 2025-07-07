@@ -7,6 +7,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { FavoritesProvider } from '@/contexts/favorites-context';
 import { ScanLimiterProvider } from '@/contexts/scan-limiter-context'; 
 import { MobileBottomNav } from '@/components/navigation/mobile-bottom-nav';
+import { PwaInstaller } from '@/components/pwa-installer';
 // ThemeProvider is removed as it's now in the root layout.
 
 // This function is needed for static site generation (SSG) if you plan to pre-render locales.
@@ -32,8 +33,8 @@ export async function generateViewport({ params }: { params: { locale: string } 
     width: 'device-width',
     initialScale: 1,
     themeColor: [
-        { media: '(prefers-color-scheme: light)', color: 'white' },
-        { media: '(prefers-color-scheme: dark)', color: 'black' },
+        { media: '(prefers-color-scheme: light)', color: '#FBF9F6' },
+        { media: '(prefers-color-scheme: dark)', color: '#121212' },
       ],
   };
 }
@@ -57,6 +58,7 @@ export default function LocaleLayout({
         </FavoritesProvider>
       </SidebarProvider>
       <Toaster />
+      <PwaInstaller />
     </>
   );
 }

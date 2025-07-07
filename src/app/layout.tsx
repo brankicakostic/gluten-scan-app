@@ -8,6 +8,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 export const metadata: Metadata = {
   title: 'Gluten Scan', // Generic title, will be overridden by locale-specific layout
   description: 'Scan and identify gluten-free products easily.',
+  manifest: '/manifest.json', // Added for PWA support
 };
 
 const geistSans = Geist({
