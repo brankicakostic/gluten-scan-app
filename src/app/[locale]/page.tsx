@@ -545,7 +545,7 @@ export default function HomePage() {
         <SiteHeader />
         <main className="flex-1 p-6 md:p-8">
           <PageHeader 
-            title="Welcome to Gluten Detective"
+            title="Welcome to Gluten Scan"
             description="Search, scan, or analyze ingredients to find gluten-free products."
             icon={ScanLine}
           />
