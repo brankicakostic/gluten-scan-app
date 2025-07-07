@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PageHeader } from '@/components/page-header';
@@ -43,32 +42,34 @@ export default function EdukacijaLandingPage({ params }: { params: { locale: str
       <SidebarInset>
         <SiteHeader />
         <main className="flex-1 p-6 md:p-8">
-          <PageHeader
-            title="Edukacija o Celijakiji"
-            description="Pročitajte korisne članke i lične priče o životu sa celijakijom."
-            icon={BookOpenText}
-          />
-          {articlesData.length > 0 ? (
-            <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
-              {articlesData.map((article) => (
-                <Card key={article.slug} className="hover:shadow-lg transition-shadow duration-200 flex flex-col">
-                  <CardHeader>
-                    <CardTitle className="text-xl">{article.title}</CardTitle>
-                    <CardDescription>{article.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex-grow flex flex-col justify-end">
-                    <Button asChild variant="outline" className="mt-auto">
-                      <Link href={`/${locale}/edukacija/${article.slug}`} className="inline-flex items-center">
-                        Pročitaj više <ChevronRight className="ml-1 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted-foreground">Trenutno nema dostupnih članaka.</p>
-          )}
+          <div className="mx-auto max-w-6xl">
+            <PageHeader
+              title="Edukacija o Celijakiji"
+              description="Pročitajte korisne članke i lične priče o životu sa celijakijom."
+              icon={BookOpenText}
+            />
+            {articlesData.length > 0 ? (
+              <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
+                {articlesData.map((article) => (
+                  <Card key={article.slug} className="hover:shadow-lg transition-shadow duration-200 flex flex-col">
+                    <CardHeader>
+                      <CardTitle className="text-xl">{article.title}</CardTitle>
+                      <CardDescription>{article.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-grow flex flex-col justify-end">
+                      <Button asChild variant="outline" className="mt-auto">
+                        <Link href={`/${locale}/edukacija/${article.slug}`} className="inline-flex items-center">
+                          Pročitaj više <ChevronRight className="ml-1 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted-foreground">Trenutno nema dostupnih članaka.</p>
+            )}
+          </div>
         </main>
       </SidebarInset>
     </div>

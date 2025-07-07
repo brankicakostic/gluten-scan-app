@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, type FormEvent, useRef, useEffect, ChangeEvent } from 'react';
@@ -544,722 +543,722 @@ export default function HomePage() {
       <SidebarInset>
         <SiteHeader />
         <main className="flex-1 p-6 md:p-8">
-          <PageHeader 
-            title="Welcome to Gluten Scan"
-            description="Search, scan, or analyze ingredients to find gluten-free products."
-            icon={ScanLine}
-          />
-          
-           <Card className="mb-6 bg-muted/30 border-muted/50">
-             <CardContent className="p-3">
-               <div className="flex items-center justify-between text-sm min-h-[28px]">
-                 {hasMounted ? (
-                   <>
-                     {canScan() ? (
-                       <div className="flex items-center text-primary">
-                         <CheckCircle className="h-4 w-4 mr-1.5" />
-                         <span>{getRemainingScans()} of {scanLimit} free scans remaining.</span>
-                       </div>
-                     ) : (
-                       <div className="flex items-center text-destructive">
-                         <AlertCircle className="h-4 w-4 mr-1.5" />
-                         <span>No free scans remaining. Upgrade for unlimited scans.</span>
-                       </div>
-                     )}
-                   </>
-                 ) : (
-                   <div className="h-5 w-56 bg-muted rounded animate-pulse" /> // Skeleton placeholder
-                 )}
-                 
-                 {process.env.NODE_ENV === 'development' && (
-                   <Button variant="outline" size="sm" onClick={resetScanCount} title="Reset Scan Count (Dev Only)">
-                     <RotateCcw className="h-3 w-3" />
-                   </Button>
-                 )}
-               </div>
-             </CardContent>
-           </Card>
+          <div className="mx-auto max-w-6xl">
+            <PageHeader 
+              title="Welcome to Gluten Scan"
+              description="Search, scan, or analyze ingredients to find gluten-free products."
+              icon={ScanLine}
+            />
+            
+             <Card className="mb-6 bg-muted/30 border-muted/50">
+               <CardContent className="p-3">
+                 <div className="flex items-center justify-between text-sm min-h-[28px]">
+                   {hasMounted ? (
+                     <>
+                       {canScan() ? (
+                         <div className="flex items-center text-primary">
+                           <CheckCircle className="h-4 w-4 mr-1.5" />
+                           <span>{getRemainingScans()} of {scanLimit} free scans remaining.</span>
+                         </div>
+                       ) : (
+                         <div className="flex items-center text-destructive">
+                           <AlertCircle className="h-4 w-4 mr-1.5" />
+                           <span>No free scans remaining. Upgrade for unlimited scans.</span>
+                         </div>
+                       )}
+                     </>
+                   ) : (
+                     <div className="h-5 w-56 bg-muted rounded animate-pulse" /> // Skeleton placeholder
+                   )}
+                   
+                   {process.env.NODE_ENV === 'development' && (
+                     <Button variant="outline" size="sm" onClick={resetScanCount} title="Reset Scan Count (Dev Only)">
+                       <RotateCcw className="h-3 w-3" />
+                     </Button>
+                   )}
+                 </div>
+               </CardContent>
+             </Card>
 
-          <div className="mb-8">
-            {isLoadingTip && (
-              <div className="flex items-center justify-center text-muted-foreground p-4 bg-muted/50 rounded-lg shadow-sm">
-                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                <span>Loading daily tip...</span>
-              </div>
-            )}
-            {errorTip && !isLoadingTip && (
-              <div className="flex items-center justify-center text-destructive p-4 bg-destructive/10 rounded-lg shadow-sm">
-                <AlertCircle className="h-5 w-5 mr-2" />
-                <span>{errorTip}</span>
-              </div>
-            )}
-            {dailyTip && !isLoadingTip && !errorTip && (
-              <Card className="bg-secondary/50 border-secondary shadow-sm">
-                <CardContent className="p-4">
-                  <div className="flex items-start md:items-center justify-between gap-3 flex-col md:flex-row">
-                    <div className="flex items-center">
-                      <Lightbulb className="h-6 w-6 mr-3 text-primary flex-shrink-0" />
-                      <p className="text-sm text-secondary-foreground">{dailyTip.summary}</p>
+            <div className="mb-8">
+              {isLoadingTip && (
+                <div className="flex items-center justify-center text-muted-foreground p-4 bg-muted/50 rounded-lg shadow-sm">
+                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                  <span>Loading daily tip...</span>
+                </div>
+              )}
+              {errorTip && !isLoadingTip && (
+                <div className="flex items-center justify-center text-destructive p-4 bg-destructive/10 rounded-lg shadow-sm">
+                  <AlertCircle className="h-5 w-5 mr-2" />
+                  <span>{errorTip}</span>
+                </div>
+              )}
+              {dailyTip && !isLoadingTip && !errorTip && (
+                <Card className="bg-secondary/50 border-secondary shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex items-start md:items-center justify-between gap-3 flex-col md:flex-row">
+                      <div className="flex items-center">
+                        <Lightbulb className="h-6 w-6 mr-3 text-primary flex-shrink-0" />
+                        <p className="text-sm text-secondary-foreground">{dailyTip.summary}</p>
+                      </div>
+                      <AlertDialog open={showTipDetailsModal} onOpenChange={setShowTipDetailsModal}>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="bg-background/70 hover:bg-background">
+                            <BookOpen className="mr-2 h-4 w-4" /> Read More
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="flex items-center gap-2">
+                              <Lightbulb className="h-5 w-5 text-primary" /> Daily Celiac Tip
+                            </AlertDialogTitle>
+                            <AlertDialogDescription className="text-left pt-2">
+                              <strong>{dailyTip.summary}</strong>
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <div className="text-sm text-muted-foreground max-h-[60vh] overflow-y-auto pr-2">
+                            <p>{dailyTip.details}</p>
+                          </div>
+                          <AlertDialogFooter>
+                            <AlertDialogAction>Got it!</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
-                    <AlertDialog open={showTipDetailsModal} onOpenChange={setShowTipDetailsModal}>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="bg-background/70 hover:bg-background">
-                          <BookOpen className="mr-2 h-4 w-4" /> Read More
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle className="flex items-center gap-2">
-                            <Lightbulb className="h-5 w-5 text-primary" /> Daily Celiac Tip
-                          </AlertDialogTitle>
-                          <AlertDialogDescription className="text-left pt-2">
-                            <strong>{dailyTip.summary}</strong>
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <div className="text-sm text-muted-foreground max-h-[60vh] overflow-y-auto pr-2">
-                          <p>{dailyTip.details}</p>
-                        </div>
-                        <AlertDialogFooter>
-                          <AlertDialogAction>Got it!</AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><Search className="h-5 w-5"/> Find Products</CardTitle>
+                  <CardDescription>Search by name or filter by category to find gluten-free items.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="product-search" className="text-sm font-medium">Search by name or brand</Label>
+                    <Input 
+                      id="product-search" 
+                      placeholder="e.g., Gluten-Free Bread, Schar" 
+                      value={searchTerm} 
+                      onChange={(e) => setSearchTerm(e.target.value)} 
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="product-category" className="text-sm font-medium">Category</Label>
+                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                      <SelectTrigger id="product-category">
+                        <SelectValue placeholder="All Categories" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Categories</SelectItem>
+                        {productCategories.map(category => (
+                          <SelectItem key={category} value={category}>{category}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </CardContent>
               </Card>
-            )}
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Search className="h-5 w-5"/> Find Products</CardTitle>
-                <CardDescription>Search by name or filter by category to find gluten-free items.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="product-search" className="text-sm font-medium">Search by name or brand</Label>
-                  <Input 
-                    id="product-search" 
-                    placeholder="e.g., Gluten-Free Bread, Schar" 
-                    value={searchTerm} 
-                    onChange={(e) => setSearchTerm(e.target.value)} 
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="product-category" className="text-sm font-medium">Category</Label>
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger id="product-category">
-                      <SelectValue placeholder="All Categories" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Categories</SelectItem>
-                      {productCategories.map(category => (
-                        <SelectItem key={category} value={category}>{category}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardContent>
-            </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2"><QrCode className="h-5 w-5" /> Scan Product Barcode</CardTitle>
-                <CardDescription>Use your device's camera for instant gluten information.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {!isScanningBarcode && !barcodeScanResult && (
-                  <Button 
-                    onClick={handleStartBarcodeScanning} 
-                    className="w-full" 
-                    size="lg" 
-                    disabled={!hasMounted || (hasMounted && !canScan()) || isLoadingAnyAnalysisProcess || isTakingOcrPhoto}
-                  >
-                    <QrCode className="mr-2 h-5 w-5" /> Start Barcode Scanning
-                  </Button>
-                )}
-                {isScanningBarcode && (
-                  <div className="space-y-4">
-                     <div className="aspect-video bg-muted rounded-md flex flex-col items-center justify-center text-muted-foreground p-4 relative">
-                       <video ref={barcodeVideoRef} className="w-full h-full object-cover rounded-md" autoPlay playsInline muted />
-                       {hasBarcodeCameraPermission === null && <Loader2 className="absolute h-8 w-8 animate-spin text-primary"/>}
-                       {hasBarcodeCameraPermission === false && (
-                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 p-4 rounded-md">
-                            <CameraOff className="h-12 w-12 mb-2 text-destructive" />
-                            <p className="text-center text-destructive-foreground">Camera access is required. Please enable permissions.</p>
-                         </div>
-                       )}
-                       {hasBarcodeCameraPermission === true && (
-                          <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-sm bg-black/50 text-white px-2 py-1 rounded">Point camera at barcode...</p>
-                       )}
-                    </div>
-                    <Button onClick={handleCancelBarcodeScanning} variant="outline" className="w-full">Cancel Barcode Scan</Button>
-                  </div>
-                )}
-                {errorBarcode && !isScanningBarcode && (
-                  <ShadcnAlert variant="destructive" className="mt-4">
-                    <AlertCircle className="h-4 w-4" />
-                    <ShadcnAlertTitle>Barcode Scanning Error</ShadcnAlertTitle>
-                    <ShadcnAlertDescription>{errorBarcode}</ShadcnAlertDescription>
-                  </ShadcnAlert>
-                )}
-                {barcodeScanResult && !isScanningBarcode && (
-                  <Card className="mt-4">
-                    <CardHeader className="flex flex-row items-start gap-4">
-                      <Image src={barcodeScanResult.imageUrl} alt={barcodeScanResult.name} width={80} height={80} className="rounded-md object-cover" data-ai-hint={barcodeScanResult.dataAiHint || "product image"}/>
-                      <div>
-                        <CardTitle className="text-xl">{barcodeScanResult.name}</CardTitle>
-                        {barcodeScanResult.tags?.includes('gluten-free') && (
-                          <div className="flex items-center text-green-600 dark:text-green-400 mt-1"><CheckCircle className="h-5 w-5 mr-1" /><span>Likely Gluten-Free</span></div>
-                        )}
-                        {(barcodeScanResult.tags?.includes('contains-gluten') || barcodeScanResult.tags?.includes('contains-wheat') || barcodeScanResult.tags?.includes('contains-barley') || barcodeScanResult.tags?.includes('contains-rye') || (barcodeScanResult.tags?.includes('contains-oats') && !barcodeScanResult.tags?.includes('gluten-free'))) && (
-                          <div className="flex items-center text-red-600 dark:text-red-500 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>Contains Gluten</span></div>
-                        )}
-                        {barcodeScanResult.tags?.includes('may-contain-gluten') && !barcodeScanResult.tags?.includes('gluten-free') && !barcodeScanResult.tags?.includes('contains-gluten') && (
-                           <div className="flex items-center text-orange-500 dark:text-orange-400 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>May Contain Traces</span></div>
-                        )}
-                         {barcodeScanResult.tags?.includes('unknown-barcode') && (
-                           <div className="flex items-center text-muted-foreground mt-1"><Info className="h-5 w-5 mr-1" /><span>Barcode Not Found</span></div>
-                        )}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><QrCode className="h-5 w-5" /> Scan Product Barcode</CardTitle>
+                  <CardDescription>Use your device's camera for instant gluten information.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {!isScanningBarcode && !barcodeScanResult && (
+                    <Button 
+                      onClick={handleStartBarcodeScanning} 
+                      className="w-full" 
+                      size="lg" 
+                      disabled={!hasMounted || (hasMounted && !canScan()) || isLoadingAnyAnalysisProcess || isTakingOcrPhoto}
+                    >
+                      <QrCode className="mr-2 h-5 w-5" /> Start Barcode Scanning
+                    </Button>
+                  )}
+                  {isScanningBarcode && (
+                    <div className="space-y-4">
+                       <div className="aspect-video bg-muted rounded-md flex flex-col items-center justify-center text-muted-foreground p-4 relative">
+                         <video ref={barcodeVideoRef} className="w-full h-full object-cover rounded-md" autoPlay playsInline muted />
+                         {hasBarcodeCameraPermission === null && <Loader2 className="absolute h-8 w-8 animate-spin text-primary"/>}
+                         {hasBarcodeCameraPermission === false && (
+                           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 p-4 rounded-md">
+                              <CameraOff className="h-12 w-12 mb-2 text-destructive" />
+                              <p className="text-center text-destructive-foreground">Camera access is required. Please enable permissions.</p>
+                           </div>
+                         )}
+                         {hasBarcodeCameraPermission === true && (
+                            <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-sm bg-black/50 text-white px-2 py-1 rounded">Point camera at barcode...</p>
+                         )}
                       </div>
-                    </CardHeader>
-                    <CardContent>
-                      {barcodeScanResult.barcode && barcodeScanResult.barcode !== "N/A" && (
-                        <div className="flex items-center text-sm text-muted-foreground mb-2">
-                           <BarcodeIcon className="h-4 w-4 mr-2" />
-                           <span>{barcodeScanResult.barcode}</span>
-                        </div>
-                      )}
-                      <h4 className="font-semibold mb-1 text-sm">Ingredients:</h4>
-                      <p className="text-xs text-muted-foreground">{barcodeScanResult.ingredientsText || 'Not available'}</p>
-                      <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => { setBarcodeScanResult(null); setErrorBarcode(null);}}>Scan Another Barcode</Button>
-                    </CardContent>
-                  </Card>
-                )}
-                {!isScanningBarcode && !barcodeScanResult && !errorBarcode && (
-                   <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md">
-                    <QrCode className="mx-auto h-8 w-8 mb-2" />
-                    <p className="text-sm">Barcode scan results will appear here.</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="mb-8">
-            <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
-              <ShoppingBag className="h-6 w-6 text-primary" /> Products
-            </h2>
-            {displayedProducts.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {displayedProducts.map(product => {
-                  const isGlutenFreeTag = product.tags?.includes('gluten-free');
-                  const containsGlutenTag = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isGlutenFreeTag);
-                  const mayContainGlutenTag = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
-
-                  return (
-                    <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col">
-                      <CardHeader className="p-0">
-                        <Image src={product.imageUrl} alt={product.name} width={400} height={200} className="w-full h-48 object-cover" data-ai-hint={product.dataAiHint || 'product image'}/>
-                      </CardHeader>
-                      <CardContent className="p-4 flex flex-col flex-grow">
-                        <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
-                        {product.brand && <CardDescription className="text-xs text-muted-foreground mb-1">{product.brand}</CardDescription>}
-                        <div className="flex justify-between items-center mb-2">
-                          <CardDescription className="text-sm text-muted-foreground">{product.category}</CardDescription>
-                          {product.nutriScore && (
-                            <span className={`px-2 py-0.5 rounded-md text-xs font-semibold border ${getNutriScoreClasses(product.nutriScore)}`}>
-                              {product.nutriScore}
-                            </span>
+                      <Button onClick={handleCancelBarcodeScanning} variant="outline" className="w-full">Cancel Barcode Scan</Button>
+                    </div>
+                  )}
+                  {errorBarcode && !isScanningBarcode && (
+                    <ShadcnAlert variant="destructive" className="mt-4">
+                      <AlertCircle className="h-4 w-4" />
+                      <ShadcnAlertTitle>Barcode Scanning Error</ShadcnAlertTitle>
+                      <ShadcnAlertDescription>{errorBarcode}</ShadcnAlertDescription>
+                    </ShadcnAlert>
+                  )}
+                  {barcodeScanResult && !isScanningBarcode && (
+                    <Card className="mt-4">
+                      <CardHeader className="flex flex-row items-start gap-4">
+                        <Image src={barcodeScanResult.imageUrl} alt={barcodeScanResult.name} width={80} height={80} className="rounded-md object-cover" data-ai-hint={barcodeScanResult.dataAiHint || "product image"}/>
+                        <div>
+                          <CardTitle className="text-xl">{barcodeScanResult.name}</CardTitle>
+                          {barcodeScanResult.tags?.includes('gluten-free') && (
+                            <div className="flex items-center text-green-600 dark:text-green-400 mt-1"><CheckCircle className="h-5 w-5 mr-1" /><span>Likely Gluten-Free</span></div>
+                          )}
+                          {(barcodeScanResult.tags?.includes('contains-gluten') || barcodeScanResult.tags?.includes('contains-wheat') || barcodeScanResult.tags?.includes('contains-barley') || barcodeScanResult.tags?.includes('contains-rye') || (barcodeScanResult.tags?.includes('contains-oats') && !barcodeScanResult.tags?.includes('gluten-free'))) && (
+                            <div className="flex items-center text-red-600 dark:text-red-500 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>Contains Gluten</span></div>
+                          )}
+                          {barcodeScanResult.tags?.includes('may-contain-gluten') && !barcodeScanResult.tags?.includes('gluten-free') && !barcodeScanResult.tags?.includes('contains-gluten') && (
+                             <div className="flex items-center text-orange-500 dark:text-orange-400 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>May Contain Traces</span></div>
+                          )}
+                           {barcodeScanResult.tags?.includes('unknown-barcode') && (
+                             <div className="flex items-center text-muted-foreground mt-1"><Info className="h-5 w-5 mr-1" /><span>Barcode Not Found</span></div>
                           )}
                         </div>
-
-                        {isGlutenFreeTag ? (
-                          <div className="flex items-center text-green-600 dark:text-green-400 text-xs mt-1 mb-1">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            <span>Gluten-Free</span>
-                          </div>
-                        ) : containsGlutenTag ? (
-                          <div className="flex items-center text-red-600 dark:text-red-500 text-xs mt-1 mb-1">
-                            <AlertTriangle className="h-3 w-3 mr-1" />
-                            <span>Contains Gluten</span>
-                          </div>
-                        ) : mayContainGlutenTag ? (
-                          <div className="flex items-center text-orange-500 dark:text-orange-400 text-xs mt-1 mb-1">
-                            <AlertTriangle className="h-3 w-3 mr-1" />
-                            <span>May Contain Traces</span>
-                          </div>
-                        ) : (
-                           <div className="flex items-center text-muted-foreground text-xs mt-1 mb-1">
-                            <AlertTriangle className="h-3 w-3 mr-1" />
-                            <span>Proveriti sastav</span>
+                      </CardHeader>
+                      <CardContent>
+                        {barcodeScanResult.barcode && barcodeScanResult.barcode !== "N/A" && (
+                          <div className="flex items-center text-sm text-muted-foreground mb-2">
+                             <BarcodeIcon className="h-4 w-4 mr-2" />
+                             <span>{barcodeScanResult.barcode}</span>
                           </div>
                         )}
-                        
-                        <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description}</p>
-                         <div className="flex flex-wrap gap-1 mb-3">
-                          {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
-                          {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Lactose-Free</Badge>}
-                          {product.isSugarFree && <Badge variant="secondary" className="text-xs">Sugar-Free</Badge>}
-                           {product.tags?.filter(tag => !explicitlyHandledTags.includes(tag.toLowerCase())).slice(0,1).map(tag => (
-                              <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
-                           ))}
-                           {product.tags?.includes('high-protein') && <Badge variant="secondary" className="text-xs">High Protein</Badge>}
-                        </div>
-                        <Button asChild variant="outline" size="sm" className="w-full mt-auto">
-                          <Link href={`/${locale}/products/${product.id}`}>View Details</Link>
-                        </Button>
+                        <h4 className="font-semibold mb-1 text-sm">Ingredients:</h4>
+                        <p className="text-xs text-muted-foreground">{barcodeScanResult.ingredientsText || 'Not available'}</p>
+                        <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => { setBarcodeScanResult(null); setErrorBarcode(null);}}>Scan Another Barcode</Button>
                       </CardContent>
                     </Card>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-12 text-muted-foreground border-dashed border-2 rounded-md">
-                <PackageOpen className="mx-auto h-16 w-16 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No Products Found</h3>
-                <p>Try adjusting your search or filters.</p>
-              </div>
-            )}
-          </div>
-          
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2"><ScanSearch className="h-5 w-5" /> Analyze Ingredients from Image</CardTitle>
-                <CardDescription>Upload an image of an ingredient list, or take a picture for AI analysis.</CardDescription>
-              </CardHeader>
-              <CardContent className="min-h-[220px]">
-                {isTakingOcrPhoto ? (
-                  <div className="space-y-2">
-                    <div className="aspect-video bg-muted rounded-md flex flex-col items-center justify-center text-muted-foreground p-1 relative">
-                      <video ref={ocrVideoRef} className="w-full h-full object-cover rounded-md" autoPlay playsInline muted />
-                      {hasOcrCameraPermission === null && <Loader2 className="absolute h-8 w-8 animate-spin text-primary"/>}
-                      {hasOcrCameraPermission === false && (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 p-4 rounded-md">
-                          <CameraOff className="h-10 w-10 mb-2 text-destructive" />
-                          <p className="text-center text-destructive-foreground text-sm">OCR Camera access is required.</p>
-                        </div>
-                      )}
+                  )}
+                  {!isScanningBarcode && !barcodeScanResult && !errorBarcode && (
+                     <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md">
+                      <QrCode className="mx-auto h-8 w-8 mb-2" />
+                      <p className="text-sm">Barcode scan results will appear here.</p>
                     </div>
-                    <div className="flex gap-2">
-                      <Button onClick={handleCaptureOcrPhoto} disabled={!hasOcrCameraPermission || isLoadingOcr} className="flex-grow">
-                        {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Camera className="mr-2 h-4 w-4"/>}
-                         Capture Photo
-                      </Button>
-                      <Button onClick={handleCancelOcrPhotoCapture} variant="outline" className="flex-grow">Cancel</Button>
-                    </div>
-                  </div>
-                ) : stagedImage ? (
-                   <div className="space-y-2 text-center">
-                    <div className="relative w-full max-w-sm mx-auto aspect-video rounded-md overflow-hidden border">
-                       <Image src={stagedImage} alt="Staged image for analysis" layout="fill" objectFit="contain" />
-                        <Button 
-                          variant="destructive" 
-                          size="icon" 
-                          className="absolute top-2 right-2 h-7 w-7"
-                          onClick={() => resetAnalysisInputs()}
-                        >
-                          <X className="h-4 w-4" />
-                          <span className="sr-only">Clear Image</span>
-                        </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground">Image ready for analysis.</p>
-                   </div>
-                ) : (
-                  <div className="space-y-4 text-center">
-                    <Label htmlFor="ocr-file-input" className="group cursor-pointer w-full border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center hover:border-primary hover:bg-muted/50 transition-colors">
-                      <UploadCloud className="h-8 w-8 text-muted-foreground group-hover:text-primary" />
-                      <span className="mt-2 text-sm font-semibold">Choose File</span>
-                      <Input id="ocr-file-input" type="file" className="sr-only" onChange={handleFileChange} accept="image/*" disabled={isLoadingAnyAnalysisProcess}/>
-                    </Label>
-                     <div className="flex items-center gap-2">
-                        <div className="flex-grow border-t"></div>
-                        <span className="text-xs text-muted-foreground">OR</span>
-                        <div className="flex-grow border-t"></div>
-                     </div>
-                     <Button variant="outline" className="w-full" onClick={handleInitiateOcrPhotoCapture} disabled={isLoadingAnyAnalysisProcess}>
-                        <Camera className="mr-2 h-4 w-4" />
-                        Take Picture
-                     </Button>
-                  </div>
-                )}
-              </CardContent>
-              <CardFooter>
-                 <Button onClick={handleAnalyzeStagedImage} size="lg" disabled={!stagedImage || isLoadingAnyAnalysisProcess || !hasMounted || (hasMounted && !canScan())} className="w-full">
-                    {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                    Analyze with AI
-                 </Button>
-              </CardFooter>
-            </Card>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
 
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="item-1">
-                <AccordionTrigger>
-                   <div className="flex items-center gap-2">
-                     <FileText className="h-5 w-5"/> Or Paste Text Manually
-                   </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <form onSubmit={handleDeclarationSubmit} className="space-y-4 pt-2">
-                      <Textarea
-                        id="declaration-text-area"
-                        placeholder="e.g., Wheat flour, sugar, salt, yeast, barley malt extract..."
-                        value={declarationText}
-                        onChange={(e) => {
-                           setDeclarationText(e.target.value);
-                           if(e.target.value) { resetAnalysisInputs(true); }
-                        }}
-                        rows={6}
-                        className="resize-none"
-                        aria-label="Product Declaration Input"
-                        disabled={!hasMounted || (hasMounted && !canScan()) || isLoadingAnyAnalysisProcess}
-                      />
-                    <Button type="submit" 
-                      size="lg"
-                      disabled={!hasMounted || (hasMounted && !canScan()) || isLoadingDeclaration || !declarationText.trim() || isLoadingAnyAnalysisProcess} 
-                      className="w-full"
-                    >
-                      {isLoadingDeclaration && !isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                      Analyze Text with AI
-                    </Button>
-                  </form>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-            
-            <div
-              ref={analysisReportRef}
-              aria-live="polite" 
-              aria-busy={isLoadingAnyAnalysisProcess}
-              className="mt-6"
-            >
-              {(analysisResult || isLoadingDeclaration || (isLoadingOcr && !isTakingOcrPhoto)) && !showLabelingQuestionModal && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg mb-2">AI Analysis Report</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {(isLoadingDeclaration || (isLoadingOcr && !isTakingOcrPhoto)) && (
-                      <div className="flex flex-col items-center justify-center h-24 text-muted-foreground">
-                        <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
-                        <p>{isLoadingOcr ? 'Processing Image...' : 'Analyzing Ingredients...'}</p>
-                      </div>
-                    )}
-                    {analysisResult && !isLoadingDeclaration && !isLoadingOcr && (
-                      <div className="space-y-4">
-                        {getAssessmentAlert(analysisResult)}
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
+                <ShoppingBag className="h-6 w-6 text-primary" /> Products
+              </h2>
+              {displayedProducts.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {displayedProducts.map(product => {
+                    const isGlutenFreeTag = product.tags?.includes('gluten-free');
+                    const containsGlutenTag = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isGlutenFreeTag);
+                    const mayContainGlutenTag = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
 
-                         {relevantGlutenIssueCount > 0 && (
-                            <div className="mt-3 p-2 bg-destructive/10 rounded-md text-sm text-destructive flex items-center gap-2">
-                                <ShieldAlert className="h-5 w-5"/>
-                                <span>Identifikovano {relevantGlutenIssueCount} kritičnih stavki vezanih za gluten.</span>
+                    return (
+                      <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col">
+                        <CardHeader className="p-0">
+                          <Image src={product.imageUrl} alt={product.name} width={400} height={200} className="w-full h-48 object-cover" data-ai-hint={product.dataAiHint || 'product image'}/>
+                        </CardHeader>
+                        <CardContent className="p-4 flex flex-col flex-grow">
+                          <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
+                          {product.brand && <CardDescription className="text-xs text-muted-foreground mb-1">{product.brand}</CardDescription>}
+                          <div className="flex justify-between items-center mb-2">
+                            <CardDescription className="text-sm text-muted-foreground">{product.category}</CardDescription>
+                            {product.nutriScore && (
+                              <span className={`px-2 py-0.5 rounded-md text-xs font-semibold border ${getNutriScoreClasses(product.nutriScore)}`}>
+                                {product.nutriScore}
+                              </span>
+                            )}
+                          </div>
+
+                          {isGlutenFreeTag ? (
+                            <div className="flex items-center text-green-600 dark:text-green-400 text-xs mt-1 mb-1">
+                              <CheckCircle className="h-3 w-3 mr-1" />
+                              <span>Gluten-Free</span>
                             </div>
-                         )}
-
-                        <div>
-                          <h4 className="font-semibold mb-1 text-sm">Obrazloženje:</h4>
-                          <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.finalnoObrazlozenje}</p>
-                        </div>
-                        
-                        {problematicIngredients.length > 0 && (
-                          <div>
-                            <h4 className="font-semibold mb-2 text-md">Analiza rizičnih sastojaka:</h4>
-                            <ul className="list-none space-y-2 text-sm">
-                              {problematicIngredients.map((item, index) => {
-                                let icon;
-                                let colorClasses;
-                                let textColor;
-                        
-                                switch (item.ocena) {
-                                  case 'nije bezbedno':
-                                    icon = <XCircle className="h-5 w-5 text-red-600" />;
-                                    colorClasses = 'border-red-400/50 bg-red-50 dark:bg-red-900/20';
-                                    textColor = 'text-red-700 dark:text-red-300';
-                                    break;
-                                  case 'rizično – proveriti poreklo':
-                                  default:
-                                    icon = <AlertTriangle className="h-5 w-5 text-orange-500" />;
-                                    colorClasses = 'border-orange-400/50 bg-orange-50 dark:bg-orange-900/20';
-                                    textColor = 'text-orange-700 dark:text-orange-300';
-                                    break;
-                                }
-                        
-                                return (
-                                  <li key={index} className={`p-3 rounded-lg border ${colorClasses}`}>
-                                    <Popover>
-                                      <PopoverTrigger asChild disabled={!item.napomena}>
-                                        <div className={`flex items-start gap-3 ${item.napomena ? 'cursor-pointer' : ''}`}>
-                                          <div className="pt-0.5">{icon}</div>
-                                          <div className="flex-1">
-                                            <p className="font-semibold text-foreground">{item.sastojak}</p>
-                                            <p className={`text-xs ${textColor}`}>
-                                              {item.ocena} (Nivo rizika: {item.nivoRizika})
-                                            </p>
-                                          </div>
-                                          {item.napomena && <Info className="h-4 w-4 text-blue-500 shrink-0" />}
-                                        </div>
-                                      </PopoverTrigger>
-                                      {item.napomena && (
-                                        <PopoverContent className="w-auto max-w-[300px] text-sm p-3" side="top" align="start">
-                                          <p className="font-bold mb-1">{item.kategorijaRizika || 'Napomena'}</p>
-                                          <p className="text-muted-foreground">{item.napomena}</p>
-                                        </PopoverContent>
-                                      )}
-                                    </Popover>
-                                  </li>
-                                );
-                              })}
-                            </ul>
+                          ) : containsGlutenTag ? (
+                            <div className="flex items-center text-red-600 dark:text-red-500 text-xs mt-1 mb-1">
+                              <AlertTriangle className="h-3 w-3 mr-1" />
+                              <span>Contains Gluten</span>
+                            </div>
+                          ) : mayContainGlutenTag ? (
+                            <div className="flex items-center text-orange-500 dark:text-orange-400 text-xs mt-1 mb-1">
+                              <AlertTriangle className="h-3 w-3 mr-1" />
+                              <span>May Contain Traces</span>
+                            </div>
+                          ) : (
+                             <div className="flex items-center text-muted-foreground text-xs mt-1 mb-1">
+                              <AlertTriangle className="h-3 w-3 mr-1" />
+                              <span>Proveriti sastav</span>
+                            </div>
+                          )}
+                          
+                          <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description}</p>
+                           <div className="flex flex-wrap gap-1 mb-3">
+                            {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
+                            {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Lactose-Free</Badge>}
+                            {product.isSugarFree && <Badge variant="secondary" className="text-xs">Sugar-Free</Badge>}
+                             {product.tags?.filter(tag => !explicitlyHandledTags.includes(tag.toLowerCase())).slice(0,1).map(tag => (
+                                <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
+                             ))}
+                             {product.tags?.includes('high-protein') && <Badge variant="secondary" className="text-xs">High Protein</Badge>}
+                          </div>
+                          <Button asChild variant="outline" size="sm" className="w-full mt-auto">
+                            <Link href={`/${locale}/products/${product.id}`}>View Details</Link>
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-12 text-muted-foreground border-dashed border-2 rounded-md">
+                  <PackageOpen className="mx-auto h-16 w-16 mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">No Products Found</h3>
+                  <p>Try adjusting your search or filters.</p>
+                </div>
+              )}
+            </div>
+            
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><ScanSearch className="h-5 w-5" /> Analyze Ingredients from Image</CardTitle>
+                  <CardDescription>Upload an image of an ingredient list, or take a picture for AI analysis.</CardDescription>
+                </CardHeader>
+                <CardContent className="min-h-[220px]">
+                  {isTakingOcrPhoto ? (
+                    <div className="space-y-2">
+                      <div className="aspect-video bg-muted rounded-md flex flex-col items-center justify-center text-muted-foreground p-1 relative">
+                        <video ref={ocrVideoRef} className="w-full h-full object-cover rounded-md" autoPlay playsInline muted />
+                        {hasOcrCameraPermission === null && <Loader2 className="absolute h-8 w-8 animate-spin text-primary"/>}
+                        {hasOcrCameraPermission === false && (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 p-4 rounded-md">
+                            <CameraOff className="h-10 w-10 mb-2 text-destructive" />
+                            <p className="text-center text-destructive-foreground text-sm">OCR Camera access is required.</p>
                           </div>
                         )}
-                        
-                        {safeIngredients.length > 0 && (
-                           <Accordion type="single" collapsible className="w-full mt-4">
-                            <AccordionItem value="safe-ingredients">
-                              <AccordionTrigger>Prikaži {safeIngredients.length} bezbednih sastojaka</AccordionTrigger>
-                              <AccordionContent>
-                                <p className="text-sm text-muted-foreground p-2 bg-muted/50 rounded-md">
-                                  {safeIngredients.map(item => item.sastojak).join(', ')}
-                                </p>
-                              </AccordionContent>
-                            </AccordionItem>
-                          </Accordion>
-                        )}
-
-                        <div className="mt-6 flex flex-col sm:flex-row gap-2">
-                           <Button variant="outline" className="w-full" onClick={() => resetAnalysisInputs()}>
-                            <RotateCcw className="mr-2 h-4 w-4" />
-                            Očisti i počni ponovo
-                          </Button>
-                           <Dialog open={showReportErrorModal} onOpenChange={(open) => {
-                               setShowReportErrorModal(open);
-                               if (!open) {
-                                   setReportComment('');
-                                   setWantsContact(false);
-                                   setContactEmail('');
-                                   setReportPriority('');
-                                   setErrorType('');
-                                   setSubmissionStatus('idle');
-                               }
-                           }}>
-                             <DialogTrigger asChild>
-                               <Button className="w-full">
-                                 <Flag className="mr-2 h-4 w-4" />
-                                 Prijavi grešku
-                               </Button>
-                             </DialogTrigger>
-                             <DialogContent>
-                               {submissionStatus === 'success' ? (
-                                 <div className="flex flex-col items-center justify-center text-center p-4">
-                                   <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
-                                   <DialogTitle className="text-xl">Prijava je poslata!</DialogTitle>
-                                   <DialogDescription className="mt-2">
-                                     Hvala što si deo GlutenScan zajednice. 💛 Ako si ostavio/la kontakt, možemo ti se javiti kad proverimo.
-                                   </DialogDescription>
-                                   <DialogFooter className="mt-6 w-full">
-                                     <Button className="w-full" onClick={() => setShowReportErrorModal(false)}>Zatvori</Button>
-                                   </DialogFooter>
-                                 </div>
-                               ) : (
-                                 <>
-                                   <DialogHeader>
-                                     <DialogTitle>Prijavi grešku u analizi</DialogTitle>
-                                     <DialogDescription>
-                                       Tvoje povratne informacije nam pomažu da poboljšamo tačnost aplikacije.
-                                     </DialogDescription>
-                                   </DialogHeader>
-                                   <div className="space-y-4 py-2 text-sm">
-
-                                      <div>
-                                        <Label className="font-semibold">Koliko je ova greška ozbiljna za vas? (opciono)</Label>
-                                        <RadioGroup value={reportPriority} onValueChange={setReportPriority} className="mt-2 space-y-1">
-                                          <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="niska" id="priority-low" />
-                                            <Label htmlFor="priority-low" className="font-normal">Niska (čisto informacija)</Label>
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="srednja" id="priority-medium" />
-                                            <Label htmlFor="priority-medium" className="font-normal">Srednja (važno mi je)</Label>
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="visoka" id="priority-high" />
-                                            <Label htmlFor="priority-high" className="font-normal">Visoka (utiče na moju bezbednost)</Label>
-                                          </div>
-                                        </RadioGroup>
-                                      </div>
-                                     
-                                      <div>
-                                        <Label className="font-semibold">Tip greške (opciono)</Label>
-                                         <RadioGroup value={errorType} onValueChange={setErrorType} className="mt-2 space-y-1">
-                                          <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="sastav" id="type-sastav" />
-                                            <Label htmlFor="type-sastav" className="font-normal">Greška u sastavu / AI analizi</Label>
-                                          </div>
-                                          <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="drugo" id="type-drugo" />
-                                            <Label htmlFor="type-drugo" className="font-normal">Ostalo</Label>
-                                          </div>
-                                        </RadioGroup>
-                                      </div>
-
-                                     <div className="space-y-2">
-                                       <Label htmlFor="report-comment">Komentar (opciono)</Label>
-                                       <Textarea id="report-comment" placeholder="Npr. Brašno od rogača je bez glutena, a označeno je kao rizično." onChange={(e) => setReportComment(e.target.value)} />
-                                     </div>
-                                     
-                                     <div className="flex items-center space-x-2">
-                                       <Checkbox id="wants-contact" onCheckedChange={(checked) => setWantsContact(!!checked)} />
-                                       <Label htmlFor="wants-contact">Želim da me kontaktirate povodom ove prijave.</Label>
-                                     </div>
-                                     {wantsContact && (
-                                       <div className="space-y-2 pl-6">
-                                         <Label htmlFor="contact-email">Email za odgovor</Label>
-                                         <Input id="contact-email" type="email" placeholder="vas.email@primer.com" onChange={(e) => setContactEmail(e.target.value)} />
-                                       </div>
-                                     )}
-                                     <p className="text-xs text-muted-foreground">
-                                       Napomena: Uz prijavu se automatski šalje i analizirani tekst (ili slika) radi lakše provere.
-                                     </p>
-                                   </div>
-                                   <DialogFooter>
-                                     <Button variant="outline" onClick={() => setShowReportErrorModal(false)}>Odustani</Button>
-                                     <Button onClick={handleReportSubmit} disabled={submissionStatus === 'submitting'}>
-                                       {submissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Pošalji prijavu'}
-                                     </Button>
-                                   </DialogFooter>
-                                 </>
-                               )}
-                             </DialogContent>
-                           </Dialog>
-                          <Dialog open={showInquiryModal} onOpenChange={(open) => {
-                             setShowInquiryModal(open);
-                             if (!open) {
-                               setInquiryComment('');
-                               setInquiryEmail('');
-                             }
-                           }}>
-                            <DialogTrigger asChild>
-                              <Button variant="secondary" className="w-full">
-                                <Send className="mr-2 h-4 w-4" /> Pošalji proizvođaču upit
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>✉️ Želite da proverimo ovaj proizvod kod proizvođača?</DialogTitle>
-                                <DialogDescription>
-                                  Ponekad je direktan upit proizvođaču najbolji način da se otklone sumnje. Rado ćemo to uraditi za vas.
-                                </DialogDescription>
-                              </DialogHeader>
-                              <div className="space-y-4 py-2">
-                                <div className="space-y-2">
-                                  <Label htmlFor="inquiry-comment">Ostavi komentar (opciono)</Label>
-                                  <Textarea id="inquiry-comment" placeholder="Npr. 'Zanima me da li je aroma na bazi pšenice' ili 'Molim vas proverite rizik od unakrsne kontaminacije'." onChange={(e) => setInquiryComment(e.target.value)} />
-                                </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor="inquiry-email">Email za odgovor (opciono)</Label>
-                                  <Input id="inquiry-email" type="email" placeholder="vas.email@primer.com" onChange={(e) => setInquiryEmail(e.target.value)} />
-                                  <p className="text-xs text-muted-foreground">Ako unesete email, javićemo vam direktno kada dobijemo odgovor.</p>
-                                </div>
-                              </div>
-                              <DialogFooter>
-                                <Button variant="outline" onClick={() => setShowInquiryModal(false)}>Odustani</Button>
-                                <Button onClick={() => {
-                                  toast({
-                                    title: "Upit se šalje!",
-                                    description: "Hvala! Poslaćemo upit proizvođaču i obavestiti vas.",
-                                  });
-                                  setShowInquiryModal(false);
-                                }}>
-                                  <Send className="mr-2 h-4 w-4" /> Pošalji
-                                </Button>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-4 text-center">
-                          <Info className="inline h-3 w-3 mr-1" />
-                          Ova analiza je informativna i ne zamenjuje zvaničnu potvrdu proizvođača. Ako imate sumnje, pošaljite upit direktno preko aplikacije.
-                        </p>
                       </div>
-                    )}
-                   </CardContent>
-                </Card>
-              )}
-               {errorDeclaration && !showLabelingQuestionModal && (
-                  <ShadcnAlert variant="destructive" className="mt-4">
-                    <AlertCircle className="h-4 w-4" />
-                    <ShadcnAlertTitle>Error</ShadcnAlertTitle>
-                    <ShadcnAlertDescription>{errorDeclaration}</ShadcnAlertDescription>
-                  </ShadcnAlert>
+                      <div className="flex gap-2">
+                        <Button onClick={handleCaptureOcrPhoto} disabled={!hasOcrCameraPermission || isLoadingOcr} className="flex-grow">
+                          {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Camera className="mr-2 h-4 w-4"/>}
+                           Capture Photo
+                        </Button>
+                        <Button onClick={handleCancelOcrPhotoCapture} variant="outline" className="flex-grow">Cancel</Button>
+                      </div>
+                    </div>
+                  ) : stagedImage ? (
+                     <div className="space-y-2 text-center">
+                      <div className="relative w-full max-w-sm mx-auto aspect-video rounded-md overflow-hidden border">
+                         <Image src={stagedImage} alt="Staged image for analysis" layout="fill" objectFit="contain" />
+                          <Button 
+                            variant="destructive" 
+                            size="icon" 
+                            className="absolute top-2 right-2 h-7 w-7"
+                            onClick={() => resetAnalysisInputs()}
+                          >
+                            <X className="h-4 w-4" />
+                            <span className="sr-only">Clear Image</span>
+                          </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Image ready for analysis.</p>
+                     </div>
+                  ) : (
+                    <div className="space-y-4 text-center">
+                      <Label htmlFor="ocr-file-input" className="group cursor-pointer w-full border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center hover:border-primary hover:bg-muted/50 transition-colors">
+                        <UploadCloud className="h-8 w-8 text-muted-foreground group-hover:text-primary" />
+                        <span className="mt-2 text-sm font-semibold">Choose File</span>
+                        <Input id="ocr-file-input" type="file" className="sr-only" onChange={handleFileChange} accept="image/*" disabled={isLoadingAnyAnalysisProcess}/>
+                      </Label>
+                       <div className="flex items-center gap-2">
+                          <div className="flex-grow border-t"></div>
+                          <span className="text-xs text-muted-foreground">OR</span>
+                          <div className="flex-grow border-t"></div>
+                       </div>
+                       <Button variant="outline" className="w-full" onClick={handleInitiateOcrPhotoCapture} disabled={isLoadingAnyAnalysisProcess}>
+                          <Camera className="mr-2 h-4 w-4" />
+                          Take Picture
+                       </Button>
+                    </div>
+                  )}
+                </CardContent>
+                <CardFooter>
+                   <Button onClick={handleAnalyzeStagedImage} size="lg" disabled={!stagedImage || isLoadingAnyAnalysisProcess || !hasMounted || (hasMounted && !canScan())} className="w-full">
+                      {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                      Analyze with AI
+                   </Button>
+                </CardFooter>
+              </Card>
+
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="item-1">
+                  <AccordionTrigger>
+                     <div className="flex items-center gap-2">
+                       <FileText className="h-5 w-5"/> Or Paste Text Manually
+                     </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <form onSubmit={handleDeclarationSubmit} className="space-y-4 pt-2">
+                        <Textarea
+                          id="declaration-text-area"
+                          placeholder="e.g., Wheat flour, sugar, salt, yeast, barley malt extract..."
+                          value={declarationText}
+                          onChange={(e) => {
+                             setDeclarationText(e.target.value);
+                             if(e.target.value) { resetAnalysisInputs(true); }
+                          }}
+                          rows={6}
+                          className="resize-none"
+                          aria-label="Product Declaration Input"
+                          disabled={!hasMounted || (hasMounted && !canScan()) || isLoadingAnyAnalysisProcess}
+                        />
+                      <Button type="submit" 
+                        size="lg"
+                        disabled={!hasMounted || (hasMounted && !canScan()) || isLoadingDeclaration || !declarationText.trim() || isLoadingAnyAnalysisProcess} 
+                        className="w-full"
+                      >
+                        {isLoadingDeclaration && !isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                        Analyze Text with AI
+                      </Button>
+                    </form>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+              
+              <div
+                ref={analysisReportRef}
+                aria-live="polite" 
+                aria-busy={isLoadingAnyAnalysisProcess}
+                className="mt-6"
+              >
+                {(analysisResult || isLoadingDeclaration || (isLoadingOcr && !isTakingOcrPhoto)) && !showLabelingQuestionModal && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg mb-2">AI Analysis Report</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {(isLoadingDeclaration || (isLoadingOcr && !isTakingOcrPhoto)) && (
+                        <div className="flex flex-col items-center justify-center h-24 text-muted-foreground">
+                          <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
+                          <p>{isLoadingOcr ? 'Processing Image...' : 'Analyzing Ingredients...'}</p>
+                        </div>
+                      )}
+                      {analysisResult && !isLoadingDeclaration && !isLoadingOcr && (
+                        <div className="space-y-4">
+                          {getAssessmentAlert(analysisResult)}
+
+                           {relevantGlutenIssueCount > 0 && (
+                              <div className="mt-3 p-2 bg-destructive/10 rounded-md text-sm text-destructive flex items-center gap-2">
+                                  <ShieldAlert className="h-5 w-5"/>
+                                  <span>Identifikovano {relevantGlutenIssueCount} kritičnih stavki vezanih za gluten.</span>
+                              </div>
+                           )}
+
+                          <div>
+                            <h4 className="font-semibold mb-1 text-sm">Obrazloženje:</h4>
+                            <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.finalnoObrazlozenje}</p>
+                          </div>
+                          
+                          {problematicIngredients.length > 0 && (
+                            <div>
+                              <h4 className="font-semibold mb-2 text-md">Analiza rizičnih sastojaka:</h4>
+                              <ul className="list-none space-y-2 text-sm">
+                                {problematicIngredients.map((item, index) => {
+                                  let icon;
+                                  let colorClasses;
+                                  let textColor;
+                          
+                                  switch (item.ocena) {
+                                    case 'nije bezbedno':
+                                      icon = <XCircle className="h-5 w-5 text-red-600" />;
+                                      colorClasses = 'border-red-400/50 bg-red-50 dark:bg-red-900/20';
+                                      textColor = 'text-red-700 dark:text-red-300';
+                                      break;
+                                    case 'rizično – proveriti poreklo':
+                                    default:
+                                      icon = <AlertTriangle className="h-5 w-5 text-orange-500" />;
+                                      colorClasses = 'border-orange-400/50 bg-orange-50 dark:bg-orange-900/20';
+                                      textColor = 'text-orange-700 dark:text-orange-300';
+                                      break;
+                                  }
+                          
+                                  return (
+                                    <li key={index} className={`p-3 rounded-lg border ${colorClasses}`}>
+                                      <Popover>
+                                        <PopoverTrigger asChild disabled={!item.napomena}>
+                                          <div className={`flex items-start gap-3 ${item.napomena ? 'cursor-pointer' : ''}`}>
+                                            <div className="pt-0.5">{icon}</div>
+                                            <div className="flex-1">
+                                              <p className="font-semibold text-foreground">{item.sastojak}</p>
+                                              <p className={`text-xs ${textColor}`}>
+                                                {item.ocena} (Nivo rizika: {item.nivoRizika})
+                                              </p>
+                                            </div>
+                                            {item.napomena && <Info className="h-4 w-4 text-blue-500 shrink-0" />}
+                                          </div>
+                                        </PopoverTrigger>
+                                        {item.napomena && (
+                                          <PopoverContent className="w-auto max-w-[300px] text-sm p-3" side="top" align="start">
+                                            <p className="font-bold mb-1">{item.kategorijaRizika || 'Napomena'}</p>
+                                            <p className="text-muted-foreground">{item.napomena}</p>
+                                          </PopoverContent>
+                                        )}
+                                      </Popover>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            </div>
+                          )}
+                          
+                          {safeIngredients.length > 0 && (
+                             <Accordion type="single" collapsible className="w-full mt-4">
+                              <AccordionItem value="safe-ingredients">
+                                <AccordionTrigger>Prikaži {safeIngredients.length} bezbednih sastojaka</AccordionTrigger>
+                                <AccordionContent>
+                                  <p className="text-sm text-muted-foreground p-2 bg-muted/50 rounded-md">
+                                    {safeIngredients.map(item => item.sastojak).join(', ')}
+                                  </p>
+                                </AccordionContent>
+                              </AccordionItem>
+                            </Accordion>
+                          )}
+
+                          <div className="mt-6 flex flex-col sm:flex-row gap-2">
+                             <Button variant="outline" className="w-full" onClick={() => resetAnalysisInputs()}>
+                              <RotateCcw className="mr-2 h-4 w-4" />
+                              Očisti i počni ponovo
+                            </Button>
+                             <Dialog open={showReportErrorModal} onOpenChange={(open) => {
+                                 setShowReportErrorModal(open);
+                                 if (!open) {
+                                     setReportComment('');
+                                     setWantsContact(false);
+                                     setContactEmail('');
+                                     setReportPriority('');
+                                     setErrorType('');
+                                     setSubmissionStatus('idle');
+                                 }
+                             }}>
+                               <DialogTrigger asChild>
+                                 <Button className="w-full">
+                                   <Flag className="mr-2 h-4 w-4" />
+                                   Prijavi grešku
+                                 </Button>
+                               </DialogTrigger>
+                               <DialogContent>
+                                 {submissionStatus === 'success' ? (
+                                   <div className="flex flex-col items-center justify-center text-center p-4">
+                                     <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+                                     <DialogTitle className="text-xl">Prijava je poslata!</DialogTitle>
+                                     <DialogDescription className="mt-2">
+                                       Hvala što si deo GlutenScan zajednice. 💛 Ako si ostavio/la kontakt, možemo ti se javiti kad proverimo.
+                                     </DialogDescription>
+                                     <DialogFooter className="mt-6 w-full">
+                                       <Button className="w-full" onClick={() => setShowReportErrorModal(false)}>Zatvori</Button>
+                                     </DialogFooter>
+                                   </div>
+                                 ) : (
+                                   <>
+                                     <DialogHeader>
+                                       <DialogTitle>Prijavi grešku u analizi</DialogTitle>
+                                       <DialogDescription>
+                                         Tvoje povratne informacije nam pomažu da poboljšamo tačnost aplikacije.
+                                       </DialogDescription>
+                                     </DialogHeader>
+                                     <div className="space-y-4 py-2 text-sm">
+
+                                        <div>
+                                          <Label className="font-semibold">Koliko je ova greška ozbiljna za vas? (opciono)</Label>
+                                          <RadioGroup value={reportPriority} onValueChange={setReportPriority} className="mt-2 space-y-1">
+                                            <div className="flex items-center space-x-2">
+                                              <RadioGroupItem value="niska" id="priority-low" />
+                                              <Label htmlFor="priority-low" className="font-normal">Niska (čisto informacija)</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                              <RadioGroupItem value="srednja" id="priority-medium" />
+                                              <Label htmlFor="priority-medium" className="font-normal">Srednja (važno mi je)</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                              <RadioGroupItem value="visoka" id="priority-high" />
+                                              <Label htmlFor="priority-high" className="font-normal">Visoka (utiče na moju bezbednost)</Label>
+                                            </div>
+                                          </RadioGroup>
+                                        </div>
+                                       
+                                        <div>
+                                          <Label className="font-semibold">Tip greške (opciono)</Label>
+                                           <RadioGroup value={errorType} onValueChange={setErrorType} className="mt-2 space-y-1">
+                                            <div className="flex items-center space-x-2">
+                                              <RadioGroupItem value="sastav" id="type-sastav" />
+                                              <Label htmlFor="type-sastav" className="font-normal">Greška u sastavu / AI analizi</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                              <RadioGroupItem value="drugo" id="type-drugo" />
+                                              <Label htmlFor="type-drugo" className="font-normal">Ostalo</Label>
+                                            </div>
+                                          </RadioGroup>
+                                        </div>
+
+                                       <div className="space-y-2">
+                                         <Label htmlFor="report-comment">Komentar (opciono)</Label>
+                                         <Textarea id="report-comment" placeholder="Npr. Brašno od rogača je bez glutena, a označeno je kao rizično." onChange={(e) => setReportComment(e.target.value)} />
+                                       </div>
+                                       
+                                       <div className="flex items-center space-x-2">
+                                         <Checkbox id="wants-contact" onCheckedChange={(checked) => setWantsContact(!!checked)} />
+                                         <Label htmlFor="wants-contact">Želim da me kontaktirate povodom ove prijave.</Label>
+                                       </div>
+                                       {wantsContact && (
+                                         <div className="space-y-2 pl-6">
+                                           <Label htmlFor="contact-email">Email za odgovor</Label>
+                                           <Input id="contact-email" type="email" placeholder="vas.email@primer.com" onChange={(e) => setContactEmail(e.target.value)} />
+                                         </div>
+                                       )}
+                                       <p className="text-xs text-muted-foreground">
+                                         Napomena: Uz prijavu se automatski šalje i analizirani tekst (ili slika) radi lakše provere.
+                                       </p>
+                                     </div>
+                                     <DialogFooter>
+                                       <Button variant="outline" onClick={() => setShowReportErrorModal(false)}>Odustani</Button>
+                                       <Button onClick={handleReportSubmit} disabled={submissionStatus === 'submitting'}>
+                                         {submissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Pošalji prijavu'}
+                                       </Button>
+                                     </DialogFooter>
+                                   </>
+                                 )}
+                               </DialogContent>
+                             </Dialog>
+                            <Dialog open={showInquiryModal} onOpenChange={(open) => {
+                               setShowInquiryModal(open);
+                               if (!open) {
+                                 setInquiryComment('');
+                                 setInquiryEmail('');
+                               }
+                             }}>
+                              <DialogTrigger asChild>
+                                <Button variant="secondary" className="w-full">
+                                  <Send className="mr-2 h-4 w-4" /> Pošalji proizvođaču upit
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>✉️ Želite da proverimo ovaj proizvod kod proizvođača?</DialogTitle>
+                                  <DialogDescription>
+                                    Ponekad je direktan upit proizvođaču najbolji način da se otklone sumnje. Rado ćemo to uraditi za vas.
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <div className="space-y-4 py-2">
+                                  <div className="space-y-2">
+                                    <Label htmlFor="inquiry-comment">Ostavi komentar (opciono)</Label>
+                                    <Textarea id="inquiry-comment" placeholder="Npr. 'Zanima me da li je aroma na bazi pšenice' ili 'Molim vas proverite rizik od unakrsne kontaminacije'." onChange={(e) => setInquiryComment(e.target.value)} />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor="inquiry-email">Email za odgovor (opciono)</Label>
+                                    <Input id="inquiry-email" type="email" placeholder="vas.email@primer.com" onChange={(e) => setInquiryEmail(e.target.value)} />
+                                    <p className="text-xs text-muted-foreground">Ako unesete email, javićemo vam direktno kada dobijemo odgovor.</p>
+                                  </div>
+                                </div>
+                                <DialogFooter>
+                                  <Button variant="outline" onClick={() => setShowInquiryModal(false)}>Odustani</Button>
+                                  <Button onClick={() => {
+                                    toast({
+                                      title: "Upit se šalje!",
+                                      description: "Hvala! Poslaćemo upit proizvođaču i obavestiti vas.",
+                                    });
+                                    setShowInquiryModal(false);
+                                  }}>
+                                    <Send className="mr-2 h-4 w-4" /> Pošalji
+                                  </Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-4 text-center">
+                            <Info className="inline h-3 w-3 mr-1" />
+                            Ova analiza je informativna i ne zamenjuje zvaničnu potvrdu proizvođača. Ako imate sumnje, pošaljite upit direktno preko aplikacije.
+                          </p>
+                        </div>
+                      )}
+                     </CardContent>
+                  </Card>
                 )}
-            </div>
-          </div>
-          
-
-          <AlertDialog open={showScanLimitModal} onOpenChange={setShowScanLimitModal}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="flex items-center">
-                  <Star className="h-5 w-5 mr-2 text-primary" /> 
-                  Free Scan Limit Reached
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  You have used all your {scanLimit} free scans. To continue scanning and analyzing products, please consider upgrading to our Premium version.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Maybe Later</AlertDialogCancel>
-                <AlertDialogAction onClick={() => {
-                  toast({ title: "Premium (Coming Soon!)", description: "Thanks for your interest! Premium features are under development."});
-                  setShowScanLimitModal(false);
-                }}>
-                  Learn More About Premium
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-
-          <AlertDialog open={showLabelingQuestionModal} onOpenChange={(open) => {
-            if (!open) { resetAnalysisInputs(); } // Reset everything if modal is closed without action
-            setShowLabelingQuestionModal(open);
-          }}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Product Labeling Information</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Please indicate if you see any of these gluten-free labels on the product packaging.
-                  This helps improve the analysis accuracy. <br />
-                  (Example AOECS: A crossed grain symbol, often with a license number and country code.)
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <div className="space-y-3 py-2">
-                <RadioGroup value={selectedLabelingOption} onValueChange={setSelectedLabelingOption} className="gap-3">
-                  <div className="flex items-center space-x-2 p-2 border rounded-md hover:bg-muted/50 transition-colors">
-                    <RadioGroupItem value="aoecs" id="label-aoecs" />
-                    <Label htmlFor="label-aoecs" className="cursor-pointer flex-1">AOECS Certificate (e.g., Crossed Grain symbol)</Label>
-                  </div>
-                  <div className="flex items-center space-x-2 p-2 border rounded-md hover:bg-muted/50 transition-colors">
-                    <RadioGroupItem value="gf_text" id="label-gf_text" />
-                    <Label htmlFor="label-gf_text" className="cursor-pointer flex-1">"Gluten-Free" Text/Icon (not an official certificate)</Label>
-                  </div>
-                  <div className="flex items-center space-x-2 p-2 border rounded-md hover:bg-muted/50 transition-colors">
-                    <RadioGroupItem value="none" id="label-none" />
-                    <Label htmlFor="label-none" className="cursor-pointer flex-1">No Gluten-Free Label Present</Label>
-                  </div>
-                </RadioGroup>
+                 {errorDeclaration && !showLabelingQuestionModal && (
+                    <ShadcnAlert variant="destructive" className="mt-4">
+                      <AlertCircle className="h-4 w-4" />
+                      <ShadcnAlertTitle>Error</ShadcnAlertTitle>
+                      <ShadcnAlertDescription>{errorDeclaration}</ShadcnAlertDescription>
+                    </ShadcnAlert>
+                  )}
               </div>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel Scan</AlertDialogCancel>
-                <AlertDialogAction onClick={handleLabelingChoiceSubmit} disabled={!selectedLabelingOption || isLoadingDeclaration}>
-                  {isLoadingDeclaration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                  Continue to AI Analysis
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+            </div>
+            
+            <AlertDialog open={showScanLimitModal} onOpenChange={setShowScanLimitModal}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="flex items-center">
+                    <Star className="h-5 w-5 mr-2 text-primary" /> 
+                    Free Scan Limit Reached
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    You have used all your {scanLimit} free scans. To continue scanning and analyzing products, please consider upgrading to our Premium version.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Maybe Later</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => {
+                    toast({ title: "Premium (Coming Soon!)", description: "Thanks for your interest! Premium features are under development."});
+                    setShowScanLimitModal(false);
+                  }}>
+                    Learn More About Premium
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
 
+            <AlertDialog open={showLabelingQuestionModal} onOpenChange={(open) => {
+              if (!open) { resetAnalysisInputs(); } // Reset everything if modal is closed without action
+              setShowLabelingQuestionModal(open);
+            }}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Product Labeling Information</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Please indicate if you see any of these gluten-free labels on the product packaging.
+                    This helps improve the analysis accuracy. <br />
+                    (Example AOECS: A crossed grain symbol, often with a license number and country code.)
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="space-y-3 py-2">
+                  <RadioGroup value={selectedLabelingOption} onValueChange={setSelectedLabelingOption} className="gap-3">
+                    <div className="flex items-center space-x-2 p-2 border rounded-md hover:bg-muted/50 transition-colors">
+                      <RadioGroupItem value="aoecs" id="label-aoecs" />
+                      <Label htmlFor="label-aoecs" className="cursor-pointer flex-1">AOECS Certificate (e.g., Crossed Grain symbol)</Label>
+                    </div>
+                    <div className="flex items-center space-x-2 p-2 border rounded-md hover:bg-muted/50 transition-colors">
+                      <RadioGroupItem value="gf_text" id="label-gf_text" />
+                      <Label htmlFor="label-gf_text" className="cursor-pointer flex-1">"Gluten-Free" Text/Icon (not an official certificate)</Label>
+                    </div>
+                    <div className="flex items-center space-x-2 p-2 border rounded-md hover:bg-muted/50 transition-colors">
+                      <RadioGroupItem value="none" id="label-none" />
+                      <Label htmlFor="label-none" className="cursor-pointer flex-1">No Gluten-Free Label Present</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel Scan</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleLabelingChoiceSubmit} disabled={!selectedLabelingOption || isLoadingDeclaration}>
+                    {isLoadingDeclaration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    Continue to AI Analysis
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </main>
       </SidebarInset>
     </div>
