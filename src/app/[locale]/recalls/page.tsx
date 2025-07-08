@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from "@/components/ui/checkbox";
@@ -27,6 +27,8 @@ import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
 
 // Define the structure for a recall item
 interface RecallItem {
@@ -265,7 +267,8 @@ export default function RecallsPage() {
               </CardContent>
             </Card>
             
-            <div className="overflow-x-auto">
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -347,11 +350,77 @@ export default function RecallsPage() {
                 </TableBody>
               </Table>
             </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-4">
+              {filteredRecalls.length > 0 ? filteredRecalls.map(recall => (
+                  <Card key={recall.id} className="w-full">
+                    <CardHeader>
+                       <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-3">
+                            {recall.productImageUrl && (
+                              <Image 
+                                src={recall.productImageUrl} 
+                                alt={recall.productName} 
+                                width={48} 
+                                height={48} 
+                                className="rounded-md object-cover"
+                                data-ai-hint={recall.dataAiHint || 'product image'}
+                              />
+                            )}
+                            <div className="flex-1">
+                               <CardTitle className="text-base">{recall.productName}</CardTitle>
+                               <CardDescription className="text-xs">{recall.productBrand}</CardDescription>
+                            </div>
+                          </div>
+                          {getStatusBadge(recall.status)}
+                       </div>
+                    </CardHeader>
+                    <CardContent className="space-y-3 text-sm">
+                       <div className="flex justify-between items-center text-xs">
+                         <span className="text-muted-foreground">Datum opoziva:</span>
+                         <span className="font-medium">{new Date(recall.date).toLocaleDateString(locale === 'sr' ? 'sr-RS' : 'en-GB')}</span>
+                       </div>
+                       <div className="flex justify-between items-center text-xs">
+                         <span className="text-muted-foreground">Zemlja:</span>
+                         <span className="font-medium">{recall.country}</span>
+                       </div>
+                       <div className="flex flex-col text-xs">
+                          <span className="text-muted-foreground mb-1">LOT brojevi:</span>
+                          <p className="font-medium text-xs bg-muted p-2 rounded-md">{recall.lotNumbers.join(', ')}</p>
+                       </div>
+                       <Accordion type="single" collapsible className="w-full">
+                         <AccordionItem value="details">
+                             <AccordionTrigger className="text-sm py-2">Razlog i preporuka</AccordionTrigger>
+                             <AccordionContent className="space-y-2 text-xs pt-2">
+                                 <p><strong>Razlog:</strong> {recall.reason || 'Nije naveden'}</p>
+                                 <p><strong>Savet:</strong> {recall.advice || 'Proveriti izvor.'}</p>
+                                 {recall.sourceLink && recall.sourceLink !== '#' && (
+                                     <p><strong>Izvor:</strong> <a href={recall.sourceLink} target="_blank" rel="noopener noreferrer" className="underline text-primary">Link ka obaveštenju</a></p>
+                                 )}
+                             </AccordionContent>
+                         </AccordionItem>
+                       </Accordion>
+                    </CardContent>
+                    {recall.productId && (
+                       <CardFooter>
+                         <Button asChild variant="secondary" size="sm" className="w-full">
+                           <Link href={`/${locale}/products/${recall.productId}`}>Vidi detalje proizvoda</Link>
+                         </Button>
+                       </CardFooter>
+                    )}
+                  </Card>
+              )) : (
+                <div className="text-center py-10 text-muted-foreground">
+                  <p>Nema aktivnih opoziva koji odgovaraju vašoj pretrazi.</p>
+                </div>
+              )}
+            </div>
+
             <CardDescription className="mt-4 text-sm">
               <Info className="inline h-4 w-4 mr-1.5 text-muted-foreground"/>
               Klikom na proizvod ili dugme "Info" možete videti više detalja (razlog opoziva, link ka izvoru, saveti korisnicima). Lista se redovno ažurira.
             </CardDescription>
-
 
             <Card className="mt-10">
               <CardHeader>
