@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -7,7 +8,10 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
         <div className="mr-4 hidden md:flex items-center">
-           <Image src="/logo.png" alt="Gluten Scan Logo" width={24} height={24} className="h-6 w-6 mr-2 rounded-md" />
+           {/* Light Mode Logo */}
+           <Image src="/logo-light.png" alt="Gluten Scan Logo" width={24} height={24} className="h-6 w-6 mr-2 rounded-md dark:hidden" />
+           {/* Dark Mode Logo */}
+           <Image src="/logo-dark.png" alt="Gluten Scan Logo" width={24} height={24} className="h-6 w-6 mr-2 rounded-md hidden dark:block" />
           <span className="font-bold">Gluten Scan</span>
         </div>
         <div className="md:hidden">
