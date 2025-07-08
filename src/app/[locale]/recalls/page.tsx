@@ -1,4 +1,3 @@
-// This file uses client-side rendering for potential interactivity.
 'use client';
 
 import { useState } from 'react';
@@ -22,12 +21,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from '@/components/ui/button';
-import { Siren, Search, PackageSearch, Info, MapPinIcon, TagIcon, Barcode, Flag, ArrowUpDown, Filter } from 'lucide-react';
+import { Siren, Search, PackageSearch, Info, MapPinIcon, TagIcon, Barcode, Flag, ArrowUpDown, Filter, Send, Loader2, CheckCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { addReportAction } from '@/app/actions/report-actions';
 
 
 // Define the structure for a recall item
@@ -113,6 +115,16 @@ export default function RecallsPage() {
   const [sortByDate, setSortByDate] = useState('newest'); // 'newest', 'oldest'
   const [showOnlyGlobal, setShowOnlyGlobal] = useState(false);
   
+  // State for report dialog
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [reportProductName, setReportProductName] = useState('');
+  const [reportBarcode, setReportBarcode] = useState('');
+  const [reportComment, setReportComment] = useState('');
+  const [reportWantsContact, setReportWantsContact] = useState(false);
+  const [reportContactEmail, setReportContactEmail] = useState('');
+  const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
+
+
   // In a real app, filtering and sorting logic would go here
   const filteredRecalls = placeholderRecalls.filter(recall => {
     const nameMatch = recall.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -163,13 +175,43 @@ export default function RecallsPage() {
     );
   };
 
-  const handleReportProblem = () => {
-    toast({
-      title: "Prijava Problema",
-      description: "Funkcionalnost prijave problema će uskoro biti dostupna. Hvala na razumevanju!",
+  const handleReportSubmit = async () => {
+    if (!reportProductName.trim() || !reportComment.trim()) {
+      toast({
+        variant: 'destructive',
+        title: 'Polja su obavezna',
+        description: 'Molimo unesite naziv proizvoda i razlog prijave.',
+      });
+      return;
+    }
+
+    setSubmissionStatus('submitting');
+    
+    const result = await addReportAction({
+      type: 'inquiry',
+      productContext: `Prijava za proizvod: ${reportProductName}${reportBarcode ? `, Barkod: ${reportBarcode}` : ''}`,
+      comment: reportComment,
+      wantsContact: reportWantsContact,
+      contactEmail: reportWantsContact ? reportContactEmail : '',
     });
+
+    if (result.success) {
+      setSubmissionStatus('success');
+    } else {
+      setSubmissionStatus('idle');
+      toast({ variant: 'destructive', title: 'Greška pri slanju', description: result.error });
+    }
   };
 
+  const resetReportForm = () => {
+    setIsReportModalOpen(false);
+    setSubmissionStatus('idle');
+    setReportProductName('');
+    setReportBarcode('');
+    setReportComment('');
+    setReportWantsContact(false);
+    setReportContactEmail('');
+  };
 
   return (
     <div className="flex min-h-screen">
@@ -186,10 +228,72 @@ export default function RecallsPage() {
             />
 
             <div className="mb-6">
-              <Button variant="outline" onClick={handleReportProblem}>
-                <Flag className="mr-2 h-4 w-4" /> Prijavi problem sa proizvodom
-              </Button>
+              <Dialog open={isReportModalOpen} onOpenChange={(open) => {
+                if (!open) { resetReportForm(); } 
+                else { setIsReportModalOpen(true); }
+              }}>
+                <DialogTrigger asChild>
+                   <Button variant="outline">
+                    <Flag className="mr-2 h-4 w-4" /> Prijavi problem sa proizvodom
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  {submissionStatus === 'success' ? (
+                     <div className="flex flex-col items-center justify-center text-center p-4">
+                       <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+                       <DialogTitle className="text-xl">Prijava je poslata!</DialogTitle>
+                       <DialogDescription className="mt-2">
+                         Hvala Vam na prijavi. Proverićemo informacije i ažurirati listu ako je potrebno.
+                       </DialogDescription>
+                       <DialogFooter className="mt-6 w-full">
+                         <Button className="w-full" onClick={resetReportForm}>Zatvori</Button>
+                       </DialogFooter>
+                     </div>
+                  ) : (
+                    <>
+                      <DialogHeader>
+                        <DialogTitle>Prijavi Problem sa Proizvodom</DialogTitle>
+                        <DialogDescription>
+                          Ako sumnjate da neki proizvod treba da se nađe na ovoj listi, molimo vas da popunite formu.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 py-2 text-sm">
+                        <div className="space-y-2">
+                           <Label htmlFor="report-product-name">Naziv Proizvoda</Label>
+                           <Input id="report-product-name" placeholder="Unesite tačan naziv proizvoda" value={reportProductName} onChange={(e) => setReportProductName(e.target.value)} />
+                        </div>
+                         <div className="space-y-2">
+                           <Label htmlFor="report-barcode">Barkod (opciono)</Label>
+                           <Input id="report-barcode" placeholder="Unesite barkod ako ga znate" value={reportBarcode} onChange={(e) => setReportBarcode(e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                           <Label htmlFor="report-comment">Razlog prijave / Komentar</Label>
+                           <Textarea id="report-comment" placeholder="Npr. 'Ovaj proizvod sadrži nedeklarisani alergen...' ili 'Proizvođač je najavio povlačenje.'" value={reportComment} onChange={(e) => setReportComment(e.target.value)} />
+                        </div>
+                         <div className="flex items-center space-x-2">
+                           <Checkbox id="report-wants-contact" checked={reportWantsContact} onCheckedChange={(checked) => setReportWantsContact(!!checked)} />
+                           <Label htmlFor="report-wants-contact">Želim da me kontaktirate povodom ove prijave.</Label>
+                         </div>
+                         {reportWantsContact && (
+                           <div className="space-y-2 pl-6">
+                             <Label htmlFor="report-contact-email">Email za odgovor</Label>
+                             <Input id="report-contact-email" type="email" placeholder="vas.email@primer.com" value={reportContactEmail} onChange={(e) => setReportContactEmail(e.target.value)} />
+                           </div>
+                         )}
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={resetReportForm}>Odustani</Button>
+                        <Button onClick={handleReportSubmit} disabled={submissionStatus === 'submitting' || !reportProductName.trim() || !reportComment.trim()}>
+                           {submissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />}
+                           Pošalji prijavu
+                        </Button>
+                      </DialogFooter>
+                    </>
+                  )}
+                </DialogContent>
+              </Dialog>
             </div>
+
 
             <Card className="mb-8">
               <CardHeader>
