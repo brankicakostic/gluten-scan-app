@@ -223,7 +223,7 @@ export default function AdminClientPage({ initialProducts, initialReports }: Adm
             <Tabs defaultValue="products">
               <TabsList className="mb-4">
                 <TabsTrigger value="products">Proizvodi</TabsTrigger>
-                <TabsTrigger value="reports">Prijave <Badge variant="destructive" className="ml-2">{reports.length}</Badge></TabsTrigger>
+                <TabsTrigger value="reports">Prijave i Upiti <Badge variant="destructive" className="ml-2">{reports.length}</Badge></TabsTrigger>
               </TabsList>
 
               {/* Products Tab */}
@@ -290,7 +290,11 @@ export default function AdminClientPage({ initialProducts, initialReports }: Adm
                                 {report.type === 'error' ? 'Greška' : 'Upit'}
                               </Badge>
                             </TableCell>
-                            <TableCell>{getPriorityBadge(report.priority)}</TableCell>
+                            <TableCell>
+                              {report.type === 'error' ? getPriorityBadge(report.priority) : (
+                                <span className="text-muted-foreground text-center block">-</span>
+                              )}
+                            </TableCell>
                             <TableCell className="text-xs max-w-sm">
                                 <p className="font-semibold">{report.comment || 'N/A'}</p>
                                 <p className="text-muted-foreground mt-1 truncate"><strong>Kontekst:</strong> {report.productContext}</p>
