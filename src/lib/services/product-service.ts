@@ -70,10 +70,10 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData>): Product {
         const tagsLower = new Set(data.tagsFromInput.map((t: string) => t.toLowerCase()));
         
         productData.isPosno = tagsLower.has('posno');
-        productData.isSugarFree = tagsLower.has('bez šećera');
-        productData.isLactoseFree = tagsLower.has('bez laktoze');
+        productData.isSugarFree = tagsLower.has('bez šećera') || tagsLower.has('sugar-free');
+        productData.isLactoseFree = tagsLower.has('bez laktoze') || tagsLower.has('lactose-free');
         productData.isVegan = tagsLower.has('vegan');
-        productData.isHighProtein = tagsLower.has('protein');
+        productData.isHighProtein = tagsLower.has('protein') || tagsLower.has('high-protein');
     }
 
     return productData as Product;
