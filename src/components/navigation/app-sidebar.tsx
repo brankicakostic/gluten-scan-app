@@ -25,12 +25,9 @@ export function AppSidebar() {
       <SidebarHeader className="p-4">
         <Link href={`/${locale}`} className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
           {/* Light Mode Logo */}
-          <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={32} height={32} className="h-8 w-8 rounded-lg dark:hidden" />
+          <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={120} height={30} className="w-auto h-8 dark:hidden" />
           {/* Dark Mode Logo */}
-          <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={32} height={32} className="h-8 w-8 rounded-lg hidden dark:block" />
-          <span className="font-semibold text-lg group-data-[collapsible=icon]:hidden">
-            Gluten Scan
-          </span>
+          <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={120} height={30} className="w-auto h-8 hidden dark:block" />
         </Link>
       </SidebarHeader>
       <SidebarContent>
