@@ -1,3 +1,4 @@
+
 // This file uses the Firebase client SDK, but is intended for use in Server Components
 // to fetch data from Firestore.
 
@@ -17,17 +18,27 @@ import type { Product } from '@/lib/products';
  * @returns The full, public URL for the image.
  */
 function transformImageUrl(imageUrl: string): string {
-    if (!imageUrl || imageUrl.startsWith('http') || imageUrl.startsWith('/')) {
-        return imageUrl; // It's already a full URL or a placeholder/public path.
+    // If imageUrl is falsy, return a placeholder to prevent crashes.
+    if (!imageUrl) {
+        return 'https://placehold.co/400x200.png';
     }
+    // If it's already a full URL or a local public path, return it as is.
+    if (imageUrl.startsWith('http') || imageUrl.startsWith('/')) {
+        return imageUrl; 
+    }
+
     const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
     if (!bucket) {
         console.warn('Firebase storage bucket is not configured. Using placeholder for images.');
         return 'https://placehold.co/400x200.png'; // Fallback
     }
-    // Prepend 'products/' to the relative path from the database.
+    
+    // As per your feedback, the full path in storage is 'products/<manufacturer>/<image-file>'
+    // and the database contains the path part after 'products/'.
     const fullPath = `products/${imageUrl}`;
     const encodedPath = encodeURIComponent(fullPath);
+    
+    // This URL format works for public files.
     return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
 }
 
