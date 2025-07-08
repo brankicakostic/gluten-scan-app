@@ -1,17 +1,14 @@
-
 // This file uses client-side rendering.
 'use client';
 
 import type { Product } from '@/lib/products';
-import { placeholderProducts } from '@/lib/products';
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
 interface FavoritesContextType {
   favoriteProductIds: string[];
   addFavorite: (productId: string) => void;
-  removeFavorite: (productId: string) => void;
+  removeFavorite: (productId:string) => void;
   isFavorite: (productId: string) => boolean;
-  getFavoriteProducts: () => Product[];
 }
 
 const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
@@ -55,12 +52,8 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     return favoriteProductIds.includes(productId);
   };
 
-  const getFavoriteProducts = (): Product[] => {
-    return placeholderProducts.filter(product => favoriteProductIds.includes(product.id));
-  };
-
   return (
-    <FavoritesContext.Provider value={{ favoriteProductIds, addFavorite, removeFavorite, isFavorite, getFavoriteProducts }}>
+    <FavoritesContext.Provider value={{ favoriteProductIds, addFavorite, removeFavorite, isFavorite }}>
       {children}
     </FavoritesContext.Provider>
   );
