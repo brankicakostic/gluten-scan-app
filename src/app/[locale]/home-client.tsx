@@ -1,9 +1,11 @@
+
 'use client';
 
 import { useState, type FormEvent, useRef, useEffect, ChangeEvent } from 'react';
 import Image from 'next/image';
 import Link from 'next/link'; 
 import { useParams } from 'next/navigation'; 
+import { useForm } from 'react-hook-form';
 import { SidebarInset, SidebarRail } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/navigation/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
@@ -18,10 +20,11 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert, Barcode as BarcodeIcon, X, FileText, Flag, XCircle, Send } from 'lucide-react';
+import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert, Barcode as BarcodeIcon, X, FileText, Flag, XCircle, Send, PackagePlus } from 'lucide-react';
 import { analyzeDeclaration, type AnalyzeDeclarationOutput, type IngredientAssessment } from '@/ai/flows/analyze-declaration';
 import type { DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import { ocrDeclaration, type OcrDeclarationOutput } from '@/ai/flows/ocr-declaration-flow';
+import { extractProductInfo, type ExtractProductInfoOutput } from '@/ai/flows/extract-product-info-flow';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { useScanLimiter } from '@/contexts/scan-limiter-context'; 
@@ -71,43 +74,52 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
     setHasMounted(true);
   }, []);
 
+  // Main declaration analysis state
   const [declarationText, setDeclarationText] = useState<string>('');
   const [analysisResult, setAnalysisResult] = useState<AnalyzeDeclarationOutput | null>(null);
   const [isLoadingDeclaration, setIsLoadingDeclaration] = useState<boolean>(false);
   const [errorDeclaration, setErrorDeclaration] = useState<string | null>(null);
   
+  // OCR image upload state
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoadingOcr, setIsLoadingOcr] = useState<boolean>(false); 
   const [stagedImage, setStagedImage] = useState<string | null>(null);
   
+  // Barcode scanning state
   const [barcodeScanResult, setBarcodeScanResult] = useState<BarcodeScanResult | null>(null);
   const [isScanningBarcode, setIsScanningBarcode] = useState<boolean>(false);
   const barcodeVideoRef = useRef<HTMLVideoElement>(null);
   const [hasBarcodeCameraPermission, setHasBarcodeCameraPermission] = useState<boolean | null>(null);
   const [errorBarcode, setErrorBarcode] = useState<string | null>(null);
 
+  // Main OCR camera state
   const [isTakingOcrPhoto, setIsTakingOcrPhoto] = useState<boolean>(false);
   const ocrVideoRef = useRef<HTMLVideoElement>(null);
   const [hasOcrCameraPermission, setHasOcrCameraPermission] = useState<boolean | null>(null);
 
+  // Labeling info modal state
   const [showLabelingQuestionModal, setShowLabelingQuestionModal] = useState<boolean>(false);
   const [ocrTextForAnalysis, setOcrTextForAnalysis] = useState<string>('');
   const [manualTextForAnalysis, setManualTextForAnalysis] = useState<string>('');
   const [selectedLabelingOption, setSelectedLabelingOption] = useState<string>('');
 
+  // Daily tip state
   const [dailyTip, setDailyTip] = useState<DailyCeliacTipOutput | null>(initialTip);
   const [isLoadingTip, setIsLoadingTip] = useState<boolean>(!initialTip);
   const [showTipDetailsModal, setShowTipDetailsModal] = useState<boolean>(false);
   const [showScanLimitModal, setShowScanLimitModal] = useState<boolean>(false);
 
-  // Report error form state
+  // Report error form state (for text analysis)
   const [showReportErrorModal, setShowReportErrorModal] = useState(false);
   const [reportComment, setReportComment] = useState('');
   const [wantsContact, setWantsContact] = useState(false);
   const [contactEmail, setContactEmail] = useState('');
   const [reportPriority, setReportPriority] = useState('');
   const [errorType, setErrorType] = useState('');
-  const [submissionStatus, setSubmissionStatus] = useState('idle');
+  const [reportSubmissionStatus, setReportSubmissionStatus] = useState('idle');
+
+  // New product flow state (for not found barcodes)
+  const [notFoundBarcode, setNotFoundBarcode] = useState<string | null>(null);
 
   const analysisReportRef = useRef<HTMLDivElement>(null);
   const [displayedProducts] = useState<Product[]>(initialProducts);
@@ -140,7 +152,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
           }
 
           setTimeout(async () => {
-            const simulatedBarcode = "8606107907482";
+            const simulatedBarcode = "8601111111111"; // Simulated not found barcode
             const foundProduct = await getProductById(simulatedBarcode);
 
             if (foundProduct) {
@@ -153,17 +165,11 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                     dataAiHint: foundProduct.dataAiHint || "scanned product"
                   });
             } else {
-                 setBarcodeScanResult({ 
-                    name: "Unknown Product Scanned", 
-                    barcode: "N/A",
-                    tags: ['unknown-barcode'],
-                    ingredientsText: "No product information found for this barcode. Try analyzing the declaration.", 
-                    imageUrl: "https://placehold.co/300x200.png",
-                    dataAiHint: "unknown product"
-                  });
+                 setBarcodeScanResult(null);
+                 setNotFoundBarcode(simulatedBarcode);
             }
             incrementScanCount();
-            toast({ title: "Barcode Scan Simulated", description: foundProduct ? "Product details loaded." : "Barcode not found in database."});
+            toast({ title: "Barcode Scan Simulated", description: foundProduct ? "Product details loaded." : "Barcode not found. Help us add it!"});
             setIsScanningBarcode(false); 
           }, 3000);
         } catch (error) {
@@ -410,6 +416,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
     setIsScanningBarcode(true);
     setBarcodeScanResult(null);
     setErrorBarcode(null);
+    setNotFoundBarcode(null);
     setHasBarcodeCameraPermission(null);
   };
   
@@ -418,7 +425,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
   };
 
   const handleReportSubmit = async () => {
-    setSubmissionStatus('submitting');
+    setReportSubmissionStatus('submitting');
     
     const reportData = {
         type: 'error' as const,
@@ -433,9 +440,9 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
     const result = await addReportAction(reportData);
 
     if (result.success) {
-        setSubmissionStatus('success');
+        setReportSubmissionStatus('success');
     } else {
-        setSubmissionStatus('idle');
+        setReportSubmissionStatus('idle');
         toast({ variant: 'destructive', title: 'Greška pri slanju', description: result.error });
     }
   };
@@ -654,9 +661,6 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                           {barcodeScanResult.tags?.includes('may-contain-gluten') && !barcodeScanResult.tags?.includes('gluten-free') && !barcodeScanResult.tags?.includes('contains-gluten') && (
                              <div className="flex items-center text-orange-500 dark:text-orange-400 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>May Contain Traces</span></div>
                           )}
-                           {barcodeScanResult.tags?.includes('unknown-barcode') && (
-                             <div className="flex items-center text-muted-foreground mt-1"><Info className="h-5 w-5 mr-1" /><span>Barcode Not Found</span></div>
-                          )}
                         </div>
                       </CardHeader>
                       <CardContent>
@@ -672,7 +676,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                       </CardContent>
                     </Card>
                   )}
-                  {!isScanningBarcode && !barcodeScanResult && !errorBarcode && (
+                  {!isScanningBarcode && !barcodeScanResult && !errorBarcode && !notFoundBarcode && (
                      <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md">
                       <QrCode className="mx-auto h-8 w-8 mb-2" />
                       <p className="text-sm">Barcode scan results will appear here.</p>
@@ -974,7 +978,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                                      setContactEmail('');
                                      setReportPriority('');
                                      setErrorType('');
-                                     setSubmissionStatus('idle');
+                                     setReportSubmissionStatus('idle');
                                  }
                              }}>
                                <DialogTrigger asChild>
@@ -984,7 +988,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                                  </Button>
                                </DialogTrigger>
                                <DialogContent>
-                                 {submissionStatus === 'success' ? (
+                                 {reportSubmissionStatus === 'success' ? (
                                    <div className="flex flex-col items-center justify-center text-center p-4">
                                      <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
                                      <DialogTitle className="text-xl">Prijava je poslata!</DialogTitle>
@@ -1058,8 +1062,8 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                                      </div>
                                      <DialogFooter>
                                        <Button variant="outline" onClick={() => setShowReportErrorModal(false)}>Odustani</Button>
-                                       <Button onClick={handleReportSubmit} disabled={submissionStatus === 'submitting'}>
-                                         {submissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Pošalji prijavu'}
+                                       <Button onClick={handleReportSubmit} disabled={reportSubmissionStatus === 'submitting'}>
+                                         {reportSubmissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Pošalji prijavu'}
                                        </Button>
                                      </DialogFooter>
                                    </>
@@ -1147,9 +1151,236 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+
+            <AddProductDialog
+              barcode={notFoundBarcode}
+              isOpen={!!notFoundBarcode}
+              onClose={() => setNotFoundBarcode(null)}
+            />
+
           </div>
         </main>
       </SidebarInset>
     </div>
+  );
+}
+
+
+// New Component for the "Product Not Found" flow
+interface AddProductDialogProps {
+  barcode: string | null;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function AddProductDialog({ barcode, isOpen, onClose }: AddProductDialogProps) {
+  const [step, setStep] = useState<'initial' | 'capturing' | 'confirming' | 'success'>('initial');
+  const [image, setImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const { toast } = useToast();
+
+  const { register, handleSubmit, watch, setValue } = useForm({
+    defaultValues: {
+      productName: '',
+      brand: '',
+      comment: '',
+    }
+  });
+
+  // Reset state when dialog is closed or barcode changes
+  useEffect(() => {
+    if (isOpen) {
+      setStep('initial');
+      setImage(null);
+      setIsLoading(false);
+      setError(null);
+      setValue('productName', '');
+      setValue('brand', '');
+      setValue('comment', '');
+    }
+  }, [isOpen, setValue]);
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (loadEvent) => {
+        const result = loadEvent.target?.result as string;
+        setImage(result);
+        processImageWithAI(result);
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
+  const handleStartCapture = async () => {
+    setStep('capturing');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      setHasCameraPermission(true);
+      if (videoRef.current) videoRef.current.srcObject = stream;
+    } catch (err) {
+      setError('Camera access denied. Please enable permissions.');
+      setHasCameraPermission(false);
+      setStep('initial');
+    }
+  };
+
+  const handleCapture = () => {
+    if (videoRef.current) {
+      const canvas = document.createElement('canvas');
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      canvas.getContext('2d')?.drawImage(videoRef.current, 0, 0);
+      const dataUri = canvas.toDataURL('image/jpeg');
+      setImage(dataUri);
+      stopCamera();
+      processImageWithAI(dataUri);
+    }
+  };
+
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      (videoRef.current.srcObject as MediaStream).getTracks().forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+    }
+  };
+
+  const processImageWithAI = async (imageDataUri: string) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await extractProductInfo({ imageDataUri });
+      setValue('productName', result.productName);
+      setValue('brand', result.brand);
+      setStep('confirming');
+    } catch (err) {
+      setError('Could not extract info from image. Please try again.');
+      setStep('initial'); // Revert to initial step on error
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onFormSubmit = async (data: { productName: string, brand: string, comment: string }) => {
+    setIsLoading(true);
+    const result = await addReportAction({
+      type: 'inquiry',
+      productName: data.productName,
+      productContext: `Novi proizvod - Brend: ${data.brand || 'N/A'}, Barkod: ${barcode}`,
+      comment: data.comment,
+    });
+    setIsLoading(false);
+
+    if (result.success) {
+      setStep('success');
+    } else {
+      toast({ variant: 'destructive', title: 'Greška pri slanju', description: result.error });
+    }
+  };
+  
+  const DialogSteps = () => {
+    switch (step) {
+      case 'initial':
+        return (
+          <>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2"><PackagePlus className="h-6 w-6 text-primary" /> Proizvod nije u bazi</DialogTitle>
+              <DialogDescription>
+                Ovaj barkod nije pronađen. Možete nam pomoći da ga dodamo – skenirajte prednju stranu pakovanja (sa nazivom proizvoda).
+              </DialogDescription>
+            </DialogHeader>
+            {error && <ShadcnAlert variant="destructive"><AlertCircle className="h-4 w-4" />{error}</ShadcnAlert>}
+            {isLoading && <div className="flex justify-center items-center p-4"><Loader2 className="h-8 w-8 animate-spin" /></div>}
+            <div className="grid grid-cols-2 gap-4 pt-4">
+              <Button asChild variant="outline">
+                <Label htmlFor="new-product-upload">
+                  <UploadCloud className="mr-2 h-4 w-4" /> Dodaj iz galerije
+                  <Input id="new-product-upload" type="file" className="sr-only" accept="image/*" onChange={handleFileChange} />
+                </Label>
+              </Button>
+              <Button onClick={handleStartCapture}><Camera className="mr-2 h-4 w-4" /> Fotografisi</Button>
+            </div>
+          </>
+        );
+
+      case 'capturing':
+         return (
+          <>
+            <DialogHeader><DialogTitle>Fotografiši Proizvod</DialogTitle></DialogHeader>
+            <div className="aspect-video bg-muted rounded-md relative">
+              <video ref={videoRef} className="w-full h-full object-cover rounded-md" autoPlay playsInline muted />
+              {!hasCameraPermission && <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-white p-4">Dozvolite pristup kameri...</div>}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => { stopCamera(); setStep('initial'); }}>Nazad</Button>
+              <Button onClick={handleCapture} disabled={!hasCameraPermission}>Slikaj</Button>
+            </DialogFooter>
+          </>
+        );
+        
+      case 'confirming':
+        return (
+          <form onSubmit={handleSubmit(onFormSubmit)}>
+            <DialogHeader>
+              <DialogTitle>Potvrdi podatke o proizvodu</DialogTitle>
+              <DialogDescription>Molimo proverite podatke koje je AI izvukao iz slike i pošaljite ih našem timu na verifikaciju.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="productName">Naziv proizvoda</Label>
+                <Input id="productName" {...register('productName', { required: true })} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="brand">Brend</Label>
+                <Input id="brand" {...register('brand')} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="barcode">Barkod</Label>
+                <Input id="barcode" value={barcode || ''} readOnly disabled />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="comment">Komentar (opciono)</Label>
+                <Textarea id="comment" placeholder="Npr. Na pakovanju piše 'bez glutena'" {...register('comment')} />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setStep('initial')}>Nazad</Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Pošalji timu GlutenScan
+              </Button>
+            </DialogFooter>
+          </form>
+        );
+      
+      case 'success':
+        return (
+          <>
+            <DialogHeader className="items-center text-center">
+              <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+              <DialogTitle>Hvala Vam!</DialogTitle>
+              <DialogDescription>
+                Uspešno ste poslali podatke o novom proizvodu. Naš tim će ih proveriti i dodati u bazu.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button className="w-full" onClick={onClose}>Zatvori</Button>
+            </DialogFooter>
+          </>
+        );
+
+      default: return null;
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent onInteractOutside={(e) => e.preventDefault()}>
+        {DialogSteps()}
+      </DialogContent>
+    </Dialog>
   );
 }
