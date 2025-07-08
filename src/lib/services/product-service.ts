@@ -5,10 +5,7 @@
 import { db } from '@/lib/firebase/client';
 import { collection, getDocs, doc, getDoc, query, orderBy, limit } from 'firebase/firestore';
 import type { Product } from '@/lib/products';
-
-// The data in Firestore should be structured according to the Product type.
-// This function assumes documents in the 'products' collection have fields matching the Product type.
-// The document ID from Firestore will be used as the product's `id`.
+import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 
 
 /**
@@ -18,11 +15,9 @@ import type { Product } from '@/lib/products';
  * @returns The full, public URL for the image.
  */
 function transformImageUrl(imageUrl: string): string {
-    // If imageUrl is falsy, return a placeholder to prevent crashes.
     if (!imageUrl) {
         return 'https://placehold.co/400x200.png';
     }
-    // If it's already a full URL or a local public path, return it as is.
     if (imageUrl.startsWith('http') || imageUrl.startsWith('/')) {
         return imageUrl; 
     }
@@ -30,16 +25,58 @@ function transformImageUrl(imageUrl: string): string {
     const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
     if (!bucket) {
         console.warn('Firebase storage bucket is not configured. Using placeholder for images.');
-        return 'https://placehold.co/400x200.png'; // Fallback
+        return 'https://placehold.co/400x200.png';
     }
     
-    // As per your feedback, the full path in storage is 'products/<manufacturer>/<image-file>'
-    // and the database contains the path part after 'products/'.
     const fullPath = `products/${imageUrl}`;
     const encodedPath = encodeURIComponent(fullPath);
     
-    // This URL format works for public files.
     return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
+}
+
+/**
+ * Maps a Firestore document to a structured Product object, normalizing inconsistent fields.
+ * @param doc The Firestore document snapshot.
+ * @returns A normalized Product object.
+ */
+function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData>): Product {
+    const data = doc.data();
+    const productData: any = {
+        id: doc.id,
+        ...data,
+        imageUrl: transformImageUrl(data.imageUrl),
+    };
+
+    // 1. Map ingredients array to ingredientsText string
+    if (Array.isArray(data.ingredients)) {
+        productData.ingredientsText = data.ingredients.join(', ');
+    } else if (typeof data.ingredients === 'string') {
+        productData.ingredientsText = data.ingredients;
+    }
+
+    // 2. Normalize nutriscore to nutriScore
+    if (data.nutriscore) {
+        productData.nutriScore = data.nutriscore;
+    }
+
+    // 3. Map boolean flags from the database
+    productData.hasAOECSLicense = !!data.license;
+    productData.hasManufacturerStatement = !!data.manufacturerStatement;
+    productData.isVerifiedAdmin = !!data.verified;
+
+    // 4. Map tagsFromInput to the 'tags' property and derive boolean dietary flags
+    if (data.tagsFromInput) {
+        productData.tags = data.tagsFromInput;
+        const tagsLower = new Set(data.tagsFromInput.map((t: string) => t.toLowerCase()));
+        
+        productData.isPosno = tagsLower.has('posno');
+        productData.isSugarFree = tagsLower.has('bez šećera');
+        productData.isLactoseFree = tagsLower.has('bez laktoze');
+        productData.isVegan = tagsLower.has('vegan');
+        productData.isHighProtein = tagsLower.has('protein');
+    }
+
+    return productData as Product;
 }
 
 
@@ -50,20 +87,13 @@ function transformImageUrl(imageUrl: string): string {
 export async function getProducts(): Promise<Product[]> {
     try {
         const productsCol = collection(db, 'products');
-        const q = query(productsCol, orderBy("name")); // Order by name for consistent results
+        const q = query(productsCol, orderBy("name"));
         const productSnapshot = await getDocs(q);
-        const productList = productSnapshot.docs.map(doc => {
-            const data = doc.data();
-            return {
-                id: doc.id,
-                ...data,
-                imageUrl: transformImageUrl(data.imageUrl),
-            } as Product;
-        });
+        const productList = productSnapshot.docs.map(mapDocToProduct);
         return productList;
     } catch (error) {
         console.error("Error fetching products from Firestore: ", error);
-        return []; // Return an empty array on error
+        return [];
     }
 }
 
@@ -75,21 +105,13 @@ export async function getProducts(): Promise<Product[]> {
 export async function getFeaturedProducts(count: number = 8): Promise<Product[]> {
     try {
         const productsCol = collection(db, 'products');
-        // A simple query to get some products. In a real app, this might be based on a 'featured' flag.
         const q = query(productsCol, orderBy("name"), limit(count));
         const productSnapshot = await getDocs(q);
-        const productList = productSnapshot.docs.map(doc => {
-            const data = doc.data();
-            return {
-                id: doc.id,
-                ...data,
-                imageUrl: transformImageUrl(data.imageUrl),
-            } as Product;
-        });
+        const productList = productSnapshot.docs.map(mapDocToProduct);
         return productList;
     } catch (error) {
         console.error("Error fetching featured products from Firestore: ", error);
-        return []; // Return an empty array on error
+        return [];
     }
 }
 
@@ -109,12 +131,8 @@ export async function getProductById(id: string): Promise<Product | null> {
             return null;
         }
         
-        const data = productSnap.data();
-        return {
-            id: productSnap.id,
-            ...data,
-            imageUrl: transformImageUrl(data.imageUrl),
-        } as Product;
+        // Use the same mapping function for consistency
+        return mapDocToProduct(productSnap as QueryDocumentSnapshot<DocumentData>);
     } catch (error) {
         console.error(`Error fetching product with ID ${id}: `, error);
         return null;

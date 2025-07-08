@@ -31,7 +31,8 @@ const getNutriScoreClasses = (score?: string) => {
 const explicitlyHandledTags = [
   'gluten-free', 'contains-gluten', 'may-contain-gluten',
   'contains-wheat', 'risk-of-contamination', 'contains-barley', 'contains-rye', 'contains-oats',
-  'sugar-free', 'lactose-free', 'posno', 'high-protein', 'upozorenje', 'povučeno', 'problematična-serija', 'sadrži-gluten'
+  'sugar-free', 'lactose-free', 'posno', 'high-protein', 'upozorenje', 'povučeno', 'problematična-serija', 'sadrži-gluten',
+  'bez šećera', 'vegan', 'protein', 'bez laktoze'
 ];
 
 const PRODUCTS_PER_PAGE = 12;
@@ -125,8 +126,8 @@ export default function ProductsClientPage({ allProducts, productCategories }: P
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {currentProductsToDisplay.map(product => {
-                    const isGlutenFreeTag = product.tags?.includes('gluten-free');
-                    const containsGlutenTag = product.warning || product.tags?.includes('contains-gluten') || product.tags?.includes('sadrži-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isGlutenFreeTag);
+                    const isConsideredGF = product.hasAOECSLicense || product.hasManufacturerStatement || product.isVerifiedAdmin;
+                    const containsGlutenTag = product.warning || product.tags?.includes('contains-gluten') || product.tags?.includes('sadrži-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isConsideredGF);
                     const mayContainGlutenTag = !product.warning && (product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination'));
 
                     return (
@@ -146,7 +147,7 @@ export default function ProductsClientPage({ allProducts, productCategories }: P
                           {product.brand && <CardDescription className="text-xs text-muted-foreground mb-1">{product.brand}</CardDescription>}
                           <div className="flex justify-between items-center mb-2">
                             <CardDescription className="text-sm text-muted-foreground">{product.category}</CardDescription>
-                            {product.nutriScore && (
+                            {product.nutriScore && product.nutriScore !== 'N/A' && (
                               <span className={`px-2 py-0.5 rounded-md text-xs font-semibold border ${getNutriScoreClasses(product.nutriScore)}`}>
                                 {product.nutriScore}
                               </span>
@@ -158,7 +159,7 @@ export default function ProductsClientPage({ allProducts, productCategories }: P
                               <AlertTriangle className="h-3.5 w-3.5 mr-1" />
                               <span>UPOZORENJE: Problematična serija!</span>
                             </div>
-                          ) : isGlutenFreeTag ? (
+                          ) : isConsideredGF ? (
                             <div className="flex items-center text-green-600 dark:text-green-400 text-xs mt-1 mb-1">
                               <CheckCircle className="h-3 w-3 mr-1" />
                               <span>Gluten-Free</span>
@@ -183,9 +184,10 @@ export default function ProductsClientPage({ allProducts, productCategories }: P
                           <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description && product.description.length > 100 && product.warning && product.note ? product.note : product.description}</p>
                           <div className="flex flex-wrap gap-1 mb-3">
                             {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
+                            {product.isVegan && <Badge variant="secondary" className="text-xs">Vegan</Badge>}
                             {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Lactose-Free</Badge>}
                             {product.isSugarFree && <Badge variant="secondary" className="text-xs">Sugar-Free</Badge>}
-                            {product.tags?.includes('high-protein') && <Badge variant="secondary" className="text-xs">High Protein</Badge>}
+                            {product.isHighProtein && <Badge variant="secondary" className="text-xs">High Protein</Badge>}
                             {product.tags?.filter(tag => !explicitlyHandledTags.includes(tag.toLowerCase())).slice(0, 2).map(tag => (
                               <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
                             ))}

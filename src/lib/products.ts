@@ -18,6 +18,8 @@ export interface Product {
   isLactoseFree?: boolean;
   isSugarFree?: boolean;
   isPosno?: boolean;
+  isVegan?: boolean;
+  isHighProtein?: boolean;
   dataAiHint?: string;
   warning?: boolean;
   note?: string;

@@ -11,7 +11,7 @@ import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Leaf, Info, ShieldCheck, FileText, GitBranch, Tag, Barcode, CircleAlert, Store, MapPin, ExternalLink, ListChecks, CalendarDays, SearchCheck } from 'lucide-react';
+import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Leaf, Info, ShieldCheck, FileText, GitBranch, Tag, Barcode, CircleAlert, Store, MapPin, ExternalLink, ListChecks, CalendarDays, SearchCheck, Zap } from 'lucide-react';
 import type { Product } from '@/lib/products';
 import { Badge } from '@/components/ui/badge';
 import { useFavorites } from '@/contexts/favorites-context';
@@ -68,15 +68,15 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     }
   };
 
-  const isGlutenFreeTag = product.tags?.includes('gluten-free');
+  const isConsideredGF = product.hasAOECSLicense || product.hasManufacturerStatement || product.isVerifiedAdmin;
+  const containsGluten = product.warning || product.tags?.includes('contains-gluten') || product.tags?.includes('sadrži-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isConsideredGF) ;
   const mayContainGluten = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
-  const containsGluten = product.warning || product.tags?.includes('contains-gluten') || product.tags?.includes('sadrži-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isGlutenFreeTag) ;
-
+  
   const identifiedGlutenSources: string[] = [];
   if (product.tags?.includes('contains-wheat')) identifiedGlutenSources.push('Wheat');
   if (product.tags?.includes('contains-barley')) identifiedGlutenSources.push('Barley');
   if (product.tags?.includes('contains-rye')) identifiedGlutenSources.push('Rye');
-  if (product.tags?.includes('contains-oats') && !isGlutenFreeTag) identifiedGlutenSources.push('Oats (may not be gluten-free)');
+  if (product.tags?.includes('contains-oats') && !isConsideredGF) identifiedGlutenSources.push('Oats (may not be gluten-free)');
 
   const commonAllergenKeywords: { term: string, name: string }[] = [
     { term: 'lešnik', name: 'Hazelnuts' }, { term: 'lešnici', name: 'Hazelnuts' }, { term: 'lesnik', name: 'Hazelnuts' }, { term: 'lesnici', name: 'Hazelnuts' },
@@ -204,25 +204,25 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                           <h3 className="text-md font-semibold mb-2">Gluten Information</h3>
-                          {product.warning ? (
+                           {product.warning ? (
                               <div className="flex items-center text-red-600 dark:text-red-400 font-semibold">
                                   <AlertTriangle className="h-5 w-5 mr-2" />
-                                  <span>SADRŽI GLUTEN (Povučena serija)</span>
+                                  <span>CONTAINS GLUTEN (Recalled Lot)</span>
                               </div>
                           ) : product.hasAOECSLicense ? (
                             <div className="flex items-center text-green-600 dark:text-green-400">
                               <ShieldCheck className="h-5 w-5 mr-2" />
                               <span>AOECS Licensed Gluten-Free</span>
                             </div>
-                          ) : product.hasManufacturerStatement && isGlutenFreeTag ? (
+                          ) : product.hasManufacturerStatement ? (
                             <div className="flex items-center text-green-600 dark:text-green-400">
                               <FileText className="h-5 w-5 mr-2" />
                               <span>Manufacturer Declares Gluten-Free</span>
                             </div>
-                          ) : isGlutenFreeTag ? (
+                          ) : product.isVerifiedAdmin ? (
                             <div className="flex items-center text-green-600 dark:text-green-400">
                               <CheckCircle className="h-5 w-5 mr-2" />
-                              <span>Considered Gluten-Free</span>
+                              <span>Verified as Gluten-Free</span>
                             </div>
                           ) : containsGluten ? (
                             <div className="flex items-center text-red-600 dark:text-red-500">
@@ -237,12 +237,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                           ) : (
                              <div className="flex items-center text-muted-foreground">
                                <Info className="h-5 w-5 mr-2" />
-                               <span>Gluten status unknown or not specified</span>
+                               <span>Gluten status not specified</span>
                              </div>
                           )}
                       </div>
 
-                      {product.nutriScore && (
+                      {product.nutriScore && product.nutriScore !== 'N/A' && (
                         <div>
                           <h3 className="text-md font-semibold mb-2">Nutri-Score</h3>
                           <span className={`px-3 py-1 rounded-lg text-lg font-bold border-2 ${getNutriScoreClasses(product.nutriScore)}`}>
@@ -252,13 +252,15 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                       )}
                     </div>
 
-                    {(product.isLactoseFree || product.isSugarFree || product.isPosno) && (
+                    {(product.isLactoseFree || product.isSugarFree || product.isPosno || product.isVegan || product.isHighProtein) && (
                       <div>
                         <h3 className="text-md font-semibold mb-2">Other Dietary Information</h3>
                         <div className="space-y-2">
                           <DietaryTag label="Posno (Lenten)" icon={Leaf} present={product.isPosno} />
+                          <DietaryTag label="Vegan" icon={Leaf} present={product.isVegan} />
                           <DietaryTag label="Lactose-Free" icon={CheckCircle} present={product.isLactoseFree} />
                           <DietaryTag label="Sugar-Free" icon={CheckCircle} present={product.isSugarFree} />
+                          <DietaryTag label="High Protein" icon={Zap} present={product.isHighProtein} />
                         </div>
                       </div>
                     )}
@@ -335,10 +337,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                       {!product.warning && identifiedGlutenSources.length > 0 && (
                           <p className="text-sm text-red-600 dark:text-red-500"><strong>Contains Gluten Sources:</strong> {identifiedGlutenSources.join(', ')}.</p>
                       )}
-                      {!product.warning && identifiedGlutenSources.length === 0 && mayContainGluten && !isGlutenFreeTag && (
+                      {!product.warning && identifiedGlutenSources.length === 0 && mayContainGluten && !isConsideredGF && (
                            <p className="text-sm text-orange-600 dark:text-orange-400"><strong>Advisory:</strong> May contain traces of gluten.</p>
                       )}
-                      {!product.warning && identifiedGlutenSources.length === 0 && isGlutenFreeTag && (
+                      {!product.warning && identifiedGlutenSources.length === 0 && isConsideredGF && (
                           <p className="text-sm text-green-600 dark:text-green-400">This product is generally considered gluten-free based on available information.</p>
                       )}
 
@@ -350,7 +352,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                         </div>
                       )}
 
-                      {!product.warning && identifiedGlutenSources.length === 0 && !isGlutenFreeTag && !mayContainGluten && mentionedNonGlutenAllergens.length === 0 && (
+                      {!product.warning && identifiedGlutenSources.length === 0 && !isConsideredGF && !mayContainGluten && mentionedNonGlutenAllergens.length === 0 && (
                           <p className="text-sm text-muted-foreground">For specific allergen information, please refer to the ingredients list.</p>
                       )}
                        <p className="text-xs text-muted-foreground mt-3 italic">Always check the product packaging for the most accurate and complete allergen details. Allergen information provided here is for guidance and is based on available data.</p>
