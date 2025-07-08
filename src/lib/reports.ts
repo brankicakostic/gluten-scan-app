@@ -7,7 +7,9 @@ export interface Report {
   wantsContact?: boolean;
   contactEmail?: string;
   priority?: 'niska' | 'srednja' | 'visoka';
-  errorType?: 'sastav' | 'drugo';
-  productContext: string; // The declaration text that was analyzed
+  errorType?: 'sastav' | 'drugo' | 'podaci';
+  productContext: string; // The declaration text that was analyzed OR product name
+  productId?: string; // ID of the product being reported
+  productName?: string; // Name of the product being reported
   status: 'new' | 'viewed' | 'resolved';
 }

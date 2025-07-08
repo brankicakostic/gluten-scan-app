@@ -11,12 +11,20 @@ import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Alert as ShadcnAlert, AlertDescription as ShadcnAlertDescription, AlertTitle as ShadcnAlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Leaf, Info, ShieldCheck, FileText, GitBranch, Tag, Barcode, CircleAlert, Store, MapPin, ExternalLink, ListChecks, CalendarDays, SearchCheck, Zap } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from '@/components/ui/checkbox';
+import { Textarea } from '@/components/ui/textarea';
+import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Leaf, Info, ShieldCheck, FileText, GitBranch, Tag, Barcode, CircleAlert, Store, MapPin, ExternalLink, ListChecks, CalendarDays, SearchCheck, Zap, Flag, Mail, CheckSquare, Loader2, Send } from 'lucide-react';
 import type { Product } from '@/lib/products';
 import { Badge } from '@/components/ui/badge';
 import { useFavorites } from '@/contexts/favorites-context';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { addReportAction } from '@/app/actions/report-actions';
+
 
 const getNutriScoreClasses = (score?: string) => {
   if (!score) return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';
@@ -56,6 +64,14 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     setIsClient(true);
   }, []);
 
+  // Report error form state
+  const [showReportErrorModal, setShowReportErrorModal] = useState(false);
+  const [reportComment, setReportComment] = useState('');
+  const [wantsContact, setWantsContact] = useState(false);
+  const [contactEmail, setContactEmail] = useState('');
+  const [reportPriority, setReportPriority] = useState('');
+  const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
+
   const isCurrentlyFavorite = isClient && isFavorite(product.id);
 
   const handleToggleFavorite = () => {
@@ -67,6 +83,43 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       toast({ title: `${product.name} added to favorites!` });
     }
   };
+  
+  const handleReportSubmit = async () => {
+    setSubmissionStatus('submitting');
+    
+    const reportData = {
+        type: 'error' as const,
+        errorType: 'podaci' as const,
+        priority: reportPriority as 'niska' | 'srednja' | 'visoka',
+        comment: reportComment,
+        wantsContact: wantsContact,
+        contactEmail: wantsContact ? contactEmail : '',
+        productContext: `Prijava za proizvod: ${product.name} (ID: ${product.id})`,
+        productId: product.id,
+        productName: product.name,
+    };
+    
+    const result = await addReportAction(reportData);
+
+    if (result.success) {
+        setSubmissionStatus('success');
+    } else {
+        setSubmissionStatus('idle');
+        toast({ variant: 'destructive', title: 'Greška pri slanju', description: result.error });
+    }
+  };
+
+  const resetReportForm = () => {
+    setShowReportErrorModal(false);
+    setTimeout(() => {
+        setSubmissionStatus('idle');
+        setReportComment('');
+        setWantsContact(false);
+        setContactEmail('');
+        setReportPriority('');
+    }, 300); // Delay to allow dialog to close before resetting state
+  };
+
 
   const isConsideredGF = product.hasAOECSLicense || product.hasManufacturerStatement || product.isVerifiedAdmin;
   const containsGluten = product.warning || product.tags?.includes('contains-gluten') || product.tags?.includes('sadrži-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isConsideredGF) ;
@@ -189,10 +242,83 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                         {product.brand && <CardDescription className="text-lg text-muted-foreground">{product.brand}</CardDescription>}
                         <CardDescription className="text-md text-muted-foreground">{product.category}</CardDescription>
                       </div>
-                      <Button variant="outline" size="icon" className="ml-auto flex-shrink-0" onClick={handleToggleFavorite}>
-                        <Heart className="h-5 w-5" fill={isCurrentlyFavorite ? 'hsl(var(--primary))' : 'none'} />
-                        <span className="sr-only">{isCurrentlyFavorite ? 'Remove from favorites' : 'Add to favorites'}</span>
-                      </Button>
+                      <div className="flex items-center gap-2 ml-auto flex-shrink-0">
+                          <Button variant="outline" size="icon" onClick={handleToggleFavorite}>
+                            <Heart className="h-5 w-5" fill={isCurrentlyFavorite ? 'hsl(var(--primary))' : 'none'} />
+                            <span className="sr-only">{isCurrentlyFavorite ? 'Remove from favorites' : 'Add to favorites'}</span>
+                          </Button>
+                          <Dialog open={showReportErrorModal} onOpenChange={setShowReportErrorModal}>
+                            <DialogTrigger asChild>
+                              <Button variant="outline" size="icon">
+                                <Flag className="h-5 w-5" />
+                                <span className="sr-only">Report an issue</span>
+                              </Button>
+                            </DialogTrigger>
+                             <DialogContent>
+                               {submissionStatus === 'success' ? (
+                                   <div className="flex flex-col items-center justify-center text-center p-4">
+                                     <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+                                     <DialogTitle className="text-xl">Prijava je poslata!</DialogTitle>
+                                     <DialogDescription className="mt-2">
+                                       Hvala što pomažete da podaci budu tačni. Ako ste ostavili kontakt, možemo vam se javiti.
+                                     </DialogDescription>
+                                     <DialogFooter className="mt-6 w-full">
+                                       <Button className="w-full" onClick={resetReportForm}>Zatvori</Button>
+                                     </DialogFooter>
+                                   </div>
+                               ) : (
+                                 <>
+                                   <DialogHeader>
+                                     <DialogTitle>Prijavi grešku za proizvod: {product.name}</DialogTitle>
+                                     <DialogDescription>
+                                       Ako mislite da su podaci o ovom proizvodu netačni, molimo Vas da popunite formu ispod.
+                                     </DialogDescription>
+                                   </DialogHeader>
+                                   <div className="space-y-4 py-2 text-sm">
+                                      <div>
+                                        <Label className="font-semibold">Koliko je ova greška ozbiljna?</Label>
+                                        <RadioGroup value={reportPriority} onValueChange={setReportPriority} className="mt-2 space-y-1">
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="niska" id="prod-priority-low" />
+                                            <Label htmlFor="prod-priority-low" className="font-normal">Niska (npr. pogrešna slika, opis)</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="srednja" id="prod-priority-medium" />
+                                            <Label htmlFor="prod-priority-medium" className="font-normal">Srednja (netačan sastav, alergeni)</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="visoka" id="prod-priority-high" />
+                                            <Label htmlFor="prod-priority-high" className="font-normal">Visoka (proizvod sadrži gluten, a nije tako označen)</Label>
+                                          </div>
+                                        </RadioGroup>
+                                      </div>
+                                     <div className="space-y-2">
+                                       <Label htmlFor="report-comment-prod">Komentar</Label>
+                                       <Textarea id="report-comment-prod" placeholder="Opišite grešku što detaljnije." value={reportComment} onChange={(e) => setReportComment(e.target.value)} />
+                                     </div>
+                                     <div className="flex items-center space-x-2">
+                                       <Checkbox id="wants-contact-prod" checked={wantsContact} onCheckedChange={(checked) => setWantsContact(!!checked)} />
+                                       <Label htmlFor="wants-contact-prod">Želim da me kontaktirate.</Label>
+                                     </div>
+                                     {wantsContact && (
+                                       <div className="space-y-2 pl-6">
+                                         <Label htmlFor="contact-email-prod">Email</Label>
+                                         <Input id="contact-email-prod" type="email" placeholder="vas.email@primer.com" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} />
+                                       </div>
+                                     )}
+                                   </div>
+                                   <DialogFooter>
+                                     <Button variant="outline" onClick={() => setShowReportErrorModal(false)}>Odustani</Button>
+                                     <Button onClick={handleReportSubmit} disabled={submissionStatus === 'submitting' || !reportComment}>
+                                       {submissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />}
+                                        Pošalji prijavu
+                                     </Button>
+                                   </DialogFooter>
+                                 </>
+                               )}
+                             </DialogContent>
+                          </Dialog>
+                        </div>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-6">

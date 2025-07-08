@@ -1,7 +1,7 @@
 // This file uses the Firebase client SDK for report-related Firestore operations.
 
 import { db } from '@/lib/firebase/client';
-import { collection, getDocs, doc, deleteDoc, query, orderBy, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, doc, deleteDoc, query, orderBy, Timestamp, updateDoc } from 'firebase/firestore';
 import type { Report } from '@/lib/reports';
 import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 
@@ -25,6 +25,8 @@ function mapDocToReport(doc: QueryDocumentSnapshot<DocumentData>): Report {
         priority: data.priority || 'niska',
         errorType: data.errorType || 'drugo',
         productContext: data.productContext || 'N/A',
+        productId: data.productId,
+        productName: data.productName,
         status: data.status || 'new',
     } as Report;
 }
@@ -44,6 +46,17 @@ export async function getReports(): Promise<Report[]> {
         return [];
     }
 }
+
+/**
+ * Updates an existing report in Firestore.
+ * @param reportId The ID of the report to update.
+ * @param reportData The data to update.
+ */
+export async function updateReport(reportId: string, reportData: Partial<Report>): Promise<void> {
+  const reportDocRef = doc(db, 'reports', reportId);
+  await updateDoc(reportDocRef, { ...reportData });
+}
+
 
 /**
  * Deletes a report from Firestore.

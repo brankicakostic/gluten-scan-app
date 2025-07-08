@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -43,11 +44,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Shield, PlusCircle, Edit, Trash2, Loader2, MessageSquareWarning, Mail, Flag } from 'lucide-react';
+import { Shield, PlusCircle, Edit, Trash2, Loader2, Mail, CheckSquare, ExternalLink } from 'lucide-react';
 import type { Product } from '@/lib/products';
 import type { Report } from '@/lib/reports';
 import { addProductAction, updateProductAction, deleteProductAction } from '@/app/actions/product-actions';
-import { deleteReportAction } from '@/app/actions/report-actions';
+import { deleteReportAction, updateReportStatusAction } from '@/app/actions/report-actions';
 import { useToast } from '@/hooks/use-toast';
 
 // Zod schema for form validation
@@ -77,9 +78,10 @@ type ProductFormData = z.infer<typeof productFormSchema>;
 interface AdminClientPageProps {
   initialProducts: Product[];
   initialReports: Report[];
+  locale: string;
 }
 
-export default function AdminClientPage({ initialProducts, initialReports }: AdminClientPageProps) {
+export default function AdminClientPage({ initialProducts, initialReports, locale }: AdminClientPageProps) {
   const router = useRouter();
   const { toast } = useToast();
 
@@ -94,6 +96,9 @@ export default function AdminClientPage({ initialProducts, initialReports }: Adm
   const [reports, setReports] = useState(initialReports);
   const [isReportDeleteAlertOpen, setIsReportDeleteAlertOpen] = useState(false);
   const [reportToDelete, setReportToDelete] = useState<Report | null>(null);
+  const [isResolveAlertOpen, setIsResolveAlertOpen] = useState(false);
+  const [reportToResolve, setReportToResolve] = useState<Report | null>(null);
+
 
   // Common state
   const [isLoading, setIsLoading] = useState(false);
@@ -180,6 +185,28 @@ export default function AdminClientPage({ initialProducts, initialReports }: Adm
     }
     setReportToDelete(null);
   };
+  
+  const handleResolveReportClick = (report: Report) => {
+    setReportToResolve(report);
+    setIsResolveAlertOpen(true);
+  };
+
+  const handleResolveReportConfirm = async () => {
+    if (!reportToResolve?.id) return;
+    setIsLoading(true);
+    const result = await updateReportStatusAction(reportToResolve.id, 'resolved');
+    setIsLoading(false);
+    setIsResolveAlertOpen(false);
+
+    if (result.success) {
+        toast({ title: `Prijava označena kao rešena.` });
+        router.refresh();
+    } else {
+        toast({ variant: 'destructive', title: 'Greška', description: result.error });
+    }
+    setReportToResolve(null);
+  };
+
 
   if (!isAuthenticated) {
     return (
@@ -209,6 +236,16 @@ export default function AdminClientPage({ initialProducts, initialReports }: Adm
       default: return <Badge variant="outline">N/A</Badge>;
     }
   };
+  
+  const getStatusBadge = (status?: string) => {
+    switch (status) {
+      case 'resolved': return <Badge variant="default" className="bg-green-600 hover:bg-green-600/80">Rešeno</Badge>;
+      case 'viewed': return <Badge variant="secondary">Pregledano</Badge>;
+      case 'new':
+      default: return <Badge variant="destructive">Novo</Badge>;
+    }
+  };
+
 
   return (
     <div className="flex min-h-screen">
@@ -223,7 +260,7 @@ export default function AdminClientPage({ initialProducts, initialReports }: Adm
             <Tabs defaultValue="products">
               <TabsList className="mb-4">
                 <TabsTrigger value="products">Proizvodi</TabsTrigger>
-                <TabsTrigger value="reports">Prijave i Upiti <Badge variant="destructive" className="ml-2">{reports.length}</Badge></TabsTrigger>
+                <TabsTrigger value="reports">Prijave i Upiti <Badge variant="destructive" className="ml-2">{reports.filter(r => r.status === 'new').length}</Badge></TabsTrigger>
               </TabsList>
 
               {/* Products Tab */}
@@ -275,15 +312,16 @@ export default function AdminClientPage({ initialProducts, initialReports }: Adm
                         <TableRow>
                           <TableHead>Datum</TableHead>
                           <TableHead>Tip</TableHead>
-                          <TableHead>Prioritet</TableHead>
+                          <TableHead>Proizvod</TableHead>
                           <TableHead>Komentar</TableHead>
                           <TableHead>Kontakt</TableHead>
+                          <TableHead>Status</TableHead>
                           <TableHead className="text-right">Akcije</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {reports.map((report) => (
-                          <TableRow key={report.id}>
+                          <TableRow key={report.id} className={report.status === 'new' ? 'bg-muted/50' : ''}>
                             <TableCell className="text-xs">{new Date(report.createdAt).toLocaleString()}</TableCell>
                             <TableCell>
                               <Badge variant={report.type === 'error' ? 'destructive' : 'secondary'}>
@@ -291,17 +329,35 @@ export default function AdminClientPage({ initialProducts, initialReports }: Adm
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              {report.type === 'error' ? getPriorityBadge(report.priority) : (
-                                <span className="text-muted-foreground text-center block">-</span>
+                              {report.productId ? (
+                                <Link href={`/${locale}/products/${report.productId}`} className="hover:underline text-primary text-xs" target="_blank">
+                                  {report.productName || 'Vidi proizvod'} <ExternalLink className="inline h-3 w-3 ml-1" />
+                                </Link>
+                              ) : (
+                                <span className="text-muted-foreground text-xs">Tekstualna analiza</span>
                               )}
                             </TableCell>
                             <TableCell className="text-xs max-w-sm">
                                 <p className="font-semibold">{report.comment || 'N/A'}</p>
+                                {report.priority && <div>{getPriorityBadge(report.priority)}</div>}
                                 <p className="text-muted-foreground mt-1 truncate"><strong>Kontekst:</strong> {report.productContext}</p>
                             </TableCell>
                             <TableCell className="text-xs">{report.wantsContact ? report.contactEmail : 'Nije zatražen'}</TableCell>
-                            <TableCell className="text-right">
-                              <Button variant="destructive" size="icon" onClick={() => handleDeleteReportClick(report)}>
+                             <TableCell>{getStatusBadge(report.status)}</TableCell>
+                            <TableCell className="text-right space-x-1">
+                              {report.wantsContact && report.contactEmail && (
+                                <Button asChild variant="outline" size="icon" title="Odgovori korisniku">
+                                  <a href={`mailto:${report.contactEmail}?subject=Re: GlutenScan prijava`}>
+                                    <Mail className="h-4 w-4" />
+                                  </a>
+                                </Button>
+                              )}
+                              {report.status !== 'resolved' && (
+                                <Button variant="outline" size="icon" onClick={() => handleResolveReportClick(report)} title="Označi kao rešeno">
+                                  <CheckSquare className="h-4 w-4" />
+                                </Button>
+                              )}
+                              <Button variant="destructive" size="icon" onClick={() => handleDeleteReportClick(report)} title="Obriši prijavu">
                                 <Trash2 className="h-4 w-4" />
                               </Button>
                             </TableCell>
@@ -445,6 +501,24 @@ export default function AdminClientPage({ initialProducts, initialReports }: Adm
             <AlertDialogCancel onClick={() => setReportToDelete(null)}>Odustani</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteReportConfirm} disabled={isLoading} className="bg-destructive hover:bg-destructive/90">
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Obriši'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Resolve Report Confirmation Dialog */}
+      <AlertDialog open={isResolveAlertOpen} onOpenChange={setIsResolveAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Označi kao rešeno?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Da li ste sigurni da želite da označite ovu prijavu kao rešenu?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setReportToResolve(null)}>Odustani</AlertDialogCancel>
+            <AlertDialogAction onClick={handleResolveReportConfirm} disabled={isLoading}>
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Potvrdi'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
