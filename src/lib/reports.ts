@@ -12,4 +12,5 @@ export interface Report {
   productId?: string; // ID of the product being reported
   productName?: string; // Name of the product being reported
   status: 'new' | 'in_progress' | 'resolved';
+  adminNotes?: string;
 }

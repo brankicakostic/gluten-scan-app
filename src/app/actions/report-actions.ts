@@ -60,3 +60,15 @@ export async function updateReportStatusAction(reportId: string, status: 'new' |
         return { success: false, error: errorMessage };
     }
 }
+
+export async function updateReportNotesAction(reportId: string, adminNotes: string) {
+    try {
+        await updateReport(reportId, { adminNotes });
+        revalidatePath('/[locale]/admin', 'page');
+        return { success: true };
+    } catch (error) {
+        console.error('Error in updateReportNotesAction:', error);
+        const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+        return { success: false, error: errorMessage };
+    }
+}

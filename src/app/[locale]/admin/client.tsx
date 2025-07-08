@@ -19,6 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import {
   Dialog,
   DialogContent,
@@ -44,11 +45,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Shield, PlusCircle, Edit, Trash2, Loader2, Mail, CheckSquare, ExternalLink, Hourglass } from 'lucide-react';
+import { Shield, PlusCircle, Edit, Trash2, Loader2, Mail, CheckSquare, ExternalLink, Hourglass, Save, MessageSquare, Flag } from 'lucide-react';
 import type { Product } from '@/lib/products';
 import type { Report } from '@/lib/reports';
 import { addProductAction, updateProductAction, deleteProductAction } from '@/app/actions/product-actions';
-import { deleteReportAction, updateReportStatusAction } from '@/app/actions/report-actions';
+import { deleteReportAction, updateReportStatusAction, updateReportNotesAction } from '@/app/actions/report-actions';
 import { useToast } from '@/hooks/use-toast';
 
 // Zod schema for form validation
@@ -100,6 +101,8 @@ export default function AdminClientPage({ initialProducts, initialReports, local
   const [reportToResolve, setReportToResolve] = useState<Report | null>(null);
   const [isMarkInProgressAlertOpen, setIsMarkInProgressAlertOpen] = useState(false);
   const [reportToMarkInProgress, setReportToMarkInProgress] = useState<Report | null>(null);
+  const [adminNotes, setAdminNotes] = useState<Record<string, string>>({});
+  const [isSavingNote, setIsSavingNote] = useState<string | null>(null);
 
 
   // Common state
@@ -108,7 +111,14 @@ export default function AdminClientPage({ initialProducts, initialReports, local
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => setProducts(initialProducts), [initialProducts]);
-  useEffect(() => setReports(initialReports), [initialReports]);
+  useEffect(() => {
+    setReports(initialReports);
+    const initialNotes = initialReports.reduce((acc, report) => {
+      acc[report.id] = report.adminNotes || '';
+      return acc;
+    }, {} as Record<string, string>);
+    setAdminNotes(initialNotes);
+  }, [initialReports]);
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
@@ -230,6 +240,21 @@ export default function AdminClientPage({ initialProducts, initialReports, local
     setReportToMarkInProgress(null);
   };
 
+  const handleNoteChange = (reportId: string, value: string) => {
+    setAdminNotes(prev => ({ ...prev, [reportId]: value }));
+  };
+
+  const handleSaveNote = async (reportId: string) => {
+    setIsSavingNote(reportId);
+    const result = await updateReportNotesAction(reportId, adminNotes[reportId]);
+    setIsSavingNote(null);
+    if (result.success) {
+      toast({ title: 'Admin beleška sačuvana!' });
+    } else {
+      toast({ variant: 'destructive', title: 'Greška pri čuvanju beleške', description: result.error });
+    }
+  };
+
 
   if (!isAuthenticated) {
     return (
@@ -328,73 +353,97 @@ export default function AdminClientPage({ initialProducts, initialReports, local
 
               {/* Reports Tab */}
               <TabsContent value="reports">
-                 <Card>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Datum</TableHead>
-                          <TableHead>Tip</TableHead>
-                          <TableHead>Proizvod</TableHead>
-                          <TableHead>Komentar</TableHead>
-                          <TableHead>Kontakt</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead className="text-right">Akcije</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {reports.map((report) => (
-                          <TableRow key={report.id} className={report.status === 'new' ? 'bg-muted/50' : ''}>
-                            <TableCell className="text-xs">{new Date(report.createdAt).toLocaleString()}</TableCell>
-                            <TableCell>
-                              <Badge variant={report.type === 'error' ? 'destructive' : 'secondary'}>
-                                {report.type === 'error' ? 'Greška' : 'Upit'}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              {report.productId ? (
-                                <Link href={`/${locale}/products/${report.productId}`} className="hover:underline text-primary text-xs" target="_blank">
-                                  {report.productName || 'Vidi proizvod'} <ExternalLink className="inline h-3 w-3 ml-1" />
-                                </Link>
-                              ) : (
-                                <span className="text-muted-foreground text-xs">Tekstualna analiza</span>
-                              )}
-                            </TableCell>
-                            <TableCell className="text-xs max-w-sm">
-                                <p className="font-semibold">{report.comment || 'N/A'}</p>
-                                {report.type === 'error' && report.priority && <div>{getPriorityBadge(report.priority)}</div>}
-                                <p className="text-muted-foreground mt-1 truncate"><strong>Kontekst:</strong> {report.productContext}</p>
-                            </TableCell>
-                            <TableCell className="text-xs">{report.wantsContact ? report.contactEmail : 'Nije zatražen'}</TableCell>
-                             <TableCell>{getStatusBadge(report.status)}</TableCell>
-                            <TableCell className="text-right space-x-1">
-                              {report.wantsContact && report.contactEmail && (
-                                <Button asChild variant="outline" size="icon" title="Odgovori korisniku">
-                                  <a href={`mailto:${report.contactEmail}?subject=Re: GlutenScan prijava`}>
-                                    <Mail className="h-4 w-4" />
-                                  </a>
-                                </Button>
-                              )}
-                              {report.status === 'new' && (
-                                <Button variant="outline" size="icon" onClick={() => handleMarkInProgressClick(report)} title="Označi kao 'u toku'">
-                                  <Hourglass className="h-4 w-4" />
-                                </Button>
-                              )}
-                              {report.status !== 'resolved' && (
-                                <Button variant="outline" size="icon" onClick={() => handleResolveReportClick(report)} title="Označi kao rešeno">
-                                  <CheckSquare className="h-4 w-4" />
-                                </Button>
-                              )}
-                              <Button variant="destructive" size="icon" onClick={() => handleDeleteReportClick(report)} title="Obriši prijavu">
-                                <Trash2 className="h-4 w-4" />
+                 <Accordion type="multiple" className="w-full space-y-2">
+                    {reports.map((report) => (
+                      <AccordionItem key={report.id} value={report.id} className={`rounded-lg border ${report.status === 'new' ? 'border-primary/50 bg-muted/30' : 'bg-card'}`}>
+                        <AccordionTrigger className="p-4 hover:no-underline">
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 w-full">
+                            <span className="text-sm font-normal text-muted-foreground w-36 text-left">
+                              {new Date(report.createdAt).toLocaleString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                            <Badge variant={report.type === 'error' ? 'destructive' : 'secondary'} className="w-20 justify-center">
+                              <div className="flex items-center gap-1">
+                                {report.type === 'error' ? <Flag className="h-3 w-3" /> : <MessageSquare className="h-3 w-3" />}
+                                <span>{report.type === 'error' ? 'Greška' : 'Upit'}</span>
+                              </div>
+                            </Badge>
+                             <span className="font-medium text-sm flex-1 text-left truncate">{report.productName || 'Tekstualna analiza'}</span>
+                            <div className="flex items-center gap-2">
+                              {report.type === 'error' && report.priority && getPriorityBadge(report.priority)}
+                              {getStatusBadge(report.status)}
+                            </div>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="p-4 pt-0">
+                          <div className="space-y-4">
+                            <div>
+                              <h4 className="font-semibold text-sm">Komentar korisnika:</h4>
+                              <p className="text-sm text-muted-foreground p-2 bg-muted rounded-md mt-1">{report.comment || 'Nije ostavljen komentar.'}</p>
+                            </div>
+
+                             <div>
+                              <h4 className="font-semibold text-sm">Povezani proizvod/kontekst:</h4>
+                               <div className="text-sm text-muted-foreground p-2 bg-muted rounded-md mt-1">
+                                {report.productId ? (
+                                  <Link href={`/${locale}/products/${report.productId}`} className="hover:underline text-primary" target="_blank">
+                                    {report.productName} <ExternalLink className="inline h-3 w-3 ml-1" />
+                                  </Link>
+                                ) : (
+                                  <p className="whitespace-pre-wrap font-mono text-xs">{report.productContext}</p>
+                                )}
+                              </div>
+                            </div>
+
+                             {report.wantsContact && report.contactEmail && (
+                               <div>
+                                <h4 className="font-semibold text-sm">Kontakt korisnika:</h4>
+                                <a href={`mailto:${report.contactEmail}`} className="text-sm text-primary hover:underline mt-1 flex items-center gap-2">
+                                  <Mail className="h-4 w-4" /> {report.contactEmail}
+                                </a>
+                              </div>
+                            )}
+
+                             <div>
+                              <h4 className="font-semibold text-sm mb-1">Admin beleške:</h4>
+                              <Textarea
+                                placeholder="Dodaj internu belešku..."
+                                value={adminNotes[report.id] || ''}
+                                onChange={(e) => handleNoteChange(report.id, e.target.value)}
+                                className="text-sm"
+                              />
+                              <Button size="sm" className="mt-2" onClick={() => handleSaveNote(report.id)} disabled={isSavingNote === report.id}>
+                                {isSavingNote === report.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                                Sačuvaj belešku
                               </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                 </Card>
+                            </div>
+
+                            <div className="border-t pt-4 flex flex-wrap gap-2 justify-end">
+                                {report.wantsContact && report.contactEmail && (
+                                  <Button asChild variant="outline" size="sm" title="Odgovori korisniku">
+                                    <a href={`mailto:${report.contactEmail}?subject=Re: GlutenScan prijava`}>
+                                      <Mail className="h-4 w-4" /> Odgovori
+                                    </a>
+                                  </Button>
+                                )}
+                                {report.status === 'new' && (
+                                  <Button variant="outline" size="sm" onClick={() => handleMarkInProgressClick(report)} title="Označi kao 'u toku'">
+                                    <Hourglass className="h-4 w-4" /> Označi kao "u toku"
+                                  </Button>
+                                )}
+                                {report.status !== 'resolved' && (
+                                  <Button variant="default" className="bg-green-600 hover:bg-green-700" size="sm" onClick={() => handleResolveReportClick(report)} title="Označi kao rešeno">
+                                    <CheckSquare className="h-4 w-4" /> Reši prijavu
+                                  </Button>
+                                )}
+                                <Button variant="destructive" size="sm" onClick={() => handleDeleteReportClick(report)} title="Obriši prijavu">
+                                  <Trash2 className="h-4 w-4" /> Obriši
+                                </Button>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
               </TabsContent>
             </Tabs>
 

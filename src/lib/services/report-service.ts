@@ -28,6 +28,7 @@ function mapDocToReport(doc: QueryDocumentSnapshot<DocumentData>): Report {
         productId: data.productId,
         productName: data.productName,
         status: data.status || 'new',
+        adminNotes: data.adminNotes || '',
     } as Report;
 }
 
