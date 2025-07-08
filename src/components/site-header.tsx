@@ -6,12 +6,12 @@ import { ThemeToggle } from '@/components/theme-toggle';
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
+      <div className="container flex h-16 items-center">
         <div className="mr-4 hidden md:flex items-center">
            {/* Light Mode Logo */}
-           <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={130} height={33} className="h-9 w-auto mr-2 dark:hidden" />
+           <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={150} height={38} className="h-10 w-auto mr-2 dark:hidden" />
            {/* Dark Mode Logo */}
-           <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={130} height={33} className="h-9 w-auto mr-2 hidden dark:block" />
+           <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={150} height={38} className="h-10 w-auto mr-2 hidden dark:block" />
         </div>
         <div className="md:hidden">
           <SidebarTrigger />
