@@ -40,7 +40,7 @@ export function AppSidebar() {
             const localizedHref = `/${locale}${link.href === '/' ? '' : link.href}`;
             // Check if current pathname matches the localized link href
             // For the homepage, a simple check against `/${locale}` is needed if link.href is '/'
-            const isActive = link.href === '/' ? pathname === `/${locale}` : pathname === localizedHref;
+            const isActive = link.href === '/' ? pathname === `/${locale}` : pathname.startsWith(localizedHref) && (link.href !== '/' || pathname === `/${locale}`);
             
             return (
               <SidebarMenuItem key={link.href}>
