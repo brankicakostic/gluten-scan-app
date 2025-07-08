@@ -7,6 +7,12 @@ const defaultLocale = 'sr';
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Prevent internationalized routing for static files.
+  // This checks if the path seems to be for a file (e.g., contains a dot).
+  if (pathname.includes('.')) {
+    return NextResponse.next();
+  }
+
   // Check if there is any supported locale in the pathname
   const pathnameHasLocale = locales.some(
     (locale) => pathname.startsWith('/' + locale + '/') || pathname === ('/' + locale)
