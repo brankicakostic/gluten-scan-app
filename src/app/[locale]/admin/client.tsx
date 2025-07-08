@@ -45,7 +45,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Shield, PlusCircle, Edit, Trash2, Loader2, Mail, CheckSquare, ExternalLink, Hourglass, Save, MessageSquare, Flag } from 'lucide-react';
+import { Shield, PlusCircle, Edit, Trash2, Loader2, Mail, CheckSquare, ExternalLink, Hourglass, Save, MessageSquare, Flag, Send } from 'lucide-react';
 import type { Product } from '@/lib/products';
 import type { Report } from '@/lib/reports';
 import { addProductAction, updateProductAction, deleteProductAction } from '@/app/actions/product-actions';
@@ -81,6 +81,42 @@ interface AdminClientPageProps {
   initialReports: Report[];
   locale: string;
 }
+
+/**
+ * Generates a mailto link for sending an inquiry to a manufacturer.
+ * @param report The report object containing inquiry details.
+ * @returns A mailto link string.
+ */
+const generateInquiryMailto = (report: Report): string => {
+  const subject = `GlutenScan - Upit za proizvod: ${report.productName || 'Provera sastojaka'}`;
+  
+  const bodyParts = [
+    'Poštovani,',
+    '',
+    'Korisnik GlutenScan aplikacije postavio je sledeći upit za vaš proizvod:',
+    '',
+    `📌 Proizvod: ${report.productName || '[Unesite naziv proizvoda ovde]'}`,
+    `📝 Pitanje: "${report.comment || 'Nije specificiran komentar.'}"`,
+  ];
+
+  if (report.contactEmail && report.wantsContact) {
+    bodyParts.push(`📩 Email korisnika (za cc): ${report.contactEmail}`);
+  }
+
+  bodyParts.push(
+    '',
+    'Zahvaljujemo unapred na odgovoru, koji ćemo proslediti korisnicima aplikacije.',
+    '',
+    'Srdačno,',
+    'GlutenScan tim'
+  );
+
+  const body = bodyParts.join('\n');
+  
+  // The 'to' field is left empty for the admin to fill in the manufacturer's email.
+  return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+};
+
 
 export default function AdminClientPage({ initialProducts, initialReports, locale }: AdminClientPageProps) {
   const router = useRouter();
@@ -418,6 +454,13 @@ export default function AdminClientPage({ initialProducts, initialReports, local
                             </div>
 
                             <div className="border-t pt-4 flex flex-wrap gap-2 justify-end">
+                                {report.type === 'inquiry' && (
+                                  <Button asChild variant="secondary" size="sm" title="Sastavi upit za proizvođača">
+                                    <a href={generateInquiryMailto(report)}>
+                                      <Send className="h-4 w-4" /> Sastavi upit
+                                    </a>
+                                  </Button>
+                                )}
                                 {report.wantsContact && report.contactEmail && (
                                   <Button asChild variant="outline" size="sm" title="Odgovori korisniku">
                                     <a href={`mailto:${report.contactEmail}?subject=Re: GlutenScan prijava`}>
