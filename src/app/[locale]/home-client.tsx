@@ -35,6 +35,7 @@ import { AlertDialog, AlertDialogTrigger, AlertDialogAction, AlertDialogCancel, 
 import { Checkbox } from '@/components/ui/checkbox';
 import { getProductById } from '@/lib/services/product-service';
 import { addReportAction } from '@/app/actions/report-actions';
+import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode';
 
 
 interface BarcodeScanResult {
@@ -88,7 +89,8 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
   // Barcode scanning state
   const [barcodeScanResult, setBarcodeScanResult] = useState<BarcodeScanResult | null>(null);
   const [isScanningBarcode, setIsScanningBarcode] = useState<boolean>(false);
-  const barcodeVideoRef = useRef<HTMLVideoElement>(null);
+  const html5QrcodeScannerRef = useRef<Html5Qrcode | null>(null);
+  const barcodeReaderElementId = "barcode-reader";
   const [hasBarcodeCameraPermission, setHasBarcodeCameraPermission] = useState<boolean | null>(null);
   const [errorBarcode, setErrorBarcode] = useState<string | null>(null);
 
@@ -131,11 +133,65 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
   }, [analysisResult]);
   
   useEffect(() => {
-    const stopStream = (stream: MediaStream | null) => {
-      stream?.getTracks().forEach(track => track.stop());
-    };
+    const startScanner = async () => {
+      if (!isScanningBarcode || !document.getElementById(barcodeReaderElementId)) {
+        return;
+      }
+      
+      setHasBarcodeCameraPermission(null); // Set to loading state
 
-    let currentStream: MediaStream | null = null;
+      const scanner = new Html5Qrcode(barcodeReaderElementId, /* verbose= */ false);
+      html5QrcodeScannerRef.current = scanner;
+
+      try {
+        await scanner.start(
+          { facingMode: "environment" },
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 },
+            aspectRatio: 1.0
+          },
+          async (decodedText, decodedResult) => {
+            // Success callback
+            if (html5QrcodeScannerRef.current?.getState() === Html5QrcodeScannerState.SCANNING) {
+                html5QrcodeScannerRef.current.stop();
+            }
+            setIsScanningBarcode(false);
+            setHasBarcodeCameraPermission(true);
+
+            // Process the barcode
+            incrementScanCount();
+            const foundProduct = await getProductById(decodedText);
+            
+            if (foundProduct) {
+              setBarcodeScanResult({ 
+                name: foundProduct.name, 
+                barcode: foundProduct.barcode,
+                tags: foundProduct.tags,
+                ingredientsText: foundProduct.ingredientsText || "Ingredients not available.", 
+                imageUrl: foundProduct.imageUrl,
+                dataAiHint: foundProduct.dataAiHint || "scanned product"
+              });
+              toast({ title: "Product Found!", description: `Details for ${foundProduct.name} loaded.` });
+            } else {
+              setNotFoundBarcode(decodedText);
+              toast({ title: "Barcode Scanned", description: "This product is not in our database yet. Help us add it!" });
+            }
+          },
+          (errorMessage) => {
+            // Error callback (called continuously until a QR code is found)
+            // We can ignore most of these, but it's here if we need it.
+          }
+        );
+        setHasBarcodeCameraPermission(true);
+      } catch (err) {
+        console.error("html5-qrcode start error", err);
+        setHasBarcodeCameraPermission(false);
+        setErrorBarcode("Could not start camera. Please check permissions.");
+        toast({ variant: 'destructive', title: 'Camera Error', description: 'Could not start camera. Please check permissions.'});
+        setIsScanningBarcode(false);
+      }
+    };
 
     if (isScanningBarcode) {
       if (!canScan()) {
@@ -143,55 +199,14 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
         setIsScanningBarcode(false);
         return;
       }
-      const getCamera = async () => {
-        try {
-          currentStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-          setHasBarcodeCameraPermission(true);
-          if (barcodeVideoRef.current) {
-            barcodeVideoRef.current.srcObject = currentStream;
-          }
-
-          setTimeout(async () => {
-            const simulatedBarcode = "8601111111111"; // Simulated not found barcode
-            const foundProduct = await getProductById(simulatedBarcode);
-
-            if (foundProduct) {
-                 setBarcodeScanResult({ 
-                    name: foundProduct.name, 
-                    barcode: foundProduct.barcode,
-                    tags: foundProduct.tags,
-                    ingredientsText: foundProduct.ingredientsText || "Ingredients not available.", 
-                    imageUrl: foundProduct.imageUrl,
-                    dataAiHint: foundProduct.dataAiHint || "scanned product"
-                  });
-            } else {
-                 setBarcodeScanResult(null);
-                 setNotFoundBarcode(simulatedBarcode);
-            }
-            incrementScanCount();
-            toast({ title: "Barcode Scan Simulated", description: foundProduct ? "Product details loaded." : "Barcode not found. Help us add it!"});
-            setIsScanningBarcode(false); 
-          }, 3000);
-        } catch (error) {
-          console.error('Error accessing barcode camera:', error);
-          setHasBarcodeCameraPermission(false);
-          setErrorBarcode('Camera access denied. Please enable permissions.');
-          toast({ variant: 'destructive', title: 'Camera Access Denied', description: 'Enable camera permissions for barcode scanning.'});
-          setIsScanningBarcode(false);
-        }
-      };
-      getCamera();
-    } else {
-      if (barcodeVideoRef.current?.srcObject) {
-        stopStream(barcodeVideoRef.current.srcObject as MediaStream);
-        barcodeVideoRef.current.srcObject = null;
-      }
+      startScanner();
     }
+
     return () => {
-      stopStream(currentStream);
-      if (barcodeVideoRef.current?.srcObject) { 
-          stopStream(barcodeVideoRef.current.srcObject as MediaStream);
-          barcodeVideoRef.current.srcObject = null;
+      if (html5QrcodeScannerRef.current && html5QrcodeScannerRef.current.isScanning) {
+        html5QrcodeScannerRef.current.stop().catch(err => {
+          console.error("Failed to stop html5-qrcode scanner", err);
+        });
       }
     };
   }, [isScanningBarcode, canScan, incrementScanCount, toast]);
@@ -624,7 +639,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                   {isScanningBarcode && (
                     <div className="space-y-4">
                        <div className="aspect-video bg-muted rounded-md flex flex-col items-center justify-center text-muted-foreground p-4 relative">
-                         <video ref={barcodeVideoRef} className="w-full h-full object-cover rounded-md" autoPlay playsInline muted />
+                         <div id={barcodeReaderElementId} className="w-full h-full"></div>
                          {hasBarcodeCameraPermission === null && <Loader2 className="absolute h-8 w-8 animate-spin text-primary"/>}
                          {hasBarcodeCameraPermission === false && (
                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 p-4 rounded-md">
