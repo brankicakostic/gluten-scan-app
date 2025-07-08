@@ -25,7 +25,9 @@ function transformImageUrl(imageUrl: string): string {
         console.warn('Firebase storage bucket is not configured. Using placeholder for images.');
         return 'https://placehold.co/400x200.png'; // Fallback
     }
-    const encodedPath = encodeURIComponent(imageUrl);
+    // Prepend 'products/' to the relative path from the database.
+    const fullPath = `products/${imageUrl}`;
+    const encodedPath = encodeURIComponent(fullPath);
     return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
 }
 
