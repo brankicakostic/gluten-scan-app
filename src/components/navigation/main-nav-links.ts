@@ -1,6 +1,6 @@
 
 import type { LucideIcon } from 'lucide-react';
-import { Home, History, Heart, ShoppingBag, BookOpenText, MapPin, Siren } from 'lucide-react'; // Added Siren
+import { Home, History, Heart, ShoppingBag, BookOpenText, MapPin, Siren, Shield } from 'lucide-react'; // Added Shield
 
 export interface NavLink {
   href: string;
@@ -53,5 +53,11 @@ export const mainNavLinks: NavLink[] = [
     label: 'Favorite Products',
     icon: Heart,
     tooltip: 'Favorite Products',
+  },
+  {
+    href: '/admin', // Relative to locale
+    label: 'Admin',
+    icon: Shield,
+    tooltip: 'Admin Panel',
   },
 ];

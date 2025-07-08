@@ -3,7 +3,7 @@
 // to fetch data from Firestore.
 
 import { db } from '@/lib/firebase/client';
-import { collection, getDocs, doc, getDoc, query, orderBy, limit } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, query, orderBy, limit, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import type { Product } from '@/lib/products';
 import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 
@@ -28,6 +28,7 @@ function transformImageUrl(imageUrl: string): string {
         return 'https://placehold.co/400x200.png';
     }
     
+    // Assuming the path in DB is relative to a 'products' folder in storage
     const fullPath = `products/${imageUrl}`;
     const encodedPath = encodeURIComponent(fullPath);
     
@@ -39,12 +40,13 @@ function transformImageUrl(imageUrl: string): string {
  * @param doc The Firestore document snapshot.
  * @returns A normalized Product object.
  */
-function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData>): Product {
+function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData): Product {
     const data = doc.data();
+    
     const productData: any = {
         id: doc.id,
         ...data,
-        imageUrl: transformImageUrl(data.imageUrl),
+        imageUrl: transformImageUrl(data.imageUrl || ''),
     };
 
     // 1. Map ingredients array to ingredientsText string
@@ -65,20 +67,78 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData>): Product {
     productData.isVerifiedAdmin = !!data.verified;
 
     // 4. Map tagsFromInput to the 'tags' property and derive boolean dietary flags
-    if (data.tagsFromInput) {
-        productData.tags = data.tagsFromInput;
-        const tagsLower = new Set(data.tagsFromInput.map((t: string) => t.toLowerCase()));
-        
-        productData.isPosno = tagsLower.has('posno');
-        productData.isSugarFree = tagsLower.has('bez šećera') || tagsLower.has('sugar-free');
-        productData.isLactoseFree = tagsLower.has('bez laktoze') || tagsLower.has('lactose-free');
-        productData.isVegan = tagsLower.has('vegan');
-        productData.isHighProtein = tagsLower.has('protein') || tagsLower.has('high-protein');
-    }
+    const tags = data.tagsFromInput || [];
+    productData.tags = tags;
+    const tagsLower = new Set(tags.map((t: string) => t.toLowerCase()));
+    
+    productData.isPosno = tagsLower.has('posno');
+    productData.isSugarFree = tagsLower.has('bez šećera') || tagsLower.has('sugar-free');
+    productData.isLactoseFree = tagsLower.has('bez laktoze') || tagsLower.has('lactose-free');
+    productData.isVegan = tagsLower.has('vegan');
+    productData.isHighProtein = tagsLower.has('protein') || tagsLower.has('high-protein');
 
     return productData as Product;
 }
 
+/**
+ * Maps a Product object to a Firestore document data structure for saving.
+ * @param product The Product object.
+ * @returns A plain object suitable for Firestore.
+ */
+function mapProductToDocData(product: Partial<Product>): DocumentData {
+    const data: DocumentData = {};
+    
+    // Direct mappings
+    if (product.name) data.name = product.name;
+    if (product.brand) data.brand = product.brand;
+    if (product.barcode) data.barcode = product.barcode;
+    if (product.category) data.category = product.category;
+    if (product.description) data.description = product.description;
+    if (product.labelText) data.labelText = product.labelText;
+    if (product.source) data.source = product.source;
+    if (product.nutriScore) data.nutriscore = product.nutriScore;
+    if (product.note) data.note = product.note;
+    if (product.stores) data.stores = product.stores;
+
+    // Handle image URL (storing only the relative path)
+    if (product.imageUrl) {
+        if (product.imageUrl.includes('firebasestorage')) {
+             // Extract relative path if it's a full URL
+             try {
+                const url = new URL(product.imageUrl);
+                const path = decodeURIComponent(url.pathname);
+                const relativePath = path.substring(path.indexOf('/o/') + 3).replace('products/','');
+                data.imageUrl = relativePath;
+             } catch (e) {
+                data.imageUrl = 'placeholder.png'; // fallback
+             }
+        } else if (!product.imageUrl.startsWith('http')) {
+            data.imageUrl = product.imageUrl;
+        }
+    }
+
+    // Boolean to database fields
+    data.license = !!product.hasAOECSLicense;
+    data.manufacturerStatement = !!product.hasManufacturerStatement;
+    data.verified = !!product.isVerifiedAdmin;
+    data.warning = !!product.warning;
+
+    // ingredientsText string to ingredients array
+    if (product.ingredientsText) {
+        data.ingredients = product.ingredientsText.split(',').map(s => s.trim()).filter(Boolean);
+    }
+    
+    // Booleans to tagsFromInput array
+    const tags = new Set<string>(product.tags || []);
+    if (product.isVegan) tags.add('vegan'); else tags.delete('vegan');
+    if (product.isPosno) tags.add('posno'); else tags.delete('posno');
+    if (product.isSugarFree) tags.add('bez šećera'); else tags.delete('bez šećera');
+    if (product.isLactoseFree) tags.add('bez laktoze'); else tags.delete('bez laktoze');
+    if (product.isHighProtein) tags.add('protein'); else tags.delete('protein');
+    data.tagsFromInput = Array.from(tags);
+
+    return data;
+}
 
 /**
  * Fetches all products from the Firestore 'products' collection.
@@ -131,10 +191,42 @@ export async function getProductById(id: string): Promise<Product | null> {
             return null;
         }
         
-        // Use the same mapping function for consistency
-        return mapDocToProduct(productSnap as QueryDocumentSnapshot<DocumentData>);
+        return mapDocToProduct(productSnap);
     } catch (error) {
         console.error(`Error fetching product with ID ${id}: `, error);
         return null;
     }
+}
+
+
+/**
+ * Creates a new product in Firestore.
+ * @param productData The product data to save.
+ * @returns The ID of the newly created document.
+ */
+export async function createProduct(productData: Partial<Product>): Promise<string> {
+  const dataToSave = mapProductToDocData(productData);
+  const productsCol = collection(db, 'products');
+  const docRef = await addDoc(productsCol, dataToSave);
+  return docRef.id;
+}
+
+/**
+ * Updates an existing product in Firestore.
+ * @param productId The ID of the product to update.
+ * @param productData The data to update.
+ */
+export async function updateProduct(productId: string, productData: Partial<Product>): Promise<void> {
+  const dataToSave = mapProductToDocData(productData);
+  const productDocRef = doc(db, 'products', productId);
+  await updateDoc(productDocRef, dataToSave);
+}
+
+/**
+ * Deletes a product from Firestore.
+ * @param productId The ID of the product to delete.
+ */
+export async function deleteProduct(productId: string): Promise<void> {
+  const productDocRef = doc(db, 'products', productId);
+  await deleteDoc(productDocRef);
 }

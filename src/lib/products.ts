@@ -1,6 +1,6 @@
 // This file centralizes the Product type definition.
 export interface Product {
-  id: string;
+  id: string; // Firestore document ID
   name: string;
   brand?: string;
   barcode?: string;
