@@ -8,34 +8,34 @@ body {
 
 @layer base {
   :root {
-    /* New Organic Palette (Light Mode) */
-    --background: 40 30% 98%;      /* Very light, warm off-white */
-    --foreground: 20 15% 25%;      /* Deep, warm brown for text */
+    /* New Gold & Brown Palette (Light Mode) */
+    --background: 40 30% 98%;      /* Very light, warm off-white/cream */
+    --foreground: 25 25% 20%;      /* Deep, warm brown for text */
 
-    --card: 30 100% 99%;         /* Almost white with a hint of peach */
-    --card-foreground: 20 15% 25%;
+    --card: 30 100% 99%;         /* Almost white with a hint of cream */
+    --card-foreground: 25 25% 20%;
 
     --popover: 30 100% 99%;
-    --popover-foreground: 20 15% 25%;
+    --popover-foreground: 25 25% 20%;
 
-    --primary: 142 76% 36%;      /* A rich, organic green */
-    --primary-foreground: 0 0% 100%; /* White */
+    --primary: 42 84% 50%;      /* A rich, golden yellow/ochre from the logo */
+    --primary-foreground: 25 25% 15%; /* Dark brown for text on primary */
 
-    --secondary: 142 25% 90%;     /* A very light, muted green */
-    --secondary-foreground: 142 76% 20%; /* Darker green for text on secondary */
+    --secondary: 40 50% 90%;     /* A very light, muted gold/beige */
+    --secondary-foreground: 42 84% 20%; /* Darker gold for text on secondary */
 
     --muted: 40 25% 94%;          /* A light beige/gray for muted backgrounds */
-    --muted-foreground: 20 10% 45%; /* A mid-tone brown for muted text */
+    --muted-foreground: 25 15% 45%; /* A mid-tone brown for muted text */
 
-    --accent: 142 25% 92%;        /* A slightly brighter muted green for accents */
-    --accent-foreground: 142 76% 25%; /* Darker green for text on accent */
+    --accent: 40 50% 92%;        /* A slightly brighter muted gold/beige for accents */
+    --accent-foreground: 42 84% 25%; /* Darker gold for text on accent */
 
     --destructive: 0 84.2% 60.2%; /* Standard Red for warnings */
     --destructive-foreground: 0 0% 98%;
 
     --border: 40 20% 88%;         /* Light beige border */
     --input: 40 20% 88%;
-    --ring: 142 76% 36%;         /* Primary green for focus rings */
+    --ring: 42 84% 50%;         /* Primary gold for focus rings */
     --radius: 0.5rem;
     
     --chart-1: 12 76% 61%;
@@ -46,44 +46,44 @@ body {
 
     /* Sidebar specific theme (Light Mode) */
     --sidebar-background: 40 30% 97%;
-    --sidebar-foreground: 20 15% 25%;
-    --sidebar-primary: 142 76% 36%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 142 25% 90%;
-    --sidebar-accent-foreground: 142 76% 20%;
+    --sidebar-foreground: 25 25% 20%;
+    --sidebar-primary: 42 84% 50%;
+    --sidebar-primary-foreground: 25 25% 15%;
+    --sidebar-accent: 40 50% 90%;
+    --sidebar-accent-foreground: 42 84% 20%;
     --sidebar-border: 40 20% 92%;
-    --sidebar-ring: 142 76% 36%;
+    --sidebar-ring: 42 84% 50%;
   }
 
   .dark {
-    /* New Organic Palette (Dark Mode) */
-    --background: 20 14% 4%;        /* Very dark, warm brown/black */
-    --foreground: 0 0% 95%;          /* Light gray for text */
+    /* New Gold & Brown Palette (Dark Mode) */
+    --background: 20 14% 4%;        /* Very dark, warm brown/black from logo background */
+    --foreground: 40 20% 95%;          /* Light cream/off-white text */
 
     --card: 20 14% 7%;           /* Slightly lighter dark brown */
-    --card-foreground: 0 0% 95%;
+    --card-foreground: 40 20% 95%;
 
     --popover: 20 14% 4%;
-    --popover-foreground: 0 0% 95%;
+    --popover-foreground: 40 20% 95%;
 
-    --primary: 142 71% 45%;      /* A vibrant green for dark mode */
-    --primary-foreground: 142 76% 15%; /* Very dark green for text on primary */
+    --primary: 42 78% 55%;      /* A vibrant gold/yellow for dark mode */
+    --primary-foreground: 25 25% 15%; /* Very dark brown for text on primary */
 
-    --secondary: 142 20% 15%;     /* A dark, muted green */
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 30 15% 15%;     /* A dark, muted brown */
+    --secondary-foreground: 40 20% 95%;
 
     --muted: 20 10% 12%;          /* Darker gray-brown */
-    --muted-foreground: 0 0% 65%;    /* Lighter muted text */
+    --muted-foreground: 40 10% 65%;    /* Lighter muted text */
 
-    --accent: 142 20% 20%;        /* Dark muted green for accents */
-    --accent-foreground: 0 0% 95%;
+    --accent: 30 15% 20%;        /* Dark muted brown for accents */
+    --accent-foreground: 40 20% 95%;
 
     --destructive: 0 62.8% 30.6%;   /* Standard dark-mode red */
     --destructive-foreground: 0 0% 98%;
 
     --border: 20 10% 15%;         /* Dark brown border */
     --input: 20 10% 15%;
-    --ring: 142 71% 45%;         /* Primary green for focus rings */
+    --ring: 42 78% 55%;         /* Primary gold for focus rings */
 
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -93,13 +93,13 @@ body {
 
     /* Sidebar specific theme (Dark Mode) */
     --sidebar-background: 20 14% 4%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 142 71% 45%;
-    --sidebar-primary-foreground: 142 76% 15%;
-    --sidebar-accent: 142 20% 20%;
-    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-foreground: 40 20% 95%;
+    --sidebar-primary: 42 78% 55%;
+    --sidebar-primary-foreground: 25 25% 15%;
+    --sidebar-accent: 30 15% 20%;
+    --sidebar-accent-foreground: 40 20% 95%;
     --sidebar-border: 20 10% 15%;
-    --sidebar-ring: 142 71% 45%;
+    --sidebar-ring: 42 78% 55%;
   }
 }
 
