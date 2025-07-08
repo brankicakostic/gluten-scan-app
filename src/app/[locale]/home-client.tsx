@@ -109,11 +109,6 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
   const [errorType, setErrorType] = useState('');
   const [submissionStatus, setSubmissionStatus] = useState('idle');
 
-  // Manufacturer inquiry form state
-  const [showInquiryModal, setShowInquiryModal] = useState(false);
-  const [inquiryComment, setInquiryComment] = useState('');
-  const [inquiryEmail, setInquiryEmail] = useState('');
-
   const analysisReportRef = useRef<HTMLDivElement>(null);
   const [displayedProducts] = useState<Product[]>(initialProducts);
 
@@ -168,8 +163,8 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                   });
             }
             incrementScanCount();
-            setIsScanningBarcode(false); 
             toast({ title: "Barcode Scan Simulated", description: foundProduct ? "Product details loaded." : "Barcode not found in database."});
+            setIsScanningBarcode(false); 
           }, 3000);
         } catch (error) {
           console.error('Error accessing barcode camera:', error);
@@ -444,25 +439,6 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
         toast({ variant: 'destructive', title: 'Greška pri slanju', description: result.error });
     }
   };
-
-  const handleInquirySubmit = async () => {
-    const result = await addReportAction({
-        type: 'inquiry' as const,
-        comment: inquiryComment,
-        contactEmail: inquiryEmail,
-        productContext: declarationText || ocrTextForAnalysis,
-    });
-    if(result.success) {
-        toast({
-          title: "Upit je poslat!",
-          description: "Hvala! Poslaćemo upit proizvođaču i obavestiti vas ako ste ostavili email.",
-        });
-        setShowInquiryModal(false);
-    } else {
-        toast({ variant: 'destructive', title: 'Greška pri slanju', description: result.error });
-    }
-  };
-
 
   const isLoadingAnyAnalysisProcess = isLoadingOcr || isLoadingDeclaration || showLabelingQuestionModal;
   
@@ -1090,44 +1066,6 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                                  )}
                                </DialogContent>
                              </Dialog>
-                            <Dialog open={showInquiryModal} onOpenChange={(open) => {
-                               setShowInquiryModal(open);
-                               if (!open) {
-                                 setInquiryComment('');
-                                 setInquiryEmail('');
-                               }
-                             }}>
-                              <DialogTrigger asChild>
-                                <Button variant="secondary" className="w-full">
-                                  <Send className="mr-2 h-4 w-4" /> Pošalji proizvođaču upit
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>✉️ Želite da proverimo ovaj proizvod kod proizvođača?</DialogTitle>
-                                  <DialogDescription>
-                                    Ponekad je direktan upit proizvođaču najbolji način da se otklone sumnje. Rado ćemo to uraditi za vas.
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <div className="space-y-4 py-2">
-                                  <div className="space-y-2">
-                                    <Label htmlFor="inquiry-comment">Ostavi komentar (opciono)</Label>
-                                    <Textarea id="inquiry-comment" placeholder="Npr. 'Zanima me da li je aroma na bazi pšenice' ili 'Molim vas proverite rizik od unakrsne kontaminacije'." onChange={(e) => setInquiryComment(e.target.value)} />
-                                  </div>
-                                  <div className="space-y-2">
-                                    <Label htmlFor="inquiry-email">Email za odgovor (opciono)</Label>
-                                    <Input id="inquiry-email" type="email" placeholder="vas.email@primer.com" onChange={(e) => setInquiryEmail(e.target.value)} />
-                                    <p className="text-xs text-muted-foreground">Ako unesete email, javićemo vam direktno kada dobijemo odgovor.</p>
-                                  </div>
-                                </div>
-                                <DialogFooter>
-                                  <Button variant="outline" onClick={() => setShowInquiryModal(false)}>Odustani</Button>
-                                  <Button onClick={handleInquirySubmit}>
-                                    <Send className="mr-2 h-4 w-4" /> Pošalji
-                                  </Button>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
                           </div>
                           <p className="text-xs text-muted-foreground mt-4 text-center">
                             <Info className="inline h-3 w-3 mr-1" />
