@@ -44,7 +44,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Shield, PlusCircle, Edit, Trash2, Loader2, Mail, CheckSquare, ExternalLink } from 'lucide-react';
+import { Shield, PlusCircle, Edit, Trash2, Loader2, Mail, CheckSquare, ExternalLink, Hourglass } from 'lucide-react';
 import type { Product } from '@/lib/products';
 import type { Report } from '@/lib/reports';
 import { addProductAction, updateProductAction, deleteProductAction } from '@/app/actions/product-actions';
@@ -98,6 +98,8 @@ export default function AdminClientPage({ initialProducts, initialReports, local
   const [reportToDelete, setReportToDelete] = useState<Report | null>(null);
   const [isResolveAlertOpen, setIsResolveAlertOpen] = useState(false);
   const [reportToResolve, setReportToResolve] = useState<Report | null>(null);
+  const [isMarkInProgressAlertOpen, setIsMarkInProgressAlertOpen] = useState(false);
+  const [reportToMarkInProgress, setReportToMarkInProgress] = useState<Report | null>(null);
 
 
   // Common state
@@ -207,6 +209,27 @@ export default function AdminClientPage({ initialProducts, initialReports, local
     setReportToResolve(null);
   };
 
+  const handleMarkInProgressClick = (report: Report) => {
+    setReportToMarkInProgress(report);
+    setIsMarkInProgressAlertOpen(true);
+  };
+
+  const handleMarkInProgressConfirm = async () => {
+    if (!reportToMarkInProgress?.id) return;
+    setIsLoading(true);
+    const result = await updateReportStatusAction(reportToMarkInProgress.id, 'in_progress');
+    setIsLoading(false);
+    setIsMarkInProgressAlertOpen(false);
+
+    if (result.success) {
+        toast({ title: `Prijava označena kao "u toku".` });
+        router.refresh();
+    } else {
+        toast({ variant: 'destructive', title: 'Greška', description: result.error });
+    }
+    setReportToMarkInProgress(null);
+  };
+
 
   if (!isAuthenticated) {
     return (
@@ -233,14 +256,14 @@ export default function AdminClientPage({ initialProducts, initialReports, local
       case 'visoka': return <Badge variant="destructive">Visoka</Badge>;
       case 'srednja': return <Badge variant="default" className="bg-orange-500 hover:bg-orange-500/80">Srednja</Badge>;
       case 'niska': return <Badge variant="secondary">Niska</Badge>;
-      default: return <Badge variant="outline">N/A</Badge>;
+      default: return null;
     }
   };
   
   const getStatusBadge = (status?: string) => {
     switch (status) {
       case 'resolved': return <Badge variant="default" className="bg-green-600 hover:bg-green-600/80">Rešeno</Badge>;
-      case 'viewed': return <Badge variant="secondary">Pregledano</Badge>;
+      case 'in_progress': return <Badge variant="default" className="bg-blue-500 hover:bg-blue-500/80">U toku</Badge>;
       case 'new':
       default: return <Badge variant="destructive">Novo</Badge>;
     }
@@ -339,7 +362,7 @@ export default function AdminClientPage({ initialProducts, initialReports, local
                             </TableCell>
                             <TableCell className="text-xs max-w-sm">
                                 <p className="font-semibold">{report.comment || 'N/A'}</p>
-                                {report.priority && <div>{getPriorityBadge(report.priority)}</div>}
+                                {report.type === 'error' && report.priority && <div>{getPriorityBadge(report.priority)}</div>}
                                 <p className="text-muted-foreground mt-1 truncate"><strong>Kontekst:</strong> {report.productContext}</p>
                             </TableCell>
                             <TableCell className="text-xs">{report.wantsContact ? report.contactEmail : 'Nije zatražen'}</TableCell>
@@ -350,6 +373,11 @@ export default function AdminClientPage({ initialProducts, initialReports, local
                                   <a href={`mailto:${report.contactEmail}?subject=Re: GlutenScan prijava`}>
                                     <Mail className="h-4 w-4" />
                                   </a>
+                                </Button>
+                              )}
+                              {report.status === 'new' && (
+                                <Button variant="outline" size="icon" onClick={() => handleMarkInProgressClick(report)} title="Označi kao 'u toku'">
+                                  <Hourglass className="h-4 w-4" />
                                 </Button>
                               )}
                               {report.status !== 'resolved' && (
@@ -518,6 +546,24 @@ export default function AdminClientPage({ initialProducts, initialReports, local
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setReportToResolve(null)}>Odustani</AlertDialogCancel>
             <AlertDialogAction onClick={handleResolveReportConfirm} disabled={isLoading}>
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Potvrdi'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Mark In Progress Confirmation Dialog */}
+      <AlertDialog open={isMarkInProgressAlertOpen} onOpenChange={setIsMarkInProgressAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Označi kao "u toku"?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Da li ste sigurni da želite da označite ovu prijavu kao "u toku"?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setReportToMarkInProgress(null)}>Odustani</AlertDialogCancel>
+            <AlertDialogAction onClick={handleMarkInProgressConfirm} disabled={isLoading}>
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Potvrdi'}
             </AlertDialogAction>
           </AlertDialogFooter>

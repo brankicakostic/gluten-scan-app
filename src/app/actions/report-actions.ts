@@ -49,7 +49,7 @@ export async function deleteReportAction(reportId: string) {
     }
 }
 
-export async function updateReportStatusAction(reportId: string, status: 'new' | 'viewed' | 'resolved') {
+export async function updateReportStatusAction(reportId: string, status: 'new' | 'in_progress' | 'resolved') {
     try {
         await updateReport(reportId, { status });
         revalidatePath('/[locale]/admin', 'page');

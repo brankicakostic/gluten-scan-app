@@ -11,5 +11,5 @@ export interface Report {
   productContext: string; // The declaration text that was analyzed OR product name
   productId?: string; // ID of the product being reported
   productName?: string; // Name of the product being reported
-  status: 'new' | 'viewed' | 'resolved';
+  status: 'new' | 'in_progress' | 'resolved';
 }
