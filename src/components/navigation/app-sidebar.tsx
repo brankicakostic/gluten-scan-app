@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -26,9 +25,9 @@ export function AppSidebar() {
       <SidebarHeader className="p-4">
         <Link href={`/${locale}`} className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
           {/* Light Mode Logo */}
-          <Image src="/logo-light.png" alt="Gluten Scan Logo" width={32} height={32} className="h-8 w-8 rounded-lg dark:hidden" />
+          <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={32} height={32} className="h-8 w-8 rounded-lg dark:hidden" />
           {/* Dark Mode Logo */}
-          <Image src="/logo-dark.png" alt="Gluten Scan Logo" width={32} height={32} className="h-8 w-8 rounded-lg hidden dark:block" />
+          <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={32} height={32} className="h-8 w-8 rounded-lg hidden dark:block" />
           <span className="font-semibold text-lg group-data-[collapsible=icon]:hidden">
             Gluten Scan
           </span>

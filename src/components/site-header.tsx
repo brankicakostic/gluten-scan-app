@@ -9,9 +9,9 @@ export function SiteHeader() {
       <div className="container flex h-14 items-center">
         <div className="mr-4 hidden md:flex items-center">
            {/* Light Mode Logo */}
-           <Image src="/logo-light.png" alt="Gluten Scan Logo" width={24} height={24} className="h-6 w-6 mr-2 rounded-md dark:hidden" />
+           <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={24} height={24} className="h-6 w-6 mr-2 rounded-md dark:hidden" />
            {/* Dark Mode Logo */}
-           <Image src="/logo-dark.png" alt="Gluten Scan Logo" width={24} height={24} className="h-6 w-6 mr-2 rounded-md hidden dark:block" />
+           <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={24} height={24} className="h-6 w-6 mr-2 rounded-md hidden dark:block" />
           <span className="font-bold">Gluten Scan</span>
         </div>
         <div className="md:hidden">
