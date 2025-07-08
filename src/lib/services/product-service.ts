@@ -9,6 +9,27 @@ import type { Product } from '@/lib/products';
 // This function assumes documents in the 'products' collection have fields matching the Product type.
 // The document ID from Firestore will be used as the product's `id`.
 
+
+/**
+ * Helper to construct the full Firebase Storage URL from a relative path.
+ * If the URL is already absolute or a placeholder, it returns it as is.
+ * @param imageUrl The relative path to the image in Firebase Storage.
+ * @returns The full, public URL for the image.
+ */
+function transformImageUrl(imageUrl: string): string {
+    if (!imageUrl || imageUrl.startsWith('http') || imageUrl.startsWith('/')) {
+        return imageUrl; // It's already a full URL or a placeholder/public path.
+    }
+    const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+    if (!bucket) {
+        console.warn('Firebase storage bucket is not configured. Using placeholder for images.');
+        return 'https://placehold.co/400x200.png'; // Fallback
+    }
+    const encodedPath = encodeURIComponent(imageUrl);
+    return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
+}
+
+
 /**
  * Fetches all products from the Firestore 'products' collection.
  * @returns A promise that resolves to an array of products.
@@ -19,9 +40,11 @@ export async function getProducts(): Promise<Product[]> {
         const q = query(productsCol, orderBy("name")); // Order by name for consistent results
         const productSnapshot = await getDocs(q);
         const productList = productSnapshot.docs.map(doc => {
+            const data = doc.data();
             return {
                 id: doc.id,
-                ...doc.data()
+                ...data,
+                imageUrl: transformImageUrl(data.imageUrl),
             } as Product;
         });
         return productList;
@@ -43,9 +66,11 @@ export async function getFeaturedProducts(count: number = 8): Promise<Product[]>
         const q = query(productsCol, orderBy("name"), limit(count));
         const productSnapshot = await getDocs(q);
         const productList = productSnapshot.docs.map(doc => {
+            const data = doc.data();
             return {
                 id: doc.id,
-                ...doc.data()
+                ...data,
+                imageUrl: transformImageUrl(data.imageUrl),
             } as Product;
         });
         return productList;
@@ -70,10 +95,12 @@ export async function getProductById(id: string): Promise<Product | null> {
             console.warn(`Product with ID ${id} not found in Firestore.`);
             return null;
         }
-
+        
+        const data = productSnap.data();
         return {
             id: productSnap.id,
-            ...productSnap.data()
+            ...data,
+            imageUrl: transformImageUrl(data.imageUrl),
         } as Product;
     } catch (error) {
         console.error(`Error fetching product with ID ${id}: `, error);
