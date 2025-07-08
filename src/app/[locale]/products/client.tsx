@@ -28,13 +28,6 @@ const getNutriScoreClasses = (score?: string) => {
   }
 };
 
-const explicitlyHandledTags = [
-  'gluten-free', 'contains-gluten', 'may-contain-gluten',
-  'contains-wheat', 'risk-of-contamination', 'contains-barley', 'contains-rye', 'contains-oats',
-  'sugar-free', 'lactose-free', 'posno', 'high-protein', 'upozorenje', 'povučeno', 'problematična-serija', 'sadrži-gluten',
-  'bez šećera', 'vegan', 'protein', 'bez laktoze'
-];
-
 const PRODUCTS_PER_PAGE = 12;
 
 interface ProductsClientPageProps {
@@ -183,14 +176,11 @@ export default function ProductsClientPage({ allProducts, productCategories }: P
 
                           <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description && product.description.length > 100 && product.warning && product.note ? product.note : product.description}</p>
                           <div className="flex flex-wrap gap-1 mb-3">
-                            {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
-                            {product.isVegan && <Badge variant="secondary" className="text-xs">Vegan</Badge>}
-                            {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Lactose-Free</Badge>}
-                            {product.isSugarFree && <Badge variant="secondary" className="text-xs">Sugar-Free</Badge>}
-                            {product.isHighProtein && <Badge variant="secondary" className="text-xs">High Protein</Badge>}
-                            {product.tags?.filter(tag => !explicitlyHandledTags.includes(tag.toLowerCase())).slice(0, 2).map(tag => (
-                              <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
-                            ))}
+                              {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
+                              {product.isVegan && <Badge variant="secondary" className="text-xs">Vegan</Badge>}
+                              {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Bez laktoze</Badge>}
+                              {product.isSugarFree && <Badge variant="secondary" className="text-xs">Bez šećera</Badge>}
+                              {product.isHighProtein && <Badge variant="secondary" className="text-xs">Visok sadržaj proteina</Badge>}
                           </div>
                           <Button asChild variant="outline" size="sm" className="w-full mt-auto">
                             <Link href={`/${locale}/products/${product.id}`}>View Details</Link>

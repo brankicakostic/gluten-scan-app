@@ -53,12 +53,6 @@ const getNutriScoreClasses = (score?: string) => {
   }
 };
 
-const explicitlyHandledTags = [
-  'gluten-free', 'contains-gluten', 'may-contain-gluten', 
-  'contains-wheat', 'risk-of-contamination', 'contains-barley', 'contains-rye', 'contains-oats',
-  'sugar-free', 'lactose-free', 'posno', 'high-protein'
-];
-
 interface HomeClientProps {
   initialProducts: Product[];
   initialTip: DailyCeliacTipOutput;
@@ -685,8 +679,8 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
               {displayedProducts.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {displayedProducts.map(product => {
-                    const isGlutenFreeTag = product.tags?.includes('gluten-free');
-                    const containsGlutenTag = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isGlutenFreeTag);
+                    const isConsideredGF = product.hasAOECSLicense || product.hasManufacturerStatement || product.isVerifiedAdmin;
+                    const containsGlutenTag = product.tags?.includes('contains-gluten') || product.tags?.includes('sadrži-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isConsideredGF);
                     const mayContainGlutenTag = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
 
                     return (
@@ -699,14 +693,14 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                           {product.brand && <CardDescription className="text-xs text-muted-foreground mb-1">{product.brand}</CardDescription>}
                           <div className="flex justify-between items-center mb-2">
                             <CardDescription className="text-sm text-muted-foreground">{product.category}</CardDescription>
-                            {product.nutriScore && (
+                            {product.nutriScore && product.nutriScore !== 'N/A' && (
                               <span className={`px-2 py-0.5 rounded-md text-xs font-semibold border ${getNutriScoreClasses(product.nutriScore)}`}>
                                 {product.nutriScore}
                               </span>
                             )}
                           </div>
 
-                          {isGlutenFreeTag ? (
+                          {isConsideredGF ? (
                             <div className="flex items-center text-green-600 dark:text-green-400 text-xs mt-1 mb-1">
                               <CheckCircle className="h-3 w-3 mr-1" />
                               <span>Gluten-Free</span>
@@ -730,14 +724,12 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                           
                           <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description}</p>
                            <div className="flex flex-wrap gap-1 mb-3">
-                            {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
-                            {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Lactose-Free</Badge>}
-                            {product.isSugarFree && <Badge variant="secondary" className="text-xs">Sugar-Free</Badge>}
-                             {product.tags?.filter(tag => !explicitlyHandledTags.includes(tag.toLowerCase())).slice(0,1).map(tag => (
-                                <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
-                             ))}
-                             {product.tags?.includes('high-protein') && <Badge variant="secondary" className="text-xs">High Protein</Badge>}
-                          </div>
+                              {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
+                              {product.isVegan && <Badge variant="secondary" className="text-xs">Vegan</Badge>}
+                              {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Bez laktoze</Badge>}
+                              {product.isSugarFree && <Badge variant="secondary" className="text-xs">Bez šećera</Badge>}
+                              {product.isHighProtein && <Badge variant="secondary" className="text-xs">Visok sadržaj proteina</Badge>}
+                           </div>
                           <Button asChild variant="outline" size="sm" className="w-full mt-auto">
                             <Link href={`/${locale}/products/${product.id}`}>View Details</Link>
                           </Button>
