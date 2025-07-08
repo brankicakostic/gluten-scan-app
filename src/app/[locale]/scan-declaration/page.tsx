@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import { addReportAction } from '@/app/actions/report-actions';
 
 
 export default function ScanDeclarationPage() {
@@ -79,9 +79,6 @@ export default function ScanDeclarationPage() {
     setAnalysisResult(null);
 
     try {
-      // For this dedicated page, we assume no specific labeling info is gathered in a separate step,
-      // so we pass 'unknown' or rely on the AI's default handling if labelingInfo is optional.
-      // If a labeling info step were to be added here, it would mirror the homepage logic.
       const result = await analyzeDeclaration({ declarationText, labelingInfo: 'unknown' });
       setAnalysisResult(result);
       incrementScanCount();
@@ -103,13 +100,48 @@ export default function ScanDeclarationPage() {
     }
   };
 
-  const handleReportSubmit = () => {
+  const handleReportSubmit = async () => {
     setSubmissionStatus('submitting');
-    // Simulate API call
-    setTimeout(() => {
+    
+    const reportData = {
+        type: 'error' as const,
+        comment: reportComment,
+        wantsContact: wantsContact,
+        contactEmail: wantsContact ? contactEmail : '',
+        priority: reportPriority as 'niska' | 'srednja' | 'visoka',
+        errorType: errorType as 'sastav' | 'drugo',
+        productContext: declarationText,
+    };
+    
+    const result = await addReportAction(reportData);
+
+    if (result.success) {
         setSubmissionStatus('success');
-    }, 1000);
+    } else {
+        setSubmissionStatus('idle');
+        toast({ variant: 'destructive', title: 'Greška pri slanju', description: result.error });
+    }
   };
+
+  const handleInquirySubmit = async () => {
+    const result = await addReportAction({
+        type: 'inquiry' as const,
+        comment: inquiryComment,
+        contactEmail: inquiryEmail,
+        productContext: declarationText,
+    });
+
+    if (result.success) {
+        toast({
+          title: "Upit je poslat!",
+          description: "Hvala! Poslaćemo upit proizvođaču i obavestiti vas ako ste ostavili email.",
+        });
+        setShowInquiryModal(false);
+    } else {
+        toast({ variant: 'destructive', title: 'Greška pri slanju', description: result.error });
+    }
+  };
+
 
   const getAssessmentAlert = (result: AnalyzeDeclarationOutput) => {
     const confidenceText = `Poverenje: ${result.poverenjeUkupneProcene !== undefined ? Math.round(result.poverenjeUkupneProcene * 100) : 'N/A'}%`;
@@ -481,13 +513,7 @@ export default function ScanDeclarationPage() {
                                 </div>
                                 <DialogFooter>
                                   <Button variant="outline" onClick={() => setShowInquiryModal(false)}>Odustani</Button>
-                                  <Button onClick={() => {
-                                    toast({
-                                      title: "Upit se šalje!",
-                                      description: "Hvala! Poslaćemo upit proizvođaču i obavestiti vas.",
-                                    });
-                                    setShowInquiryModal(false);
-                                  }}>
+                                  <Button onClick={handleInquirySubmit}>
                                     <Send className="mr-2 h-4 w-4" /> Pošalji
                                   </Button>
                                 </DialogFooter>

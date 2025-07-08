@@ -31,6 +31,8 @@ import type { Product } from '@/lib/products';
 import { AlertDialog, AlertDialogTrigger, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { getProductById } from '@/lib/services/product-service';
+import { addReportAction } from '@/app/actions/report-actions';
+
 
 interface BarcodeScanResult {
   name: string;
@@ -142,9 +144,6 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
             barcodeVideoRef.current.srcObject = currentStream;
           }
 
-          // In a real app, a library like `react-barcode-scanner` would process the video stream.
-          // Here, we simulate finding a product after a delay.
-          // The barcode "8606107907482" for "Cookies" is used for simulation.
           setTimeout(async () => {
             const simulatedBarcode = "8606107907482";
             const foundProduct = await getProductById(simulatedBarcode);
@@ -423,12 +422,47 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
     setIsScanningBarcode(false);
   };
 
-  const handleReportSubmit = () => {
+  const handleReportSubmit = async () => {
     setSubmissionStatus('submitting');
-    setTimeout(() => {
+    
+    const reportData = {
+        type: 'error' as const,
+        comment: reportComment,
+        wantsContact: wantsContact,
+        contactEmail: wantsContact ? contactEmail : '',
+        priority: reportPriority as 'niska' | 'srednja' | 'visoka',
+        errorType: errorType as 'sastav' | 'drugo',
+        productContext: declarationText || ocrTextForAnalysis,
+    };
+    
+    const result = await addReportAction(reportData);
+
+    if (result.success) {
         setSubmissionStatus('success');
-    }, 1000);
+    } else {
+        setSubmissionStatus('idle');
+        toast({ variant: 'destructive', title: 'Greška pri slanju', description: result.error });
+    }
   };
+
+  const handleInquirySubmit = async () => {
+    const result = await addReportAction({
+        type: 'inquiry' as const,
+        comment: inquiryComment,
+        contactEmail: inquiryEmail,
+        productContext: declarationText || ocrTextForAnalysis,
+    });
+    if(result.success) {
+        toast({
+          title: "Upit je poslat!",
+          description: "Hvala! Poslaćemo upit proizvođaču i obavestiti vas ako ste ostavili email.",
+        });
+        setShowInquiryModal(false);
+    } else {
+        toast({ variant: 'destructive', title: 'Greška pri slanju', description: result.error });
+    }
+  };
+
 
   const isLoadingAnyAnalysisProcess = isLoadingOcr || isLoadingDeclaration || showLabelingQuestionModal;
   
@@ -1088,13 +1122,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                                 </div>
                                 <DialogFooter>
                                   <Button variant="outline" onClick={() => setShowInquiryModal(false)}>Odustani</Button>
-                                  <Button onClick={() => {
-                                    toast({
-                                      title: "Upit se šalje!",
-                                      description: "Hvala! Poslaćemo upit proizvođaču i obavestiti vas.",
-                                    });
-                                    setShowInquiryModal(false);
-                                  }}>
+                                  <Button onClick={handleInquirySubmit}>
                                     <Send className="mr-2 h-4 w-4" /> Pošalji
                                   </Button>
                                 </DialogFooter>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { SidebarInset, SidebarRail } from '@/components/ui/sidebar';
@@ -17,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -24,7 +25,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   AlertDialog,
@@ -42,9 +42,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Shield, PlusCircle, Edit, Trash2, Loader2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Shield, PlusCircle, Edit, Trash2, Loader2, MessageSquareWarning, Mail, Flag } from 'lucide-react';
 import type { Product } from '@/lib/products';
+import type { Report } from '@/lib/reports';
 import { addProductAction, updateProductAction, deleteProductAction } from '@/app/actions/product-actions';
+import { deleteReportAction } from '@/app/actions/report-actions';
 import { useToast } from '@/hooks/use-toast';
 
 // Zod schema for form validation
@@ -73,21 +76,32 @@ type ProductFormData = z.infer<typeof productFormSchema>;
 
 interface AdminClientPageProps {
   initialProducts: Product[];
+  initialReports: Report[];
 }
 
-export default function AdminClientPage({ initialProducts }: AdminClientPageProps) {
+export default function AdminClientPage({ initialProducts, initialReports }: AdminClientPageProps) {
   const router = useRouter();
   const { toast } = useToast();
+
+  // Products state
   const [products, setProducts] = useState(initialProducts);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  
+  // Reports state
+  const [reports, setReports] = useState(initialReports);
+  const [isReportDeleteAlertOpen, setIsReportDeleteAlertOpen] = useState(false);
+  const [reportToDelete, setReportToDelete] = useState<Report | null>(null);
+
+  // Common state
   const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => setProducts(initialProducts), [initialProducts]);
+  useEffect(() => setReports(initialReports), [initialReports]);
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
@@ -119,18 +133,18 @@ export default function AdminClientPage({ initialProducts }: AdminClientPageProp
     if (result.success) {
       toast({ title: `Proizvod ${data.id ? 'ažuriran' : 'dodan'}!` });
       setIsFormOpen(false);
-      router.refresh(); // Tell Next.js to re-fetch the server component data
+      router.refresh(); 
     } else {
       toast({ variant: 'destructive', title: 'Greška', description: result.error });
     }
   };
 
-  const handleDeleteClick = (product: Product) => {
+  const handleDeleteProductClick = (product: Product) => {
     setProductToDelete(product);
     setIsDeleteAlertOpen(true);
   };
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteProductConfirm = async () => {
     if (!productToDelete?.id) return;
     setIsLoading(true);
     const result = await deleteProductAction(productToDelete.id);
@@ -145,7 +159,28 @@ export default function AdminClientPage({ initialProducts }: AdminClientPageProp
     }
     setProductToDelete(null);
   };
-  
+
+  const handleDeleteReportClick = (report: Report) => {
+    setReportToDelete(report);
+    setIsReportDeleteAlertOpen(true);
+  };
+
+  const handleDeleteReportConfirm = async () => {
+    if (!reportToDelete?.id) return;
+    setIsLoading(true);
+    const result = await deleteReportAction(reportToDelete.id);
+    setIsLoading(false);
+    setIsReportDeleteAlertOpen(false);
+
+    if (result.success) {
+      toast({ title: `Prijava obrisana.` });
+      router.refresh();
+    } else {
+      toast({ variant: 'destructive', title: 'Greška pri brisanju prijave', description: result.error });
+    }
+    setReportToDelete(null);
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-muted">
@@ -166,6 +201,15 @@ export default function AdminClientPage({ initialProducts }: AdminClientPageProp
     );
   }
 
+  const getPriorityBadge = (priority?: string) => {
+    switch (priority) {
+      case 'visoka': return <Badge variant="destructive">Visoka</Badge>;
+      case 'srednja': return <Badge variant="default" className="bg-orange-500 hover:bg-orange-500/80">Srednja</Badge>;
+      case 'niska': return <Badge variant="secondary">Niska</Badge>;
+      default: return <Badge variant="outline">N/A</Badge>;
+    }
+  };
+
   return (
     <div className="flex min-h-screen">
       <AppSidebar />
@@ -174,43 +218,98 @@ export default function AdminClientPage({ initialProducts }: AdminClientPageProp
         <SiteHeader />
         <main className="flex-1 p-6 md:p-8">
           <div className="mx-auto max-w-6xl">
-            <PageHeader title="Admin Panel" description="Upravljanje bazom proizvoda." icon={Shield} />
-            <div className="flex justify-end mb-4">
-              <Button onClick={() => handleOpenForm()}>
-                <PlusCircle className="mr-2 h-4 w-4" /> Dodaj novi proizvod
-              </Button>
-            </div>
-            <Card>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Naziv Proizvoda</TableHead>
-                      <TableHead>Brend</TableHead>
-                      <TableHead>Kategorija</TableHead>
-                      <TableHead className="text-right">Akcije</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {products.map((product) => (
-                      <TableRow key={product.id}>
-                        <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell>{product.brand}</TableCell>
-                        <TableCell>{product.category}</TableCell>
-                        <TableCell className="text-right space-x-2">
-                          <Button variant="outline" size="icon" onClick={() => handleOpenForm(product)}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="destructive" size="icon" onClick={() => handleDeleteClick(product)}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+            <PageHeader title="Admin Panel" description="Upravljanje bazom podataka i prijavama korisnika." icon={Shield} />
+
+            <Tabs defaultValue="products">
+              <TabsList className="mb-4">
+                <TabsTrigger value="products">Proizvodi</TabsTrigger>
+                <TabsTrigger value="reports">Prijave <Badge variant="destructive" className="ml-2">{reports.length}</Badge></TabsTrigger>
+              </TabsList>
+
+              {/* Products Tab */}
+              <TabsContent value="products">
+                <div className="flex justify-end mb-4">
+                  <Button onClick={() => handleOpenForm()}>
+                    <PlusCircle className="mr-2 h-4 w-4" /> Dodaj novi proizvod
+                  </Button>
+                </div>
+                <Card>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Naziv Proizvoda</TableHead>
+                          <TableHead>Brend</TableHead>
+                          <TableHead>Kategorija</TableHead>
+                          <TableHead className="text-right">Akcije</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {products.map((product) => (
+                          <TableRow key={product.id}>
+                            <TableCell className="font-medium">{product.name}</TableCell>
+                            <TableCell>{product.brand}</TableCell>
+                            <TableCell>{product.category}</TableCell>
+                            <TableCell className="text-right space-x-2">
+                              <Button variant="outline" size="icon" onClick={() => handleOpenForm(product)}>
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button variant="destructive" size="icon" onClick={() => handleDeleteProductClick(product)}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Reports Tab */}
+              <TabsContent value="reports">
+                 <Card>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Datum</TableHead>
+                          <TableHead>Tip</TableHead>
+                          <TableHead>Prioritet</TableHead>
+                          <TableHead>Komentar</TableHead>
+                          <TableHead>Kontakt</TableHead>
+                          <TableHead className="text-right">Akcije</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {reports.map((report) => (
+                          <TableRow key={report.id}>
+                            <TableCell className="text-xs">{new Date(report.createdAt).toLocaleString()}</TableCell>
+                            <TableCell>
+                              <Badge variant={report.type === 'error' ? 'destructive' : 'secondary'}>
+                                {report.type === 'error' ? 'Greška' : 'Upit'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>{getPriorityBadge(report.priority)}</TableCell>
+                            <TableCell className="text-xs max-w-sm">
+                                <p className="font-semibold">{report.comment || 'N/A'}</p>
+                                <p className="text-muted-foreground mt-1 truncate"><strong>Kontekst:</strong> {report.productContext}</p>
+                            </TableCell>
+                            <TableCell className="text-xs">{report.wantsContact ? report.contactEmail : 'Nije zatražen'}</TableCell>
+                            <TableCell className="text-right">
+                              <Button variant="destructive" size="icon" onClick={() => handleDeleteReportClick(report)}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                 </Card>
+              </TabsContent>
+            </Tabs>
+
           </div>
         </main>
       </SidebarInset>
@@ -245,7 +344,7 @@ export default function AdminClientPage({ initialProducts }: AdminClientPageProp
             </div>
             <div className="space-y-1">
               <Label htmlFor="imageUrl">URL Slike (relativni putanja)</Label>
-              <Input id="imageUrl" placeholder="npr. aleksandrija-fruska-gora/instant-palenta-8606112581172.png" {...form.register('imageUrl')} />
+              <Input id="imageUrl" placeholder="npr. aleksandrija-fruska-gora/instant-palenta.png" {...form.register('imageUrl')} />
             </div>
             <div className="space-y-1">
               <Label htmlFor="description">Opis</Label>
@@ -311,7 +410,7 @@ export default function AdminClientPage({ initialProducts }: AdminClientPageProp
         </DialogContent>
       </Dialog>
       
-      {/* Delete Confirmation Dialog */}
+      {/* Delete Product Confirmation Dialog */}
       <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -322,7 +421,25 @@ export default function AdminClientPage({ initialProducts }: AdminClientPageProp
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setProductToDelete(null)}>Odustani</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteConfirm} disabled={isLoading} className="bg-destructive hover:bg-destructive/90">
+            <AlertDialogAction onClick={handleDeleteProductConfirm} disabled={isLoading} className="bg-destructive hover:bg-destructive/90">
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Obriši'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Report Confirmation Dialog */}
+      <AlertDialog open={isReportDeleteAlertOpen} onOpenChange={setIsReportDeleteAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Da li ste sigurni?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Ova akcija se ne može opozvati. Prijava će biti trajno obrisana.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setReportToDelete(null)}>Odustani</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteReportConfirm} disabled={isLoading} className="bg-destructive hover:bg-destructive/90">
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Obriši'}
             </AlertDialogAction>
           </AlertDialogFooter>
