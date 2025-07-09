@@ -546,12 +546,12 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                    {canScan() ? (
                      <div className="flex items-center text-primary">
                        <CheckCircle className="h-4 w-4 mr-1.5" />
-                       <span>Preostalo vam je {getRemainingScans()} od {scanLimit} besplatnih skeniranja.</span>
+                       <span>Preostalo vam je {getRemainingScans()} od {scanLimit} besplatnih AI analiza.</span>
                      </div>
                    ) : (
                      <div className="flex items-center text-destructive">
                        <AlertCircle className="h-4 w-4 mr-1.5" />
-                       <span>Nemate više besplatnih skeniranja. Nadogradite na Premium za neograničeno skeniranje.</span>
+                       <span>Nemate više besplatnih AI analiza. Nadogradite na Premium za neograničeno korišćenje.</span>
                      </div>
                    )}
                  </>
@@ -576,13 +576,14 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
             </div>
           )}
           {dailyTip && !isLoadingTip && (
-            <Card className="bg-secondary/50 border-secondary shadow-sm">
-              <CardContent className="p-4">
-                <div className="flex items-start md:items-center justify-between gap-3 flex-col md:flex-row">
-                  <div className="flex items-center">
-                    <Lightbulb className="h-6 w-6 mr-3 text-primary flex-shrink-0" />
-                    <p className="text-sm text-secondary-foreground">{dailyTip.summary}</p>
-                  </div>
+            <div className="relative rounded-lg border border-border bg-secondary/30 p-4 pl-5 border-l-4 border-primary">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 pt-1">
+                  <Lightbulb className="h-6 w-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <Badge variant="secondary" className="mb-2">Savet Dana</Badge>
+                  <p className="text-sm text-secondary-foreground mb-3">{dailyTip.summary}</p>
                   <AlertDialog open={showTipDetailsModal} onOpenChange={setShowTipDetailsModal}>
                     <AlertDialogTrigger asChild>
                       <Button variant="outline" size="sm" className="bg-background/70 hover:bg-background">
@@ -607,8 +608,8 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                     </AlertDialogContent>
                   </AlertDialog>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
         </div>
         
@@ -1118,10 +1119,10 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
             <AlertDialogHeader>
               <AlertDialogTitle className="flex items-center">
                 <Star className="h-5 w-5 mr-2 text-primary" /> 
-                Dostignut limit besplatnih skeniranja
+                Dostignut limit besplatnih AI analiza
               </AlertDialogTitle>
               <AlertDialogDescription>
-                Iskoristili ste svih {scanLimit} besplatnih skeniranja. Da biste nastavili sa skeniranjem i analizom proizvoda, razmislite o nadogradnji na našu Premium verziju.
+                Iskoristili ste svih {scanLimit} besplatnih AI analiza. Da biste nastavili sa skeniranjem i analizom proizvoda, razmislite o nadogradnji na našu Premium verziju.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
