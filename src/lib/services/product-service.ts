@@ -150,9 +150,14 @@ function mapProductToDocData(product: Partial<Product>): DocumentData {
 export async function getProducts(): Promise<Product[]> {
     try {
         const productsCol = collection(db, 'products');
-        const q = query(productsCol, orderBy("name"));
+        // Removed orderBy to prevent issues with missing Firestore indexes. Sorting is now done in-memory.
+        const q = query(productsCol);
         const productSnapshot = await getDocs(q);
         const productList = productSnapshot.docs.map(mapDocToProduct);
+        
+        // Sort products by name alphabetically in JavaScript, respecting Serbian locale
+        productList.sort((a, b) => a.name.localeCompare(b.name, 'sr'));
+
         return productList;
     } catch (error) {
         console.error("Error fetching products from Firestore: ", error);
@@ -168,7 +173,8 @@ export async function getProducts(): Promise<Product[]> {
 export async function getFeaturedProducts(count: number = 8): Promise<Product[]> {
     try {
         const productsCol = collection(db, 'products');
-        const q = query(productsCol, orderBy("name"), limit(count));
+        // Removed orderBy to prevent issues with missing Firestore indexes.
+        const q = query(productsCol, limit(count));
         const productSnapshot = await getDocs(q);
         const productList = productSnapshot.docs.map(mapDocToProduct);
         return productList;
