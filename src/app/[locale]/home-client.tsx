@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert, Barcode as BarcodeIcon, X, FileText, Flag, XCircle, Send, PackagePlus, LayoutGrid } from 'lucide-react';
+import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert, Barcode as BarcodeIcon, X, FileText, Flag, XCircle, Send, PackagePlus, LayoutGrid, Wheat, Sandwich, UtensilsCrossed, Cookie, Popcorn, Soup, Container, CookingPot, CupSoda, Spice, Package, type LucideIcon } from 'lucide-react';
 import { analyzeDeclaration, type AnalyzeDeclarationOutput, type IngredientAssessment } from '@/ai/flows/analyze-declaration';
 import type { DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import { ocrDeclaration, type OcrDeclarationOutput } from '@/ai/flows/ocr-declaration-flow';
@@ -65,19 +65,19 @@ interface HomeClientProps {
   categories: CategoryInfo[];
 }
 
-const getCategoryIcon = (categoryName: string): string => {
+const getCategoryIcon = (categoryName: string): LucideIcon => {
   const lowerCaseName = categoryName.toLowerCase();
-  if (lowerCaseName.includes('brašn') || lowerCaseName.includes('smeš')) return '🌾';
-  if (lowerCaseName.includes('hleb') || lowerCaseName.includes('peciv')) return '🍞';
-  if (lowerCaseName.includes('testenine') || lowerCaseName.includes('pasta')) return '🍝';
-  if (lowerCaseName.includes('slatkiš') || lowerCaseName.includes('keks') || lowerCaseName.includes('čokolad')) return '🍪';
-  if (lowerCaseName.includes('grickalice') || lowerCaseName.includes('kreker')) return '🥨';
-  if (lowerCaseName.includes('pahuljice') || lowerCaseName.includes('musli')) return '🥣';
-  if (lowerCaseName.includes('namaz') || lowerCaseName.includes('krem') || lowerCaseName.includes('med')) return '🍯';
-  if (lowerCaseName.includes('sos') || lowerCaseName.includes('preliv')) return '🥫';
-  if (lowerCaseName.includes('pić') || lowerCaseName.includes('sok')) return '🥤';
-  if (lowerCaseName.includes('začin')) return '🧂';
-  return '🛍️';
+  if (lowerCaseName.includes('brašn') || lowerCaseName.includes('smeš')) return Wheat;
+  if (lowerCaseName.includes('hleb') || lowerCaseName.includes('peciv')) return Sandwich;
+  if (lowerCaseName.includes('testenine') || lowerCaseName.includes('pasta')) return UtensilsCrossed;
+  if (lowerCaseName.includes('slatkiš') || lowerCaseName.includes('keks') || lowerCaseName.includes('čokolad')) return Cookie;
+  if (lowerCaseName.includes('grickalice') || lowerCaseName.includes('kreker')) return Popcorn;
+  if (lowerCaseName.includes('pahuljice') || lowerCaseName.includes('musli')) return Soup;
+  if (lowerCaseName.includes('namaz') || lowerCaseName.includes('krem') || lowerCaseName.includes('med')) return Container;
+  if (lowerCaseName.includes('sos') || lowerCaseName.includes('preliv')) return CookingPot;
+  if (lowerCaseName.includes('pić') || lowerCaseName.includes('sok')) return CupSoda;
+  if (lowerCaseName.includes('začin')) return Spice;
+  return Package;
 };
 
 
@@ -651,7 +651,7 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
                   {barcodeScanResult.imageUrl ? (
                     <Image src={barcodeScanResult.imageUrl} alt={barcodeScanResult.name} width={80} height={80} className="rounded-md object-cover" data-ai-hint={barcodeScanResult.dataAiHint || "product image"}/>
                   ) : (
-                    <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center bg-secondary rounded-md">
+                    <div className="aspect-[1/1] w-20 h-20 flex-shrink-0 flex items-center justify-center bg-secondary rounded-md">
                       <Image
                         src="/placeholder.svg"
                         alt="Slika nije dostupna"
@@ -1034,10 +1034,14 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
             </div>
             <TooltipProvider delayDuration={200}>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {categories.map((category) => (
+                    {categories.map((category) => {
+                      const Icon = getCategoryIcon(category.name);
+                      return (
                         <Link key={category.name} href={`/${locale}/products?category=${encodeURIComponent(category.name)}`} className="block group focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-lg">
                             <Card className="h-full flex flex-col items-center justify-center text-center p-4 hover:bg-muted/50 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group-hover:border-primary">
-                                <div className="text-4xl mb-2 transition-transform duration-200 group-hover:scale-110">{getCategoryIcon(category.name)}</div>
+                                <div className="text-primary mb-2 transition-transform duration-200 group-hover:scale-110">
+                                  <Icon className="h-12 w-12" />
+                                </div>
                                 <p className="font-semibold text-sm">{category.name}</p>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
@@ -1049,7 +1053,8 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
                                 </Tooltip>
                             </Card>
                         </Link>
-                    ))}
+                      );
+                    })}
                 </div>
             </TooltipProvider>
             <div className="text-center mt-8">

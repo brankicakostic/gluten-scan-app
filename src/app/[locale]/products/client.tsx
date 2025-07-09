@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -8,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle, X } from 'lucide-react';
+import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle, X, Wheat, Sandwich, UtensilsCrossed, Cookie, Popcorn, Soup, Container, CookingPot, CupSoda, Spice, Package, type LucideIcon } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import type { Product } from '@/lib/products';
@@ -34,19 +35,19 @@ const getNutriScoreClasses = (score?: string) => {
   }
 };
 
-const getCategoryIcon = (categoryName: string): string => {
+const getCategoryIcon = (categoryName: string): LucideIcon => {
   const lowerCaseName = categoryName.toLowerCase();
-  if (lowerCaseName.includes('brašn') || lowerCaseName.includes('smeš')) return '🌾';
-  if (lowerCaseName.includes('hleb') || lowerCaseName.includes('peciv')) return '🍞';
-  if (lowerCaseName.includes('testenine') || lowerCaseName.includes('pasta')) return '🍝';
-  if (lowerCaseName.includes('slatkiš') || lowerCaseName.includes('keks') || lowerCaseName.includes('čokolad')) return '🍪';
-  if (lowerCaseName.includes('grickalice') || lowerCaseName.includes('kreker')) return '🥨';
-  if (lowerCaseName.includes('pahuljice') || lowerCaseName.includes('musli')) return '🥣';
-  if (lowerCaseName.includes('namaz') || lowerCaseName.includes('krem') || lowerCaseName.includes('med')) return '🍯';
-  if (lowerCaseName.includes('sos') || lowerCaseName.includes('preliv')) return '🥫';
-  if (lowerCaseName.includes('pić') || lowerCaseName.includes('sok')) return '🥤';
-  if (lowerCaseName.includes('začin')) return '🧂';
-  return '🛍️';
+  if (lowerCaseName.includes('brašn') || lowerCaseName.includes('smeš')) return Wheat;
+  if (lowerCaseName.includes('hleb') || lowerCaseName.includes('peciv')) return Sandwich;
+  if (lowerCaseName.includes('testenine') || lowerCaseName.includes('pasta')) return UtensilsCrossed;
+  if (lowerCaseName.includes('slatkiš') || lowerCaseName.includes('keks') || lowerCaseName.includes('čokolad')) return Cookie;
+  if (lowerCaseName.includes('grickalice') || lowerCaseName.includes('kreker')) return Popcorn;
+  if (lowerCaseName.includes('pahuljice') || lowerCaseName.includes('musli')) return Soup;
+  if (lowerCaseName.includes('namaz') || lowerCaseName.includes('krem') || lowerCaseName.includes('med')) return Container;
+  if (lowerCaseName.includes('sos') || lowerCaseName.includes('preliv')) return CookingPot;
+  if (lowerCaseName.includes('pić') || lowerCaseName.includes('sok')) return CupSoda;
+  if (lowerCaseName.includes('začin')) return Spice;
+  return Package;
 };
 
 const PRODUCTS_PER_PAGE = 12;
@@ -136,14 +137,17 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Sve kategorije ({allProducts.length})</SelectItem>
-                  {productCategories.map(category => (
-                    <SelectItem key={category.name} value={category.name}>
-                       <div className="flex items-center gap-2">
-                        <span>{getCategoryIcon(category.name)}</span>
-                        <span>{category.name} ({category.count})</span>
-                       </div>
-                    </SelectItem>
-                  ))}
+                  {productCategories.map(category => {
+                    const Icon = getCategoryIcon(category.name);
+                    return (
+                      <SelectItem key={category.name} value={category.name}>
+                         <div className="flex items-center gap-2">
+                          <Icon className="h-4 w-4" />
+                          <span>{category.name} ({category.count})</span>
+                         </div>
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
@@ -170,17 +174,20 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
               >
                   Sve
               </Button>
-              {quickFilterCategories.slice(0, 7).map(category => (
-                  <Button
-                      key={category.name}
-                      variant={selectedCategory === category.name ? 'default' : 'outline'}
-                      className="rounded-full shrink-0"
-                      onClick={() => setSelectedCategory(category.name)}
-                  >
-                      <span className="mr-2">{getCategoryIcon(category.name)}</span>
-                      {category.name}
-                  </Button>
-              ))}
+              {quickFilterCategories.slice(0, 7).map(category => {
+                  const Icon = getCategoryIcon(category.name);
+                  return (
+                    <Button
+                        key={category.name}
+                        variant={selectedCategory === category.name ? 'default' : 'outline'}
+                        className="rounded-full shrink-0"
+                        onClick={() => setSelectedCategory(category.name)}
+                    >
+                        <Icon className="mr-2 h-4 w-4" />
+                        {category.name}
+                    </Button>
+                  );
+              })}
           </div>
         </div>
 
