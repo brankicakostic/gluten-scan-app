@@ -3,9 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { SidebarInset, SidebarRail } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/navigation/app-sidebar';
-import { SiteHeader } from '@/components/site-header';
 import { PageHeader } from '@/components/page-header';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -74,158 +71,151 @@ export default function ProductsClientPage({ allProducts, productCategories }: P
   };
 
   return (
-    <div className="flex min-h-screen">
-      <AppSidebar />
-      <SidebarRail />
-      <SidebarInset>
-        <SiteHeader />
-        <main className="flex-1 p-6 md:p-8">
-          <div className="mx-auto max-w-6xl">
-            <PageHeader
-              title="Find Gluten-Free Products"
-              description="Search and filter through a curated list of gluten-free items."
-              icon={ShoppingBag}
-            />
+    <div className="p-6 md:p-8">
+      <div className="mx-auto max-w-6xl">
+        <PageHeader
+          title="Find Gluten-Free Products"
+          description="Search and filter through a curated list of gluten-free items."
+          icon={ShoppingBag}
+        />
 
-            <div className="mb-8 p-6 bg-card border rounded-lg shadow">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                <div className="space-y-1.5 md:col-span-2">
-                  <label htmlFor="search" className="text-sm font-medium">Search Products</label>
-                  <Input
-                    id="search"
-                    placeholder="Search by name, brand, or description..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label htmlFor="category" className="text-sm font-medium">Category</label>
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger id="category">
-                      <SelectValue placeholder="All Categories" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Categories</SelectItem>
-                      {productCategories.map(category => (
-                        <SelectItem key={category} value={category}>{category}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+        <div className="mb-8 p-6 bg-card border rounded-lg shadow">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div className="space-y-1.5 md:col-span-2">
+              <label htmlFor="search" className="text-sm font-medium">Search Products</label>
+              <Input
+                id="search"
+                placeholder="Search by name, brand, or description..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
+            <div className="space-y-1.5">
+              <label htmlFor="category" className="text-sm font-medium">Category</label>
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger id="category">
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {productCategories.map(category => (
+                    <SelectItem key={category} value={category}>{category}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
 
-            {currentProductsToDisplay.length > 0 ? (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {currentProductsToDisplay.map(product => {
-                    const isConsideredGF = product.hasAOECSLicense || product.hasManufacturerStatement || product.isVerifiedAdmin;
-                    const containsGlutenTag = product.warning || product.tags?.includes('contains-gluten') || product.tags?.includes('sadrži-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isConsideredGF);
-                    const mayContainGlutenTag = !product.warning && (product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination'));
+        {currentProductsToDisplay.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {currentProductsToDisplay.map(product => {
+                const isConsideredGF = product.hasAOECSLicense || product.hasManufacturerStatement || product.isVerifiedAdmin;
+                const containsGlutenTag = product.warning || product.tags?.includes('contains-gluten') || product.tags?.includes('sadrži-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isConsideredGF);
+                const mayContainGlutenTag = !product.warning && (product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination'));
 
-                    return (
-                      <Card key={product.id} className={`overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col ${product.warning ? 'border-destructive border-2' : ''}`}>
-                        <CardHeader className="p-0">
-                          <Image
-                            src={product.imageUrl}
-                            alt={product.name}
-                            width={400}
-                            height={200}
-                            className="w-full h-48 object-cover"
-                            data-ai-hint={product.dataAiHint}
-                          />
-                        </CardHeader>
-                        <CardContent className="p-4 flex flex-col flex-grow">
-                          <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
-                          {product.brand && <CardDescription className="text-xs text-muted-foreground mb-1">{product.brand}</CardDescription>}
-                          <div className="flex justify-between items-center mb-2">
-                            <CardDescription className="text-sm text-muted-foreground">{product.category}</CardDescription>
-                            {product.nutriScore && product.nutriScore !== 'N/A' && (
-                              <span className={`px-2 py-0.5 rounded-md text-xs font-semibold border ${getNutriScoreClasses(product.nutriScore)}`}>
-                                {product.nutriScore}
-                              </span>
-                            )}
-                          </div>
+                return (
+                  <Card key={product.id} className={`overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col ${product.warning ? 'border-destructive border-2' : ''}`}>
+                    <CardHeader className="p-0">
+                      <Image
+                        src={product.imageUrl}
+                        alt={product.name}
+                        width={400}
+                        height={200}
+                        className="w-full h-48 object-cover"
+                        data-ai-hint={product.dataAiHint}
+                      />
+                    </CardHeader>
+                    <CardContent className="p-4 flex flex-col flex-grow">
+                      <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
+                      {product.brand && <CardDescription className="text-xs text-muted-foreground mb-1">{product.brand}</CardDescription>}
+                      <div className="flex justify-between items-center mb-2">
+                        <CardDescription className="text-sm text-muted-foreground">{product.category}</CardDescription>
+                        {product.nutriScore && product.nutriScore !== 'N/A' && (
+                          <span className={`px-2 py-0.5 rounded-md text-xs font-semibold border ${getNutriScoreClasses(product.nutriScore)}`}>
+                            {product.nutriScore}
+                          </span>
+                        )}
+                      </div>
 
-                          {product.warning ? (
-                            <div className="flex items-center text-red-600 dark:text-red-400 text-xs mt-1 mb-1 font-semibold">
-                              <AlertTriangle className="h-3.5 w-3.5 mr-1" />
-                              <span>UPOZORENJE: Problematična serija!</span>
-                            </div>
-                          ) : isConsideredGF ? (
-                            <div className="flex items-center text-green-600 dark:text-green-400 text-xs mt-1 mb-1">
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              <span>Gluten-Free</span>
-                            </div>
-                          ) : containsGlutenTag ? (
-                            <div className="flex items-center text-red-600 dark:text-red-500 text-xs mt-1 mb-1">
-                              <AlertTriangle className="h-3 w-3 mr-1" />
-                              <span>Contains Gluten</span>
-                            </div>
-                          ) : mayContainGlutenTag ? (
-                            <div className="flex items-center text-orange-500 dark:text-orange-400 text-xs mt-1 mb-1">
-                              <AlertTriangle className="h-3 w-3 mr-1" />
-                              <span>May Contain Traces</span>
-                            </div>
-                          ) : (
-                             <div className="flex items-center text-muted-foreground text-xs mt-1 mb-1">
-                              <AlertTriangle className="h-3 w-3 mr-1" />
-                              <span>Proveriti sastav</span>
-                            </div>
-                          )}
+                      {product.warning ? (
+                        <div className="flex items-center text-red-600 dark:text-red-400 text-xs mt-1 mb-1 font-semibold">
+                          <AlertTriangle className="h-3.5 w-3.5 mr-1" />
+                          <span>UPOZORENJE: Problematična serija!</span>
+                        </div>
+                      ) : isConsideredGF ? (
+                        <div className="flex items-center text-green-600 dark:text-green-400 text-xs mt-1 mb-1">
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          <span>Gluten-Free</span>
+                        </div>
+                      ) : containsGlutenTag ? (
+                        <div className="flex items-center text-red-600 dark:text-red-500 text-xs mt-1 mb-1">
+                          <AlertTriangle className="h-3 w-3 mr-1" />
+                          <span>Contains Gluten</span>
+                        </div>
+                      ) : mayContainGlutenTag ? (
+                        <div className="flex items-center text-orange-500 dark:text-orange-400 text-xs mt-1 mb-1">
+                          <AlertTriangle className="h-3 w-3 mr-1" />
+                          <span>May Contain Traces</span>
+                        </div>
+                      ) : (
+                         <div className="flex items-center text-muted-foreground text-xs mt-1 mb-1">
+                          <AlertTriangle className="h-3 w-3 mr-1" />
+                          <span>Proveriti sastav</span>
+                        </div>
+                      )}
 
-                          <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description && product.description.length > 100 && product.warning && product.note ? product.note : product.description}</p>
-                          <div className="flex flex-wrap gap-1 mb-3">
-                              {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
-                              {product.isVegan && <Badge variant="secondary" className="text-xs">Vegan</Badge>}
-                              {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Bez laktoze</Badge>}
-                              {product.isSugarFree && <Badge variant="secondary" className="text-xs">Bez šećera</Badge>}
-                              {product.isHighProtein && <Badge variant="secondary" className="text-xs">Visok sadržaj proteina</Badge>}
-                          </div>
-                          <Button asChild variant="outline" size="sm" className="w-full mt-auto">
-                            <Link href={`/${locale}/products/${product.id}`}>View Details</Link>
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-                {totalPages > 1 && (
-                  <div className="flex justify-center items-center space-x-4 mt-8">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handlePrevPage}
-                      disabled={currentPage === 1}
-                    >
-                      <ChevronLeft className="h-4 w-4 mr-1" />
-                      Previous
-                    </Button>
-                    <span className="text-sm text-muted-foreground">
-                      Page {currentPage} of {totalPages}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleNextPage}
-                      disabled={currentPage === totalPages}
-                    >
-                      Next
-                      <ChevronRight className="h-4 w-4 ml-1" />
-                    </Button>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="text-center py-12 text-muted-foreground">
-                <PackageOpen className="mx-auto h-16 w-16 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No Products Found</h3>
-                <p>Try adjusting your filters or search terms.</p>
+                      <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description && product.description.length > 100 && product.warning && product.note ? product.note : product.description}</p>
+                      <div className="flex flex-wrap gap-1 mb-3">
+                          {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
+                          {product.isVegan && <Badge variant="secondary" className="text-xs">Vegan</Badge>}
+                          {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Bez laktoze</Badge>}
+                          {product.isSugarFree && <Badge variant="secondary" className="text-xs">Bez šećera</Badge>}
+                          {product.isHighProtein && <Badge variant="secondary" className="text-xs">Visok sadržaj proteina</Badge>}
+                      </div>
+                      <Button asChild variant="outline" size="sm" className="w-full mt-auto">
+                        <Link href={`/${locale}/products/${product.id}`}>View Details</Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center space-x-4 mt-8">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Previous
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
               </div>
             )}
+          </>
+        ) : (
+          <div className="text-center py-12 text-muted-foreground">
+            <PackageOpen className="mx-auto h-16 w-16 mb-4" />
+            <h3 className="text-xl font-semibold mb-2">No Products Found</h3>
+            <p>Try adjusting your filters or search terms.</p>
           </div>
-        </main>
-      </SidebarInset>
+        )}
+      </div>
     </div>
   );
 }

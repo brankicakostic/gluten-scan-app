@@ -8,7 +8,8 @@ import { FavoritesProvider } from '@/contexts/favorites-context';
 import { ScanLimiterProvider } from '@/contexts/scan-limiter-context'; 
 import { MobileBottomNav } from '@/components/navigation/mobile-bottom-nav';
 import { PwaInstaller } from '@/components/pwa-installer';
-// ThemeProvider is removed as it's now in the root layout.
+import { SiteHeader } from '@/components/site-header';
+import { AppSidebar } from '@/components/navigation/app-sidebar';
 
 // This function is needed for static site generation (SSG) if you plan to pre-render locales.
 export async function generateStaticParams() {
@@ -49,11 +50,15 @@ export default function LocaleLayout({
 }>) {
   return (
     <>
-      <SidebarProvider defaultOpen={true}>
+      <SidebarProvider>
         <FavoritesProvider>
           <ScanLimiterProvider> 
-            {children}
-            <MobileBottomNav />
+             <div className="relative flex min-h-screen flex-col bg-background">
+                <SiteHeader />
+                <AppSidebar />
+                <main className="flex-1">{children}</main>
+                <MobileBottomNav />
+             </div>
           </ScanLimiterProvider>
         </FavoritesProvider>
       </SidebarProvider>

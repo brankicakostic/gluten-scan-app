@@ -6,9 +6,6 @@ import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { SidebarInset, SidebarRail } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/navigation/app-sidebar';
-import { SiteHeader } from '@/components/site-header';
 import { PageHeader } from '@/components/page-header';
 import {
   Table,
@@ -332,167 +329,160 @@ export default function AdminClientPage({ initialProducts, initialReports, local
 
 
   return (
-    <div className="flex min-h-screen">
-      <AppSidebar />
-      <SidebarRail />
-      <SidebarInset>
-        <SiteHeader />
-        <main className="flex-1 p-6 md:p-8">
-          <div className="mx-auto max-w-6xl">
-            <PageHeader title="Admin Panel" description="Upravljanje bazom podataka i prijavama korisnika." icon={Shield} />
+    <div className="p-6 md:p-8">
+      <div className="mx-auto max-w-6xl">
+        <PageHeader title="Admin Panel" description="Upravljanje bazom podataka i prijavama korisnika." icon={Shield} />
 
-            <Tabs defaultValue="products">
-              <TabsList className="mb-4">
-                <TabsTrigger value="products">Proizvodi</TabsTrigger>
-                <TabsTrigger value="reports">Prijave i Upiti <Badge variant="destructive" className="ml-2">{reports.filter(r => r.status === 'new').length}</Badge></TabsTrigger>
-              </TabsList>
+        <Tabs defaultValue="products">
+          <TabsList className="mb-4">
+            <TabsTrigger value="products">Proizvodi</TabsTrigger>
+            <TabsTrigger value="reports">Prijave i Upiti <Badge variant="destructive" className="ml-2">{reports.filter(r => r.status === 'new').length}</Badge></TabsTrigger>
+          </TabsList>
 
-              {/* Products Tab */}
-              <TabsContent value="products">
-                <div className="flex justify-end mb-4">
-                  <Button onClick={() => handleOpenForm()}>
-                    <PlusCircle className="mr-2 h-4 w-4" /> Dodaj novi proizvod
-                  </Button>
-                </div>
-                <Card>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Naziv Proizvoda</TableHead>
-                          <TableHead>Brend</TableHead>
-                          <TableHead>Kategorija</TableHead>
-                          <TableHead className="text-right">Akcije</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {products.map((product) => (
-                          <TableRow key={product.id}>
-                            <TableCell className="font-medium">{product.name}</TableCell>
-                            <TableCell>{product.brand}</TableCell>
-                            <TableCell>{product.category}</TableCell>
-                            <TableCell className="text-right space-x-2">
-                              <Button variant="outline" size="icon" onClick={() => handleOpenForm(product)}>
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button variant="destructive" size="icon" onClick={() => handleDeleteProductClick(product)}>
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Reports Tab */}
-              <TabsContent value="reports">
-                 <Accordion type="multiple" className="w-full space-y-2">
-                    {reports.map((report) => (
-                      <AccordionItem key={report.id} value={report.id} className={`rounded-lg border ${report.status === 'new' ? 'border-primary/50 bg-muted/30' : 'bg-card'}`}>
-                        <AccordionTrigger className="p-4 hover:no-underline">
-                          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 w-full">
-                            <span className="text-sm font-normal text-muted-foreground w-36 text-left">
-                              {new Date(report.createdAt).toLocaleString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                            <Badge variant={report.type === 'error' ? 'destructive' : 'secondary'} className="w-20 justify-center">
-                              <div className="flex items-center gap-1">
-                                {report.type === 'error' ? <Flag className="h-3 w-3" /> : <MessageSquare className="h-3 w-3" />}
-                                <span>{report.type === 'error' ? 'Greška' : 'Upit'}</span>
-                              </div>
-                            </Badge>
-                             <span className="font-medium text-sm flex-1 text-left truncate">{report.productName || 'Tekstualna analiza'}</span>
-                            <div className="flex items-center gap-2">
-                              {report.type === 'error' && report.priority && getPriorityBadge(report.priority)}
-                              {getStatusBadge(report.status)}
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="p-4 pt-0">
-                          <div className="space-y-4">
-                            <div>
-                              <h4 className="font-semibold text-sm">Komentar korisnika:</h4>
-                              <p className="text-sm text-muted-foreground p-2 bg-muted rounded-md mt-1">{report.comment || 'Nije ostavljen komentar.'}</p>
-                            </div>
-
-                             <div>
-                              <h4 className="font-semibold text-sm">Povezani proizvod/kontekst:</h4>
-                               <div className="text-sm text-muted-foreground p-2 bg-muted rounded-md mt-1">
-                                {report.productId ? (
-                                  <Link href={`/${locale}/products/${report.productId}`} className="hover:underline text-primary" target="_blank">
-                                    {report.productName} <ExternalLink className="inline h-3 w-3 ml-1" />
-                                  </Link>
-                                ) : (
-                                  <p className="whitespace-pre-wrap font-mono text-xs">{report.productContext}</p>
-                                )}
-                              </div>
-                            </div>
-
-                             {report.wantsContact && report.contactEmail && (
-                               <div>
-                                <h4 className="font-semibold text-sm">Kontakt korisnika:</h4>
-                                <a href={`mailto:${report.contactEmail}`} className="text-sm text-primary hover:underline mt-1 flex items-center gap-2">
-                                  <Mail className="h-4 w-4" /> {report.contactEmail}
-                                </a>
-                              </div>
-                            )}
-
-                             <div>
-                              <h4 className="font-semibold text-sm mb-1">Admin beleške:</h4>
-                              <Textarea
-                                placeholder="Dodaj internu belešku..."
-                                value={adminNotes[report.id] || ''}
-                                onChange={(e) => handleNoteChange(report.id, e.target.value)}
-                                className="text-sm"
-                              />
-                              <Button size="sm" className="mt-2" onClick={() => handleSaveNote(report.id)} disabled={isSavingNote === report.id}>
-                                {isSavingNote === report.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                                Sačuvaj belešku
-                              </Button>
-                            </div>
-
-                            <div className="border-t pt-4 flex flex-wrap gap-2 justify-end">
-                                {report.type === 'inquiry' && (
-                                  <Button asChild variant="secondary" size="sm" title="Sastavi upit za proizvođača">
-                                    <a href={generateInquiryMailto(report)}>
-                                      <Send className="h-4 w-4" /> Sastavi upit
-                                    </a>
-                                  </Button>
-                                )}
-                                {report.wantsContact && report.contactEmail && (
-                                  <Button asChild variant="outline" size="sm" title="Odgovori korisniku">
-                                    <a href={`mailto:${report.contactEmail}?subject=Re: GlutenScan prijava`}>
-                                      <Mail className="h-4 w-4" /> Odgovori
-                                    </a>
-                                  </Button>
-                                )}
-                                {report.status === 'new' && (
-                                  <Button variant="outline" size="sm" onClick={() => handleMarkInProgressClick(report)} title="Označi kao 'u toku'">
-                                    <Hourglass className="h-4 w-4" /> Označi kao "u toku"
-                                  </Button>
-                                )}
-                                {report.status !== 'resolved' && (
-                                  <Button variant="default" className="bg-green-600 hover:bg-green-700" size="sm" onClick={() => handleResolveReportClick(report)} title="Označi kao rešeno">
-                                    <CheckSquare className="h-4 w-4" /> Reši prijavu
-                                  </Button>
-                                )}
-                                <Button variant="destructive" size="sm" onClick={() => handleDeleteReportClick(report)} title="Obriši prijavu">
-                                  <Trash2 className="h-4 w-4" /> Obriši
-                                </Button>
-                            </div>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
+          {/* Products Tab */}
+          <TabsContent value="products">
+            <div className="flex justify-end mb-4">
+              <Button onClick={() => handleOpenForm()}>
+                <PlusCircle className="mr-2 h-4 w-4" /> Dodaj novi proizvod
+              </Button>
+            </div>
+            <Card>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Naziv Proizvoda</TableHead>
+                      <TableHead>Brend</TableHead>
+                      <TableHead>Kategorija</TableHead>
+                      <TableHead className="text-right">Akcije</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {products.map((product) => (
+                      <TableRow key={product.id}>
+                        <TableCell className="font-medium">{product.name}</TableCell>
+                        <TableCell>{product.brand}</TableCell>
+                        <TableCell>{product.category}</TableCell>
+                        <TableCell className="text-right space-x-2">
+                          <Button variant="outline" size="icon" onClick={() => handleOpenForm(product)}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="destructive" size="icon" onClick={() => handleDeleteProductClick(product)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </Accordion>
-              </TabsContent>
-            </Tabs>
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-          </div>
-        </main>
-      </SidebarInset>
+          {/* Reports Tab */}
+          <TabsContent value="reports">
+             <Accordion type="multiple" className="w-full space-y-2">
+                {reports.map((report) => (
+                  <AccordionItem key={report.id} value={report.id} className={`rounded-lg border ${report.status === 'new' ? 'border-primary/50 bg-muted/30' : 'bg-card'}`}>
+                    <AccordionTrigger className="p-4 hover:no-underline">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 w-full">
+                        <span className="text-sm font-normal text-muted-foreground w-36 text-left">
+                          {new Date(report.createdAt).toLocaleString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                        <Badge variant={report.type === 'error' ? 'destructive' : 'secondary'} className="w-20 justify-center">
+                          <div className="flex items-center gap-1">
+                            {report.type === 'error' ? <Flag className="h-3 w-3" /> : <MessageSquare className="h-3 w-3" />}
+                            <span>{report.type === 'error' ? 'Greška' : 'Upit'}</span>
+                          </div>
+                        </Badge>
+                         <span className="font-medium text-sm flex-1 text-left truncate">{report.productName || 'Tekstualna analiza'}</span>
+                        <div className="flex items-center gap-2">
+                          {report.type === 'error' && report.priority && getPriorityBadge(report.priority)}
+                          {getStatusBadge(report.status)}
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="p-4 pt-0">
+                      <div className="space-y-4">
+                        <div>
+                          <h4 className="font-semibold text-sm">Komentar korisnika:</h4>
+                          <p className="text-sm text-muted-foreground p-2 bg-muted rounded-md mt-1">{report.comment || 'Nije ostavljen komentar.'}</p>
+                        </div>
+
+                         <div>
+                          <h4 className="font-semibold text-sm">Povezani proizvod/kontekst:</h4>
+                           <div className="text-sm text-muted-foreground p-2 bg-muted rounded-md mt-1">
+                            {report.productId ? (
+                              <Link href={`/${locale}/products/${report.productId}`} className="hover:underline text-primary" target="_blank">
+                                {report.productName} <ExternalLink className="inline h-3 w-3 ml-1" />
+                              </Link>
+                            ) : (
+                              <p className="whitespace-pre-wrap font-mono text-xs">{report.productContext}</p>
+                            )}
+                          </div>
+                        </div>
+
+                         {report.wantsContact && report.contactEmail && (
+                           <div>
+                            <h4 className="font-semibold text-sm">Kontakt korisnika:</h4>
+                            <a href={`mailto:${report.contactEmail}`} className="text-sm text-primary hover:underline mt-1 flex items-center gap-2">
+                              <Mail className="h-4 w-4" /> {report.contactEmail}
+                            </a>
+                          </div>
+                        )}
+
+                         <div>
+                          <h4 className="font-semibold text-sm mb-1">Admin beleške:</h4>
+                          <Textarea
+                            placeholder="Dodaj internu belešku..."
+                            value={adminNotes[report.id] || ''}
+                            onChange={(e) => handleNoteChange(report.id, e.target.value)}
+                            className="text-sm"
+                          />
+                          <Button size="sm" className="mt-2" onClick={() => handleSaveNote(report.id)} disabled={isSavingNote === report.id}>
+                            {isSavingNote === report.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                            Sačuvaj belešku
+                          </Button>
+                        </div>
+
+                        <div className="border-t pt-4 flex flex-wrap gap-2 justify-end">
+                            {report.type === 'inquiry' && (
+                              <Button asChild variant="secondary" size="sm" title="Sastavi upit za proizvođača">
+                                <a href={generateInquiryMailto(report)}>
+                                  <Send className="h-4 w-4" /> Sastavi upit
+                                </a>
+                              </Button>
+                            )}
+                            {report.wantsContact && report.contactEmail && (
+                              <Button asChild variant="outline" size="sm" title="Odgovori korisniku">
+                                <a href={`mailto:${report.contactEmail}?subject=Re: GlutenScan prijava`}>
+                                  <Mail className="h-4 w-4" /> Odgovori
+                                </a>
+                              </Button>
+                            )}
+                            {report.status === 'new' && (
+                              <Button variant="outline" size="sm" onClick={() => handleMarkInProgressClick(report)} title="Označi kao 'u toku'">
+                                <Hourglass className="h-4 w-4" /> Označi kao "u toku"
+                              </Button>
+                            )}
+                            {report.status !== 'resolved' && (
+                              <Button variant="default" className="bg-green-600 hover:bg-green-700" size="sm" onClick={() => handleResolveReportClick(report)} title="Označi kao rešeno">
+                                <CheckSquare className="h-4 w-4" /> Reši prijavu
+                              </Button>
+                            )}
+                            <Button variant="destructive" size="sm" onClick={() => handleDeleteReportClick(report)} title="Obriši prijavu">
+                              <Trash2 className="h-4 w-4" /> Obriši
+                            </Button>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+          </TabsContent>
+        </Tabs>
+
+      </div>
 
       {/* Add/Edit Product Dialog */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>

@@ -1,6 +1,6 @@
 
 import type { LucideIcon } from 'lucide-react';
-import { Home, History, Heart, ShoppingBag, BookOpenText, MapPin, Siren, Shield } from 'lucide-react'; // Added Shield
+import { Home, History, Heart, ShoppingBag, BookOpenText, MapPin, Siren, Shield } from 'lucide-react';
 
 export interface NavLink {
   href: string;
@@ -20,37 +20,37 @@ export const mainNavLinks: NavLink[] = [
   },
   {
     href: '/products', // Relative to locale
-    label: 'Browse Products',
+    label: 'Products',
     icon: ShoppingBag,
     tooltip: 'Browse All Products',
   },
   {
     href: '/recalls', // Relative to locale - NEW PAGE
-    label: 'Opozivi',
+    label: 'Recalls',
     icon: Siren,
-    tooltip: 'Aktivni opozivi proizvoda',
+    tooltip: 'Active product recalls',
   },
   {
     href: '/map', // Relative to locale
-    label: 'Mapa',
+    label: 'Map',
     icon: MapPin,
-    tooltip: 'Mapa lokacija',
+    tooltip: 'Location Map',
   },
   {
     href: '/edukacija', // Relative to locale
-    label: 'Edukacija',
+    label: 'Education',
     icon: BookOpenText,
-    tooltip: 'Edukativni članci',
+    tooltip: 'Educational Articles',
   },
   {
     href: '/history', // Relative to locale
-    label: 'Scan History',
+    label: 'History',
     icon: History,
     tooltip: 'Scan History',
   },
   {
     href: '/favorites', // Relative to locale
-    label: 'Favorite Products',
+    label: 'Favorites',
     icon: Heart,
     tooltip: 'Favorite Products',
   },

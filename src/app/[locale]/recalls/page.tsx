@@ -3,9 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { SidebarInset, SidebarRail } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/navigation/app-sidebar';
-import { SiteHeader } from '@/components/site-header';
 import { PageHeader } from '@/components/page-header';
 import {
   Table,
@@ -214,351 +211,344 @@ export default function RecallsPage() {
   };
 
   return (
-    <div className="flex min-h-screen">
-      <AppSidebar />
-      <SidebarRail />
-      <SidebarInset>
-        <SiteHeader />
-        <main className="flex-1 p-6 md:p-8">
-          <div className="mx-auto max-w-6xl">
-            <PageHeader 
-              title="Aktivni Opozivi Proizvoda"
-              description="Lista proizvoda koji su povučeni sa tržišta ili su pod istragom."
-              icon={Siren}
-            />
+    <div className="p-6 md:p-8">
+      <div className="mx-auto max-w-6xl">
+        <PageHeader 
+          title="Aktivni Opozivi Proizvoda"
+          description="Lista proizvoda koji su povučeni sa tržišta ili su pod istragom."
+          icon={Siren}
+        />
 
-            <div className="mb-6">
-              <Dialog open={isReportModalOpen} onOpenChange={(open) => {
-                if (!open) { resetReportForm(); } 
-                else { setIsReportModalOpen(true); }
-              }}>
-                <DialogTrigger asChild>
-                   <Button variant="outline">
-                    <Flag className="mr-2 h-4 w-4" /> Prijavi problem sa proizvodom
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  {submissionStatus === 'success' ? (
-                     <div className="flex flex-col items-center justify-center text-center p-4">
-                       <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
-                       <DialogTitle className="text-xl">Prijava je poslata!</DialogTitle>
-                       <DialogDescription className="mt-2">
-                         Hvala Vam na prijavi. Proverićemo informacije i ažurirati listu ako je potrebno.
-                       </DialogDescription>
-                       <DialogFooter className="mt-6 w-full">
-                         <Button className="w-full" onClick={resetReportForm}>Zatvori</Button>
-                       </DialogFooter>
+        <div className="mb-6">
+          <Dialog open={isReportModalOpen} onOpenChange={(open) => {
+            if (!open) { resetReportForm(); } 
+            else { setIsReportModalOpen(true); }
+          }}>
+            <DialogTrigger asChild>
+               <Button variant="outline">
+                <Flag className="mr-2 h-4 w-4" /> Prijavi problem sa proizvodom
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              {submissionStatus === 'success' ? (
+                 <div className="flex flex-col items-center justify-center text-center p-4">
+                   <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+                   <DialogTitle className="text-xl">Prijava je poslata!</DialogTitle>
+                   <DialogDescription className="mt-2">
+                     Hvala Vam na prijavi. Proverićemo informacije i ažurirati listu ako je potrebno.
+                   </DialogDescription>
+                   <DialogFooter className="mt-6 w-full">
+                     <Button className="w-full" onClick={resetReportForm}>Zatvori</Button>
+                   </DialogFooter>
+                 </div>
+              ) : (
+                <>
+                  <DialogHeader>
+                    <DialogTitle>Prijavi Problem sa Proizvodom</DialogTitle>
+                    <DialogDescription>
+                      Ako sumnjate da neki proizvod treba da se nađe na ovoj listi, molimo vas da popunite formu.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-2 text-sm">
+                    <div className="space-y-2">
+                       <Label htmlFor="report-product-name">Naziv Proizvoda</Label>
+                       <Input id="report-product-name" placeholder="Unesite tačan naziv proizvoda" value={reportProductName} onChange={(e) => setReportProductName(e.target.value)} />
+                    </div>
+                     <div className="space-y-2">
+                       <Label htmlFor="report-barcode">Barkod (opciono)</Label>
+                       <Input id="report-barcode" placeholder="Unesite barkod ako ga znate" value={reportBarcode} onChange={(e) => setReportBarcode(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                       <Label htmlFor="report-comment">Razlog prijave / Komentar</Label>
+                       <Textarea id="report-comment" placeholder="Npr. 'Ovaj proizvod sadrži nedeklarisani alergen...' ili 'Proizvođač je najavio povlačenje.'" value={reportComment} onChange={(e) => setReportComment(e.target.value)} />
+                    </div>
+                     <div className="flex items-center space-x-2">
+                       <Checkbox id="report-wants-contact" checked={reportWantsContact} onCheckedChange={(checked) => setReportWantsContact(!!checked)} />
+                       <Label htmlFor="report-wants-contact">Želim da me kontaktirate povodom ove prijave.</Label>
                      </div>
-                  ) : (
-                    <>
-                      <DialogHeader>
-                        <DialogTitle>Prijavi Problem sa Proizvodom</DialogTitle>
-                        <DialogDescription>
-                          Ako sumnjate da neki proizvod treba da se nađe na ovoj listi, molimo vas da popunite formu.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="space-y-4 py-2 text-sm">
-                        <div className="space-y-2">
-                           <Label htmlFor="report-product-name">Naziv Proizvoda</Label>
-                           <Input id="report-product-name" placeholder="Unesite tačan naziv proizvoda" value={reportProductName} onChange={(e) => setReportProductName(e.target.value)} />
-                        </div>
-                         <div className="space-y-2">
-                           <Label htmlFor="report-barcode">Barkod (opciono)</Label>
-                           <Input id="report-barcode" placeholder="Unesite barkod ako ga znate" value={reportBarcode} onChange={(e) => setReportBarcode(e.target.value)} />
-                        </div>
-                        <div className="space-y-2">
-                           <Label htmlFor="report-comment">Razlog prijave / Komentar</Label>
-                           <Textarea id="report-comment" placeholder="Npr. 'Ovaj proizvod sadrži nedeklarisani alergen...' ili 'Proizvođač je najavio povlačenje.'" value={reportComment} onChange={(e) => setReportComment(e.target.value)} />
-                        </div>
-                         <div className="flex items-center space-x-2">
-                           <Checkbox id="report-wants-contact" checked={reportWantsContact} onCheckedChange={(checked) => setReportWantsContact(!!checked)} />
-                           <Label htmlFor="report-wants-contact">Želim da me kontaktirate povodom ove prijave.</Label>
-                         </div>
-                         {reportWantsContact && (
-                           <div className="space-y-2 pl-6">
-                             <Label htmlFor="report-contact-email">Email za odgovor</Label>
-                             <Input id="report-contact-email" type="email" placeholder="vas.email@primer.com" value={reportContactEmail} onChange={(e) => setReportContactEmail(e.target.value)} />
-                           </div>
-                         )}
-                      </div>
-                      <DialogFooter>
-                        <Button variant="outline" onClick={resetReportForm}>Odustani</Button>
-                        <Button onClick={handleReportSubmit} disabled={submissionStatus === 'submitting' || !reportProductName.trim() || !reportComment.trim()}>
-                           {submissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />}
-                           Pošalji prijavu
-                        </Button>
-                      </DialogFooter>
-                    </>
-                  )}
-                </DialogContent>
-              </Dialog>
-            </div>
-
-
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Filter className="h-5 w-5 text-primary"/> Filteri i Pretraga Opoziva</CardTitle>
-                <CardDescription>Pronađite specifične opozive koristeći filtere ispod.</CardDescription>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-end">
-                <div>
-                  <Label htmlFor="recall-search" className="text-sm font-medium mb-1 block">
-                    <Search className="inline h-4 w-4 mr-1.5 text-muted-foreground"/>Pretraga (naziv, brend)
-                  </Label>
-                  <Input 
-                    id="recall-search" 
-                    placeholder="Unesi naziv ili brend..." 
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="recall-category" className="text-sm font-medium mb-1 block">
-                    <TagIcon className="inline h-4 w-4 mr-1.5 text-muted-foreground"/>Kategorija proizvoda
-                  </Label>
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger id="recall-category">
-                      <SelectValue placeholder="Izaberi kategoriju" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {productCategories.map(cat => (
-                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="recall-country" className="text-sm font-medium mb-1 block">
-                   <MapPinIcon className="inline h-4 w-4 mr-1.5 text-muted-foreground"/> Zemlja
-                  </Label>
-                  <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                    <SelectTrigger id="recall-country">
-                      <SelectValue placeholder="Izaberi zemlju" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {countries.map(country => (
-                        <SelectItem key={country} value={country}>{country}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                   <Label htmlFor="recall-sort-date" className="text-sm font-medium mb-1 block">
-                     <ArrowUpDown className="inline h-4 w-4 mr-1.5 text-muted-foreground"/>Sortiraj po datumu
-                   </Label>
-                  <Select value={sortByDate} onValueChange={setSortByDate}>
-                    <SelectTrigger id="recall-sort-date">
-                      <SelectValue placeholder="Sortiraj po datumu" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="newest">Najnoviji prvo</SelectItem>
-                      <SelectItem value="oldest">Najstariji prvo</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="md:col-span-2 flex items-end"> {/* Adjust span for layout */}
-                  <div className="flex items-center space-x-2 pt-2">
-                    <Checkbox 
-                      id="show-global-recalls" 
-                      checked={showOnlyGlobal} 
-                      onCheckedChange={(checked) => setShowOnlyGlobal(!!checked)}
-                    />
-                    <Label htmlFor="show-global-recalls" className="text-sm font-medium cursor-pointer">
-                      Prikaži samo potpune opozive (global-recall)
-                    </Label>
+                     {reportWantsContact && (
+                       <div className="space-y-2 pl-6">
+                         <Label htmlFor="report-contact-email">Email za odgovor</Label>
+                         <Input id="report-contact-email" type="email" placeholder="vas.email@primer.com" value={reportContactEmail} onChange={(e) => setReportContactEmail(e.target.value)} />
+                       </div>
+                     )}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            {/* Desktop Table View */}
-            <div className="hidden md:block overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[100px] whitespace-nowrap">📅 Datum</TableHead>
-                    <TableHead className="min-w-[250px]">🧾 Proizvod</TableHead>
-                    <TableHead className="whitespace-nowrap">⚠️ Status</TableHead>
-                    <TableHead>📦 LOT brojevi</TableHead>
-                    <TableHead className="whitespace-nowrap">🧭 Zemlja</TableHead>
-                    <TableHead className="text-right whitespace-nowrap">Detalji</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredRecalls.length > 0 ? filteredRecalls.map((recall) => (
-                    <TableRow key={recall.id}>
-                      <TableCell className="font-medium">{new Date(recall.date).toLocaleDateString(locale === 'sr' ? 'sr-RS' : 'en-GB')}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          {recall.productImageUrl && (
-                             <Image 
-                                src={recall.productImageUrl} 
-                                alt={recall.productName} 
-                                width={40} 
-                                height={40} 
-                                className="rounded-md object-cover"
-                                data-ai-hint={recall.dataAiHint || 'product image'}
-                              />
-                          )}
-                          <div>
-                            {recall.productId ? (
-                              <Link href={`/${locale}/products/${recall.productId}`} className="font-semibold hover:underline">
-                                {recall.productName}
-                              </Link>
-                            ) : (
-                              <span className="font-semibold">{recall.productName}</span>
-                            )}
-                            {recall.productBrand && <div className="text-xs text-muted-foreground">{recall.productBrand}</div>}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>{getStatusBadge(recall.status)}</TableCell>
-                      <TableCell className="text-xs">{recall.displayLotNumbers}</TableCell>
-                      <TableCell>{recall.country}</TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="outline" size="sm" asChild>
-                          {recall.productId ? (
-                             <Link href={`/${locale}/products/${recall.productId}`}>
-                              Vidi proizvod
-                             </Link>
-                          ) : (
-                            <span 
-                              onClick={() => toast({
-                                title: `Opoziv: ${recall.productName}`,
-                                description: (
-                                  <div className="text-xs space-y-1">
-                                    <p><strong>Razlog:</strong> {recall.reason || 'Nije naveden'}</p>
-                                    <p><strong>Savet:</strong> {recall.advice || 'Proveriti izvor.'}</p>
-                                    {recall.sourceLink && recall.sourceLink !== '#' && (
-                                      <p><strong>Izvor:</strong> <a href={recall.sourceLink} target="_blank" rel="noopener noreferrer" className="underline">Link</a></p>
-                                    )}
-                                  </div>
-                                ),
-                                duration: 10000,
-                              })} 
-                              className="cursor-pointer"
-                            >
-                               Info
-                            </span>
-                          )}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  )) : (
-                    <TableRow>
-                      <TableCell colSpan={6} className="text-center h-24">
-                        Nema aktivnih opoziva koji odgovaraju vašoj pretrazi.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-
-            {/* Mobile Card View */}
-            <div className="md:hidden space-y-4">
-              {filteredRecalls.length > 0 ? filteredRecalls.map(recall => (
-                  <Card key={recall.id} className="w-full">
-                    <CardHeader>
-                       <div className="flex items-start justify-between gap-2">
-                          <div className="flex items-center gap-3">
-                            {recall.productImageUrl && (
-                              <Image 
-                                src={recall.productImageUrl} 
-                                alt={recall.productName} 
-                                width={48} 
-                                height={48} 
-                                className="rounded-md object-cover"
-                                data-ai-hint={recall.dataAiHint || 'product image'}
-                              />
-                            )}
-                            <div className="flex-1">
-                               <CardTitle className="text-base">{recall.productName}</CardTitle>
-                               <CardDescription className="text-xs">{recall.productBrand}</CardDescription>
-                            </div>
-                          </div>
-                          {getStatusBadge(recall.status)}
-                       </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3 text-sm">
-                       <div className="flex justify-between items-center text-xs">
-                         <span className="text-muted-foreground">Datum opoziva:</span>
-                         <span className="font-medium">{new Date(recall.date).toLocaleDateString(locale === 'sr' ? 'sr-RS' : 'en-GB')}</span>
-                       </div>
-                       <div className="flex justify-between items-center text-xs">
-                         <span className="text-muted-foreground">Zemlja:</span>
-                         <span className="font-medium">{recall.country}</span>
-                       </div>
-                       <div className="flex flex-col text-xs">
-                          <span className="text-muted-foreground mb-1">LOT brojevi:</span>
-                          <p className="font-medium text-xs bg-muted p-2 rounded-md">{recall.lotNumbers.join(', ')}</p>
-                       </div>
-                       <Accordion type="single" collapsible className="w-full">
-                         <AccordionItem value="details">
-                             <AccordionTrigger className="text-sm py-2">Razlog i preporuka</AccordionTrigger>
-                             <AccordionContent className="space-y-2 text-xs pt-2">
-                                 <p><strong>Razlog:</strong> {recall.reason || 'Nije naveden'}</p>
-                                 <p><strong>Savet:</strong> {recall.advice || 'Proveriti izvor.'}</p>
-                                 {recall.sourceLink && recall.sourceLink !== '#' && (
-                                     <p><strong>Izvor:</strong> <a href={recall.sourceLink} target="_blank" rel="noopener noreferrer" className="underline text-primary">Link ka obaveštenju</a></p>
-                                 )}
-                             </AccordionContent>
-                         </AccordionItem>
-                       </Accordion>
-                    </CardContent>
-                    {recall.productId && (
-                       <CardFooter>
-                         <Button asChild variant="secondary" size="sm" className="w-full">
-                           <Link href={`/${locale}/products/${recall.productId}`}>Vidi detalje proizvoda</Link>
-                         </Button>
-                       </CardFooter>
-                    )}
-                  </Card>
-              )) : (
-                <div className="text-center py-10 text-muted-foreground">
-                  <p>Nema aktivnih opoziva koji odgovaraju vašoj pretrazi.</p>
-                </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={resetReportForm}>Odustani</Button>
+                    <Button onClick={handleReportSubmit} disabled={submissionStatus === 'submitting' || !reportProductName.trim() || !reportComment.trim()}>
+                       {submissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />}
+                       Pošalji prijavu
+                    </Button>
+                  </DialogFooter>
+                </>
               )}
+            </DialogContent>
+          </Dialog>
+        </div>
+
+
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><Filter className="h-5 w-5 text-primary"/> Filteri i Pretraga Opoziva</CardTitle>
+            <CardDescription>Pronađite specifične opozive koristeći filtere ispod.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-end">
+            <div>
+              <Label htmlFor="recall-search" className="text-sm font-medium mb-1 block">
+                <Search className="inline h-4 w-4 mr-1.5 text-muted-foreground"/>Pretraga (naziv, brend)
+              </Label>
+              <Input 
+                id="recall-search" 
+                placeholder="Unesi naziv ili brend..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
+            <div>
+              <Label htmlFor="recall-category" className="text-sm font-medium mb-1 block">
+                <TagIcon className="inline h-4 w-4 mr-1.5 text-muted-foreground"/>Kategorija proizvoda
+              </Label>
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger id="recall-category">
+                  <SelectValue placeholder="Izaberi kategoriju" />
+                </SelectTrigger>
+                <SelectContent>
+                  {productCategories.map(cat => (
+                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="recall-country" className="text-sm font-medium mb-1 block">
+               <MapPinIcon className="inline h-4 w-4 mr-1.5 text-muted-foreground"/> Zemlja
+              </Label>
+              <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                <SelectTrigger id="recall-country">
+                  <SelectValue placeholder="Izaberi zemlju" />
+                </SelectTrigger>
+                <SelectContent>
+                  {countries.map(country => (
+                    <SelectItem key={country} value={country}>{country}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+               <Label htmlFor="recall-sort-date" className="text-sm font-medium mb-1 block">
+                 <ArrowUpDown className="inline h-4 w-4 mr-1.5 text-muted-foreground"/>Sortiraj po datumu
+               </Label>
+              <Select value={sortByDate} onValueChange={setSortByDate}>
+                <SelectTrigger id="recall-sort-date">
+                  <SelectValue placeholder="Sortiraj po datumu" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Najnoviji prvo</SelectItem>
+                  <SelectItem value="oldest">Najstariji prvo</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="md:col-span-2 flex items-end"> {/* Adjust span for layout */}
+              <div className="flex items-center space-x-2 pt-2">
+                <Checkbox 
+                  id="show-global-recalls" 
+                  checked={showOnlyGlobal} 
+                  onCheckedChange={(checked) => setShowOnlyGlobal(!!checked)}
+                />
+                <Label htmlFor="show-global-recalls" className="text-sm font-medium cursor-pointer">
+                  Prikaži samo potpune opozive (global-recall)
+                </Label>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[100px] whitespace-nowrap">📅 Datum</TableHead>
+                <TableHead className="min-w-[250px]">🧾 Proizvod</TableHead>
+                <TableHead className="whitespace-nowrap">⚠️ Status</TableHead>
+                <TableHead>📦 LOT brojevi</TableHead>
+                <TableHead className="whitespace-nowrap">🧭 Zemlja</TableHead>
+                <TableHead className="text-right whitespace-nowrap">Detalji</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredRecalls.length > 0 ? filteredRecalls.map((recall) => (
+                <TableRow key={recall.id}>
+                  <TableCell className="font-medium">{new Date(recall.date).toLocaleDateString(locale === 'sr' ? 'sr-RS' : 'en-GB')}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      {recall.productImageUrl && (
+                         <Image 
+                            src={recall.productImageUrl} 
+                            alt={recall.productName} 
+                            width={40} 
+                            height={40} 
+                            className="rounded-md object-cover"
+                            data-ai-hint={recall.dataAiHint || 'product image'}
+                          />
+                      )}
+                      <div>
+                        {recall.productId ? (
+                          <Link href={`/${locale}/products/${recall.productId}`} className="font-semibold hover:underline">
+                            {recall.productName}
+                          </Link>
+                        ) : (
+                          <span className="font-semibold">{recall.productName}</span>
+                        )}
+                        {recall.productBrand && <div className="text-xs text-muted-foreground">{recall.productBrand}</div>}
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>{getStatusBadge(recall.status)}</TableCell>
+                  <TableCell className="text-xs">{recall.displayLotNumbers}</TableCell>
+                  <TableCell>{recall.country}</TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="outline" size="sm" asChild>
+                      {recall.productId ? (
+                         <Link href={`/${locale}/products/${recall.productId}`}>
+                          Vidi proizvod
+                         </Link>
+                      ) : (
+                        <span 
+                          onClick={() => toast({
+                            title: `Opoziv: ${recall.productName}`,
+                            description: (
+                              <div className="text-xs space-y-1">
+                                <p><strong>Razlog:</strong> {recall.reason || 'Nije naveden'}</p>
+                                <p><strong>Savet:</strong> {recall.advice || 'Proveriti izvor.'}</p>
+                                {recall.sourceLink && recall.sourceLink !== '#' && (
+                                  <p><strong>Izvor:</strong> <a href={recall.sourceLink} target="_blank" rel="noopener noreferrer" className="underline">Link</a></p>
+                                )}
+                              </div>
+                            ),
+                            duration: 10000,
+                          })} 
+                          className="cursor-pointer"
+                        >
+                           Info
+                        </span>
+                      )}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              )) : (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center h-24">
+                    Nema aktivnih opoziva koji odgovaraju vašoj pretrazi.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
-            <CardDescription className="mt-4 text-sm">
-              <Info className="inline h-4 w-4 mr-1.5 text-muted-foreground"/>
-              Klikom na proizvod ili dugme "Info" možete videti više detalja (razlog opoziva, link ka izvoru, saveti korisnicima). Lista se redovno ažurira.
-            </CardDescription>
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-4">
+          {filteredRecalls.length > 0 ? filteredRecalls.map(recall => (
+              <Card key={recall.id} className="w-full">
+                <CardHeader>
+                   <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-3">
+                        {recall.productImageUrl && (
+                          <Image 
+                            src={recall.productImageUrl} 
+                            alt={recall.productName} 
+                            width={48} 
+                            height={48} 
+                            className="rounded-md object-cover"
+                            data-ai-hint={recall.dataAiHint || 'product image'}
+                          />
+                        )}
+                        <div className="flex-1">
+                           <CardTitle className="text-base">{recall.productName}</CardTitle>
+                           <CardDescription className="text-xs">{recall.productBrand}</CardDescription>
+                        </div>
+                      </div>
+                      {getStatusBadge(recall.status)}
+                   </div>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                   <div className="flex justify-between items-center text-xs">
+                     <span className="text-muted-foreground">Datum opoziva:</span>
+                     <span className="font-medium">{new Date(recall.date).toLocaleDateString(locale === 'sr' ? 'sr-RS' : 'en-GB')}</span>
+                   </div>
+                   <div className="flex justify-between items-center text-xs">
+                     <span className="text-muted-foreground">Zemlja:</span>
+                     <span className="font-medium">{recall.country}</span>
+                   </div>
+                   <div className="flex flex-col text-xs">
+                      <span className="text-muted-foreground mb-1">LOT brojevi:</span>
+                      <p className="font-medium text-xs bg-muted p-2 rounded-md">{recall.lotNumbers.join(', ')}</p>
+                   </div>
+                   <Accordion type="single" collapsible className="w-full">
+                     <AccordionItem value="details">
+                         <AccordionTrigger className="text-sm py-2">Razlog i preporuka</AccordionTrigger>
+                         <AccordionContent className="space-y-2 text-xs pt-2">
+                             <p><strong>Razlog:</strong> {recall.reason || 'Nije naveden'}</p>
+                             <p><strong>Savet:</strong> {recall.advice || 'Proveriti izvor.'}</p>
+                             {recall.sourceLink && recall.sourceLink !== '#' && (
+                                 <p><strong>Izvor:</strong> <a href={recall.sourceLink} target="_blank" rel="noopener noreferrer" className="underline text-primary">Link ka obaveštenju</a></p>
+                             )}
+                         </AccordionContent>
+                     </AccordionItem>
+                   </Accordion>
+                </CardContent>
+                {recall.productId && (
+                   <CardFooter>
+                     <Button asChild variant="secondary" size="sm" className="w-full">
+                       <Link href={`/${locale}/products/${recall.productId}`}>Vidi detalje proizvoda</Link>
+                     </Button>
+                   </CardFooter>
+                )}
+              </Card>
+          )) : (
+            <div className="text-center py-10 text-muted-foreground">
+              <p>Nema aktivnih opoziva koji odgovaraju vašoj pretrazi.</p>
+            </div>
+          )}
+        </div>
 
-            <Card className="mt-10">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2"><PackageSearch className="h-5 w-5 text-primary" /> Šta Sadrži Sekcija "Aktivni Opozivi"?</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4 text-sm">
-                <p className="text-muted-foreground">
-                  Ovde možete pronaći informacije o proizvodima koji su zvanično povučeni sa tržišta ili su pod posebnim merama opreza. Cilj je da vam pružimo pravovremene i tačne podatke kako biste mogli da donesete informisane odluke.
-                </p>
-                <div>
-                  <h3 className="font-semibold text-foreground mb-1">Mogućnosti Filtracije:</h3>
-                  <ul className="list-disc list-inside pl-4 space-y-1 text-muted-foreground">
-                    <li><TagIcon className="inline h-4 w-4 mr-1.5 text-primary"/><strong>Kategorija proizvoda:</strong> Filtrirajte opozive po tipu proizvoda (npr. brašno, grickalice, testenine).</li>
-                    <li><Search className="inline h-4 w-4 mr-1.5 text-primary"/><strong>Pretraga po nazivu ili brendu.</strong></li>
-                    <li><MapPinIcon className="inline h-4 w-4 mr-1.5 text-primary"/><strong>Filter po zemlji:</strong> Pregledajte opozive relevantne za vaše tržište (HR, RS, EU, itd.).</li>
-                    <li><ArrowUpDown className="inline h-4 w-4 mr-1.5 text-primary"/><strong>Sortiranje po datumu.</strong></li>
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-foreground mb-1">Statusi Opoziva:</h3>
-                  <ul className="list-disc list-inside pl-4 space-y-1 text-muted-foreground">
-                    <li><Badge variant="warning" className="mr-1.5">Opoziv (LOT-spec.)</Badge> Zvanični opoziv koji se odnosi samo na određene serije (LOT brojeve) proizvoda.</li>
-                    <li><Badge variant="destructive" className="mr-1.5">Potpuni opoziv</Badge> Svi primerci proizvoda su povučeni, bez obzira na seriju.</li>
-                    <li><Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-300 hover:bg-blue-200 mr-1.5">Proveriti (sumnja)</Badge> Postoji sumnja na problem, ali još uvek nema zvaničnog opoziva; proizvođač ili nadležne institucije vrše proveru. Potreban je dodatan oprez.</li>
-                  </ul>
-                </div>
-                 <p className="italic text-muted-foreground pt-2">
-                  Informacije o opozivima preuzimamo iz zvaničnih izvora i trudimo se da budu što ažurnije. Uvek proverite i direktno kod proizvođača ili na mestu kupovine.
-                 </p>
-              </CardContent>
-            </Card>
-          </div>
-        </main>
-      </SidebarInset>
+        <CardDescription className="mt-4 text-sm">
+          <Info className="inline h-4 w-4 mr-1.5 text-muted-foreground"/>
+          Klikom na proizvod ili dugme "Info" možete videti više detalja (razlog opoziva, link ka izvoru, saveti korisnicima). Lista se redovno ažurira.
+        </CardDescription>
+
+        <Card className="mt-10">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><PackageSearch className="h-5 w-5 text-primary" /> Šta Sadrži Sekcija "Aktivni Opozivi"?</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm">
+            <p className="text-muted-foreground">
+              Ovde možete pronaći informacije o proizvodima koji su zvanično povučeni sa tržišta ili su pod posebnim merama opreza. Cilj je da vam pružimo pravovremene i tačne podatke kako biste mogli da donesete informisane odluke.
+            </p>
+            <div>
+              <h3 className="font-semibold text-foreground mb-1">Mogućnosti Filtracije:</h3>
+              <ul className="list-disc list-inside pl-4 space-y-1 text-muted-foreground">
+                <li><TagIcon className="inline h-4 w-4 mr-1.5 text-primary"/><strong>Kategorija proizvoda:</strong> Filtrirajte opozive po tipu proizvoda (npr. brašno, grickalice, testenine).</li>
+                <li><Search className="inline h-4 w-4 mr-1.5 text-primary"/><strong>Pretraga po nazivu ili brendu.</strong></li>
+                <li><MapPinIcon className="inline h-4 w-4 mr-1.5 text-primary"/><strong>Filter po zemlji:</strong> Pregledajte opozive relevantne za vaše tržište (HR, RS, EU, itd.).</li>
+                <li><ArrowUpDown className="inline h-4 w-4 mr-1.5 text-primary"/><strong>Sortiranje po datumu.</strong></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-1">Statusi Opoziva:</h3>
+              <ul className="list-disc list-inside pl-4 space-y-1 text-muted-foreground">
+                <li><Badge variant="warning" className="mr-1.5">Opoziv (LOT-spec.)</Badge> Zvanični opoziv koji se odnosi samo na određene serije (LOT brojeve) proizvoda.</li>
+                <li><Badge variant="destructive" className="mr-1.5">Potpuni opoziv</Badge> Svi primerci proizvoda su povučeni, bez obzira na seriju.</li>
+                <li><Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-300 hover:bg-blue-200 mr-1.5">Proveriti (sumnja)</Badge> Postoji sumnja na problem, ali još uvek nema zvaničnog opoziva; proizvođač ili nadležne institucije vrše proveru. Potreban je dodatan oprez.</li>
+              </ul>
+            </div>
+             <p className="italic text-muted-foreground pt-2">
+              Informacije o opozivima preuzimamo iz zvaničnih izvora i trudimo se da budu što ažurnije. Uvek proverite i direktno kod proizvođača ili na mestu kupovine.
+             </p>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

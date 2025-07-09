@@ -2,9 +2,6 @@
 
 import { useState, useEffect, useMemo, useId } from 'react';
 import dynamic from 'next/dynamic';
-import { SidebarInset, SidebarRail } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/navigation/app-sidebar';
-import { SiteHeader } from '@/components/site-header';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -134,85 +131,78 @@ export default function MapPage() {
   }, [activeFilters]);
 
   return (
-    <div className="flex min-h-screen">
-      <AppSidebar />
-      <SidebarRail />
-      <SidebarInset>
-        <SiteHeader />
-        <main className="flex-1 p-6 md:p-8">
-          <div className="mx-auto max-w-6xl">
-            <PageHeader
-              title="Mapa Gluten-Free Lokacija"
-              description="Pronađite proizvođače, radnje i restorane sa bezglutenskom ponudom."
-              icon={MapPin}
-            />
+    <div className="p-6 md:p-8">
+      <div className="mx-auto max-w-6xl">
+        <PageHeader
+          title="Mapa Gluten-Free Lokacija"
+          description="Pronađite proizvođače, radnje i restorane sa bezglutenskom ponudom."
+          icon={MapPin}
+        />
 
-            <Card className="mb-6">
-              <CardHeader>
-                <CardTitle>Filteri</CardTitle>
-                <CardDescription>Prikaži željene tipove lokacija na mapi.</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-wrap gap-4">
-                {filterOptions.map(filter => (
-                  <div key={filter.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`filter-${filter.id}`}
-                      checked={activeFilters.includes(filter.id)}
-                      onCheckedChange={() => handleFilterChange(filter.id)}
-                    />
-                    <Label htmlFor={`filter-${filter.id}`} className="flex items-center gap-1.5 text-sm">
-                      <filter.icon className="h-4 w-4" />
-                      {filter.label}
-                    </Label>
-                  </div>
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Filteri</CardTitle>
+            <CardDescription>Prikaži željene tipove lokacija na mapi.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-4">
+            {filterOptions.map(filter => (
+              <div key={filter.id} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`filter-${filter.id}`}
+                  checked={activeFilters.includes(filter.id)}
+                  onCheckedChange={() => handleFilterChange(filter.id)}
+                />
+                <Label htmlFor={`filter-${filter.id}`} className="flex items-center gap-1.5 text-sm">
+                  <filter.icon className="h-4 w-4" />
+                  {filter.label}
+                </Label>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-0 h-[600px] w-full rounded-lg overflow-hidden">
+            {isClient && leafletIconsConfigured ? (
+              <MapContainer
+                key={mapIdKey} // Ensures a new instance if MapPage itself is re-keyed or remounted
+                center={[44.8125, 20.4612]}
+                zoom={12}
+                scrollWheelZoom={true}
+                style={{ height: "100%", width: "100%" }}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                {filteredLocations.map(location => (
+                  <LeafletMarker key={location.id} position={location.position}>
+                    <Popup>
+                      <div className="space-y-1">
+                        <h3 className="font-semibold text-md">{location.name}</h3>
+                        <p className="text-xs text-muted-foreground">{location.address}</p>
+                        <p className="text-sm">{location.description}</p>
+                        {location.link && (
+                          <a
+                            href={location.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline text-sm"
+                          >
+                            Poseti sajt
+                          </a>
+                        )}
+                      </div>
+                    </Popup>
+                  </LeafletMarker>
                 ))}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-0 h-[600px] w-full rounded-lg overflow-hidden">
-                {isClient && leafletIconsConfigured ? (
-                  <MapContainer
-                    key={mapIdKey} // Ensures a new instance if MapPage itself is re-keyed or remounted
-                    center={[44.8125, 20.4612]}
-                    zoom={12}
-                    scrollWheelZoom={true}
-                    style={{ height: "100%", width: "100%" }}
-                  >
-                    <TileLayer
-                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                    {filteredLocations.map(location => (
-                      <LeafletMarker key={location.id} position={location.position}>
-                        <Popup>
-                          <div className="space-y-1">
-                            <h3 className="font-semibold text-md">{location.name}</h3>
-                            <p className="text-xs text-muted-foreground">{location.address}</p>
-                            <p className="text-sm">{location.description}</p>
-                            {location.link && (
-                              <a
-                                href={location.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-primary hover:underline text-sm"
-                              >
-                                Poseti sajt
-                              </a>
-                            )}
-                          </div>
-                        </Popup>
-                      </LeafletMarker>
-                    ))}
-                  </MapContainer>
-                ) : (
-                  <MapViewLoader message={!isClient ? "Učitavanje podataka mape..." : "Konfigurisanje ikonica mape..."} />
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </main>
-      </SidebarInset>
+              </MapContainer>
+            ) : (
+              <MapViewLoader message={!isClient ? "Učitavanje podataka mape..." : "Konfigurisanje ikonica mape..."} />
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
