@@ -54,14 +54,26 @@ export default function FavoritesClientPage({ allProducts }: FavoritesClientPage
               <Card key={product.id} className="overflow-hidden group hover:shadow-xl transition-shadow duration-200 flex flex-col">
                 <CardHeader className="p-0 relative">
                   <Link href={`/${locale}/products/${product.id}`}>
-                    <Image 
-                      src={product.imageUrl} 
-                      alt={product.name} 
-                      width={400} 
-                      height={200} 
-                      className="w-full h-48 object-cover"
-                      data-ai-hint={product.dataAiHint || 'product image'}
-                    />
+                    {product.imageUrl ? (
+                      <Image 
+                        src={product.imageUrl} 
+                        alt={product.name} 
+                        width={400} 
+                        height={200} 
+                        className="w-full h-48 object-cover"
+                        data-ai-hint={product.dataAiHint || 'product image'}
+                      />
+                    ) : (
+                      <div className="w-full h-48 flex items-center justify-center bg-secondary">
+                        <Image
+                          src="/placeholder.svg"
+                          alt="Slika nije dostupna"
+                          width={64}
+                          height={64}
+                          className="opacity-50 text-muted-foreground"
+                        />
+                      </div>
+                    )}
                   </Link>
                   <Button 
                     variant="destructive" 

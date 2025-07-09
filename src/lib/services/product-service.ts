@@ -14,9 +14,12 @@ import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
  * @returns The full, public URL for the image.
  */
 function transformImageUrl(imageUrl: string): string {
-    if (!imageUrl || imageUrl.startsWith('http')) {
+    if (!imageUrl || imageUrl.includes('placehold.co')) {
+        return '';
+    }
+    if (imageUrl.startsWith('http')) {
         // If it's already a full URL (like placeholders) or empty, return it as is.
-        return imageUrl || 'https://placehold.co/400x200.png';
+        return imageUrl;
     }
     // If it starts with a slash, it's a local public asset.
     if (imageUrl.startsWith('/')) {
@@ -26,11 +29,10 @@ function transformImageUrl(imageUrl: string): string {
     const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
     if (!bucket) {
         console.warn('Firebase storage bucket is not configured. Using placeholder for images.');
-        return 'https://placehold.co/400x200.png';
+        return '';
     }
     
-    // Assume the path from DB is correct and just needs the bucket prefix.
-    const encodedPath = encodeURIComponent(imageUrl);
+    const encodedPath = encodeURIComponent(`products/${imageUrl}`);
     
     return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
 }
@@ -109,13 +111,20 @@ function mapProductToDocData(product: Partial<Product>): DocumentData {
              try {
                 const url = new URL(product.imageUrl);
                 const path = decodeURIComponent(url.pathname);
-                // Extract path after '/o/'
-                data.imageUrl = path.substring(path.indexOf('/o/') + 3);
+                // Extract path after '/o/products%2F'
+                const prefix = `/o/products%2F`;
+                const startIndex = path.indexOf(prefix);
+                if (startIndex !== -1) {
+                  data.imageUrl = path.substring(startIndex + prefix.length);
+                } else {
+                  // Fallback for unexpected URL structures
+                  data.imageUrl = path.substring(path.indexOf('/o/') + 3);
+                }
              } catch (e) {
                 // If URL parsing fails, assume it's a direct path or placeholder
                 data.imageUrl = product.imageUrl;
              }
-        } else if (!product.imageUrl.startsWith('http')) {
+        } else if (!product.imageUrl.startsWith('http') && product.imageUrl !== '/placeholder.svg') {
             // This is a relative path, store it as is
             data.imageUrl = product.imageUrl;
         }
@@ -138,7 +147,7 @@ function mapProductToDocData(product: Partial<Product>): DocumentData {
     if (product.isPosno) tags.add('posno'); else tags.delete('posno');
     if (product.isSugarFree) tags.add('bez šećera'); else tags.delete('bez šećera');
     if (product.isLactoseFree) tags.add('bez laktoze'); else tags.delete('bez laktoze');
-    if (product.isHighProtein) tags.add('protein'); else tags.delete('protein');
+    if (product.isHighProtein) tags.add('high-protein'); else tags.delete('high-protein');
     data.tagsFromInput = Array.from(tags);
 
     return data;

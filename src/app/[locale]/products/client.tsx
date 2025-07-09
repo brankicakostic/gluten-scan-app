@@ -188,14 +188,26 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
                 return (
                   <Card key={product.id} className={`overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col ${product.warning ? 'border-destructive border-2' : ''}`}>
                     <CardHeader className="p-0">
-                      <Image
-                        src={product.imageUrl}
-                        alt={product.name}
-                        width={400}
-                        height={200}
-                        className="w-full h-48 object-cover"
-                        data-ai-hint={product.dataAiHint}
-                      />
+                      {product.imageUrl ? (
+                        <Image
+                          src={product.imageUrl}
+                          alt={product.name}
+                          width={400}
+                          height={200}
+                          className="w-full h-48 object-cover"
+                          data-ai-hint={product.dataAiHint}
+                        />
+                      ) : (
+                        <div className="w-full h-48 flex items-center justify-center bg-secondary">
+                          <Image
+                            src="/placeholder.svg"
+                            alt="Slika nije dostupna"
+                            width={64}
+                            height={64}
+                            className="opacity-50 text-muted-foreground"
+                          />
+                        </div>
+                      )}
                     </CardHeader>
                     <CardContent className="p-4 flex flex-col flex-grow">
                       <CardTitle className="text-lg mb-1">{product.name}</CardTitle>

@@ -254,15 +254,27 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         )}
 
         <Card className={`overflow-hidden shadow-lg ${product.warning ? 'border-2 border-destructive' : ''}`}>
-          <Image
-            src={product.imageUrl}
-            alt={product.name}
-            width={800}
-            height={533}
-            className="w-full h-auto object-cover aspect-[3/2]"
-            data-ai-hint={product.dataAiHint}
-            priority
-          />
+           {product.imageUrl ? (
+            <Image
+              src={product.imageUrl}
+              alt={product.name}
+              width={800}
+              height={533}
+              className="w-full h-auto object-cover aspect-[3/2]"
+              data-ai-hint={product.dataAiHint}
+              priority
+            />
+           ) : (
+             <div className="w-full aspect-[3/2] flex items-center justify-center bg-secondary">
+               <Image
+                 src="/placeholder.svg"
+                 alt="Slika nije dostupna"
+                 width={96}
+                 height={96}
+                 className="opacity-50 text-muted-foreground"
+               />
+             </div>
+           )}
         </Card>
         
         <Card className="mt-4">
@@ -286,60 +298,60 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         </Card>
 
         <div className="mt-6 flex items-center justify-center gap-4">
-          <Button className="flex-1" disabled>
-            <ShoppingBag className="mr-2 h-4 w-4" /> Dodaj na listu
-          </Button>
-          <Dialog open={showReportErrorModal} onOpenChange={resetReportForm}>
-            <DialogTrigger asChild>
-              <Button variant="outline" className="flex-1">
-                <CircleAlert className="h-4 w-4 mr-2" /> Prijavi grešku
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              {submissionStatus === 'success' ? (
-                <div className="flex flex-col items-center justify-center text-center p-4">
-                  <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
-                  <DialogTitle className="text-xl">Prijava je poslata!</DialogTitle>
-                  <DialogDescription className="mt-2">Hvala što pomažete da podaci budu tačni. Ako ste ostavili kontakt, možemo vam se javiti.</DialogDescription>
-                  <DialogFooter className="mt-6 w-full"><Button className="w-full" onClick={resetReportForm}>Zatvori</Button></DialogFooter>
-                </div>
-              ) : (
-                <>
-                  <DialogHeader>
-                    <DialogTitle>Prijavi grešku za: {product.name}</DialogTitle>
-                    <DialogDescription>Ako mislite da su podaci o ovom proizvodu netačni, molimo popunite formu.</DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4 py-2 text-sm">
-                    <div>
-                      <Label className="font-semibold">Tip greške</Label>
-                      <RadioGroup value={errorType} onValueChange={setErrorType} className="mt-2 space-y-1">
-                        <div className="flex items-center space-x-2"><RadioGroupItem value="podaci" id="err-data" /><Label htmlFor="err-data" className="font-normal">Netačni podaci (slika, naziv, barkod)</Label></div>
-                        <div className="flex items-center space-x-2"><RadioGroupItem value="sastav" id="err-sastav" /><Label htmlFor="err-sastav" className="font-normal">Neispravni sastojci / alergeni</Label></div>
-                        <div className="flex items-center space-x-2"><RadioGroupItem value="drugo" id="err-drugo" /><Label htmlFor="err-drugo" className="font-normal">Drugo</Label></div>
-                      </RadioGroup>
-                    </div>
-                    <div>
-                      <Label className="font-semibold">Prioritet</Label>
-                      <RadioGroup value={reportPriority} onValueChange={setReportPriority} className="mt-2 space-y-1">
-                        <div className="flex items-center space-x-2"><RadioGroupItem value="niska" id="prod-priority-low" /><Label htmlFor="prod-priority-low" className="font-normal">Nizak</Label></div>
-                        <div className="flex items-center space-x-2"><RadioGroupItem value="srednja" id="prod-priority-medium" /><Label htmlFor="prod-priority-medium" className="font-normal">Srednji</Label></div>
-                        <div className="flex items-center space-x-2"><RadioGroupItem value="visoka" id="prod-priority-high" /><Label htmlFor="prod-priority-high" className="font-normal">Visok (utiče na bezbednost)</Label></div>
-                      </RadioGroup>
-                    </div>
-                    <div className="space-y-2"><Label htmlFor="report-comment-prod">Komentar</Label><Textarea id="report-comment-prod" placeholder="Opišite grešku..." value={reportComment} onChange={(e) => setReportComment(e.target.value)} /></div>
-                    <div className="flex items-center space-x-2"><Checkbox id="wants-contact-prod" checked={wantsContact} onCheckedChange={(checked) => setWantsContact(!!checked)} /><Label htmlFor="wants-contact-prod">Želim da me kontaktirate.</Label></div>
-                    {wantsContact && <div className="space-y-2 pl-6"><Label htmlFor="contact-email-prod">Email</Label><Input id="contact-email-prod" type="email" placeholder="vas.email@primer.com" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} /></div>}
+            <Button className="flex-1" disabled>
+              <ShoppingBag className="mr-2 h-4 w-4" /> Dodaj na listu
+            </Button>
+            <Dialog open={showReportErrorModal} onOpenChange={resetReportForm}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="flex-1">
+                  <CircleAlert className="h-4 w-4 mr-2" /> Prijavi grešku
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                {submissionStatus === 'success' ? (
+                  <div className="flex flex-col items-center justify-center text-center p-4">
+                    <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+                    <DialogTitle className="text-xl">Prijava je poslata!</DialogTitle>
+                    <DialogDescription className="mt-2">Hvala što pomažete da podaci budu tačni. Ako ste ostavili kontakt, možemo vam se javiti.</DialogDescription>
+                    <DialogFooter className="mt-6 w-full"><Button className="w-full" onClick={resetReportForm}>Zatvori</Button></DialogFooter>
                   </div>
-                  <DialogFooter>
-                    <Button variant="outline" onClick={() => setShowReportErrorModal(false)}>Odustani</Button>
-                    <Button onClick={handleReportSubmit} disabled={submissionStatus === 'submitting' || !reportComment || !errorType}>
-                      {submissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />} Pošalji prijavu
-                    </Button>
-                  </DialogFooter>
-                </>
-              )}
-            </DialogContent>
-          </Dialog>
+                ) : (
+                  <>
+                    <DialogHeader>
+                      <DialogTitle>Prijavi grešku za: {product.name}</DialogTitle>
+                      <DialogDescription>Ako mislite da su podaci o ovom proizvodu netačni, molimo popunite formu.</DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-2 text-sm">
+                      <div>
+                        <Label className="font-semibold">Tip greške</Label>
+                        <RadioGroup value={errorType} onValueChange={setErrorType} className="mt-2 space-y-1">
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="podaci" id="err-data" /><Label htmlFor="err-data" className="font-normal">Netačni podaci (slika, naziv, barkod)</Label></div>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="sastav" id="err-sastav" /><Label htmlFor="err-sastav" className="font-normal">Neispravni sastojci / alergeni</Label></div>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="drugo" id="err-drugo" /><Label htmlFor="err-drugo" className="font-normal">Drugo</Label></div>
+                        </RadioGroup>
+                      </div>
+                      <div>
+                        <Label className="font-semibold">Prioritet</Label>
+                        <RadioGroup value={reportPriority} onValueChange={setReportPriority} className="mt-2 space-y-1">
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="niska" id="prod-priority-low" /><Label htmlFor="prod-priority-low" className="font-normal">Nizak</Label></div>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="srednja" id="prod-priority-medium" /><Label htmlFor="prod-priority-medium" className="font-normal">Srednji</Label></div>
+                          <div className="flex items-center space-x-2"><RadioGroupItem value="visoka" id="prod-priority-high" /><Label htmlFor="prod-priority-high" className="font-normal">Visok (utiče na bezbednost)</Label></div>
+                        </RadioGroup>
+                      </div>
+                      <div className="space-y-2"><Label htmlFor="report-comment-prod">Komentar</Label><Textarea id="report-comment-prod" placeholder="Opišite grešku..." value={reportComment} onChange={(e) => setReportComment(e.target.value)} /></div>
+                      <div className="flex items-center space-x-2"><Checkbox id="wants-contact-prod" checked={wantsContact} onCheckedChange={(checked) => setWantsContact(!!checked)} /><Label htmlFor="wants-contact-prod">Želim da me kontaktirate.</Label></div>
+                      {wantsContact && <div className="space-y-2 pl-6"><Label htmlFor="contact-email-prod">Email</Label><Input id="contact-email-prod" type="email" placeholder="vas.email@primer.com" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} /></div>}
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setShowReportErrorModal(false)}>Odustani</Button>
+                      <Button onClick={handleReportSubmit} disabled={submissionStatus === 'submitting' || !reportComment || !errorType}>
+                        {submissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />} Pošalji prijavu
+                      </Button>
+                    </DialogFooter>
+                  </>
+                )}
+              </DialogContent>
+            </Dialog>
         </div>
 
         <div className="mt-8 space-y-6">

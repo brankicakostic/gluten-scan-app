@@ -648,7 +648,19 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
             {barcodeScanResult && !isScanningBarcode && (
               <Card className="mt-4 max-w-2xl mx-auto">
                 <CardHeader className="flex flex-row items-start gap-4">
-                  <Image src={barcodeScanResult.imageUrl} alt={barcodeScanResult.name} width={80} height={80} className="rounded-md object-cover" data-ai-hint={barcodeScanResult.dataAiHint || "product image"}/>
+                  {barcodeScanResult.imageUrl ? (
+                    <Image src={barcodeScanResult.imageUrl} alt={barcodeScanResult.name} width={80} height={80} className="rounded-md object-cover" data-ai-hint={barcodeScanResult.dataAiHint || "product image"}/>
+                  ) : (
+                    <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center bg-secondary rounded-md">
+                      <Image
+                        src="/placeholder.svg"
+                        alt="Slika nije dostupna"
+                        width={32}
+                        height={32}
+                        className="opacity-50 text-muted-foreground"
+                      />
+                    </div>
+                  )}
                   <div>
                     <CardTitle className="text-xl">{barcodeScanResult.name}</CardTitle>
                     {barcodeScanResult.tags?.includes('gluten-free') && (
