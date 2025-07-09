@@ -24,7 +24,6 @@ import { ocrDeclaration, type OcrDeclarationOutput } from '@/ai/flows/ocr-declar
 import { extractProductInfo, type ExtractProductInfoOutput } from '@/ai/flows/extract-product-info-flow';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-import { useScanLimiter } from '@/contexts/scan-limiter-context'; 
 import { countRelevantGlutenIssues } from '@/lib/analysis-utils';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { Product } from '@/lib/products'; 
@@ -65,7 +64,6 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
   const routeParams = useParams(); 
   const locale = routeParams.locale as string;
   const { toast } = useToast();
-  const { canScan, incrementScanCount, getRemainingScans, scanLimit, resetScanCount } = useScanLimiter();
 
   const [hasMounted, setHasMounted] = useState(false);
   useEffect(() => {
@@ -106,7 +104,6 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
   const [dailyTip, setDailyTip] = useState<DailyCeliacTipOutput | null>(initialTip);
   const [isLoadingTip, setIsLoadingTip] = useState<boolean>(!initialTip);
   const [showTipDetailsModal, setShowTipDetailsModal] = useState<boolean>(false);
-  const [showScanLimitModal, setShowScanLimitModal] = useState<boolean>(false);
 
   // Report error form state (for text analysis)
   const [showReportErrorModal, setShowReportErrorModal] = useState(false);
@@ -174,7 +171,6 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
             }
 
             // Process the barcode
-            incrementScanCount();
             const foundProduct = await getProductByBarcode(decodedText);
             
             if (foundProduct) {
@@ -208,11 +204,6 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
     };
 
     if (isScanningBarcode) {
-      if (!canScan()) {
-        setShowScanLimitModal(true);
-        setIsScanningBarcode(false);
-        return;
-      }
       startScanner();
     }
 
@@ -223,7 +214,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
         });
       }
     };
-  }, [isScanningBarcode, canScan, incrementScanCount, toast]);
+  }, [isScanningBarcode, toast]);
 
   useEffect(() => {
     const stopStream = (stream: MediaStream | null) => {
@@ -278,7 +269,6 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
         labelingInfo: labelingInfo || 'unknown'
       });
       setAnalysisResult(result);
-      incrementScanCount(); 
       toast({ title: "AI analiza završena", description: "Deklaracija proizvoda je analizirana." });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Nepoznata greška.';
@@ -291,10 +281,6 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
 
   const handleDeclarationSubmit = async (event?: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
-    if (!canScan()) {
-      setShowScanLimitModal(true);
-      return;
-    }
     if (!declarationText.trim()) {
         setErrorDeclaration('Molimo unesite sastojke za analizu.');
         return;
@@ -351,10 +337,6 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
   };
   
   const handleAnalyzeStagedImage = async () => {
-    if (!canScan()) {
-      setShowScanLimitModal(true);
-      return;
-    }
     if (!stagedImage) {
       setErrorDeclaration('Molimo prvo izaberite ili snimite sliku.');
       return;
@@ -399,10 +381,6 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
   };
 
   const handleInitiateOcrPhotoCapture = () => {
-    if (!canScan()) {
-      setShowScanLimitModal(true);
-      return;
-    }
     resetAnalysisInputs(); 
     setIsTakingOcrPhoto(true);
     setHasOcrCameraPermission(null); 
@@ -411,11 +389,6 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
   const handleCaptureOcrPhoto = async () => {
     if (!ocrVideoRef.current || !hasOcrCameraPermission) {
         setErrorDeclaration("OCR kamera nije spremna ili je pristup odbijen.");
-        return;
-    }
-    if (!canScan()) { 
-        setShowScanLimitModal(true);
-        setIsTakingOcrPhoto(false); 
         return;
     }
     const canvas = document.createElement('canvas');
@@ -438,10 +411,6 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
   };
 
   const handleStartBarcodeScanning = () => {
-    if (!canScan()) {
-      setShowScanLimitModal(true);
-      return;
-    }
     setIsScanningBarcode(true);
     setBarcodeScanResult(null);
     setErrorBarcode(null);
@@ -538,36 +507,6 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
           icon={ScanLine}
         />
         
-         <Card className="mb-6 bg-muted/30 border-muted/50">
-           <CardContent className="p-3">
-             <div className="flex items-center justify-between text-sm min-h-[28px]">
-               {hasMounted ? (
-                 <>
-                   {canScan() ? (
-                     <div className="flex items-center text-primary">
-                       <CheckCircle className="h-4 w-4 mr-1.5" />
-                       <span>Preostalo vam je {getRemainingScans()} od {scanLimit} besplatnih AI analiza.</span>
-                     </div>
-                   ) : (
-                     <div className="flex items-center text-destructive">
-                       <AlertCircle className="h-4 w-4 mr-1.5" />
-                       <span>Nemate više besplatnih AI analiza. Nadogradite na Premium za neograničeno korišćenje.</span>
-                     </div>
-                   )}
-                 </>
-               ) : (
-                 <div className="h-5 w-56 bg-muted rounded animate-pulse" />
-               )}
-               
-               {process.env.NODE_ENV === 'development' && (
-                 <Button variant="outline" size="sm" onClick={resetScanCount} title="Resetuj Brojač Skeniranja (Samo za razvoj)">
-                   <RotateCcw className="h-3 w-3" />
-                 </Button>
-               )}
-             </div>
-           </CardContent>
-         </Card>
-
         <div className="mb-8">
           {isLoadingTip && (
             <div className="flex items-center justify-center text-muted-foreground p-4 bg-muted/50 rounded-lg shadow-sm">
@@ -641,7 +580,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                   onClick={handleStartBarcodeScanning} 
                   className="w-full" 
                   size="lg" 
-                  disabled={!hasMounted || (hasMounted && !canScan()) || isLoadingAnyAnalysisProcess || isTakingOcrPhoto}
+                  disabled={isLoadingAnyAnalysisProcess || isTakingOcrPhoto}
                 >
                   <QrCode className="mr-2 h-5 w-5" /> Pokreni skeniranje barkoda
                 </Button>
@@ -761,7 +700,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                         </div>
                       )}
                       
-                      <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description}</p>
+                      <p className="text-sm mb-3 h-10 overflow-hidden">{product.description}</p>
                        <div className="flex flex-wrap gap-1 mb-3">
                           {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
                           {product.isVegan && <Badge variant="secondary" className="text-xs">Vegan</Badge>}
@@ -792,7 +731,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
               <CardTitle className="flex items-center gap-2"><ScanSearch className="h-5 w-5" /> Analiziraj sastojke sa slike</CardTitle>
               <CardDescription>Otpremite sliku liste sastojaka ili slikajte za AI analizu.</CardDescription>
             </CardHeader>
-            <CardContent className="min-h-[220px]">
+            <CardContent>
               {isTakingOcrPhoto ? (
                 <div className="space-y-2">
                   <div className="aspect-video bg-muted rounded-md flex flex-col items-center justify-center text-muted-foreground p-1 relative">
@@ -849,7 +788,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
               )}
             </CardContent>
             <CardFooter>
-               <Button onClick={handleAnalyzeStagedImage} size="lg" disabled={!stagedImage || isLoadingAnyAnalysisProcess || !hasMounted || (hasMounted && !canScan())} className="w-full">
+               <Button onClick={handleAnalyzeStagedImage} size="lg" disabled={!stagedImage || isLoadingAnyAnalysisProcess} className="w-full">
                   {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                   Analiziraj sa AI
                </Button>
@@ -876,11 +815,11 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                       rows={6}
                       className="resize-none"
                       aria-label="Product Declaration Input"
-                      disabled={!hasMounted || (hasMounted && !canScan()) || isLoadingAnyAnalysisProcess}
+                      disabled={isLoadingAnyAnalysisProcess}
                     />
                   <Button type="submit" 
                     size="lg"
-                    disabled={!hasMounted || (hasMounted && !canScan()) || isLoadingDeclaration || !declarationText.trim() || isLoadingAnyAnalysisProcess} 
+                    disabled={isLoadingDeclaration || !declarationText.trim() || isLoadingAnyAnalysisProcess} 
                     className="w-full"
                   >
                     {isLoadingDeclaration && !isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
@@ -1114,29 +1053,6 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
           </div>
         </div>
         
-        <AlertDialog open={showScanLimitModal} onOpenChange={setShowScanLimitModal}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle className="flex items-center">
-                <Star className="h-5 w-5 mr-2 text-primary" /> 
-                Dostignut limit besplatnih AI analiza
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                Iskoristili ste svih {scanLimit} besplatnih AI analiza. Da biste nastavili sa skeniranjem i analizom proizvoda, razmislite o nadogradnji na našu Premium verziju.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Možda kasnije</AlertDialogCancel>
-              <AlertDialogAction onClick={() => {
-                toast({ title: "Premium (Uskoro!)", description: "Hvala na interesovanju! Premium funkcije su u razvoju."});
-                setShowScanLimitModal(false);
-              }}>
-                Saznajte više o Premiumu
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-
         <AlertDialog open={showLabelingQuestionModal} onOpenChange={(open) => {
           if (!open) { resetAnalysisInputs(); }
           setShowLabelingQuestionModal(open);

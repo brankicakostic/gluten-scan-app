@@ -167,7 +167,7 @@ export default function ProductsClientPage({ allProducts, productCategories }: P
                         </div>
                       )}
 
-                      <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description && product.description.length > 100 && product.warning && product.note ? product.note : product.description}</p>
+                      <p className="text-sm mb-3 h-10 overflow-hidden">{product.description && product.description.length > 100 && product.warning && product.note ? product.note : product.description}</p>
                       <div className="flex flex-wrap gap-1 mb-3">
                           {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
                           {product.isVegan && <Badge variant="secondary" className="text-xs">Vegan</Badge>}
