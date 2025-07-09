@@ -28,9 +28,8 @@ function transformImageUrl(imageUrl: string): string {
         return 'https://placehold.co/400x200.png';
     }
     
-    // Assuming the path in DB is relative to a 'products' folder in storage
-    const fullPath = `products/${imageUrl}`;
-    const encodedPath = encodeURIComponent(fullPath);
+    // The path in the DB is assumed to be the full path within the bucket.
+    const encodedPath = encodeURIComponent(imageUrl);
     
     return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
 }
@@ -106,8 +105,9 @@ function mapProductToDocData(product: Partial<Product>): DocumentData {
              try {
                 const url = new URL(product.imageUrl);
                 const path = decodeURIComponent(url.pathname);
-                const relativePath = path.substring(path.indexOf('/o/') + 3).replace('products/','');
-                data.imageUrl = relativePath;
+                // Correctly extract the full path after /o/
+                const objectPath = path.substring(path.indexOf('/o/') + 3);
+                data.imageUrl = objectPath;
              } catch (e) {
                 data.imageUrl = 'placeholder.png'; // fallback
              }
