@@ -14,12 +14,13 @@ import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
  * @returns The full, public URL for the image.
  */
 function transformImageUrl(imageUrl: string): string {
-    if (!imageUrl) {
-        return 'https://placehold.co/400x200.png';
+    if (!imageUrl || imageUrl.startsWith('http')) {
+        // If it's already a full URL (like placeholders) or empty, return it as is.
+        return imageUrl || 'https://placehold.co/400x200.png';
     }
-    // If it's already a full URL (http) or a local public asset (/), return it directly.
-    if (imageUrl.startsWith('http') || imageUrl.startsWith('/')) {
-        return imageUrl; 
+    // If it starts with a slash, it's a local public asset.
+    if (imageUrl.startsWith('/')) {
+        return imageUrl;
     }
 
     const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
@@ -28,10 +29,9 @@ function transformImageUrl(imageUrl: string): string {
         return 'https://placehold.co/400x200.png';
     }
     
-    // It's likely that images are stored in a 'products/' folder in the bucket.
-    // Re-adding this prefix as the most probable fix.
-    const fullPath = `products/${imageUrl}`;
-    const encodedPath = encodeURIComponent(fullPath);
+    // Final attempt: Assume the path in the database is the EXACT path in the bucket root.
+    // No "products/" prefix will be added.
+    const encodedPath = encodeURIComponent(imageUrl);
     
     return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
 }
