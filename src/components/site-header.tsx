@@ -15,29 +15,29 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto flex h-auto max-w-6xl items-center px-6 py-3">
+      <div className="mx-auto flex h-auto max-w-6xl items-center px-6 py-4">
         
         {/* --- MOBILE HEADER --- */}
         <div className="relative flex w-full items-center justify-between md:hidden">
           <SidebarTrigger />
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-             <Link href={`/${locale}`} className="inline-block">
-              <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={120} height={30} className="h-8 w-auto dark:hidden" />
-              <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={120} height={30} className="h-8 w-auto hidden dark:block" />
+            <Link href={`/${locale}`} className="inline-block">
+              <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={140} height={35} className="h-9 w-auto dark:hidden" />
+              <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={140} height={35} className="h-9 w-auto hidden dark:block" />
             </Link>
           </div>
           <ThemeToggle />
         </div>
 
         {/* --- DESKTOP HEADER --- */}
-        <div className="hidden w-full items-center justify-between relative md:flex">
+        <div className="hidden w-full items-center relative md:flex">
           <Link href={`/${locale}`} className="flex items-center">
-            <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={150} height={38} className="h-10 w-auto dark:hidden" />
-            <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={150} height={38} className="h-10 w-auto hidden dark:block" />
+            <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={180} height={46} className="h-12 w-auto dark:hidden" />
+            <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={180} height={46} className="h-12 w-auto hidden dark:block" />
           </Link>
 
           <nav className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-             <div className="flex items-center gap-2 lg:gap-4">
+            <div className="flex items-center gap-2 lg:gap-4">
               {mainNavLinks.map((link) => {
                 if (link.href === '/admin') return null;
 
@@ -55,7 +55,7 @@ export function SiteHeader() {
                       "px-3 py-2 text-lg rounded-md transition-colors", 
                       // Active/Inactive styles
                       isActive 
-                        ? "font-semibold text-foreground" 
+                        ? "font-semibold text-foreground underline decoration-primary underline-offset-4" 
                         : "font-medium text-muted-foreground hover:text-foreground/80"
                     )}
                   >
@@ -65,8 +65,11 @@ export function SiteHeader() {
               })}
             </div>
           </nav>
+          
+           <div className="ml-auto">
+             <ThemeToggle />
+           </div>
 
-          <ThemeToggle />
         </div>
       </div>
     </header>
