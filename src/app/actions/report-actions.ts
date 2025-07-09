@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { db } from '@/lib/firebase/client';
+import { getDb } from '@/lib/firebase/client';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { deleteReport, updateReport } from '@/lib/services/report-service';
 
@@ -20,6 +20,7 @@ type ReportClientData = {
 }
 
 export async function addReportAction(reportData: ReportClientData) {
+  const db = getDb();
   if (!db) {
     console.error("addReportAction failed: Firestore is not initialized.");
     return { success: false, error: "Servis za prijavu grešaka trenutno nije dostupan." };

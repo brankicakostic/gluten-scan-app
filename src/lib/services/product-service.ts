@@ -2,7 +2,7 @@
 // This file uses the Firebase client SDK, but is intended for use in Server Components
 // to fetch data from Firestore.
 
-import { db } from '@/lib/firebase/client';
+import { getDb } from '@/lib/firebase/client';
 import { collection, getDocs, doc, getDoc, query, where, orderBy, limit, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import type { Product } from '@/lib/products';
 import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
@@ -150,8 +150,8 @@ function mapProductToDocData(product: Partial<Product>): DocumentData {
  * @returns A promise that resolves to an array of products.
  */
 export async function getProducts(): Promise<Product[]> {
+    const db = getDb();
     if (!db) {
-        console.warn("Firestore is not initialized. Skipping getProducts.");
         return [];
     }
     try {
@@ -179,8 +179,8 @@ export async function getProducts(): Promise<Product[]> {
  * @returns A promise that resolves to an array of featured products.
  */
 export async function getFeaturedProducts(count: number = 8): Promise<Product[]> {
+    const db = getDb();
     if (!db) {
-        console.warn("Firestore is not initialized. Skipping getFeaturedProducts.");
         return [];
     }
     try {
@@ -202,8 +202,8 @@ export async function getFeaturedProducts(count: number = 8): Promise<Product[]>
  * @returns A promise that resolves to the product object or null if not found.
  */
 export async function getProductById(id: string): Promise<Product | null> {
+    const db = getDb();
     if (!db) {
-        console.warn(`Firestore is not initialized. Skipping getProductById for ID: ${id}.`);
         return null;
     }
     try {
@@ -228,8 +228,8 @@ export async function getProductById(id: string): Promise<Product | null> {
  * @returns A promise that resolves to the product object or null if not found.
  */
 export async function getProductByBarcode(barcode: string): Promise<Product | null> {
+    const db = getDb();
     if (!db) {
-        console.warn(`Firestore is not initialized. Skipping getProductByBarcode for barcode: ${barcode}.`);
         return null;
     }
     try {
@@ -257,6 +257,7 @@ export async function getProductByBarcode(barcode: string): Promise<Product | nu
  * @returns The ID of the newly created document.
  */
 export async function createProduct(productData: Partial<Product>): Promise<string> {
+  const db = getDb();
   if (!db) {
     throw new Error("Firestore is not initialized. Cannot create product.");
   }
@@ -272,6 +273,7 @@ export async function createProduct(productData: Partial<Product>): Promise<stri
  * @param productData The data to update.
  */
 export async function updateProduct(productId: string, productData: Partial<Product>): Promise<void> {
+  const db = getDb();
   if (!db) {
     throw new Error("Firestore is not initialized. Cannot update product.");
   }
@@ -285,6 +287,7 @@ export async function updateProduct(productId: string, productData: Partial<Prod
  * @param productId The ID of the product to delete.
  */
 export async function deleteProduct(productId: string): Promise<void> {
+  const db = getDb();
   if (!db) {
     throw new Error("Firestore is not initialized. Cannot delete product.");
   }

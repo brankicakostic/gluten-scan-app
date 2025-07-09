@@ -1,6 +1,6 @@
 // This file uses the Firebase client SDK for report-related Firestore operations.
 
-import { db } from '@/lib/firebase/client';
+import { getDb } from '@/lib/firebase/client';
 import { collection, getDocs, doc, deleteDoc, query, orderBy, Timestamp, updateDoc } from 'firebase/firestore';
 import type { Report } from '@/lib/reports';
 import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
@@ -37,8 +37,8 @@ function mapDocToReport(doc: QueryDocumentSnapshot<DocumentData>): Report {
  * @returns A promise that resolves to an array of reports.
  */
 export async function getReports(): Promise<Report[]> {
+    const db = getDb();
     if (!db) {
-        console.warn("Firestore is not initialized. Skipping getReports.");
         return [];
     }
     try {
@@ -58,6 +58,7 @@ export async function getReports(): Promise<Report[]> {
  * @param reportData The data to update.
  */
 export async function updateReport(reportId: string, reportData: Partial<Report>): Promise<void> {
+  const db = getDb();
   if (!db) {
     throw new Error("Firestore is not initialized. Cannot update report.");
   }
@@ -71,6 +72,7 @@ export async function updateReport(reportId: string, reportData: Partial<Report>
  * @param reportId The ID of the report to delete.
  */
 export async function deleteReport(reportId: string): Promise<void> {
+  const db = getDb();
   if (!db) {
     throw new Error("Firestore is not initialized. Cannot delete report.");
   }
