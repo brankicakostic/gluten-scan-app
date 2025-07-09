@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import type { Product } from '@/lib/products';
@@ -72,7 +71,7 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
       newFilteredProducts = newFilteredProducts.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase().trim()) ||
         (product.brand && product.brand.toLowerCase().includes(searchTerm.toLowerCase().trim())) ||
-        (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase().trim()))
+        (product.ingredientsText && product.ingredientsText.toLowerCase().includes(searchTerm.toLowerCase().trim()))
       );
     }
     if (selectedCategory !== 'all') {
@@ -81,6 +80,13 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
     setFilteredProducts(newFilteredProducts);
     setCurrentPage(1);
   }, [searchTerm, selectedCategory, allProducts]);
+
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setSelectedCategory('all');
+  };
+
+  const areFiltersActive = searchTerm.trim() !== '' || selectedCategory !== 'all';
 
   const indexOfLastProduct = currentPage * PRODUCTS_PER_PAGE;
   const indexOfFirstProduct = indexOfLastProduct - PRODUCTS_PER_PAGE;
@@ -104,13 +110,13 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
           icon={ShoppingBag}
         />
 
-        <div className="mb-6 p-6 bg-card border rounded-lg shadow">
+        <div className="mb-6 p-6 bg-muted/30 border-muted/50 rounded-lg">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             <div className="space-y-1.5 md:col-span-2">
               <label htmlFor="search" className="text-sm font-medium">Pretraži proizvode</label>
               <Input
                 id="search"
-                placeholder="Pretražite po nazivu, brendu ili opisu..."
+                placeholder="Unesite naziv, brend ili sastojke..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -134,6 +140,17 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
                 </SelectContent>
               </Select>
             </div>
+          </div>
+          <div className="mt-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <p className="text-sm text-muted-foreground">
+                Pronađeno {filteredProducts.length} od {allProducts.length} proizvoda.
+            </p>
+            {areFiltersActive && (
+                <Button variant="ghost" onClick={handleResetFilters} size="sm">
+                    <X className="mr-2 h-4 w-4" />
+                    Resetuj filtere
+                </Button>
+            )}
           </div>
         </div>
 
