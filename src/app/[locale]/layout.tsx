@@ -44,7 +44,7 @@ export async function generateViewport({ params }: { params: { locale: string } 
 
 export default function LocaleLayout({
   children,
-  params: { locale }
+  params,
 }: Readonly<{
   children: React.ReactNode;
   params: { locale: string };
