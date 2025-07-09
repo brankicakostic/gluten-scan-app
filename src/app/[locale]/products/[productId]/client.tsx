@@ -173,7 +173,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
   return (
     <div className="p-6 md:p-8">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-4xl">
         <div className="mb-6">
           <Button asChild variant="outline" size="sm">
             <Link href={`/${locale}/products`}>
@@ -211,195 +211,203 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           </ShadcnAlert>
         )}
 
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="md:col-span-1">
-            <Card className={`overflow-hidden shadow-lg ${product.warning ? 'border-2 border-destructive' : ''}`}>
-              <Image
-                src={product.imageUrl}
-                alt={product.name}
-                width={600}
-                height={600}
-                className="w-full h-auto object-cover aspect-square"
-                data-ai-hint={product.dataAiHint}
-              />
-            </Card>
-            <div className="pt-4 flex flex-col gap-2">
-                 <Button size="lg" className="w-full" disabled>
-                  <ShoppingBag className="mr-2 h-5 w-5" /> Dodaj na listu za kupovinu
-                </Button>
-                <Dialog open={showReportErrorModal} onOpenChange={resetReportForm}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" className="w-full">
-                      <Flag className="h-4 w-4 mr-2" /> Prijavi grešku u podacima
-                    </Button>
-                  </DialogTrigger>
-                   <DialogContent>
-                     {submissionStatus === 'success' ? (
-                       <div className="flex flex-col items-center justify-center text-center p-4">
-                         <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
-                         <DialogTitle className="text-xl">Prijava je poslata!</DialogTitle>
-                         <DialogDescription className="mt-2">Hvala što pomažete da podaci budu tačni. Ako ste ostavili kontakt, možemo vam se javiti.</DialogDescription>
-                         <DialogFooter className="mt-6 w-full"><Button className="w-full" onClick={resetReportForm}>Zatvori</Button></DialogFooter>
-                       </div>
-                     ) : (
-                       <>
-                         <DialogHeader>
-                           <DialogTitle>Prijavi grešku za: {product.name}</DialogTitle>
-                           <DialogDescription>Ako mislite da su podaci o ovom proizvodu netačni, molimo popunite formu.</DialogDescription>
-                         </DialogHeader>
-                         <div className="space-y-4 py-2 text-sm">
-                           <div>
-                             <Label className="font-semibold">Tip greške</Label>
-                             <RadioGroup value={errorType} onValueChange={setErrorType} className="mt-2 space-y-1">
-                               <div className="flex items-center space-x-2"><RadioGroupItem value="podaci" id="err-data" /><Label htmlFor="err-data" className="font-normal">Netačni podaci (slika, naziv, barkod)</Label></div>
-                               <div className="flex items-center space-x-2"><RadioGroupItem value="sastav" id="err-sastav" /><Label htmlFor="err-sastav" className="font-normal">Neispravni sastojci / alergeni</Label></div>
-                               <div className="flex items-center space-x-2"><RadioGroupItem value="drugo" id="err-drugo" /><Label htmlFor="err-drugo" className="font-normal">Drugo</Label></div>
-                             </RadioGroup>
-                           </div>
-                           <div>
-                             <Label className="font-semibold">Prioritet</Label>
-                             <RadioGroup value={reportPriority} onValueChange={setReportPriority} className="mt-2 space-y-1">
-                               <div className="flex items-center space-x-2"><RadioGroupItem value="niska" id="prod-priority-low" /><Label htmlFor="prod-priority-low" className="font-normal">Nizak</Label></div>
-                               <div className="flex items-center space-x-2"><RadioGroupItem value="srednja" id="prod-priority-medium" /><Label htmlFor="prod-priority-medium" className="font-normal">Srednji</Label></div>
-                               <div className="flex items-center space-x-2"><RadioGroupItem value="visoka" id="prod-priority-high" /><Label htmlFor="prod-priority-high" className="font-normal">Visok (utiče na bezbednost)</Label></div>
-                             </RadioGroup>
-                           </div>
-                           <div className="space-y-2"><Label htmlFor="report-comment-prod">Komentar</Label><Textarea id="report-comment-prod" placeholder="Opišite grešku..." value={reportComment} onChange={(e) => setReportComment(e.target.value)} /></div>
-                           <div className="flex items-center space-x-2"><Checkbox id="wants-contact-prod" checked={wantsContact} onCheckedChange={(checked) => setWantsContact(!!checked)} /><Label htmlFor="wants-contact-prod">Želim da me kontaktirate.</Label></div>
-                           {wantsContact && <div className="space-y-2 pl-6"><Label htmlFor="contact-email-prod">Email</Label><Input id="contact-email-prod" type="email" placeholder="vas.email@primer.com" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} /></div>}
-                         </div>
-                         <DialogFooter>
-                           <Button variant="outline" onClick={() => setShowReportErrorModal(false)}>Odustani</Button>
-                           <Button onClick={handleReportSubmit} disabled={submissionStatus === 'submitting' || !reportComment || !errorType}>
-                             {submissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />} Pošalji prijavu
-                           </Button>
-                         </DialogFooter>
-                       </>
-                     )}
-                   </DialogContent>
-                </Dialog>
+        <Card className={`overflow-hidden shadow-lg ${product.warning ? 'border-2 border-destructive' : ''}`}>
+          <Image
+            src={product.imageUrl}
+            alt={product.name}
+            width={800}
+            height={533}
+            className="w-full h-auto object-cover aspect-[3/2]"
+            data-ai-hint={product.dataAiHint}
+            priority
+          />
+        </Card>
+        
+        <Card className="mt-4">
+          <CardContent className="p-3 flex items-center justify-between gap-2">
+            <div className="flex-1">
+              {product.warning ? (
+                <div className="flex items-center justify-center sm:justify-start text-red-600 dark:text-red-400 font-semibold text-base">
+                  <AlertTriangle className="h-5 w-5 mr-2" />
+                  <span>SADRŽI GLUTEN</span>
+                </div>
+              ) : isConsideredGF ? (
+                <div className="flex items-center justify-center sm:justify-start text-green-600 dark:text-green-400 text-base font-semibold">
+                  <ShieldCheck className="h-5 w-5 mr-2" />
+                  <span>Bez glutena</span>
+                </div>
+              ) : containsGluten ? (
+                <div className="flex items-center justify-center sm:justify-start text-red-600 dark:text-red-500 text-base font-semibold">
+                  <AlertTriangle className="h-5 w-5 mr-2" />
+                  <span>Sadrži gluten</span>
+                </div>
+              ) : mayContainGluten ? (
+                <div className="flex items-center justify-center sm:justify-start text-orange-500 dark:text-orange-400 text-base font-semibold">
+                  <AlertTriangle className="h-5 w-5 mr-2" />
+                  <span>Mogući tragovi</span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center sm:justify-start text-muted-foreground text-base font-semibold">
+                  <Info className="h-5 w-5 mr-2" />
+                  <span>Status nepoznat</span>
+                </div>
+              )}
             </div>
-          </div>
 
-          <div className="md:col-span-2">
-            <Card>
-              <CardHeader className="flex flex-row justify-between items-center">
-                 <div className="flex-grow">
-                    {product.warning ? (
-                        <div className="flex items-center text-red-600 dark:text-red-400 font-semibold text-lg">
-                            <AlertTriangle className="h-5 w-5 mr-2" />
-                            <span>SADRŽI GLUTEN (Povučen lot)</span>
-                        </div>
-                    ) : isConsideredGF ? (
-                      <div className="flex items-center text-green-600 dark:text-green-400 text-lg font-semibold">
-                        <ShieldCheck className="h-5 w-5 mr-2" />
-                        <span>Bez glutena</span>
-                      </div>
-                    ) : containsGluten ? (
-                      <div className="flex items-center text-red-600 dark:text-red-500 text-lg font-semibold">
-                        <AlertTriangle className="h-5 w-5 mr-2" />
-                        <span>Sadrži gluten</span>
-                      </div>
-                    ) : mayContainGluten ? (
-                      <div className="flex items-center text-orange-500 dark:text-orange-400 text-lg font-semibold">
-                        <AlertTriangle className="h-5 w-5 mr-2" />
-                        <span>Može sadržati tragove glutena</span>
-                      </div>
-                    ) : (
-                       <div className="flex items-center text-muted-foreground text-lg font-semibold">
-                         <Info className="h-5 w-5 mr-2" />
-                         <span>Status glutena nije specificiran</span>
-                       </div>
-                    )}
-                 </div>
-                 <div className="flex items-center gap-2 flex-shrink-0">
-                    {product.nutriScore && product.nutriScore !== 'N/A' && (
-                        <span className={`px-3 py-1 rounded-lg text-lg font-bold border-2 ${getNutriScoreClasses(product.nutriScore)}`}>
-                            {product.nutriScore}
-                        </span>
-                    )}
-                    <Button variant="outline" size="icon" onClick={handleToggleFavorite}>
-                        <Heart className="h-5 w-5" fill={isCurrentlyFavorite ? 'hsl(var(--primary))' : 'none'} />
-                        <span className="sr-only">{isCurrentlyFavorite ? 'Ukloni iz omiljenih' : 'Dodaj u omiljene'}</span>
-                    </Button>
-                 </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                
-                {product.description && (
-                  <div>
-                    <h3 className="text-lg font-semibold mt-2 mb-2">Opis</h3>
-                    <p className="text-sm text-muted-foreground">{product.description}</p>
-                  </div>
-                )}
-                
-                <Accordion type="multiple" className="w-full" defaultValue={['item-1']}>
-                    {product.ingredientsText && (
-                      <AccordionItem value="item-1">
-                        <AccordionTrigger className="text-lg font-semibold">Sastojci</AccordionTrigger>
-                        <AccordionContent>
-                            <p className="text-sm text-muted-foreground p-3 bg-muted rounded-md whitespace-pre-wrap">{product.ingredientsText}</p>
-                        </AccordionContent>
-                      </AccordionItem>
-                    )}
-                    <AccordionItem value="item-2">
-                        <AccordionTrigger className="text-lg font-semibold">Napomene o alergenima</AccordionTrigger>
-                        <AccordionContent className="space-y-3 pt-2">
-                           {product.warning && identifiedGlutenSources.length === 0 && (
-                              <p className="text-sm text-red-600 dark:text-red-400"><strong>Upozorenje:</strong> Ovaj proizvod (ili određena serija) može sadržati gluten. Molimo proverite detalje o povlačenju.</p>
-                          )}
-                          {!product.warning && identifiedGlutenSources.length > 0 && (
-                              <p className="text-sm text-red-600 dark:text-red-500"><strong>Sadrži izvore glutena:</strong> {identifiedGlutenSources.join(', ')}.</p>
-                          )}
-                          {!product.warning && identifiedGlutenSources.length === 0 && mayContainGluten && !isConsideredGF && (
-                               <p className="text-sm text-orange-600 dark:text-orange-400"><strong>Napomena:</strong> Može sadržati tragove glutena.</p>
-                          )}
-                          {!product.warning && identifiedGlutenSources.length === 0 && isConsideredGF && (
-                              <p className="text-sm text-green-600 dark:text-green-400">Ovaj proizvod se generalno smatra bezglutenskim na osnovu dostupnih informacija.</p>
-                          )}
-                          {mentionedNonGlutenAllergens.length > 0 && (
-                            <p className="text-sm text-muted-foreground"><strong>Ostali potencijalni alergeni:</strong> {mentionedNonGlutenAllergens.join(', ')}.</p>
-                          )}
-                          <p className="text-xs text-muted-foreground pt-2 italic">Uvek proverite ambalažu proizvoda za najtačnije detalje o alergenima. Informacije ovde su samo smernice.</p>
-                        </AccordionContent>
-                    </AccordionItem>
-                    
-                     <AccordionItem value="item-3">
-                        <AccordionTrigger className="text-lg font-semibold">Sertifikati i verifikacije</AccordionTrigger>
-                        <AccordionContent className="space-y-2 pt-2">
-                           <p className="text-xs text-muted-foreground italic">Ove oznake pomažu u identifikaciji bezbednosti proizvoda.</p>
-                           {product.hasAOECSLicense && <div className="flex items-center text-sm text-foreground"><ShieldCheck className="h-4 w-4 mr-2 text-primary" /><span>AOECS licenca</span></div>}
-                           {product.hasManufacturerStatement && <div className="flex items-center text-sm text-foreground"><FileText className="h-4 w-4 mr-2 text-primary" /><span>Izjava proizvođača (Bez glutena)</span></div>}
-                           {product.isVerifiedAdmin && <div className="flex items-center text-sm text-foreground"><CheckCircle className="h-4 w-4 mr-2 text-primary" /><span>Admin verifikovan</span></div>}
-                           {!(product.hasAOECSLicense || product.hasManufacturerStatement || product.isVerifiedAdmin) && <p className="text-sm text-muted-foreground">Nema dostupnih sertifikata ili izjava.</p>}
-                        </AccordionContent>
-                     </AccordionItem>
-                      <AccordionItem value="item-4">
-                        <AccordionTrigger className="text-lg font-semibold">Ostali detalji</AccordionTrigger>
-                         <AccordionContent className="space-y-3 pt-2 text-sm text-muted-foreground">
-                            {product.Poreklo && <p><span className="mr-2">{getCountryFlag(product.Poreklo)}</span><strong>Poreklo:</strong> {product.Poreklo}</p>}
-                            {product.stores && product.stores.length > 0 && <p><strong>Dostupno u:</strong> {product.stores.join(', ')}</p>}
-                            {product.barcode && <p><strong>Barkod:</strong> {product.barcode}</p>}
-                            {product.source && <p><strong>Izvor podataka:</strong> {product.source}</p>}
-                         </AccordionContent>
-                      </AccordionItem>
-                </Accordion>
-                
-                {allProductTags.size > 0 && (
-                  <div>
-                    <h3 className="text-lg font-semibold mt-6 mb-3">Tagovi</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {Array.from(allProductTags).map(tag => (
-                        <Badge key={tag} variant="outline" className={`border ${tagStyles[tag.toLowerCase()] || tagStyles.default}`}>
-                          {tag}
-                        </Badge>
-                      ))}
+            {product.nutriScore && product.nutriScore !== 'N/A' && (
+              <span className={`px-3 py-1 rounded-lg text-lg font-bold border-2 ${getNutriScoreClasses(product.nutriScore)}`}>
+                {product.nutriScore}
+              </span>
+            )}
+            
+            <Button variant="outline" size="icon" onClick={handleToggleFavorite} className="flex-shrink-0">
+              <Heart className="h-5 w-5" fill={isCurrentlyFavorite ? 'hsl(var(--primary))' : 'none'} />
+              <span className="sr-only">{isCurrentlyFavorite ? 'Ukloni iz omiljenih' : 'Dodaj u omiljene'}</span>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Button size="lg" className="w-full" disabled>
+            <ShoppingBag className="mr-2 h-5 w-5" /> Dodaj na listu za kupovinu
+          </Button>
+          <Dialog open={showReportErrorModal} onOpenChange={resetReportForm}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="lg" className="w-full">
+                <Flag className="h-4 w-4 mr-2" /> Prijavi grešku
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              {submissionStatus === 'success' ? (
+                <div className="flex flex-col items-center justify-center text-center p-4">
+                  <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+                  <DialogTitle className="text-xl">Prijava je poslata!</DialogTitle>
+                  <DialogDescription className="mt-2">Hvala što pomažete da podaci budu tačni. Ako ste ostavili kontakt, možemo vam se javiti.</DialogDescription>
+                  <DialogFooter className="mt-6 w-full"><Button className="w-full" onClick={resetReportForm}>Zatvori</Button></DialogFooter>
+                </div>
+              ) : (
+                <>
+                  <DialogHeader>
+                    <DialogTitle>Prijavi grešku za: {product.name}</DialogTitle>
+                    <DialogDescription>Ako mislite da su podaci o ovom proizvodu netačni, molimo popunite formu.</DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-2 text-sm">
+                    <div>
+                      <Label className="font-semibold">Tip greške</Label>
+                      <RadioGroup value={errorType} onValueChange={setErrorType} className="mt-2 space-y-1">
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="podaci" id="err-data" /><Label htmlFor="err-data" className="font-normal">Netačni podaci (slika, naziv, barkod)</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="sastav" id="err-sastav" /><Label htmlFor="err-sastav" className="font-normal">Neispravni sastojci / alergeni</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="drugo" id="err-drugo" /><Label htmlFor="err-drugo" className="font-normal">Drugo</Label></div>
+                      </RadioGroup>
                     </div>
+                    <div>
+                      <Label className="font-semibold">Prioritet</Label>
+                      <RadioGroup value={reportPriority} onValueChange={setReportPriority} className="mt-2 space-y-1">
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="niska" id="prod-priority-low" /><Label htmlFor="prod-priority-low" className="font-normal">Nizak</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="srednja" id="prod-priority-medium" /><Label htmlFor="prod-priority-medium" className="font-normal">Srednji</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="visoka" id="prod-priority-high" /><Label htmlFor="prod-priority-high" className="font-normal">Visok (utiče na bezbednost)</Label></div>
+                      </RadioGroup>
+                    </div>
+                    <div className="space-y-2"><Label htmlFor="report-comment-prod">Komentar</Label><Textarea id="report-comment-prod" placeholder="Opišite grešku..." value={reportComment} onChange={(e) => setReportComment(e.target.value)} /></div>
+                    <div className="flex items-center space-x-2"><Checkbox id="wants-contact-prod" checked={wantsContact} onCheckedChange={(checked) => setWantsContact(!!checked)} /><Label htmlFor="wants-contact-prod">Želim da me kontaktirate.</Label></div>
+                    {wantsContact && <div className="space-y-2 pl-6"><Label htmlFor="contact-email-prod">Email</Label><Input id="contact-email-prod" type="email" placeholder="vas.email@primer.com" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} /></div>}
                   </div>
-                )}
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setShowReportErrorModal(false)}>Odustani</Button>
+                    <Button onClick={handleReportSubmit} disabled={submissionStatus === 'submitting' || !reportComment || !errorType}>
+                      {submissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />} Pošalji prijavu
+                    </Button>
+                  </DialogFooter>
+                </>
+              )}
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <div className="mt-8 space-y-6">
+          {product.description && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl">Opis</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">{product.description}</p>
               </CardContent>
             </Card>
-          </div>
+          )}
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">Detalji o proizvodu</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Accordion type="multiple" className="w-full">
+                {product.ingredientsText && (
+                  <AccordionItem value="item-1">
+                    <AccordionTrigger className="text-lg font-semibold">Sastojci</AccordionTrigger>
+                    <AccordionContent>
+                      <p className="text-sm text-muted-foreground p-3 bg-muted rounded-md whitespace-pre-wrap">{product.ingredientsText}</p>
+                    </AccordionContent>
+                  </AccordionItem>
+                )}
+                <AccordionItem value="item-2">
+                  <AccordionTrigger className="text-lg font-semibold">Napomene o alergenima</AccordionTrigger>
+                  <AccordionContent className="space-y-3 pt-2">
+                    {product.warning && identifiedGlutenSources.length === 0 && (
+                      <p className="text-sm text-red-600 dark:text-red-400"><strong>Upozorenje:</strong> Ovaj proizvod (ili određena serija) može sadržati gluten. Molimo proverite detalje o povlačenju.</p>
+                    )}
+                    {!product.warning && identifiedGlutenSources.length > 0 && (
+                      <p className="text-sm text-red-600 dark:text-red-500"><strong>Sadrži izvore glutena:</strong> {identifiedGlutenSources.join(', ')}.</p>
+                    )}
+                    {!product.warning && identifiedGlutenSources.length === 0 && mayContainGluten && !isConsideredGF && (
+                      <p className="text-sm text-orange-600 dark:text-orange-400"><strong>Napomena:</strong> Može sadržati tragove glutena.</p>
+                    )}
+                    {!product.warning && identifiedGlutenSources.length === 0 && isConsideredGF && (
+                      <p className="text-sm text-green-600 dark:text-green-400">Ovaj proizvod se generalno smatra bezglutenskim na osnovu dostupnih informacija.</p>
+                    )}
+                    {mentionedNonGlutenAllergens.length > 0 && (
+                      <p className="text-sm text-muted-foreground"><strong>Ostali potencijalni alergeni:</strong> {mentionedNonGlutenAllergens.join(', ')}.</p>
+                    )}
+                    <p className="text-xs text-muted-foreground pt-2 italic">Uvek proverite ambalažu proizvoda za najtačnije detalje o alergenima. Informacije ovde su samo smernice.</p>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-3">
+                  <AccordionTrigger className="text-lg font-semibold">Sertifikati i verifikacije</AccordionTrigger>
+                  <AccordionContent className="space-y-2 pt-2">
+                    <p className="text-xs text-muted-foreground italic">Ove oznake pomažu u identifikaciji bezbednosti proizvoda.</p>
+                    {product.hasAOECSLicense && <div className="flex items-center text-sm text-foreground"><ShieldCheck className="h-4 w-4 mr-2 text-primary" /><span>AOECS licenca</span></div>}
+                    {product.hasManufacturerStatement && <div className="flex items-center text-sm text-foreground"><FileText className="h-4 w-4 mr-2 text-primary" /><span>Izjava proizvođača (Bez glutena)</span></div>}
+                    {product.isVerifiedAdmin && <div className="flex items-center text-sm text-foreground"><CheckCircle className="h-4 w-4 mr-2 text-primary" /><span>Admin verifikovan</span></div>}
+                    {!(product.hasAOECSLicense || product.hasManufacturerStatement || product.isVerifiedAdmin) && <p className="text-sm text-muted-foreground">Nema dostupnih sertifikata ili izjava.</p>}
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-4">
+                  <AccordionTrigger className="text-lg font-semibold">Ostali detalji</AccordionTrigger>
+                  <AccordionContent className="space-y-3 pt-2 text-sm text-muted-foreground">
+                    {product.Poreklo && <p><span className="mr-2">{getCountryFlag(product.Poreklo)}</span><strong>Poreklo:</strong> {product.Poreklo}</p>}
+                    {product.stores && product.stores.length > 0 && <p><strong>Dostupno u:</strong> {product.stores.join(', ')}</p>}
+                    {product.barcode && <p><strong>Barkod:</strong> {product.barcode}</p>}
+                    {product.source && <p><strong>Izvor podataka:</strong> {product.source}</p>}
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </CardContent>
+          </Card>
+
+          {allProductTags.size > 0 && (
+            <Card>
+              <CardHeader><CardTitle className="text-xl">Tagovi</CardTitle></CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {Array.from(allProductTags).map(tag => (
+                    <Badge key={tag} variant="outline" className={`border ${tagStyles[tag.toLowerCase()] || tagStyles.default}`}>
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>
