@@ -682,7 +682,8 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
                 <h2 className="text-2xl font-semibold tracking-tight" style={{ lineHeight: 1.4 }}>Analiziraj Deklaraciju</h2>
                 <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">Iskoristite moć veštačke inteligencije za proveru sastojaka. Možete uneti tekst ručno ili otpremiti sliku deklaracije.</p>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            
+            <div className="max-w-2xl mx-auto">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2"><Camera className="h-5 w-5" /> Analiziraj sa slike</CardTitle>
@@ -750,40 +751,44 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
                       Analiziraj Sliku sa AI
                    </Button>
                 </CardFooter>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5"/> Nalepite tekst ručno</CardTitle>
-                    <CardDescription>Unesite sastojke direktno u polje ispod.</CardDescription>
-                </CardHeader>
-                <form onSubmit={handleDeclarationSubmit}>
-                    <CardContent>
-                         <Textarea
-                          id="declaration-text-area"
-                          placeholder="npr. pšenično brašno, šećer, so, kvasac, ekstrakt ječmenog slada..."
-                          value={declarationText}
-                          onChange={(e) => {
-                             setDeclarationText(e.target.value);
-                             if(e.target.value) { resetAnalysisInputs(true); }
-                          }}
-                          rows={10}
-                          className="resize-none"
-                          aria-label="Product Declaration Input"
-                          disabled={isLoadingAnyAnalysisProcess}
-                        />
-                    </CardContent>
-                    <CardFooter>
-                        <Button type="submit" 
-                            size="lg"
-                            disabled={isLoadingDeclaration || !declarationText.trim() || isLoadingAnyAnalysisProcess} 
-                            className="w-full"
-                          >
-                            {isLoadingDeclaration && !isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                            Analiziraj Tekst sa AI
-                        </Button>
-                    </CardFooter>
-                </form>
+                
+                 <Accordion type="single" collapsible className="w-full border-t">
+                    <AccordionItem value="manual-text" className="border-b-0">
+                      <AccordionTrigger className="px-6 text-sm text-muted-foreground hover:no-underline">
+                        <div className="flex items-center gap-2">
+                            <FileText className="h-4 w-4"/>
+                            <span>Nemate sliku? Nalepite tekst ručno</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-6">
+                        <form onSubmit={handleDeclarationSubmit}>
+                          <div className="space-y-4">
+                             <Textarea
+                              id="declaration-text-area"
+                              placeholder="npr. pšenično brašno, šećer, so, kvasac, ekstrakt ječmenog slada..."
+                              value={declarationText}
+                              onChange={(e) => {
+                                 setDeclarationText(e.target.value);
+                                 if(e.target.value) { resetAnalysisInputs(true); }
+                              }}
+                              rows={8}
+                              className="resize-none"
+                              aria-label="Product Declaration Input"
+                              disabled={isLoadingAnyAnalysisProcess}
+                            />
+                            <Button type="submit" 
+                                size="lg"
+                                disabled={isLoadingDeclaration || !declarationText.trim() || isLoadingAnyAnalysisProcess} 
+                                className="w-full"
+                              >
+                                {isLoadingDeclaration && !isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                                Analiziraj Tekst sa AI
+                            </Button>
+                          </div>
+                        </form>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
               </Card>
             </div>
 
