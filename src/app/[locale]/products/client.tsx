@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle, X, Wheat, Sandwich, UtensilsCrossed, Cookie, Popcorn, Soup, Container, CookingPot, CupSoda, Package, type LucideIcon } from 'lucide-react';
+import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle, X, Wheat, Sandwich, UtensilsCrossed, Cookie, Popcorn, Soup, Container, CookingPot, CupSoda, Package, Box, Droplet, Bean, type LucideIcon } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import type { Product } from '@/lib/products';
@@ -43,10 +43,13 @@ const getCategoryIcon = (categoryName: string): LucideIcon => {
   if (lowerCaseName.includes('slatkiš') || lowerCaseName.includes('keks') || lowerCaseName.includes('čokolad')) return Cookie;
   if (lowerCaseName.includes('grickalice') || lowerCaseName.includes('kreker')) return Popcorn;
   if (lowerCaseName.includes('pahuljice') || lowerCaseName.includes('musli')) return Soup;
-  if (lowerCaseName.includes('namaz') || lowerCaseName.includes('krem') || lowerCaseName.includes('med')) return Container;
+  if (lowerCaseName.includes('namaz') || lowerCaseName.includes('krem')) return Container;
+  if (lowerCaseName.includes('med')) return Droplet;
+  if (lowerCaseName.includes('drevna zrna')) return Bean;
   if (lowerCaseName.includes('sos') || lowerCaseName.includes('preliv')) return CookingPot;
   if (lowerCaseName.includes('pić') || lowerCaseName.includes('sok')) return CupSoda;
-  if (lowerCaseName.includes('začin')) return Container;
+  if (lowerCaseName.includes('začin')) return CookingPot;
+  if (lowerCaseName.includes('nekategorizovano')) return Box;
   return Package;
 };
 
