@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
 import { PageHeader } from '@/components/page-header';
@@ -8,10 +8,19 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle, X } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import type { Product } from '@/lib/products';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
 const getNutriScoreClasses = (score?: string) => {
   if (!score) return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';
@@ -93,12 +102,10 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
   const currentProductsToDisplay = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
   const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
 
-  const handleNextPage = () => {
-    setCurrentPage(prev => Math.min(prev + 1, totalPages));
-  };
-
-  const handlePrevPage = () => {
-    setCurrentPage(prev => Math.max(prev - 1, 1));
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
   };
 
   return (
@@ -265,29 +272,72 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
               })}
             </div>
             {totalPages > 1 && (
-              <div className="flex justify-center items-center space-x-4 mt-8">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handlePrevPage}
-                  disabled={currentPage === 1}
-                >
-                  <ChevronLeft className="h-4 w-4 mr-1" />
-                  Prethodna
-                </Button>
-                <span className="text-sm text-muted-foreground">
-                  Stranica {currentPage} od {totalPages}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleNextPage}
-                  disabled={currentPage === totalPages}
-                >
-                  Sledeća
-                  <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
-              </div>
+              <Pagination className="mt-8">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    />
+                  </PaginationItem>
+                  
+                  {(() => {
+                    const pageNumbers = [];
+                    const maxPagesToShow = 5;
+                    const ellipsis = '...';
+
+                    if (totalPages <= maxPagesToShow + 2) {
+                      for (let i = 1; i <= totalPages; i++) {
+                        pageNumbers.push(i);
+                      }
+                    } else {
+                      if (currentPage <= maxPagesToShow - 2) {
+                        for (let i = 1; i <= maxPagesToShow -1; i++) {
+                          pageNumbers.push(i);
+                        }
+                        pageNumbers.push(ellipsis);
+                        pageNumbers.push(totalPages);
+                      } else if (currentPage >= totalPages - (maxPagesToShow - 3)) {
+                        pageNumbers.push(1);
+                        pageNumbers.push(ellipsis);
+                        for (let i = totalPages - (maxPagesToShow - 2); i <= totalPages; i++) {
+                          pageNumbers.push(i);
+                        }
+                      } else {
+                        pageNumbers.push(1);
+                        pageNumbers.push(ellipsis);
+                        pageNumbers.push(currentPage - 1);
+                        pageNumbers.push(currentPage);
+                        pageNumbers.push(currentPage + 1);
+                        pageNumbers.push(ellipsis);
+                        pageNumbers.push(totalPages);
+                      }
+                    }
+
+                    return pageNumbers.map((page, index) => (
+                      <PaginationItem key={index}>
+                        {page === ellipsis ? (
+                          <PaginationEllipsis />
+                        ) : (
+                          <PaginationLink
+                            isActive={currentPage === page}
+                            onClick={() => handlePageChange(page as number)}
+                          >
+                            {page}
+                          </PaginationLink>
+                        )}
+                      </PaginationItem>
+                    ));
+                  })()}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
             )}
           </>
         ) : (
