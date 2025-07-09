@@ -528,44 +528,44 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
         
         <div className="mb-8">
           {isLoadingTip && (
-            <div className="flex items-center justify-center text-muted-foreground p-4 bg-muted/50 rounded-lg shadow-sm">
+            <div className="flex items-center justify-center text-muted-foreground p-4 bg-muted/50 rounded-lg shadow-sm h-16">
               <Loader2 className="h-5 w-5 mr-2 animate-spin" />
               <span>Učitavanje dnevnog saveta...</span>
             </div>
           )}
           {dailyTip && !isLoadingTip && (
-            <div className="relative rounded-lg border border-border bg-secondary/30 p-4 pl-5 border-l-4 border-primary">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 pt-1">
-                  <Lightbulb className="h-6 w-6 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <Badge variant="secondary" className="mb-2">Savet Dana</Badge>
-                  <p className="text-sm text-secondary-foreground mb-3">{dailyTip.summary}</p>
+            <div className="relative rounded-lg border border-border bg-muted/50 p-3">
+              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                  <div className="flex items-center gap-3">
+                      <Lightbulb className="h-5 w-5 text-primary flex-shrink-0" />
+                      <p className="text-sm text-muted-foreground">
+                          <Badge variant="secondary" className="mr-2">Savet Dana</Badge>
+                          {dailyTip.summary}
+                      </p>
+                  </div>
                   <AlertDialog open={showTipDetailsModal} onOpenChange={setShowTipDetailsModal}>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="bg-background/70 hover:bg-background">
-                        <BookOpen className="mr-2 h-4 w-4" /> Pročitaj više
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2">
-                          <Lightbulb className="h-5 w-5 text-primary" /> Dnevni savet o celijakiji
-                        </AlertDialogTitle>
-                        <AlertDialogDescription className="text-left pt-2">
-                          <strong>{dailyTip.summary}</strong>
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <div className="text-sm text-muted-foreground max-h-[60vh] overflow-y-auto pr-2">
-                        <p>{dailyTip.details}</p>
-                      </div>
-                      <AlertDialogFooter>
-                        <AlertDialogAction>U redu!</AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
+                      <AlertDialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="bg-background/70 hover:bg-background flex-shrink-0">
+                              <BookOpen className="mr-2 h-4 w-4" /> Pročitaj više
+                          </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="flex items-center gap-2">
+                            <Lightbulb className="h-5 w-5 text-primary" /> Dnevni savet o celijakiji
+                          </AlertDialogTitle>
+                          <AlertDialogDescription className="text-left pt-2">
+                            <strong>{dailyTip.summary}</strong>
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <div className="text-sm text-muted-foreground max-h-[60vh] overflow-y-auto pr-2">
+                          <p>{dailyTip.details}</p>
+                        </div>
+                        <AlertDialogFooter>
+                          <AlertDialogAction>U redu!</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
                   </AlertDialog>
-                </div>
               </div>
             </div>
           )}

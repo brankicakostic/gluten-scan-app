@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -66,22 +67,6 @@ export function AppSidebar() {
           })}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="p-4 group-data-[collapsible=icon]:hidden">
-        <p className="text-xs text-sidebar-foreground/70">
-          &copy; {new Date().getFullYear()} Gluten Scan
-          <span className="mx-1">-</span>
-          <Link href={`/${locale}/terms`} className="hover:underline">
-            Uslovi korišćenja
-          </Link>
-          <span className="mx-1">-</span>
-          <Link href={`/${locale}/privacy`} className="hover:underline">
-            Privatnost
-          </Link>
-        </p>
-        <p className="text-xs text-sidebar-foreground/70 mt-2">
-          Napravljeno sa 💛 u GlutenScan-u
-        </p>
-      </SidebarFooter>
     </Sidebar>
   );
 }

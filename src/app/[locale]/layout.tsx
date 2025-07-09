@@ -10,6 +10,7 @@ import { MobileBottomNav } from '@/components/navigation/mobile-bottom-nav';
 import { PwaInstaller } from '@/components/pwa-installer';
 import { SiteHeader } from '@/components/site-header';
 import { AppSidebar } from '@/components/navigation/app-sidebar';
+import { SiteFooter } from '@/components/site-footer';
 
 // This function is needed for static site generation (SSG) if you plan to pre-render locales.
 export async function generateStaticParams() {
@@ -57,6 +58,7 @@ export default function LocaleLayout({
                 <SiteHeader />
                 <AppSidebar />
                 <main className="flex-1">{children}</main>
+                <SiteFooter />
                 <MobileBottomNav />
              </div>
           </ScanLimiterProvider>
