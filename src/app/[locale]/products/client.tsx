@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle, X, Wheat, Sandwich, UtensilsCrossed, Cookie, Popcorn, Soup, Container, CookingPot, CupSoda, Spice, Package, type LucideIcon } from 'lucide-react';
+import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle, X, Wheat, Sandwich, UtensilsCrossed, Cookie, Popcorn, Soup, Container, CookingPot, CupSoda, Package, type LucideIcon } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import type { Product } from '@/lib/products';
@@ -46,7 +46,7 @@ const getCategoryIcon = (categoryName: string): LucideIcon => {
   if (lowerCaseName.includes('namaz') || lowerCaseName.includes('krem') || lowerCaseName.includes('med')) return Container;
   if (lowerCaseName.includes('sos') || lowerCaseName.includes('preliv')) return CookingPot;
   if (lowerCaseName.includes('pić') || lowerCaseName.includes('sok')) return CupSoda;
-  if (lowerCaseName.includes('začin')) return Spice;
+  if (lowerCaseName.includes('začin')) return Container;
   return Package;
 };
 

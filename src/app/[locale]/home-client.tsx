@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert, Barcode as BarcodeIcon, X, FileText, Flag, XCircle, Send, PackagePlus, LayoutGrid, Wheat, Sandwich, UtensilsCrossed, Cookie, Popcorn, Soup, Container, CookingPot, CupSoda, Spice, Package, type LucideIcon } from 'lucide-react';
+import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert, Barcode as BarcodeIcon, X, FileText, Flag, XCircle, Send, PackagePlus, LayoutGrid, Wheat, Sandwich, UtensilsCrossed, Cookie, Popcorn, Soup, Container, CookingPot, CupSoda, Package, type LucideIcon } from 'lucide-react';
 import { analyzeDeclaration, type AnalyzeDeclarationOutput, type IngredientAssessment } from '@/ai/flows/analyze-declaration';
 import type { DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import { ocrDeclaration, type OcrDeclarationOutput } from '@/ai/flows/ocr-declaration-flow';
@@ -76,7 +76,7 @@ const getCategoryIcon = (categoryName: string): LucideIcon => {
   if (lowerCaseName.includes('namaz') || lowerCaseName.includes('krem') || lowerCaseName.includes('med')) return Container;
   if (lowerCaseName.includes('sos') || lowerCaseName.includes('preliv')) return CookingPot;
   if (lowerCaseName.includes('pić') || lowerCaseName.includes('sok')) return CupSoda;
-  if (lowerCaseName.includes('začin')) return Spice;
+  if (lowerCaseName.includes('začin')) return Container;
   return Package;
 };
 
