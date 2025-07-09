@@ -33,7 +33,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import type { Product } from '@/lib/products'; 
 import { AlertDialog, AlertDialogTrigger, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { getProductById } from '@/lib/services/product-service';
+import { getProductByBarcode } from '@/lib/services/product-service';
 import { addReportAction } from '@/app/actions/report-actions';
 import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode';
 
@@ -159,9 +159,26 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
             setIsScanningBarcode(false);
             setHasBarcodeCameraPermission(true);
 
+            // Validate the scanned code
+            const isValidBarcode = (code) => {
+                const isNumeric = /^\d+$/.test(code);
+                const validLengths = [8, 12, 13, 14]; // EAN-8, UPC-A, EAN-13, GTIN-14
+                return isNumeric && validLengths.includes(code.length);
+            };
+
+            if (!isValidBarcode(decodedText)) {
+                setErrorBarcode(`Skenirani kod "${decodedText}" nije validan barkod. Pokušajte ponovo.`);
+                toast({
+                    variant: 'destructive',
+                    title: 'Nevalidan Kod',
+                    description: 'Molimo skenirajte validan barkod proizvoda (EAN-8, EAN-13, UPC).',
+                });
+                return; // Stop further processing
+            }
+
             // Process the barcode
             incrementScanCount();
-            const foundProduct = await getProductById(decodedText);
+            const foundProduct = await getProductByBarcode(decodedText);
             
             if (foundProduct) {
               setBarcodeScanResult({ 

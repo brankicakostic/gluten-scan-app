@@ -3,7 +3,7 @@
 // to fetch data from Firestore.
 
 import { db } from '@/lib/firebase/client';
-import { collection, getDocs, doc, getDoc, query, orderBy, limit, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, query, where, orderBy, limit, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import type { Product } from '@/lib/products';
 import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 
@@ -176,8 +176,7 @@ export async function getFeaturedProducts(count: number = 8): Promise<Product[]>
 }
 
 /**
- * Fetches a single product by its ID from the Firestore 'products' collection.
- * The ID is expected to be the Firestore document ID.
+ * Fetches a single product by its Firestore document ID.
  * @param id The document ID of the product to fetch.
  * @returns A promise that resolves to the product object or null if not found.
  */
@@ -194,6 +193,30 @@ export async function getProductById(id: string): Promise<Product | null> {
         return mapDocToProduct(productSnap);
     } catch (error) {
         console.error(`Error fetching product with ID ${id}: `, error);
+        return null;
+    }
+}
+
+/**
+ * Fetches a single product by its barcode from the Firestore 'products' collection.
+ * @param barcode The barcode of the product to fetch.
+ * @returns A promise that resolves to the product object or null if not found.
+ */
+export async function getProductByBarcode(barcode: string): Promise<Product | null> {
+    try {
+        const productsCol = collection(db, 'products');
+        const q = query(productsCol, where("barcode", "==", barcode), limit(1));
+        const productSnapshot = await getDocs(q);
+
+        if (productSnapshot.empty) {
+            console.log(`Product with barcode ${barcode} not found.`);
+            return null;
+        }
+        
+        return mapDocToProduct(productSnapshot.docs[0]);
+
+    } catch (error) {
+        console.error(`Error fetching product with barcode ${barcode}: `, error);
         return null;
     }
 }
