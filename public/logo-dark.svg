@@ -1,7 +1,27 @@
 <svg width="180" height="46" viewBox="0 0 180 46" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <style>
-    .text { font: bold 24px sans-serif; fill: #F7EFE6; }
-    .scan { fill: #F2A43B; }
-  </style>
-  <text x="10" y="30" class="text">Gluten <tspan class="scan">Scan</tspan></text>
+    <style>
+        .gluten-text { font: 24px 'Geist', sans-serif; fill: #f7f5f4; }
+        .scan-text { font: bold 24px 'Geist', sans-serif; fill: #f7f5f4; }
+        .icon-stroke { stroke: #e8a23e; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+    <!-- Magnifying glass icon with wheat -->
+    <g transform="translate(0, 1)">
+        <!-- Wheat stalk -->
+        <path d="M23 13V23" class="icon-stroke"/>
+        <path d="M23 23C21 27 18 31 18 33" class="icon-stroke"/>
+        <path d="M23 23C25 27 28 31 28 33" class="icon-stroke"/>
+        <path d="M19 19L23 17" class="icon-stroke"/>
+        <path d="M27 19L23 17" class="icon-stroke"/>
+        <path d="M19 24L23 22" class="icon-stroke"/>
+        <path d="M27 24L23 22" class="icon-stroke"/>
+
+        <!-- Magnifying glass circle -->
+        <circle cx="23" cy="23" r="16" stroke="#e8a23e" stroke-width="2.5"/>
+        <!-- Magnifying glass handle -->
+        <line x1="35" y1="35" x2="43" y2="43" stroke="#e8a23e" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    
+    <!-- Text -->
+    <text x="52" y="31" class="gluten-text">Gluten</text>
+    <text x="117" y="31" class="scan-text">Scan</text>
 </svg>
