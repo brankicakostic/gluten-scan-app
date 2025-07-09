@@ -12,14 +12,14 @@ export default function ScanBarcodePage() {
   return (
     <div className="p-6 md:p-8">
       <PageHeader 
-        title="Scan Product Barcode"
-        description="Use your device's camera to scan a product barcode and check its gluten status."
+        title="Skeniraj barkod proizvoda"
+        description="Koristite kameru uređaja da skenirate barkod proizvoda i proverite njegov status glutena."
         icon={QrCode}
       />
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle>Barcode Scanner</CardTitle>
-          <CardDescription>Point your camera at a barcode. Results will appear below.</CardDescription>
+          <CardTitle>Skener barkoda</CardTitle>
+          <CardDescription>Uperite kameru ka barkodu. Rezultati će se pojaviti ispod.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="aspect-video bg-muted rounded-md flex items-center justify-center">
@@ -28,7 +28,7 @@ export default function ScanBarcodePage() {
           </div>
           <Button className="w-full" size="lg">
             <QrCode className="mr-2 h-5 w-5" />
-            Start Scanning
+            Pokreni skeniranje
           </Button>
           
           {scanResult && (
@@ -47,18 +47,18 @@ export default function ScanBarcodePage() {
                   {scanResult.isGlutenFree ? (
                     <div className="flex items-center text-green-600 mt-1">
                       <CheckCircle className="h-5 w-5 mr-1" />
-                      <span>Likely Gluten-Free</span>
+                      <span>Verovatno bez glutena</span>
                     </div>
                   ) : (
                     <div className="flex items-center text-red-600 mt-1">
                       <AlertCircle className="h-5 w-5 mr-1" />
-                      <span>May Contain Gluten</span>
+                      <span>Može sadržati gluten</span>
                     </div>
                   )}
                 </div>
               </CardHeader>
               <CardContent>
-                <h4 className="font-semibold mb-1">Ingredients:</h4>
+                <h4 className="font-semibold mb-1">Sastojci:</h4>
                 <p className="text-sm text-muted-foreground">{scanResult.ingredients}</p>
               </CardContent>
             </Card>
@@ -67,7 +67,7 @@ export default function ScanBarcodePage() {
           {!scanResult && (
              <div className="text-center text-muted-foreground py-8">
                 <ShoppingBag className="mx-auto h-12 w-12 mb-2" />
-                <p>Scan a product to see its details here.</p>
+                <p>Skenirajte proizvod da biste videli detalje ovde.</p>
               </div>
           )}
         </CardContent>

@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: { params: { locale: string } 
       default: title,
       template: `%s | ${title}`,
     },
-    description: params.locale === 'sr' ? 'Lako skenirajte i identifikujte proizvode bez glutena.' : 'Scan and identify gluten-free products easily.',
+    description: 'Lako skenirajte i identifikujte proizvode bez glutena.',
   };
 }
 

@@ -31,15 +31,15 @@ export default function FavoritesClientPage({ allProducts }: FavoritesClientPage
 
   const handleRemoveFavorite = (product: Product) => {
     removeFavorite(product.id);
-    toast({ title: `${product.name} removed from favorites.` });
+    toast({ title: `${product.name} uklonjen iz omiljenih.` });
   };
 
   return (
     <div className="p-6 md:p-8">
       <div className="mx-auto max-w-6xl">
         <PageHeader 
-          title="Favorite Products"
-          description="Manage your list of favorite gluten-free items."
+          title="Omiljeni proizvodi"
+          description="Upravljajte listom omiljenih bezglutenskih proizvoda."
           icon={Heart}
         />
         
@@ -70,7 +70,7 @@ export default function FavoritesClientPage({ allProducts }: FavoritesClientPage
                     onClick={() => handleRemoveFavorite(product)}
                   >
                     <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Remove from favorites</span>
+                    <span className="sr-only">Ukloni iz omiljenih</span>
                   </Button>
                 </CardHeader>
                 <CardContent className="p-4 flex flex-col flex-grow">
@@ -83,17 +83,17 @@ export default function FavoritesClientPage({ allProducts }: FavoritesClientPage
                   {isGlutenFreeTag ? (
                     <div className="flex items-center text-green-600 dark:text-green-400 text-xs mt-1 mb-1">
                       <CheckCircle className="h-3 w-3 mr-1" />
-                      <span>Gluten-Free</span>
+                      <span>Bez glutena</span>
                     </div>
                   ) : containsGlutenTag ? (
                     <div className="flex items-center text-red-600 dark:text-red-500 text-xs mt-1 mb-1">
                       <AlertTriangle className="h-3 w-3 mr-1" />
-                      <span>Contains Gluten</span>
+                      <span>Sadrži gluten</span>
                     </div>
                   ) : mayContainGlutenTag ? (
                     <div className="flex items-center text-orange-500 dark:text-orange-400 text-xs mt-1 mb-1">
                       <AlertTriangle className="h-3 w-3 mr-1" />
-                      <span>May Contain Traces</span>
+                      <span>Može sadržati tragove</span>
                     </div>
                   ) : (
                      <div className="flex items-center text-muted-foreground text-xs mt-1 mb-1">
@@ -103,7 +103,7 @@ export default function FavoritesClientPage({ allProducts }: FavoritesClientPage
                   )}
                   <p className="text-sm mb-3 h-10 overflow-hidden flex-grow">{product.description}</p>
                    <Button asChild variant="outline" size="sm" className="w-full mt-auto">
-                      <Link href={`/${locale}/products/${product.id}`}>View Details</Link>
+                      <Link href={`/${locale}/products/${product.id}`}>Vidi detalje</Link>
                     </Button>
                 </CardContent>
               </Card>
@@ -112,11 +112,11 @@ export default function FavoritesClientPage({ allProducts }: FavoritesClientPage
         ) : (
           <div className="text-center py-12 text-muted-foreground">
             <StarOff className="mx-auto h-16 w-16 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No Favorites Yet</h3>
-            <p>Add products to your favorites list to see them here.</p>
+            <h3 className="text-xl font-semibold mb-2">Još uvek nema omiljenih proizvoda</h3>
+            <p>Dodajte proizvode na listu omiljenih da bi se prikazali ovde.</p>
             <Button variant="outline" className="mt-4" asChild>
               <Link href={`/${locale}/products`}>
-                <ShoppingBag className="mr-2 h-4 w-4" /> Browse Products
+                <ShoppingBag className="mr-2 h-4 w-4" /> Pretraži proizvode
               </Link>
             </Button>
           </div>

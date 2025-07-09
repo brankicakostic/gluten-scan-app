@@ -13,22 +13,22 @@ export interface NavLink {
 export const bottomNavLinks: NavLink[] = [
   {
     href: '/',
-    label: 'Home',
+    label: 'Početna',
     icon: Home,
   },
   {
     href: '/products',
-    label: 'Products',
+    label: 'Proizvodi',
     icon: ShoppingBag,
   },
   {
     href: '/recalls',
-    label: 'Recalls',
+    label: 'Opozivi',
     icon: Siren,
   },
   {
     href: '/history',
-    label: 'History',
+    label: 'Istorija',
     icon: History,
   },
 ];

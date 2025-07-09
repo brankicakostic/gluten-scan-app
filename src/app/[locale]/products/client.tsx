@@ -74,30 +74,30 @@ export default function ProductsClientPage({ allProducts, productCategories }: P
     <div className="p-6 md:p-8">
       <div className="mx-auto max-w-6xl">
         <PageHeader
-          title="Find Gluten-Free Products"
-          description="Search and filter through a curated list of gluten-free items."
+          title="Pronađi proizvode bez glutena"
+          description="Pretražite i filtrirajte listu bezglutenskih proizvoda."
           icon={ShoppingBag}
         />
 
         <div className="mb-8 p-6 bg-card border rounded-lg shadow">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             <div className="space-y-1.5 md:col-span-2">
-              <label htmlFor="search" className="text-sm font-medium">Search Products</label>
+              <label htmlFor="search" className="text-sm font-medium">Pretraži proizvode</label>
               <Input
                 id="search"
-                placeholder="Search by name, brand, or description..."
+                placeholder="Pretražite po nazivu, brendu ili opisu..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="category" className="text-sm font-medium">Category</label>
+              <label htmlFor="category" className="text-sm font-medium">Kategorija</label>
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                 <SelectTrigger id="category">
-                  <SelectValue placeholder="All Categories" />
+                  <SelectValue placeholder="Sve kategorije" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="all">Sve kategorije</SelectItem>
                   {productCategories.map(category => (
                     <SelectItem key={category} value={category}>{category}</SelectItem>
                   ))}
@@ -147,17 +147,17 @@ export default function ProductsClientPage({ allProducts, productCategories }: P
                       ) : isConsideredGF ? (
                         <div className="flex items-center text-green-600 dark:text-green-400 text-xs mt-1 mb-1">
                           <CheckCircle className="h-3 w-3 mr-1" />
-                          <span>Gluten-Free</span>
+                          <span>Bez glutena</span>
                         </div>
                       ) : containsGlutenTag ? (
                         <div className="flex items-center text-red-600 dark:text-red-500 text-xs mt-1 mb-1">
                           <AlertTriangle className="h-3 w-3 mr-1" />
-                          <span>Contains Gluten</span>
+                          <span>Sadrži gluten</span>
                         </div>
                       ) : mayContainGlutenTag ? (
                         <div className="flex items-center text-orange-500 dark:text-orange-400 text-xs mt-1 mb-1">
                           <AlertTriangle className="h-3 w-3 mr-1" />
-                          <span>May Contain Traces</span>
+                          <span>Može sadržati tragove</span>
                         </div>
                       ) : (
                          <div className="flex items-center text-muted-foreground text-xs mt-1 mb-1">
@@ -175,7 +175,7 @@ export default function ProductsClientPage({ allProducts, productCategories }: P
                           {product.isHighProtein && <Badge variant="secondary" className="text-xs">Visok sadržaj proteina</Badge>}
                       </div>
                       <Button asChild variant="outline" size="sm" className="w-full mt-auto">
-                        <Link href={`/${locale}/products/${product.id}`}>View Details</Link>
+                        <Link href={`/${locale}/products/${product.id}`}>Vidi detalje</Link>
                       </Button>
                     </CardContent>
                   </Card>
@@ -191,10 +191,10 @@ export default function ProductsClientPage({ allProducts, productCategories }: P
                   disabled={currentPage === 1}
                 >
                   <ChevronLeft className="h-4 w-4 mr-1" />
-                  Previous
+                  Prethodna
                 </Button>
                 <span className="text-sm text-muted-foreground">
-                  Page {currentPage} of {totalPages}
+                  Stranica {currentPage} od {totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -202,7 +202,7 @@ export default function ProductsClientPage({ allProducts, productCategories }: P
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
                 >
-                  Next
+                  Sledeća
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </div>
@@ -211,8 +211,8 @@ export default function ProductsClientPage({ allProducts, productCategories }: P
         ) : (
           <div className="text-center py-12 text-muted-foreground">
             <PackageOpen className="mx-auto h-16 w-16 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No Products Found</h3>
-            <p>Try adjusting your filters or search terms.</p>
+            <h3 className="text-xl font-semibold mb-2">Nema pronađenih proizvoda</h3>
+            <p>Pokušajte da promenite filtere ili termine pretrage.</p>
           </div>
         )}
       </div>

@@ -182,14 +182,14 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                 name: foundProduct.name, 
                 barcode: foundProduct.barcode,
                 tags: foundProduct.tags,
-                ingredientsText: foundProduct.ingredientsText || "Ingredients not available.", 
+                ingredientsText: foundProduct.ingredientsText || "Sastojci nisu dostupni.", 
                 imageUrl: foundProduct.imageUrl,
                 dataAiHint: foundProduct.dataAiHint || "scanned product"
               });
-              toast({ title: "Product Found!", description: `Details for ${foundProduct.name} loaded.` });
+              toast({ title: "Proizvod pronađen!", description: `Učitani su detalji za ${foundProduct.name}.` });
             } else {
               setNotFoundBarcode(decodedText);
-              toast({ title: "Barcode Scanned", description: "This product is not in our database yet. Help us add it!" });
+              toast({ title: "Barkod skeniran", description: "Ovaj proizvod još uvek nije u našoj bazi. Pomozite nam da ga dodamo!" });
             }
           },
           (errorMessage) => {
@@ -201,8 +201,8 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
       } catch (err) {
         console.error("html5-qrcode start error", err);
         setHasBarcodeCameraPermission(false);
-        setErrorBarcode("Could not start camera. Please check permissions.");
-        toast({ variant: 'destructive', title: 'Camera Error', description: 'Could not start camera. Please check permissions.'});
+        setErrorBarcode("Nije moguće pokrenuti kameru. Proverite dozvole.");
+        toast({ variant: 'destructive', title: 'Greška sa kamerom', description: 'Nije moguće pokrenuti kameru. Proverite dozvole.'});
         setIsScanningBarcode(false);
       }
     };
@@ -242,8 +242,8 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
             } catch (error) {
                 console.error('Error accessing OCR camera:', error);
                 setHasOcrCameraPermission(false);
-                setErrorDeclaration('OCR Camera access denied. Please enable permissions.');
-                toast({ variant: 'destructive', title: 'Camera Access Denied', description: 'Enable camera permissions for OCR.' });
+                setErrorDeclaration('Pristup OCR kameri je odbijen. Molimo omogućite dozvole.');
+                toast({ variant: 'destructive', title: 'Pristup kameri odbijen', description: 'Omogućite dozvole za kameru za OCR.' });
                 setIsTakingOcrPhoto(false);
             }
         };
@@ -265,7 +265,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
 
   const performAiAnalysis = async (textToAnalyze: string, labelingInfo?: string) => {
     if (!textToAnalyze.trim()) {
-        setErrorDeclaration('No text to analyze.');
+        setErrorDeclaration('Nema teksta za analizu.');
         setIsLoadingDeclaration(false); 
         return;
     }
@@ -279,11 +279,11 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
       });
       setAnalysisResult(result);
       incrementScanCount(); 
-      toast({ title: "AI Analysis Complete", description: "Product declaration analyzed." });
+      toast({ title: "AI analiza završena", description: "Deklaracija proizvoda je analizirana." });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
-      setErrorDeclaration('Analysis failed: ' + errorMessage);
-      toast({ variant: "destructive", title: "Analysis Failed", description: errorMessage });
+      const errorMessage = err instanceof Error ? err.message : 'Nepoznata greška.';
+      setErrorDeclaration('Analiza neuspešna: ' + errorMessage);
+      toast({ variant: "destructive", title: "Analiza neuspešna", description: errorMessage });
     } finally {
       setIsLoadingDeclaration(false);
     }
@@ -296,7 +296,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
       return;
     }
     if (!declarationText.trim()) {
-        setErrorDeclaration('Please enter ingredients to analyze.');
+        setErrorDeclaration('Molimo unesite sastojke za analizu.');
         return;
     }
     setManualTextForAnalysis(declarationText);
@@ -334,16 +334,16 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
         setOcrTextForAnalysis(ocrResult.extractedText);
         setSelectedLabelingOption('');
         setShowLabelingQuestionModal(true);
-        toast({ title: "OCR Scan Complete", description: "Please provide labeling information below." });
+        toast({ title: "OCR skeniranje završeno", description: "Molimo unesite informacije o oznakama ispod." });
       } else {
-        setErrorDeclaration('OCR did not find any text to analyze.');
-        toast({ variant: "destructive", title: "OCR Empty", description: "No text found in image."});
+        setErrorDeclaration('OCR nije pronašao tekst za analizu.');
+        toast({ variant: "destructive", title: "OCR Prazan", description: "Nije pronađen tekst na slici."});
         resetAnalysisInputs();
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
-      setErrorDeclaration('OCR processing failed: ' + errorMessage);
-      toast({ variant: "destructive", title: "OCR Failed", description: errorMessage });
+      const errorMessage = err instanceof Error ? err.message : 'Nepoznata greška.';
+      setErrorDeclaration('OCR obrada neuspešna: ' + errorMessage);
+      toast({ variant: "destructive", title: "OCR Neuspešan", description: errorMessage });
       resetAnalysisInputs();
     } finally {
       setIsLoadingOcr(false); 
@@ -356,7 +356,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
       return;
     }
     if (!stagedImage) {
-      setErrorDeclaration('Please select or capture an image first.');
+      setErrorDeclaration('Molimo prvo izaberite ili snimite sliku.');
       return;
     }
     await processOcrData(stagedImage);
@@ -365,7 +365,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
   const handleLabelingChoiceSubmit = async () => {
     const textToAnalyze = manualTextForAnalysis || ocrTextForAnalysis;
     if (!textToAnalyze || !selectedLabelingOption) {
-      toast({ variant: "destructive", title: "Selection Missing", description: "Please select a labeling option or provide text."});
+      toast({ variant: "destructive", title: "Nedostaje odabir", description: "Molimo odaberite opciju označavanja ili unesite tekst."});
       return;
     }
     setShowLabelingQuestionModal(false); 
@@ -410,7 +410,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
 
   const handleCaptureOcrPhoto = async () => {
     if (!ocrVideoRef.current || !hasOcrCameraPermission) {
-        setErrorDeclaration("OCR Camera not ready or permission denied.");
+        setErrorDeclaration("OCR kamera nije spremna ili je pristup odbijen.");
         return;
     }
     if (!canScan()) { 
@@ -427,7 +427,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
         const imageDataUri = canvas.toDataURL('image/jpeg'); 
         setStagedImage(imageDataUri);
     } else {
-        setErrorDeclaration("Could not capture image from camera.");
+        setErrorDeclaration("Nije moguće snimiti sliku sa kamere.");
     }
     setIsTakingOcrPhoto(false); 
   };
@@ -533,8 +533,8 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
     <div className="p-6 md:p-8">
       <div className="mx-auto max-w-6xl">
         <PageHeader 
-          title="Welcome to Gluten Scan"
-          description="Search, scan, or analyze ingredients to find gluten-free products."
+          title="Dobrodošli u Gluten Scan"
+          description="Pretražite, skenirajte ili analizirajte sastojke da biste pronašli proizvode bez glutena."
           icon={ScanLine}
         />
         
@@ -546,12 +546,12 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                    {canScan() ? (
                      <div className="flex items-center text-primary">
                        <CheckCircle className="h-4 w-4 mr-1.5" />
-                       <span>{getRemainingScans()} of {scanLimit} free scans remaining.</span>
+                       <span>Preostalo vam je {getRemainingScans()} od {scanLimit} besplatnih skeniranja.</span>
                      </div>
                    ) : (
                      <div className="flex items-center text-destructive">
                        <AlertCircle className="h-4 w-4 mr-1.5" />
-                       <span>No free scans remaining. Upgrade for unlimited scans.</span>
+                       <span>Nemate više besplatnih skeniranja. Nadogradite na Premium za neograničeno skeniranje.</span>
                      </div>
                    )}
                  </>
@@ -560,7 +560,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                )}
                
                {process.env.NODE_ENV === 'development' && (
-                 <Button variant="outline" size="sm" onClick={resetScanCount} title="Reset Scan Count (Dev Only)">
+                 <Button variant="outline" size="sm" onClick={resetScanCount} title="Resetuj Brojač Skeniranja (Samo za razvoj)">
                    <RotateCcw className="h-3 w-3" />
                  </Button>
                )}
@@ -572,7 +572,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
           {isLoadingTip && (
             <div className="flex items-center justify-center text-muted-foreground p-4 bg-muted/50 rounded-lg shadow-sm">
               <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-              <span>Loading daily tip...</span>
+              <span>Učitavanje dnevnog saveta...</span>
             </div>
           )}
           {dailyTip && !isLoadingTip && (
@@ -586,13 +586,13 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                   <AlertDialog open={showTipDetailsModal} onOpenChange={setShowTipDetailsModal}>
                     <AlertDialogTrigger asChild>
                       <Button variant="outline" size="sm" className="bg-background/70 hover:bg-background">
-                        <BookOpen className="mr-2 h-4 w-4" /> Read More
+                        <BookOpen className="mr-2 h-4 w-4" /> Pročitaj više
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle className="flex items-center gap-2">
-                          <Lightbulb className="h-5 w-5 text-primary" /> Daily Celiac Tip
+                          <Lightbulb className="h-5 w-5 text-primary" /> Dnevni savet o celijakiji
                         </AlertDialogTitle>
                         <AlertDialogDescription className="text-left pt-2">
                           <strong>{dailyTip.summary}</strong>
@@ -602,7 +602,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                         <p>{dailyTip.details}</p>
                       </div>
                       <AlertDialogFooter>
-                        <AlertDialogAction>Got it!</AlertDialogAction>
+                        <AlertDialogAction>U redu!</AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
@@ -615,15 +615,15 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Link href={`/${locale}/products`} className="hover:underline">Find Products</Link></CardTitle>
-              <CardDescription>Browse the full catalog of products.</CardDescription>
+              <CardTitle className="flex items-center gap-2"><Link href={`/${locale}/products`} className="hover:underline">Pronađi proizvode</Link></CardTitle>
+              <CardDescription>Pretražite kompletan katalog proizvoda.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 flex flex-col items-center justify-center h-[180px] text-center">
                <PackageOpen className="h-16 w-16 text-primary" />
-               <p className="text-muted-foreground">Over {initialProducts.length}+ products in the database.</p>
+               <p className="text-muted-foreground">Preko {initialProducts.length}+ proizvoda u bazi podataka.</p>
                <Button asChild>
                  <Link href={`/${locale}/products`}>
-                   <Search className="mr-2 h-4 w-4" /> Browse All Products
+                   <Search className="mr-2 h-4 w-4" /> Pretraži sve proizvode
                  </Link>
                </Button>
             </CardContent>
@@ -631,8 +631,8 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><QrCode className="h-5 w-5" /> Scan Product Barcode</CardTitle>
-              <CardDescription>Use your device's camera for instant gluten information.</CardDescription>
+              <CardTitle className="flex items-center gap-2"><QrCode className="h-5 w-5" /> Skeniraj barkod proizvoda</CardTitle>
+              <CardDescription>Koristite kameru uređaja za trenutne informacije o glutenu.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {!isScanningBarcode && !barcodeScanResult && (
@@ -642,7 +642,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                   size="lg" 
                   disabled={!hasMounted || (hasMounted && !canScan()) || isLoadingAnyAnalysisProcess || isTakingOcrPhoto}
                 >
-                  <QrCode className="mr-2 h-5 w-5" /> Start Barcode Scanning
+                  <QrCode className="mr-2 h-5 w-5" /> Pokreni skeniranje barkoda
                 </Button>
               )}
               {isScanningBarcode && (
@@ -653,20 +653,20 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                      {hasBarcodeCameraPermission === false && (
                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 p-4 rounded-md">
                           <CameraOff className="h-12 w-12 mb-2 text-destructive" />
-                          <p className="text-center text-destructive-foreground">Camera access is required. Please enable permissions.</p>
+                          <p className="text-center text-destructive-foreground">Potreban je pristup kameri. Molimo omogućite dozvole.</p>
                        </div>
                      )}
                      {hasBarcodeCameraPermission === true && (
-                        <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-sm bg-black/50 text-white px-2 py-1 rounded">Point camera at barcode...</p>
+                        <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-sm bg-black/50 text-white px-2 py-1 rounded">Uperite kameru ka barkodu...</p>
                      )}
                   </div>
-                  <Button onClick={handleCancelBarcodeScanning} variant="outline" className="w-full">Cancel Barcode Scan</Button>
+                  <Button onClick={handleCancelBarcodeScanning} variant="outline" className="w-full">Otkaži skeniranje barkoda</Button>
                 </div>
               )}
               {errorBarcode && !isScanningBarcode && (
                 <ShadcnAlert variant="destructive" className="mt-4">
                   <AlertCircle className="h-4 w-4" />
-                  <ShadcnAlertTitle>Barcode Scanning Error</ShadcnAlertTitle>
+                  <ShadcnAlertTitle>Greška pri skeniranju barkoda</ShadcnAlertTitle>
                   <ShadcnAlertDescription>{errorBarcode}</ShadcnAlertDescription>
                 </ShadcnAlert>
               )}
@@ -677,13 +677,13 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                     <div>
                       <CardTitle className="text-xl">{barcodeScanResult.name}</CardTitle>
                       {barcodeScanResult.tags?.includes('gluten-free') && (
-                        <div className="flex items-center text-green-600 dark:text-green-400 mt-1"><CheckCircle className="h-5 w-5 mr-1" /><span>Likely Gluten-Free</span></div>
+                        <div className="flex items-center text-green-600 dark:text-green-400 mt-1"><CheckCircle className="h-5 w-5 mr-1" /><span>Verovatno bez glutena</span></div>
                       )}
                       {(barcodeScanResult.tags?.includes('contains-gluten') || barcodeScanResult.tags?.includes('contains-wheat') || barcodeScanResult.tags?.includes('contains-barley') || barcodeScanResult.tags?.includes('contains-rye') || (barcodeScanResult.tags?.includes('contains-oats') && !barcodeScanResult.tags?.includes('gluten-free'))) && (
-                        <div className="flex items-center text-red-600 dark:text-red-500 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>Contains Gluten</span></div>
+                        <div className="flex items-center text-red-600 dark:text-red-500 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>Sadrži gluten</span></div>
                       )}
                       {barcodeScanResult.tags?.includes('may-contain-gluten') && !barcodeScanResult.tags?.includes('gluten-free') && !barcodeScanResult.tags?.includes('contains-gluten') && (
-                         <div className="flex items-center text-orange-500 dark:text-orange-400 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>May Contain Traces</span></div>
+                         <div className="flex items-center text-orange-500 dark:text-orange-400 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>Može sadržati tragove</span></div>
                       )}
                     </div>
                   </CardHeader>
@@ -694,16 +694,16 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                          <span>{barcodeScanResult.barcode}</span>
                       </div>
                     )}
-                    <h4 className="font-semibold mb-1 text-sm">Ingredients:</h4>
-                    <p className="text-xs text-muted-foreground">{barcodeScanResult.ingredientsText || 'Not available'}</p>
-                    <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => { setBarcodeScanResult(null); setErrorBarcode(null);}}>Scan Another Barcode</Button>
+                    <h4 className="font-semibold mb-1 text-sm">Sastojci:</h4>
+                    <p className="text-xs text-muted-foreground">{barcodeScanResult.ingredientsText || 'Nisu dostupni'}</p>
+                    <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => { setBarcodeScanResult(null); setErrorBarcode(null);}}>Skeniraj drugi barkod</Button>
                   </CardContent>
                 </Card>
               )}
               {!isScanningBarcode && !barcodeScanResult && !errorBarcode && !notFoundBarcode && (
                  <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md">
                   <QrCode className="mx-auto h-8 w-8 mb-2" />
-                  <p className="text-sm">Barcode scan results will appear here.</p>
+                  <p className="text-sm">Rezultati skeniranja barkoda će se pojaviti ovde.</p>
                 </div>
               )}
             </CardContent>
@@ -712,7 +712,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
 
         <div className="mb-8">
           <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
-            <ShoppingBag className="h-6 w-6 text-primary" /> Featured Products
+            <ShoppingBag className="h-6 w-6 text-primary" /> Istaknuti proizvodi
           </h2>
           {displayedProducts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -741,17 +741,17 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                       {isConsideredGF ? (
                         <div className="flex items-center text-green-600 dark:text-green-400 text-xs mt-1 mb-1">
                           <CheckCircle className="h-3 w-3 mr-1" />
-                          <span>Gluten-Free</span>
+                          <span>Bez glutena</span>
                         </div>
                       ) : containsGlutenTag ? (
                         <div className="flex items-center text-red-600 dark:text-red-500 text-xs mt-1 mb-1">
                           <AlertTriangle className="h-3 w-3 mr-1" />
-                          <span>Contains Gluten</span>
+                          <span>Sadrži gluten</span>
                         </div>
                       ) : mayContainGlutenTag ? (
                         <div className="flex items-center text-orange-500 dark:text-orange-400 text-xs mt-1 mb-1">
                           <AlertTriangle className="h-3 w-3 mr-1" />
-                          <span>May Contain Traces</span>
+                          <span>Može sadržati tragove</span>
                         </div>
                       ) : (
                          <div className="flex items-center text-muted-foreground text-xs mt-1 mb-1">
@@ -766,10 +766,10 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                           {product.isVegan && <Badge variant="secondary" className="text-xs">Vegan</Badge>}
                           {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Bez laktoze</Badge>}
                           {product.isSugarFree && <Badge variant="secondary" className="text-xs">Bez šećera</Badge>}
-                          {product.isHighProtein && <Badge variant="secondary" className="text-xs">Visok sadržaj proteina</Badge>}
+                          {product.isHighProtein && <Badge variant="secondary" className="text-xs">Bogat proteinima</Badge>}
                        </div>
                       <Button asChild variant="outline" size="sm" className="w-full mt-auto">
-                        <Link href={`/${locale}/products/${product.id}`}>View Details</Link>
+                        <Link href={`/${locale}/products/${product.id}`}>Vidi detalje</Link>
                       </Button>
                     </CardContent>
                   </Card>
@@ -779,8 +779,8 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
           ) : (
             <div className="text-center py-12 text-muted-foreground border-dashed border-2 rounded-md">
               <PackageOpen className="mx-auto h-16 w-16 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">No Products Found</h3>
-              <p>Check back later or try searching the full product list.</p>
+              <h3 className="text-xl font-semibold mb-2">Nema pronađenih proizvoda</h3>
+              <p>Pokušajte ponovo kasnije ili pretražite kompletnu listu proizvoda.</p>
             </div>
           )}
         </div>
@@ -788,8 +788,8 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><ScanSearch className="h-5 w-5" /> Analyze Ingredients from Image</CardTitle>
-              <CardDescription>Upload an image of an ingredient list, or take a picture for AI analysis.</CardDescription>
+              <CardTitle className="flex items-center gap-2"><ScanSearch className="h-5 w-5" /> Analiziraj sastojke sa slike</CardTitle>
+              <CardDescription>Otpremite sliku liste sastojaka ili slikajte za AI analizu.</CardDescription>
             </CardHeader>
             <CardContent className="min-h-[220px]">
               {isTakingOcrPhoto ? (
@@ -800,16 +800,16 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                     {hasOcrCameraPermission === false && (
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 p-4 rounded-md">
                         <CameraOff className="h-10 w-10 mb-2 text-destructive" />
-                        <p className="text-center text-destructive-foreground text-sm">OCR Camera access is required.</p>
+                        <p className="text-center text-destructive-foreground text-sm">Pristup OCR kameri je neophodan.</p>
                       </div>
                     )}
                   </div>
                   <div className="flex gap-2">
                     <Button onClick={handleCaptureOcrPhoto} disabled={!hasOcrCameraPermission || isLoadingOcr} className="flex-grow">
                       {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Camera className="mr-2 h-4 w-4"/>}
-                       Capture Photo
+                       Snimi fotografiju
                     </Button>
-                    <Button onClick={handleCancelOcrPhotoCapture} variant="outline" className="flex-grow">Cancel</Button>
+                    <Button onClick={handleCancelOcrPhotoCapture} variant="outline" className="flex-grow">Otkaži</Button>
                   </div>
                 </div>
               ) : stagedImage ? (
@@ -823,26 +823,26 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                         onClick={() => resetAnalysisInputs()}
                       >
                         <X className="h-4 w-4" />
-                        <span className="sr-only">Clear Image</span>
+                        <span className="sr-only">Ukloni sliku</span>
                       </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground">Image ready for analysis.</p>
+                  <p className="text-xs text-muted-foreground">Slika je spremna za analizu.</p>
                  </div>
               ) : (
                 <div className="space-y-4 text-center">
                   <Label htmlFor="ocr-file-input" className="group cursor-pointer w-full border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center hover:border-primary hover:bg-muted/50 transition-colors">
                     <UploadCloud className="h-8 w-8 text-muted-foreground group-hover:text-primary" />
-                    <span className="mt-2 text-sm font-semibold">Choose File</span>
+                    <span className="mt-2 text-sm font-semibold">Izaberi fajl</span>
                     <Input id="ocr-file-input" type="file" className="sr-only" onChange={handleFileChange} accept="image/*" disabled={isLoadingAnyAnalysisProcess}/>
                   </Label>
                    <div className="flex items-center gap-2">
                       <div className="flex-grow border-t"></div>
-                      <span className="text-xs text-muted-foreground">OR</span>
+                      <span className="text-xs text-muted-foreground">ILI</span>
                       <div className="flex-grow border-t"></div>
                    </div>
                    <Button variant="outline" className="w-full" onClick={handleInitiateOcrPhotoCapture} disabled={isLoadingAnyAnalysisProcess}>
                       <Camera className="mr-2 h-4 w-4" />
-                      Take Picture
+                      Fotografiši
                    </Button>
                 </div>
               )}
@@ -850,7 +850,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
             <CardFooter>
                <Button onClick={handleAnalyzeStagedImage} size="lg" disabled={!stagedImage || isLoadingAnyAnalysisProcess || !hasMounted || (hasMounted && !canScan())} className="w-full">
                   {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                  Analyze with AI
+                  Analiziraj sa AI
                </Button>
             </CardFooter>
           </Card>
@@ -859,14 +859,14 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
             <AccordionItem value="item-1">
               <AccordionTrigger>
                  <div className="flex items-center gap-2">
-                   <FileText className="h-5 w-5"/> Or Paste Text Manually
+                   <FileText className="h-5 w-5"/> Ili nalepite tekst ručno
                  </div>
               </AccordionTrigger>
               <AccordionContent>
                 <form onSubmit={handleDeclarationSubmit} className="space-y-4 pt-2">
                     <Textarea
                       id="declaration-text-area"
-                      placeholder="e.g., Wheat flour, sugar, salt, yeast, barley malt extract..."
+                      placeholder="npr. pšenično brašno, šećer, so, kvasac, ekstrakt ječmenog slada..."
                       value={declarationText}
                       onChange={(e) => {
                          setDeclarationText(e.target.value);
@@ -883,7 +883,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                     className="w-full"
                   >
                     {isLoadingDeclaration && !isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                    Analyze Text with AI
+                    Analiziraj tekst sa AI
                   </Button>
                 </form>
               </AccordionContent>
@@ -899,13 +899,13 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
             {(analysisResult || isLoadingDeclaration || (isLoadingOcr && !isTakingOcrPhoto)) && !showLabelingQuestionModal && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg mb-2">AI Analysis Report</CardTitle>
+                  <CardTitle className="text-lg mb-2">Izveštaj AI analize</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {(isLoadingDeclaration || (isLoadingOcr && !isTakingOcrPhoto)) && (
                     <div className="flex flex-col items-center justify-center h-24 text-muted-foreground">
                       <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
-                      <p>{isLoadingOcr ? 'Processing Image...' : 'Analyzing Ingredients...'}</p>
+                      <p>{isLoadingOcr ? 'Obrađujem sliku...' : 'Analiziram sastojke...'}</p>
                     </div>
                   )}
                   {analysisResult && !isLoadingDeclaration && !isLoadingOcr && (
@@ -1086,7 +1086,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                                  <DialogFooter>
                                    <Button variant="outline" onClick={() => setShowReportErrorModal(false)}>Odustani</Button>
                                    <Button onClick={handleReportSubmit} disabled={reportSubmissionStatus === 'submitting'}>
-                                     {reportSubmissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Pošalji prijavu'}
+                                     {reportSubmissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />} Pošalji prijavu
                                    </Button>
                                  </DialogFooter>
                                </>
@@ -1106,7 +1106,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
              {errorDeclaration && !showLabelingQuestionModal && (
                 <ShadcnAlert variant="destructive" className="mt-4">
                   <AlertCircle className="h-4 w-4" />
-                  <ShadcnAlertTitle>Error</ShadcnAlertTitle>
+                  <ShadcnAlertTitle>Greška</ShadcnAlertTitle>
                   <ShadcnAlertDescription>{errorDeclaration}</ShadcnAlertDescription>
                 </ShadcnAlert>
               )}
@@ -1118,19 +1118,19 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
             <AlertDialogHeader>
               <AlertDialogTitle className="flex items-center">
                 <Star className="h-5 w-5 mr-2 text-primary" /> 
-                Free Scan Limit Reached
+                Dostignut limit besplatnih skeniranja
               </AlertDialogTitle>
               <AlertDialogDescription>
-                You have used all your {scanLimit} free scans. To continue scanning and analyzing products, please consider upgrading to our Premium version.
+                Iskoristili ste svih {scanLimit} besplatnih skeniranja. Da biste nastavili sa skeniranjem i analizom proizvoda, razmislite o nadogradnji na našu Premium verziju.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Maybe Later</AlertDialogCancel>
+              <AlertDialogCancel>Možda kasnije</AlertDialogCancel>
               <AlertDialogAction onClick={() => {
-                toast({ title: "Premium (Coming Soon!)", description: "Thanks for your interest! Premium features are under development."});
+                toast({ title: "Premium (Uskoro!)", description: "Hvala na interesovanju! Premium funkcije su u razvoju."});
                 setShowScanLimitModal(false);
               }}>
-                Learn More About Premium
+                Saznajte više o Premiumu
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -1142,34 +1142,32 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
         }}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Product Labeling Information</AlertDialogTitle>
+              <AlertDialogTitle>Informacije o oznakama na proizvodu</AlertDialogTitle>
               <AlertDialogDescription>
-                Please indicate if you see any of these gluten-free labels on the product packaging.
-                This helps improve the analysis accuracy. <br />
-                (Example AOECS: A crossed grain symbol, often with a license number and country code.)
+                Molimo vas naznačite da li vidite neku od ovih bezglutenskih oznaka na pakovanju proizvoda. Ovo pomaže u poboljšanju tačnosti analize. <br /> (Primer AOECS: Simbol precrtanog klasa, često sa brojem licence i kodom zemlje.)
               </AlertDialogDescription>
             </AlertDialogHeader>
             <div className="space-y-3 py-2">
               <RadioGroup value={selectedLabelingOption} onValueChange={setSelectedLabelingOption} className="gap-3">
                 <div className="flex items-center space-x-2 p-2 border rounded-md hover:bg-muted/50 transition-colors">
                   <RadioGroupItem value="aoecs" id="label-aoecs" />
-                  <Label htmlFor="label-aoecs" className="cursor-pointer flex-1">AOECS Certificate (e.g., Crossed Grain symbol)</Label>
+                  <Label htmlFor="label-aoecs" className="cursor-pointer flex-1">AOECS sertifikat (npr. simbol precrtanog klasa)</Label>
                 </div>
                 <div className="flex items-center space-x-2 p-2 border rounded-md hover:bg-muted/50 transition-colors">
                   <RadioGroupItem value="gf_text" id="label-gf_text" />
-                  <Label htmlFor="label-gf_text" className="cursor-pointer flex-1">"Gluten-Free" Text/Icon (not an official certificate)</Label>
+                  <Label htmlFor="label-gf_text" className="cursor-pointer flex-1">"Bez glutena" tekst/ikona (nije zvanični sertifikat)</Label>
                 </div>
                 <div className="flex items-center space-x-2 p-2 border rounded-md hover:bg-muted/50 transition-colors">
                   <RadioGroupItem value="none" id="label-none" />
-                  <Label htmlFor="label-none" className="cursor-pointer flex-1">No Gluten-Free Label Present</Label>
+                  <Label htmlFor="label-none" className="cursor-pointer flex-1">Nema bezglutenske oznake</Label>
                 </div>
               </RadioGroup>
             </div>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel Scan</AlertDialogCancel>
+              <AlertDialogCancel>Otkaži skeniranje</AlertDialogCancel>
               <AlertDialogAction onClick={handleLabelingChoiceSubmit} disabled={!selectedLabelingOption || isLoadingDeclaration}>
                 {isLoadingDeclaration ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Continue to AI Analysis
+                Nastavi na AI analizu
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -1243,7 +1241,7 @@ function AddProductDialog({ barcode, isOpen, onClose }: AddProductDialogProps) {
       setHasCameraPermission(true);
       if (videoRef.current) videoRef.current.srcObject = stream;
     } catch (err) {
-      setError('Camera access denied. Please enable permissions.');
+      setError('Pristup kameri je odbijen. Molimo omogućite dozvole.');
       setHasCameraPermission(false);
       setStep('initial');
     }
@@ -1278,7 +1276,7 @@ function AddProductDialog({ barcode, isOpen, onClose }: AddProductDialogProps) {
       setValue('brand', result.brand);
       setStep('confirming');
     } catch (err) {
-      setError('Could not extract info from image. Please try again.');
+      setError('Nije moguće izvući informacije sa slike. Molimo pokušajte ponovo.');
       setStep('initial'); // Revert to initial step on error
     } finally {
       setIsLoading(false);

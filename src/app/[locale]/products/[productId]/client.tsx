@@ -74,10 +74,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const handleToggleFavorite = () => {
     if (isCurrentlyFavorite) {
       removeFavorite(product.id);
-      toast({ title: `${product.name} removed from favorites.` });
+      toast({ title: `${product.name} uklonjen iz omiljenih.` });
     } else {
       addFavorite(product.id);
-      toast({ title: `${product.name} added to favorites!` });
+      toast({ title: `${product.name} dodat u omiljene!` });
     }
   };
   
@@ -123,20 +123,20 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const mayContainGluten = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
   
   const identifiedGlutenSources: string[] = [];
-  if (product.tags?.includes('contains-wheat')) identifiedGlutenSources.push('Wheat');
-  if (product.tags?.includes('contains-barley')) identifiedGlutenSources.push('Barley');
-  if (product.tags?.includes('contains-rye')) identifiedGlutenSources.push('Rye');
-  if (product.tags?.includes('contains-oats') && !isConsideredGF) identifiedGlutenSources.push('Oats (may not be gluten-free)');
+  if (product.tags?.includes('contains-wheat')) identifiedGlutenSources.push('Pšenica');
+  if (product.tags?.includes('contains-barley')) identifiedGlutenSources.push('Ječam');
+  if (product.tags?.includes('contains-rye')) identifiedGlutenSources.push('Raž');
+  if (product.tags?.includes('contains-oats') && !isConsideredGF) identifiedGlutenSources.push('Ovas (verovatno nije bezglutenski)');
 
   const commonAllergenKeywords: { term: string, name: string }[] = [
-    { term: 'lešnik', name: 'Hazelnuts' }, { term: 'lešnici', name: 'Hazelnuts' }, { term: 'lesnik', name: 'Hazelnuts' }, { term: 'lesnici', name: 'Hazelnuts' },
-    { term: 'kikiriki', name: 'Peanuts' },
-    { term: 'soja', name: 'Soy' }, { term: 'sojin', name: 'Soy' },
-    { term: 'mleko', name: 'Milk' }, { term: 'mlijeko', name: 'Milk' }, { term: 'mlečni', name: 'Milk' }, { term: 'mleko u prahu', name: 'Milk' }, { term: 'obrano mleko u prahu', name: 'Milk' }, { term: 'surutka', name: 'Whey (Milk)' }, { term: 'surutka u prahu', name: 'Whey (Milk)' },
-    { term: 'jaja', name: 'Eggs' }, { term: 'jaje', name: 'Eggs' }, { term: 'jaja u prahu', name: 'Eggs'}, {"term": "belance u prahu", "name": "Eggs"},
-    { term: 'badem', name: 'Almonds' },
-    { term: 'orah', name: 'Walnuts' },
-    { term: 'susam', name: 'Sesame' },
+    { term: 'lešnik', name: 'Lešnici' }, { term: 'lešnici', name: 'Lešnici' }, { term: 'lesnik', name: 'Lešnici' }, { term: 'lesnici', name: 'Lešnici' },
+    { term: 'kikiriki', name: 'Kikiriki' },
+    { term: 'soja', name: 'Soja' }, { term: 'sojin', name: 'Soja' },
+    { term: 'mleko', name: 'Mleko' }, { term: 'mlijeko', name: 'Mleko' }, { term: 'mlečni', name: 'Mleko' }, { term: 'mleko u prahu', name: 'Mleko' }, { term: 'obrano mleko u prahu', name: 'Mleko' }, { term: 'surutka', name: 'Surutka (mleko)' }, { term: 'surutka u prahu', name: 'Surutka (mleko)' },
+    { term: 'jaja', name: 'Jaja' }, { term: 'jaje', name: 'Jaja' }, { term: 'jaja u prahu', name: 'Jaja'}, {"term": "belance u prahu", "name": "Jaja"},
+    { term: 'badem', name: 'Bademi' },
+    { term: 'orah', name: 'Orasi' },
+    { term: 'susam', name: 'Susam' },
   ];
 
   let mentionedNonGlutenAllergens: string[] = [];
@@ -157,13 +157,13 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         <div className="mb-6">
           <Button asChild variant="outline" size="sm">
             <Link href={`/${locale}/products`}>
-              <ArrowLeft className="mr-2 h-4 w-4" /> Back to All Products
+              <ArrowLeft className="mr-2 h-4 w-4" /> Nazad na sve proizvode
             </Link>
           </Button>
         </div>
         <PageHeader
           title={product.name}
-          description={product.brand ? `${product.brand} - Details for ${product.name}` : `Details for ${product.name}`}
+          description={product.brand ? `${product.brand} - Detalji za ${product.name}` : `Detalji za ${product.name}`}
           icon={Package}
         />
 
@@ -216,7 +216,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
              {product.barcode && (
               <Card className="mt-4">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center"><Barcode className="h-5 w-5 mr-2 text-primary"/> Barcode</CardTitle>
+                  <CardTitle className="text-lg flex items-center"><Barcode className="h-5 w-5 mr-2 text-primary"/> Barkod</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">{product.barcode}</p>
@@ -237,13 +237,13 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   <div className="flex items-center gap-2 ml-auto flex-shrink-0">
                       <Button variant="outline" size="icon" onClick={handleToggleFavorite}>
                         <Heart className="h-5 w-5" fill={isCurrentlyFavorite ? 'hsl(var(--primary))' : 'none'} />
-                        <span className="sr-only">{isCurrentlyFavorite ? 'Remove from favorites' : 'Add to favorites'}</span>
+                        <span className="sr-only">{isCurrentlyFavorite ? 'Ukloni iz omiljenih' : 'Dodaj u omiljene'}</span>
                       </Button>
                       <Dialog open={showReportErrorModal} onOpenChange={setShowReportErrorModal}>
                         <DialogTrigger asChild>
                           <Button variant="outline" size="icon">
                             <Flag className="h-5 w-5" />
-                            <span className="sr-only">Report an issue</span>
+                            <span className="sr-only">Prijavi problem</span>
                           </Button>
                         </DialogTrigger>
                          <DialogContent>
@@ -315,47 +315,47 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <h3 className="text-md font-semibold mb-1">Description</h3>
+                  <h3 className="text-md font-semibold mb-1">Opis</h3>
                   <p className="text-sm text-muted-foreground">{product.description}</p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                      <h3 className="text-md font-semibold mb-2">Gluten Information</h3>
+                      <h3 className="text-md font-semibold mb-2">Informacije o glutenu</h3>
                        {product.warning ? (
                           <div className="flex items-center text-red-600 dark:text-red-400 font-semibold">
                               <AlertTriangle className="h-5 w-5 mr-2" />
-                              <span>CONTAINS GLUTEN (Recalled Lot)</span>
+                              <span>SADRŽI GLUTEN (Povučen lot)</span>
                           </div>
                       ) : product.hasAOECSLicense ? (
                         <div className="flex items-center text-green-600 dark:text-green-400">
                           <ShieldCheck className="h-5 w-5 mr-2" />
-                          <span>AOECS Licensed Gluten-Free</span>
+                          <span>AOECS Licenciran - Bez glutena</span>
                         </div>
                       ) : product.hasManufacturerStatement ? (
                         <div className="flex items-center text-green-600 dark:text-green-400">
                           <FileText className="h-5 w-5 mr-2" />
-                          <span>Manufacturer Declares Gluten-Free</span>
+                          <span>Proizvođač deklariše - Bez glutena</span>
                         </div>
                       ) : product.isVerifiedAdmin ? (
                         <div className="flex items-center text-green-600 dark:text-green-400">
                           <CheckCircle className="h-5 w-5 mr-2" />
-                          <span>Verified as Gluten-Free</span>
+                          <span>Verifikovano - Bez glutena</span>
                         </div>
                       ) : containsGluten ? (
                         <div className="flex items-center text-red-600 dark:text-red-500">
                           <AlertTriangle className="h-5 w-5 mr-2" />
-                          <span>Contains Gluten</span>
+                          <span>Sadrži gluten</span>
                         </div>
                       ) : mayContainGluten ? (
                         <div className="flex items-center text-orange-500 dark:text-orange-400">
                           <AlertTriangle className="h-5 w-5 mr-2" />
-                          <span>May Contain Gluten Traces</span>
+                          <span>Može sadržati tragove glutena</span>
                         </div>
                       ) : (
                          <div className="flex items-center text-muted-foreground">
                            <Info className="h-5 w-5 mr-2" />
-                           <span>Gluten status not specified</span>
+                           <span>Status glutena nije specificiran</span>
                          </div>
                       )}
                   </div>
@@ -372,20 +372,20 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
                 {(product.isLactoseFree || product.isSugarFree || product.isPosno || product.isVegan || product.isHighProtein) && (
                   <div>
-                    <h3 className="text-md font-semibold mb-2">Other Dietary Information</h3>
+                    <h3 className="text-md font-semibold mb-2">Ostale dijetetske informacije</h3>
                     <div className="space-y-2">
-                      <DietaryTag label="Posno (Lenten)" icon={Leaf} present={product.isPosno} />
+                      <DietaryTag label="Posno" icon={Leaf} present={product.isPosno} />
                       <DietaryTag label="Vegan" icon={Leaf} present={product.isVegan} />
-                      <DietaryTag label="Lactose-Free" icon={CheckCircle} present={product.isLactoseFree} />
-                      <DietaryTag label="Sugar-Free" icon={CheckCircle} present={product.isSugarFree} />
-                      <DietaryTag label="High Protein" icon={Zap} present={product.isHighProtein} />
+                      <DietaryTag label="Bez laktoze" icon={CheckCircle} present={product.isLactoseFree} />
+                      <DietaryTag label="Bez šećera" icon={CheckCircle} present={product.isSugarFree} />
+                      <DietaryTag label="Bogat proteinima" icon={Zap} present={product.isHighProtein} />
                     </div>
                   </div>
                 )}
 
                 {!product.warning && (
                   <div>
-                    <h3 className="text-md font-semibold mb-2">Certifications &amp; Verifications</h3>
+                    <h3 className="text-md font-semibold mb-2">Sertifikati i verifikacije</h3>
                     <div className="space-y-2">
                       {product.hasAOECSLicense && (
                         <TooltipProvider delayDuration={200}>
@@ -393,7 +393,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                             <TooltipTrigger asChild>
                               <div className="flex items-center text-sm text-foreground cursor-help">
                                 <ShieldCheck className="h-4 w-4 mr-2 text-primary" />
-                                <span>AOECS Licensed</span>
+                                <span>AOECS licenca</span>
                               </div>
                             </TooltipTrigger>
                             <TooltipContent className="w-64 text-sm bg-popover text-popover-foreground border-border shadow-md p-2 rounded-md">
@@ -408,7 +408,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                             <TooltipTrigger asChild>
                               <div className="flex items-center text-sm text-foreground cursor-help">
                                 <FileText className="h-4 w-4 mr-2 text-primary" />
-                                <span>Manufacturer Statement (Gluten-Free)</span>
+                                <span>Izjava proizvođača (Bez glutena)</span>
                               </div>
                             </TooltipTrigger>
                             <TooltipContent className="w-64 text-sm bg-popover text-popover-foreground border-border shadow-md p-2 rounded-md">
@@ -417,7 +417,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                           </Tooltip>
                         </TooltipProvider>
                       )}
-                      <DietaryTag label="Admin Verified" icon={CheckCircle} present={product.isVerifiedAdmin} />
+                      <DietaryTag label="Admin verifikovan" icon={CheckCircle} present={product.isVerifiedAdmin} />
                     </div>
                   </div>
                 )}
@@ -440,52 +440,52 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
                 {product.ingredientsText && (
                   <div>
-                    <h3 className="text-md font-semibold mb-1">Ingredients</h3>
+                    <h3 className="text-md font-semibold mb-1">Sastojci</h3>
                     <p className="text-xs text-muted-foreground p-3 bg-muted rounded-md whitespace-pre-wrap">{product.ingredientsText}</p>
                   </div>
                 )}
 
                 <div className="border-t pt-4">
                   <h3 className="text-md font-semibold mb-2 flex items-center">
-                      <CircleAlert className="h-4 w-4 mr-2 text-primary"/> Allergen Notes
+                      <CircleAlert className="h-4 w-4 mr-2 text-primary"/> Napomene o alergenima
                   </h3>
                   {product.warning && identifiedGlutenSources.length === 0 && (
                       <p className="text-sm text-red-600 dark:text-red-400"><strong>Upozorenje:</strong> Ovaj proizvod (ili određena serija) može sadržati gluten. Molimo proverite detalje o povlačenju.</p>
                   )}
                   {!product.warning && identifiedGlutenSources.length > 0 && (
-                      <p className="text-sm text-red-600 dark:text-red-500"><strong>Contains Gluten Sources:</strong> {identifiedGlutenSources.join(', ')}.</p>
+                      <p className="text-sm text-red-600 dark:text-red-500"><strong>Sadrži izvore glutena:</strong> {identifiedGlutenSources.join(', ')}.</p>
                   )}
                   {!product.warning && identifiedGlutenSources.length === 0 && mayContainGluten && !isConsideredGF && (
-                       <p className="text-sm text-orange-600 dark:text-orange-400"><strong>Advisory:</strong> May contain traces of gluten.</p>
+                       <p className="text-sm text-orange-600 dark:text-orange-400"><strong>Napomena:</strong> Može sadržati tragove glutena.</p>
                   )}
                   {!product.warning && identifiedGlutenSources.length === 0 && isConsideredGF && (
-                      <p className="text-sm text-green-600 dark:text-green-400">This product is generally considered gluten-free based on available information.</p>
+                      <p className="text-sm text-green-600 dark:text-green-400">Ovaj proizvod se generalno smatra bezglutenskim na osnovu dostupnih informacija.</p>
                   )}
 
                   {mentionedNonGlutenAllergens.length > 0 && (
                     <div className="mt-2">
                       <p className="text-sm text-muted-foreground">
-                        <strong>Other Potential Allergens Mentioned in Ingredients:</strong> {mentionedNonGlutenAllergens.join(', ')}.
+                        <strong>Ostali potencijalni alergeni pomenuti u sastojcima:</strong> {mentionedNonGlutenAllergens.join(', ')}.
                       </p>
                     </div>
                   )}
 
                   {!product.warning && identifiedGlutenSources.length === 0 && !isConsideredGF && !mayContainGluten && mentionedNonGlutenAllergens.length === 0 && (
-                      <p className="text-sm text-muted-foreground">For specific allergen information, please refer to the ingredients list.</p>
+                      <p className="text-sm text-muted-foreground">Za specifične informacije o alergenima, molimo pogledajte listu sastojaka.</p>
                   )}
-                   <p className="text-xs text-muted-foreground mt-3 italic">Always check the product packaging for the most accurate and complete allergen details. Allergen information provided here is for guidance and is based on available data.</p>
+                   <p className="text-xs text-muted-foreground mt-3 italic">Uvek proverite ambalažu proizvoda za najtačnije i najpotpunije detalje o alergenima. Informacije o alergenima koje su ovde navedene su samo smernice i zasnovane su na dostupnim podacima.</p>
                 </div>
 
                 {product.labelText && !product.warning && (
                   <div>
-                    <h3 className="text-md font-semibold mb-1">Label Text</h3>
+                    <h3 className="text-md font-semibold mb-1">Tekst sa etikete</h3>
                     <p className="text-xs text-muted-foreground p-3 bg-muted rounded-md">{product.labelText}</p>
                   </div>
                 )}
 
                 {product.tags && product.tags.length > 0 && (
                   <div>
-                    <h3 className="text-md font-semibold mb-1 flex items-center"><Tag className="h-4 w-4 mr-2 text-primary"/> Tags</h3>
+                    <h3 className="text-md font-semibold mb-1 flex items-center"><Tag className="h-4 w-4 mr-2 text-primary"/> Tagovi</h3>
                     <div className="flex flex-wrap gap-2 mt-2">
                       {product.tags.map(tag => (
                         <Badge key={tag} variant={tag === 'povučeno' || tag === 'sadrži-gluten' || tag === 'upozorenje' ? 'destructive' : 'secondary'}>{tag}</Badge>
@@ -496,13 +496,13 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
                 {product.source && (
                    <div>
-                    <h3 className="text-md font-semibold mb-1 flex items-center"><GitBranch className="h-4 w-4 mr-2 text-primary"/> Source</h3>
+                    <h3 className="text-md font-semibold mb-1 flex items-center"><GitBranch className="h-4 w-4 mr-2 text-primary"/> Izvor</h3>
                     <p className="text-sm text-muted-foreground">{product.source}</p>
                   </div>
                 )}
 
                 <Button size="lg" className="w-full mt-4" disabled={product.warning}>
-                  <ShoppingBag className="mr-2 h-5 w-5" /> {product.warning ? "Product Recalled" : "Add to Shopping List (Example)"}
+                  <ShoppingBag className="mr-2 h-5 w-5" /> {product.warning ? "Proizvod povučen" : "Dodaj na listu za kupovinu (Primer)"}
                 </Button>
               </CardContent>
             </Card>

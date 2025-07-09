@@ -61,7 +61,7 @@ export default function ScanDeclarationPage() {
       return;
     }
     if (!declarationText.trim()) {
-      setError('Please enter a product declaration.');
+      setError('Molimo unesite deklaraciju proizvoda.');
       return;
     }
 
@@ -74,17 +74,17 @@ export default function ScanDeclarationPage() {
       setAnalysisResult(result);
       incrementScanCount();
       toast({
-        title: "Analysis Complete",
-        description: "Product declaration has been analyzed.",
+        title: "Analiza završena",
+        description: "Deklaracija proizvoda je analizirana.",
       });
     } catch (err) {
       console.error('Error analyzing declaration:', err);
-      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
-      setError(`Failed to analyze declaration: ${errorMessage}`);
+      const errorMessage = err instanceof Error ? err.message : 'Došlo je do nepoznate greške.';
+      setError(`Analiza deklaracije neuspešna: ${errorMessage}`);
       toast({
         variant: "destructive",
-        title: "Analysis Failed",
-        description: `Could not analyze declaration. ${errorMessage}`,
+        title: "Analiza neuspešna",
+        description: `Nije moguće analizirati deklaraciju. ${errorMessage}`,
       });
     } finally {
       setIsLoading(false);
@@ -170,8 +170,8 @@ export default function ScanDeclarationPage() {
     <div className="p-6 md:p-8">
       <div className="mx-auto max-w-6xl">
         <PageHeader 
-          title="Scan Product Declaration"
-          description="Enter the ingredient list from a product to analyze it for gluten content using AI."
+          title="Analiza deklaracije"
+          description="Unesite listu sastojaka sa proizvoda da biste analizirali sadržaj glutena pomoću veštačke inteligencije."
           icon={ScanSearch}
         />
 
@@ -183,12 +183,12 @@ export default function ScanDeclarationPage() {
                   {canScan() ? (
                     <div className="flex items-center text-primary">
                       <CheckCircle className="h-4 w-4 mr-1.5" />
-                      <span>{getRemainingScans()} of {scanLimit} free scans remaining.</span>
+                      <span>Preostalo vam je {getRemainingScans()} od {scanLimit} besplatnih skeniranja.</span>
                     </div>
                   ) : (
                     <div className="flex items-center text-destructive">
                       <AlertCircle className="h-4 w-4 mr-1.5" />
-                      <span>No free scans remaining. Upgrade for unlimited scans.</span>
+                      <span>Nemate više besplatnih skeniranja. Nadogradite na Premium.</span>
                     </div>
                   )}
                 </>
@@ -202,13 +202,13 @@ export default function ScanDeclarationPage() {
         <div className="grid gap-8 md:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>Analyze Ingredients</CardTitle>
-              <CardDescription>Paste the product's ingredient list below.</CardDescription>
+              <CardTitle>Analiziraj sastojke</CardTitle>
+              <CardDescription>Nalepite listu sastojaka proizvoda ispod.</CardDescription>
             </CardHeader>
             <form onSubmit={handleSubmit}>
               <CardContent>
                 <Textarea
-                  placeholder="e.g., Wheat flour, sugar, salt, yeast, barley malt extract..."
+                  placeholder="npr. pšenično brašno, šećer, so, kvasac, ekstrakt ječmenog slada..."
                   value={declarationText}
                   onChange={(e) => setDeclarationText(e.target.value)}
                   rows={10}
@@ -219,7 +219,7 @@ export default function ScanDeclarationPage() {
                 {error && (
                   <ShadcnAlert variant="destructive" className="mt-4">
                     <AlertCircle className="h-4 w-4" />
-                    <ShadcnAlertTitle>Error</ShadcnAlertTitle>
+                    <ShadcnAlertTitle>Greška</ShadcnAlertTitle>
                     <ShadcnAlertDescription>{error}</ShadcnAlertDescription>
                   </ShadcnAlert>
                 )}
@@ -231,7 +231,7 @@ export default function ScanDeclarationPage() {
                   ) : (
                     <Sparkles className="mr-2 h-4 w-4" />
                   )}
-                  Analyze with AI
+                  Analiziraj pomoću AI
                 </Button>
               </CardFooter>
             </form>
@@ -239,8 +239,8 @@ export default function ScanDeclarationPage() {
 
           <Card ref={analysisReportRef} className={analysisResult || isLoading || error ? 'opacity-100' : 'opacity-50'}>
             <CardHeader>
-              <CardTitle>AI Analysis Report</CardTitle>
-              <CardDescription>Results of the gluten detection analysis.</CardDescription>
+              <CardTitle>Izveštaj AI analize</CardTitle>
+              <CardDescription>Rezultati analize na prisustvo glutena.</CardDescription>
             </CardHeader>
             <CardContent 
               className="space-y-4"
@@ -250,14 +250,14 @@ export default function ScanDeclarationPage() {
               {isLoading && (
                 <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
                   <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-                  <p>Analyzing ingredients...</p>
-                  <p className="text-sm">This may take a few moments.</p>
+                  <p>Analiziram sastojke...</p>
+                  <p className="text-sm">Ovo može potrajati nekoliko trenutaka.</p>
                 </div>
               )}
               {!isLoading && !analysisResult && !error && (
                  <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
                   <Info className="h-12 w-12 text-primary mb-4" />
-                  <p>Analysis results will appear here.</p>
+                  <p>Rezultati analize će se pojaviti ovde.</p>
                 </div>
               )}
               {analysisResult && (
@@ -439,7 +439,7 @@ export default function ScanDeclarationPage() {
                                 <DialogFooter>
                                   <Button variant="outline" onClick={() => setShowReportErrorModal(false)}>Odustani</Button>
                                   <Button onClick={handleReportSubmit} disabled={submissionStatus === 'submitting'}>
-                                    {submissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Pošalji prijavu'}
+                                    {submissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />} Pošalji prijavu
                                   </Button>
                                 </DialogFooter>
                               </>
@@ -463,19 +463,19 @@ export default function ScanDeclarationPage() {
             <AlertDialogHeader>
               <AlertDialogTitle className="flex items-center">
                 <Star className="h-5 w-5 mr-2 text-primary" /> 
-                Free Scan Limit Reached
+                Dostignut limit besplatnih skeniranja
               </AlertDialogTitle>
               <AlertDialogDescription>
-                You have used all your {scanLimit} free scans. To continue scanning and analyzing products, please consider upgrading to our Premium version.
+                Iskoristili ste svih {scanLimit} besplatnih skeniranja. Da biste nastavili, razmislite o nadogradnji.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Maybe Later</AlertDialogCancel>
+              <AlertDialogCancel>Možda kasnije</AlertDialogCancel>
               <AlertDialogAction onClick={() => {
-                toast({ title: "Premium (Coming Soon!)", description: "Thanks for your interest! Premium features are under development."});
+                toast({ title: "Premium (Uskoro!)", description: "Hvala na interesovanju! Premium funkcije su u razvoju."});
                 setShowScanLimitModal(false);
               }}>
-                Learn More About Premium
+                Saznaj više o Premiumu
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

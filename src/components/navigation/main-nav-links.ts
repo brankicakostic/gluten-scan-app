@@ -14,45 +14,45 @@ export interface NavLink {
 export const mainNavLinks: NavLink[] = [
   {
     href: '/', // Base path for homepage
-    label: 'Home',
+    label: 'Početna',
     icon: Home, 
-    tooltip: 'Home / Scan & Search',
+    tooltip: 'Početna / Skeniranje i Pretraga',
   },
   {
     href: '/products', // Relative to locale
-    label: 'Products',
+    label: 'Proizvodi',
     icon: ShoppingBag,
-    tooltip: 'Browse All Products',
+    tooltip: 'Pretražite sve proizvode',
   },
   {
     href: '/recalls', // Relative to locale - NEW PAGE
-    label: 'Recalls',
+    label: 'Opozivi',
     icon: Siren,
-    tooltip: 'Active product recalls',
+    tooltip: 'Aktivni opozivi proizvoda',
   },
   {
     href: '/map', // Relative to locale
-    label: 'Map',
+    label: 'Mapa',
     icon: MapPin,
-    tooltip: 'Location Map',
+    tooltip: 'Mapa lokacija',
   },
   {
     href: '/edukacija', // Relative to locale
-    label: 'Education',
+    label: 'Edukacija',
     icon: BookOpenText,
-    tooltip: 'Educational Articles',
+    tooltip: 'Edukativni članci',
   },
   {
     href: '/history', // Relative to locale
-    label: 'History',
+    label: 'Istorija',
     icon: History,
-    tooltip: 'Scan History',
+    tooltip: 'Istorija skeniranja',
   },
   {
     href: '/favorites', // Relative to locale
-    label: 'Favorites',
+    label: 'Omiljeni',
     icon: Heart,
-    tooltip: 'Favorite Products',
+    tooltip: 'Omiljeni proizvodi',
   },
   {
     href: '/admin', // Relative to locale

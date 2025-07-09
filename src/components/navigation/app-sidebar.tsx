@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useParams, usePathname } from 'next/navigation'; // Added useParams
+import { useParams, usePathname } from 'next/navigation';
 import {
   Sidebar,
   SidebarHeader,
@@ -14,21 +14,26 @@ import {
 } from '@/components/ui/sidebar';
 import { mainNavLinks, type NavLink } from './main-nav-links';
 import { cn } from '@/lib/utils';
+import { Button } from '../ui/button';
+import { ThemeToggle } from '../theme-toggle';
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const params = useParams(); // Get route params
-  const locale = params.locale as string || 'sr'; // Default to 'sr' if locale is not in params
+  const params = useParams();
+  const locale = params.locale as string || 'sr';
 
   return (
     <Sidebar side="left" variant="sidebar" collapsible="icon">
-      <SidebarHeader className="p-4">
+      <SidebarHeader className="p-4 flex justify-between items-center">
         <Link href={`/${locale}`} className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
           {/* Light Mode Logo */}
           <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={180} height={46} className="w-auto h-12 dark:hidden" />
           {/* Dark Mode Logo */}
           <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={180} height={46} className="w-auto h-12 hidden dark:block" />
         </Link>
+         <div className="group-data-[collapsible=icon]:hidden">
+           <ThemeToggle />
+         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>

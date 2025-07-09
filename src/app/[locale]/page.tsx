@@ -16,8 +16,8 @@ export default async function HomePage() {
     
     // Gracefully handle the error by providing a fallback tip.
     initialTip = {
-      summary: "Could not load the Daily Tip.",
-      details: "The daily tip feature requires a valid AI API key to function. Please ensure the GOOGLE_API_KEY or GEMINI_API_KEY is set in your environment variables. This information is not medical advice; please consult with a healthcare professional for any health concerns."
+      summary: "Nije moguće učitati dnevni savet.",
+      details: "Funkcija dnevnog saveta zahteva ispravan AI API ključ. Proverite da li je GOOGLE_API_KEY ili GEMINI_API_KEY postavljen u vašim environment varijablama. Ova informacija nije medicinski savet; molimo vas da se za zdravstvene probleme konsultujete sa zdravstvenim radnikom."
     };
   }
 
