@@ -1,4 +1,3 @@
-
 // This file uses the Firebase client SDK, but is intended for use in Server Components
 // to fetch data from Firestore.
 
@@ -18,6 +17,7 @@ function transformImageUrl(imageUrl: string): string {
     if (!imageUrl) {
         return 'https://placehold.co/400x200.png';
     }
+    // If it's already a full URL (http) or a local public asset (/), return it directly.
     if (imageUrl.startsWith('http') || imageUrl.startsWith('/')) {
         return imageUrl; 
     }
@@ -28,8 +28,10 @@ function transformImageUrl(imageUrl: string): string {
         return 'https://placehold.co/400x200.png';
     }
     
-    // The path in the DB is assumed to be the full path within the bucket.
-    const encodedPath = encodeURIComponent(imageUrl);
+    // It's likely that images are stored in a 'products/' folder in the bucket.
+    // Re-adding this prefix as the most probable fix.
+    const fullPath = `products/${imageUrl}`;
+    const encodedPath = encodeURIComponent(fullPath);
     
     return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
 }
