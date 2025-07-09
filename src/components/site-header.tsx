@@ -20,7 +20,6 @@ export function SiteHeader() {
         {/* --- MOBILE HEADER --- */}
         <div className="relative flex w-full items-center justify-between md:hidden">
           <SidebarTrigger />
-          {/* Absolutely positioned logo for perfect centering on mobile */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
              <Link href={`/${locale}`} className="inline-block">
               <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={120} height={30} className="h-8 w-auto dark:hidden" />
@@ -30,24 +29,22 @@ export function SiteHeader() {
           <ThemeToggle />
         </div>
 
-        {/* --- DESKTOP HEADER (3-column flex layout) --- */}
-        <div className="hidden w-full items-center md:flex">
+        {/* --- DESKTOP HEADER (Absolute Centering for Nav) --- */}
+        <div className="hidden w-full items-center justify-between relative md:flex">
           {/* Left section for Logo */}
-          <div className="flex-1">
-             <Link href={`/${locale}`} className="flex items-center">
-              <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={150} height={38} className="h-10 w-auto dark:hidden" />
-              <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={150} height={38} className="h-10 w-auto hidden dark:block" />
-            </Link>
-          </div>
+          <Link href={`/${locale}`} className="flex items-center">
+            <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={150} height={38} className="h-10 w-auto dark:hidden" />
+            <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={150} height={38} className="h-10 w-auto hidden dark:block" />
+          </Link>
 
           {/* Center section for Navigation */}
-          <nav className="flex-none">
+          <nav className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
              <div className="flex items-center gap-4 text-sm lg:gap-6">
               {mainNavLinks.map((link) => {
                 if (link.href === '/admin') return null;
 
                 const localizedHref = `/${locale}${link.href === '/' ? '' : link.href}`;
-                const isActive = (link.href === '/' && pathname === `/${locale}`) || (link.href !== '/' && pathname.startsWith(localizedHref));
+                const isActive = (link.href === '/' && pathname === `/${locale}`) || (link.href !== '/' && pathname.startsWith(localizedHref) && link.href !== '/');
                 
                 return (
                   <Link
@@ -66,9 +63,7 @@ export function SiteHeader() {
           </nav>
 
           {/* Right section for Theme Toggle */}
-          <div className="flex flex-1 justify-end">
-             <ThemeToggle />
-          </div>
+          <ThemeToggle />
         </div>
       </div>
     </header>
