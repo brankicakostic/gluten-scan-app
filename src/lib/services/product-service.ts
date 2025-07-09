@@ -37,53 +37,47 @@ function transformImageUrl(imageUrl: string): string {
 
 /**
  * Maps a Firestore document to a structured Product object, normalizing inconsistent fields.
+ * This function is robust and provides default values for all fields to prevent runtime errors.
  * @param doc The Firestore document snapshot.
  * @returns A normalized Product object.
  */
 function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData): Product {
-    const data = doc.data();
+    const data = doc.data() || {};
     
-    const productData: any = {
+    const tags = data.tagsFromInput || [];
+    const tagsLower = new Set(tags.map((t: string) => t.toLowerCase()));
+
+    const productData: Product = {
         id: doc.id,
-        ...data,
-        name: data.name || 'Bez imena', // Ensure name is always a string to prevent crashes
-        description: data.description || '', // Fallback for missing description
+        name: data.name || 'Bez imena',
+        brand: data.brand || '',
+        barcode: data.barcode || '',
+        category: data.category || data.jsonCategory || 'Nekategorizovano',
         imageUrl: transformImageUrl(data.imageUrl || ''),
+        description: data.description || '',
+        ingredientsText: Array.isArray(data.ingredients) ? data.ingredients.join(', ') : (typeof data.ingredients === 'string' ? data.ingredients : ''),
+        labelText: data.labelText || '',
+        hasAOECSLicense: !!data.license,
+        hasManufacturerStatement: !!data.manufacturerStatement,
+        isVerifiedAdmin: !!data.verified,
+        source: data.source || '',
+        tags: tags,
+        nutriScore: data.nutriscore || 'N/A',
+        isLactoseFree: tagsLower.has('bez laktoze') || tagsLower.has('lactose-free'),
+        isSugarFree: tagsLower.has('bez šećera') || tagsLower.has('sugar-free'),
+        isPosno: tagsLower.has('posno'),
+        isVegan: tagsLower.has('vegan'),
+        isHighProtein: tagsLower.has('protein') || tagsLower.has('high-protein'),
+        dataAiHint: data.dataAiHint || '',
+        warning: !!data.warning,
+        note: data.note || '',
+        stores: data.stores || [],
+        seriesAffected: data.seriesAffected, // This can be undefined
     };
 
-    // Normalize category field
-    productData.category = data.category || data.jsonCategory || 'Nekategorizovano';
-
-    // 1. Map ingredients array to ingredientsText string
-    if (Array.isArray(data.ingredients)) {
-        productData.ingredientsText = data.ingredients.join(', ');
-    } else if (typeof data.ingredients === 'string') {
-        productData.ingredientsText = data.ingredients;
-    }
-
-    // 2. Normalize nutriscore to nutriScore
-    if (data.nutriscore) {
-        productData.nutriScore = data.nutriscore;
-    }
-
-    // 3. Map boolean flags from the database
-    productData.hasAOECSLicense = !!data.license;
-    productData.hasManufacturerStatement = !!data.manufacturerStatement;
-    productData.isVerifiedAdmin = !!data.verified;
-
-    // 4. Map tagsFromInput to the 'tags' property and derive boolean dietary flags
-    const tags = data.tagsFromInput || [];
-    productData.tags = tags;
-    const tagsLower = new Set(tags.map((t: string) => t.toLowerCase()));
-    
-    productData.isPosno = tagsLower.has('posno');
-    productData.isSugarFree = tagsLower.has('bez šećera') || tagsLower.has('sugar-free');
-    productData.isLactoseFree = tagsLower.has('bez laktoze') || tagsLower.has('lactose-free');
-    productData.isVegan = tagsLower.has('vegan');
-    productData.isHighProtein = tagsLower.has('protein') || tagsLower.has('high-protein');
-
-    return productData as Product;
+    return productData;
 }
+
 
 /**
  * Maps a Product object to a Firestore document data structure for saving.
