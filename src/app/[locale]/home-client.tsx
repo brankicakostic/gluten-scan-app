@@ -29,7 +29,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import type { Product } from '@/lib/products'; 
 import { AlertDialog, AlertDialogTrigger, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { getProductByBarcode } from '@/lib/services/product-service';
+import { getProductByBarcodeAction } from '@/app/actions/product-actions';
 import { addReportAction } from '@/app/actions/report-actions';
 import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -191,8 +191,8 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
                 return; // Stop further processing
             }
 
-            // Process the barcode
-            const foundProduct = await getProductByBarcode(decodedText);
+            // Process the barcode using the Server Action
+            const foundProduct = await getProductByBarcodeAction(decodedText);
             
             if (foundProduct) {
               setBarcodeScanResult({ 

@@ -1,8 +1,20 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createProduct, updateProduct, deleteProduct } from '@/lib/services/product-service';
+import { createProduct, updateProduct, deleteProduct, getProductByBarcode } from '@/lib/services/product-service';
 import type { Product } from '@/lib/products';
+
+// Server Action to get a product by its barcode
+export async function getProductByBarcodeAction(barcode: string): Promise<Product | null> {
+  try {
+    // This function now runs exclusively on the server.
+    const product = await getProductByBarcode(barcode);
+    return product;
+  } catch (error) {
+    console.error(`Error in getProductByBarcodeAction for barcode ${barcode}:`, error);
+    return null; // Return null on error to be handled by the client
+  }
+}
 
 // Server Action to add a product
 export async function addProductAction(productData: Partial<Product>) {
