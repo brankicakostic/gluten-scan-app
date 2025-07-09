@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Leaf, Info, ShieldCheck, FileText, GitBranch, Tag, Barcode, CircleAlert, Store, MapPin, ExternalLink, ListChecks, CalendarDays, SearchCheck, Zap, Flag, Mail, CheckSquare, Loader2, Send } from 'lucide-react';
+import { ArrowLeft, Package, ShoppingBag, AlertTriangle, CheckCircle, Heart, Leaf, Info, ShieldCheck, FileText, GitBranch, Tag, Barcode, CircleAlert, Store, MapPin, ExternalLink, ListChecks, CalendarDays, SearchCheck, Zap, Flag, Mail, Loader2, Send } from 'lucide-react';
 import type { Product } from '@/lib/products';
 import { Badge } from '@/components/ui/badge';
 import { useFavorites } from '@/contexts/favorites-context';
@@ -225,7 +225,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         </div>
         <PageHeader
           title={product.name}
-          description={product.brand}
+          description={<span className="text-muted-foreground italic">{product.brand}</span>}
           icon={Package}
         />
 
@@ -266,20 +266,22 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         </Card>
         
         <Card className="mt-4">
-          <CardContent className="p-3 flex items-center justify-between gap-4">
-             <div className="flex items-center gap-4">
-                <GlutenStatusBadge />
-                {product.nutriScore && product.nutriScore !== 'N/A' && (
-                  <span className={`px-3 py-1 rounded-lg text-lg font-bold border-2 ${getNutriScoreClasses(product.nutriScore)}`}>
-                    {product.nutriScore}
-                  </span>
-                )}
-             </div>
-            
-            <Button variant="outline" size="icon" onClick={handleToggleFavorite} className="flex-shrink-0">
-              <Heart className="h-5 w-5" fill={isCurrentlyFavorite ? 'hsl(var(--primary))' : 'none'} />
-              <span className="sr-only">{isCurrentlyFavorite ? 'Ukloni iz omiljenih' : 'Dodaj u omiljene'}</span>
-            </Button>
+          <CardContent className="p-3">
+             <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <GlutenStatusBadge />
+                  {product.nutriScore && product.nutriScore !== 'N/A' && (
+                    <span className={`px-3 py-1 rounded-lg text-lg font-bold border-2 ${getNutriScoreClasses(product.nutriScore)}`}>
+                      {product.nutriScore}
+                    </span>
+                  )}
+                </div>
+                
+                <Button variant="outline" size="icon" onClick={handleToggleFavorite} className="flex-shrink-0">
+                  <Heart className="h-5 w-5" fill={isCurrentlyFavorite ? 'hsl(var(--primary))' : 'none'} />
+                  <span className="sr-only">{isCurrentlyFavorite ? 'Ukloni iz omiljenih' : 'Dodaj u omiljene'}</span>
+                </Button>
+              </div>
           </CardContent>
         </Card>
 
@@ -290,7 +292,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           <Dialog open={showReportErrorModal} onOpenChange={resetReportForm}>
             <DialogTrigger asChild>
               <Button variant="outline" size="lg" className="w-full">
-                <Flag className="h-4 w-4 mr-2" /> Prijavi grešku
+                <CircleAlert className="h-4 w-4 mr-2" /> Prijavi grešku
               </Button>
             </DialogTrigger>
             <DialogContent>
@@ -381,7 +383,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     {mentionedNonGlutenAllergens.length > 0 && (
                       <p className="text-sm text-muted-foreground"><strong>Ostali potencijalni alergeni:</strong> {mentionedNonGlutenAllergens.join(', ')}.</p>
                     )}
-                     <ShadcnAlert className="mt-4">
+                     <ShadcnAlert className="mt-4 border-blue-500/50 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 [&>svg]:text-blue-600">
                       <Info className="h-4 w-4" />
                       <ShadcnAlertTitle>Važna napomena</ShadcnAlertTitle>
                       <ShadcnAlertDescription>
@@ -402,29 +404,39 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 </AccordionItem>
                 <AccordionItem value="item-4" className="px-6 border-b-0">
                   <AccordionTrigger className="text-lg font-semibold">Ostali detalji</AccordionTrigger>
-                   <AccordionContent className="space-y-3 pt-2 text-sm text-muted-foreground">
-                    {product.Poreklo && (
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium text-foreground">Poreklo</span>
-                        <span className="flex items-center gap-2">{product.Poreklo} {getCountryFlag(product.Poreklo)}</span>
-                      </div>
-                    )}
-                    {product.stores && product.stores.length > 0 && (
-                      <div className="flex justify-between items-center">
+                   <AccordionContent className="pt-2 text-sm text-muted-foreground">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">
+                        {product.Poreklo && (
+                          <div className="flex justify-between items-center">
+                            <span className="font-medium text-foreground">Poreklo</span>
+                            <span className="flex items-center gap-2">{getCountryFlag(product.Poreklo)} {product.Poreklo}</span>
+                          </div>
+                        )}
+                        {product.barcode && (
+                          <div className="flex justify-between items-center">
+                            <span className="font-medium text-foreground">Barkod</span>
+                            <span>{product.barcode}</span>
+                          </div>
+                        )}
+                    </div>
+                     {(product.stores && product.stores.length > 0 && product.stores[0] !== '') && (
+                      <div className="flex justify-between items-center mt-3 pt-3 border-t">
                         <span className="font-medium text-foreground">Dostupno u</span>
-                        <span>{product.stores.join(', ')}</span>
+                        <span className="text-right">{product.stores.join(', ')}</span>
                       </div>
                     )}
-                    {product.barcode && (
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium text-foreground">Barkod</span>
-                        <span>{product.barcode}</span>
-                      </div>
-                    )}
-                    {product.source && (
-                      <div className="flex justify-between items-center">
+                     {product.source && (
+                      <div className="flex justify-between items-center mt-3 pt-3 border-t">
                         <span className="font-medium text-foreground">Izvor podataka</span>
-                        <span>{product.source}</span>
+                        <span>
+                          {product.source.startsWith('http') ? (
+                            <a href={product.source} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                              Link <ExternalLink className="h-3 w-3" />
+                            </a>
+                          ) : (
+                            product.source
+                          )}
+                        </span>
                       </div>
                     )}
                   </AccordionContent>
