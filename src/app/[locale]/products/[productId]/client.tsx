@@ -285,13 +285,13 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           </CardContent>
         </Card>
 
-        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Button size="lg" className="w-full" disabled>
-            <ShoppingBag className="mr-2 h-5 w-5" /> Dodaj na listu za kupovinu
+        <div className="mt-6 flex items-center justify-center gap-4">
+          <Button className="flex-1" disabled>
+            <ShoppingBag className="mr-2 h-4 w-4" /> Dodaj na listu
           </Button>
           <Dialog open={showReportErrorModal} onOpenChange={resetReportForm}>
             <DialogTrigger asChild>
-              <Button variant="outline" size="lg" className="w-full">
+              <Button variant="outline" className="flex-1">
                 <CircleAlert className="h-4 w-4 mr-2" /> Prijavi grešku
               </Button>
             </DialogTrigger>
