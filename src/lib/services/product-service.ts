@@ -47,6 +47,7 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
         id: doc.id,
         ...data,
         name: data.name || 'Bez imena', // Ensure name is always a string to prevent crashes
+        description: data.description || '', // Fallback for missing description
         imageUrl: transformImageUrl(data.imageUrl || ''),
     };
 
