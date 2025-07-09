@@ -72,9 +72,10 @@ const getCategoryIcon = (categoryName: string): string => {
   if (lowerCaseName.includes('slatkiš') || lowerCaseName.includes('keks') || lowerCaseName.includes('čokolad')) return '🍪';
   if (lowerCaseName.includes('grickalice') || lowerCaseName.includes('kreker')) return '🥨';
   if (lowerCaseName.includes('pahuljice') || lowerCaseName.includes('musli')) return '🥣';
-  if (lowerCaseName.includes('namaz') || lowerCaseName.includes('krem')) return '🍯';
+  if (lowerCaseName.includes('namaz') || lowerCaseName.includes('krem') || lowerCaseName.includes('med')) return '🍯';
   if (lowerCaseName.includes('sos') || lowerCaseName.includes('preliv')) return '🥫';
   if (lowerCaseName.includes('pić') || lowerCaseName.includes('sok')) return '🥤';
+  if (lowerCaseName.includes('začin')) return '🧂';
   return '🛍️';
 };
 
@@ -574,37 +575,37 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-12">
             <Card className="flex flex-col text-center items-center justify-between p-6 hover:shadow-lg transition-shadow">
                 <div className="flex-grow flex flex-col items-center text-center">
-                    <div className="flex justify-center items-center h-16 w-16 rounded-full bg-primary/10 text-primary mb-3">
+                    <div className="flex justify-center items-center h-16 w-16 rounded-full bg-primary/10 text-primary mb-4">
                         <Search className="h-8 w-8" />
                     </div>
                     <CardTitle className="text-xl mb-1">Pretraži proizvode</CardTitle>
                     <CardDescription>Pronađite bezbedne proizvode u našoj bazi.</CardDescription>
                 </div>
-                <Button asChild className="w-full mt-auto hover:scale-[.98] transition-transform duration-200">
+                <Button asChild className="w-full mt-4 hover:scale-[.98] transition-transform duration-200">
                     <Link href={`/${locale}/products`}>Pretraži bazu</Link>
                 </Button>
             </Card>
 
             <Card className="flex flex-col text-center items-center justify-between p-6 hover:shadow-lg transition-shadow">
                  <div className="flex-grow flex flex-col items-center text-center">
-                    <div className="flex justify-center items-center h-16 w-16 rounded-full bg-primary/10 text-primary mb-3">
+                    <div className="flex justify-center items-center h-16 w-16 rounded-full bg-primary/10 text-primary mb-4">
                         <QrCode className="h-8 w-8" />
                     </div>
                     <CardTitle className="text-xl mb-1">Skeniraj barkod</CardTitle>
                     <CardDescription>Proverite proizvod koristeći kameru telefona.</CardDescription>
                 </div>
-                <Button onClick={handleStartBarcodeScanning} disabled={isLoadingAnyAnalysisProcess || isTakingOcrPhoto} className="w-full mt-auto hover:scale-[.98] transition-transform duration-200">Pokreni skener</Button>
+                <Button onClick={handleStartBarcodeScanning} disabled={isLoadingAnyAnalysisProcess || isTakingOcrPhoto} className="w-full mt-4 hover:scale-[.98] transition-transform duration-200">Pokreni skener</Button>
             </Card>
 
             <Card className="flex flex-col text-center items-center justify-between p-6 hover:shadow-lg transition-shadow">
                 <div className="flex-grow flex flex-col items-center text-center">
-                    <div className="flex justify-center items-center h-16 w-16 rounded-full bg-primary/10 text-primary mb-3">
+                    <div className="flex justify-center items-center h-16 w-16 rounded-full bg-primary/10 text-primary mb-4">
                         <ScanSearch className="h-8 w-8" />
                     </div>
                     <CardTitle className="text-xl mb-1">Analiziraj sastojke</CardTitle>
                     <CardDescription>Unesite sastojke ručno ili slikajte deklaraciju.</CardDescription>
                 </div>
-                <Button onClick={() => analysisSectionRef.current?.scrollIntoView({ behavior: 'smooth' })} className="w-full mt-auto hover:scale-[.98] transition-transform duration-200">Započni analizu</Button>
+                <Button onClick={() => analysisSectionRef.current?.scrollIntoView({ behavior: 'smooth' })} className="w-full mt-4 hover:scale-[.98] transition-transform duration-200">Započni analizu</Button>
             </Card>
         </div>
 
@@ -668,7 +669,7 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
         
         <div ref={analysisSectionRef} className="space-y-8 pt-10 scroll-mt-20">
             <div className="text-center">
-                <h2 className="text-3xl font-bold tracking-tight">Analiziraj Deklaraciju</h2>
+                <h2 className="text-2xl font-semibold tracking-tight" style={{ lineHeight: 1.4 }}>Analiziraj Deklaraciju</h2>
                 <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">Iskoristite moć veštačke inteligencije za proveru sastojaka. Možete uneti tekst ručno ili otpremiti sliku deklaracije.</p>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -1001,16 +1002,16 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
         
         <div className="my-12 pt-10 scroll-mt-20">
             <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold tracking-tight leading-snug">Pretraži po kategoriji</h2>
-                <p className="text-sm text-muted-foreground mt-2 max-w-2xl mx-auto">Pronađite proizvode koji vas zanimaju pregledom naših najpopularnijih kategorija.</p>
+                <h2 className="text-2xl font-semibold tracking-tight" style={{ lineHeight: 1.4 }}>Pretraži po kategoriji</h2>
+                <p className="text-sm text-muted-foreground mt-2 max-w-2xl mx-auto" style={{ lineHeight: 1.5 }}>Pronađite proizvode koji vas zanimaju pregledom naših najpopularnijih kategorija.</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {categories.map((category) => (
                     <Link key={category.name} href={`/${locale}/products?category=${encodeURIComponent(category.name)}`} className="block group">
-                        <Card className="h-full flex flex-col items-center justify-center text-center p-4 hover:bg-muted/50 hover:shadow-lg transition-all duration-200 group-hover:border-primary">
+                        <Card className="h-full flex flex-col items-center justify-center text-center p-4 hover:bg-muted/50 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group-hover:border-primary">
                             <div className="text-4xl mb-2 transition-transform duration-200 group-hover:scale-110">{getCategoryIcon(category.name)}</div>
                             <p className="font-semibold text-sm">{category.name}</p>
-                            <Badge variant="outline" className="mt-1 bg-muted/50 font-semibold">{category.count} proizvoda</Badge>
+                            <Badge variant="secondary" className="mt-2 text-xs font-semibold">{category.count} proizvoda</Badge>
                         </Card>
                     </Link>
                 ))}
