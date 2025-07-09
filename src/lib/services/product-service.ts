@@ -49,6 +49,9 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
         imageUrl: transformImageUrl(data.imageUrl || ''),
     };
 
+    // Normalize category field
+    productData.category = data.category || data.jsonCategory || 'Nekategorizovano';
+
     // 1. Map ingredients array to ingredientsText string
     if (Array.isArray(data.ingredients)) {
         productData.ingredientsText = data.ingredients.join(', ');
