@@ -1,12 +1,9 @@
 // This is a Server Component responsible for fetching initial data.
-import { getFeaturedProducts } from '@/lib/services/product-service';
 import { getDailyCeliacTip, type DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import HomeClient from './home-client';
 
 export default async function HomePage() {
   // Fetch initial data on the server
-  const initialProducts = await getFeaturedProducts(8);
-  
   let initialTip: DailyCeliacTipOutput;
   try {
     initialTip = await getDailyCeliacTip();
@@ -23,7 +20,6 @@ export default async function HomePage() {
 
   return (
     <HomeClient 
-      initialProducts={initialProducts} 
       initialTip={initialTip} 
     />
   );

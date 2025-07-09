@@ -56,11 +56,10 @@ const getNutriScoreClasses = (score?: string) => {
 };
 
 interface HomeClientProps {
-  initialProducts: Product[];
   initialTip: DailyCeliacTipOutput;
 }
 
-export default function HomeClient({ initialProducts, initialTip }: HomeClientProps) {
+export default function HomeClient({ initialTip }: HomeClientProps) {
   const routeParams = useParams(); 
   const locale = routeParams.locale as string;
   const { toast } = useToast();
@@ -118,7 +117,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
   const [notFoundBarcode, setNotFoundBarcode] = useState<string | null>(null);
 
   const analysisReportRef = useRef<HTMLDivElement>(null);
-  const [displayedProducts] = useState<Product[]>(initialProducts);
+  const analysisSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (analysisResult && analysisReportRef.current) {
@@ -552,505 +551,432 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
           )}
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Link href={`/${locale}/products`} className="hover:underline">Pronađi proizvode</Link></CardTitle>
-              <CardDescription>Pretražite kompletan katalog proizvoda.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 flex flex-col items-center justify-center h-[180px] text-center">
-               <ShoppingBag className="h-16 w-16 text-primary" />
-               <p className="text-muted-foreground">Preko {initialProducts.length}+ proizvoda u bazi podataka.</p>
-               <Button asChild>
-                 <Link href={`/${locale}/products`}>
-                   <Search className="mr-2 h-4 w-4" /> Pretraži sve proizvode
-                 </Link>
-               </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><QrCode className="h-5 w-5" /> Skeniraj barkod proizvoda</CardTitle>
-              <CardDescription>Koristite kameru uređaja za trenutne informacije o glutenu.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {!isScanningBarcode && !barcodeScanResult && (
-                <Button 
-                  onClick={handleStartBarcodeScanning} 
-                  className="w-full" 
-                  size="lg" 
-                  disabled={isLoadingAnyAnalysisProcess || isTakingOcrPhoto}
-                >
-                  <QrCode className="mr-2 h-5 w-5" /> Pokreni skeniranje barkoda
-                </Button>
-              )}
-              {isScanningBarcode && (
-                <div className="space-y-4">
-                   <div className="aspect-video bg-muted rounded-md flex flex-col items-center justify-center text-muted-foreground p-4 relative">
-                     <div id={barcodeReaderElementId} className="w-full h-full"></div>
-                     {hasBarcodeCameraPermission === null && <Loader2 className="absolute h-8 w-8 animate-spin text-primary"/>}
-                     {hasBarcodeCameraPermission === false && (
-                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 p-4 rounded-md">
-                          <CameraOff className="h-12 w-12 mb-2 text-destructive" />
-                          <p className="text-center text-destructive-foreground">Potreban je pristup kameri. Molimo omogućite dozvole.</p>
-                       </div>
-                     )}
-                     {hasBarcodeCameraPermission === true && (
-                        <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-sm bg-black/50 text-white px-2 py-1 rounded">Uperite kameru ka barkodu...</p>
-                     )}
-                  </div>
-                  <Button onClick={handleCancelBarcodeScanning} variant="outline" className="w-full">Otkaži skeniranje barkoda</Button>
-                </div>
-              )}
-              {errorBarcode && !isScanningBarcode && (
-                <ShadcnAlert variant="destructive" className="mt-4">
-                  <AlertCircle className="h-4 w-4" />
-                  <ShadcnAlertTitle>Greška pri skeniranju barkoda</ShadcnAlertTitle>
-                  <ShadcnAlertDescription>{errorBarcode}</ShadcnAlertDescription>
-                </ShadcnAlert>
-              )}
-              {barcodeScanResult && !isScanningBarcode && (
-                <Card className="mt-4">
-                  <CardHeader className="flex flex-row items-start gap-4">
-                    <Image src={barcodeScanResult.imageUrl} alt={barcodeScanResult.name} width={80} height={80} className="rounded-md object-cover" data-ai-hint={barcodeScanResult.dataAiHint || "product image"}/>
-                    <div>
-                      <CardTitle className="text-xl">{barcodeScanResult.name}</CardTitle>
-                      {barcodeScanResult.tags?.includes('gluten-free') && (
-                        <div className="flex items-center text-green-600 dark:text-green-400 mt-1"><CheckCircle className="h-5 w-5 mr-1" /><span>Verovatno bez glutena</span></div>
-                      )}
-                      {(barcodeScanResult.tags?.includes('contains-gluten') || barcodeScanResult.tags?.includes('contains-wheat') || barcodeScanResult.tags?.includes('contains-barley') || barcodeScanResult.tags?.includes('contains-rye') || (barcodeScanResult.tags?.includes('contains-oats') && !barcodeScanResult.tags?.includes('gluten-free'))) && (
-                        <div className="flex items-center text-red-600 dark:text-red-500 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>Sadrži gluten</span></div>
-                      )}
-                      {barcodeScanResult.tags?.includes('may-contain-gluten') && !barcodeScanResult.tags?.includes('gluten-free') && !barcodeScanResult.tags?.includes('contains-gluten') && (
-                         <div className="flex items-center text-orange-500 dark:text-orange-400 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>Može sadržati tragove</span></div>
-                      )}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-12">
+            <Card className="flex flex-col text-center items-center justify-between p-6 hover:shadow-lg transition-shadow">
+                <div className="mb-4">
+                    <div className="mb-4 flex justify-center items-center h-16 w-16 rounded-full bg-primary/10 text-primary">
+                        <Search className="h-8 w-8" />
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    {barcodeScanResult.barcode && barcodeScanResult.barcode !== "N/A" && (
-                      <div className="flex items-center text-sm text-muted-foreground mb-2">
-                         <BarcodeIcon className="h-4 w-4 mr-2" />
-                         <span>{barcodeScanResult.barcode}</span>
-                      </div>
-                    )}
-                    <h4 className="font-semibold mb-1 text-sm">Sastojci:</h4>
-                    <p className="text-xs text-muted-foreground">{barcodeScanResult.ingredientsText || 'Nisu dostupni'}</p>
-                    <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => { setBarcodeScanResult(null); setErrorBarcode(null);}}>Skeniraj drugi barkod</Button>
-                  </CardContent>
-                </Card>
-              )}
-              {!isScanningBarcode && !barcodeScanResult && !errorBarcode && !notFoundBarcode && (
-                 <div className="text-center text-muted-foreground py-4 border-dashed border-2 rounded-md">
-                  <QrCode className="mx-auto h-8 w-8 mb-2" />
-                  <p className="text-sm">Rezultati skeniranja barkoda će se pojaviti ovde.</p>
+                    <CardTitle className="text-xl">Pretraži proizvode</CardTitle>
+                    <CardDescription className="mt-1">Pronađite bezbedne proizvode u našoj bazi.</CardDescription>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+                <Button asChild className="w-full mt-auto">
+                    <Link href={`/${locale}/products`}>Pretraži bazu</Link>
+                </Button>
+            </Card>
+
+            <Card className="flex flex-col text-center items-center justify-between p-6 hover:shadow-lg transition-shadow">
+                 <div className="mb-4">
+                    <div className="mb-4 flex justify-center items-center h-16 w-16 rounded-full bg-primary/10 text-primary">
+                        <QrCode className="h-8 w-8" />
+                    </div>
+                    <CardTitle className="text-xl">Skeniraj barkod</CardTitle>
+                    <CardDescription className="mt-1">Proverite proizvod koristeći kameru telefona.</CardDescription>
+                </div>
+                <Button onClick={handleStartBarcodeScanning} disabled={isLoadingAnyAnalysisProcess || isTakingOcrPhoto} className="w-full mt-auto">Pokreni skener</Button>
+            </Card>
+
+            <Card className="flex flex-col text-center items-center justify-between p-6 hover:shadow-lg transition-shadow">
+                <div className="mb-4">
+                    <div className="mb-4 flex justify-center items-center h-16 w-16 rounded-full bg-primary/10 text-primary">
+                        <ScanSearch className="h-8 w-8" />
+                    </div>
+                    <CardTitle className="text-xl">Analiziraj sastojke</CardTitle>
+                    <CardDescription className="mt-1">Unesite sastojke ručno ili slikajte deklaraciju.</CardDescription>
+                </div>
+                <Button onClick={() => analysisSectionRef.current?.scrollIntoView({ behavior: 'smooth' })} className="w-full mt-auto">Započni analizu</Button>
+            </Card>
         </div>
 
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
-            <ShoppingBag className="h-6 w-6 text-primary" /> Istaknuti proizvodi
-          </h2>
-          {displayedProducts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {displayedProducts.map(product => {
-                const isConsideredGF = product.hasAOECSLicense || product.hasManufacturerStatement || product.isVerifiedAdmin;
-                const containsGlutenTag = product.tags?.includes('contains-gluten') || product.tags?.includes('sadrži-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isConsideredGF);
-                const mayContainGlutenTag = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
-
-                return (
-                  <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col">
-                    <CardHeader className="p-0">
-                      <Image src={product.imageUrl} alt={product.name} width={400} height={200} className="w-full h-48 object-cover" data-ai-hint={product.dataAiHint || 'product image'}/>
-                    </CardHeader>
-                    <CardContent className="p-4 flex flex-col flex-grow">
-                      <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
-                      {product.brand && <CardDescription className="text-xs text-muted-foreground mb-1">{product.brand}</CardDescription>}
-                      <div className="flex justify-between items-center mb-2">
-                        <CardDescription className="text-sm text-muted-foreground">{product.category}</CardDescription>
-                        {product.nutriScore && product.nutriScore !== 'N/A' && (
-                          <span className={`px-2 py-0.5 rounded-md text-xs font-semibold border ${getNutriScoreClasses(product.nutriScore)}`}>
-                            {product.nutriScore}
-                          </span>
-                        )}
-                      </div>
-
-                      {isConsideredGF ? (
-                        <div className="flex items-center text-green-600 dark:text-green-400 text-xs mt-1 mb-1">
-                          <CheckCircle className="h-3 w-3 mr-1" />
-                          <span>Bez glutena</span>
-                        </div>
-                      ) : containsGlutenTag ? (
-                        <div className="flex items-center text-red-600 dark:text-red-500 text-xs mt-1 mb-1">
-                          <AlertTriangle className="h-3 w-3 mr-1" />
-                          <span>Sadrži gluten</span>
-                        </div>
-                      ) : mayContainGlutenTag ? (
-                        <div className="flex items-center text-orange-500 dark:text-orange-400 text-xs mt-1 mb-1">
-                          <AlertTriangle className="h-3 w-3 mr-1" />
-                          <span>Može sadržati tragove</span>
-                        </div>
-                      ) : (
-                         <div className="flex items-center text-muted-foreground text-xs mt-1 mb-1">
-                          <AlertTriangle className="h-3 w-3 mr-1" />
-                          <span>Proveriti sastav</span>
-                        </div>
-                      )}
-                      
-                      <p className="text-sm mb-3 h-10 overflow-hidden">{product.description}</p>
-                       <div className="flex flex-wrap gap-1 mb-3">
-                          {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
-                          {product.isVegan && <Badge variant="secondary" className="text-xs">Vegan</Badge>}
-                          {product.isLactoseFree && <Badge variant="outline" className="text-xs">Bez laktoze</Badge>}
-                          {product.isSugarFree && <Badge variant="outline" className="text-xs">Bez šećera</Badge>}
-                          {product.isHighProtein && <Badge variant="default" className="text-xs">Bogat proteinima</Badge>}
-                       </div>
-                      <Button asChild variant="default" size="sm" className="w-full mt-auto">
-                        <Link href={`/${locale}/products/${product.id}`}>Vidi detalje</Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="text-center py-12 text-muted-foreground border-dashed border-2 rounded-md">
-              <PackageOpen className="mx-auto h-16 w-16 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Nema pronađenih proizvoda</h3>
-              <p>Pokušajte ponovo kasnije ili pretražite kompletnu listu proizvoda.</p>
-            </div>
-          )}
-        </div>
-        
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><ScanSearch className="h-5 w-5" /> Analiziraj sastojke sa slike</CardTitle>
-              <CardDescription>Otpremite sliku liste sastojaka ili slikajte za AI analizu.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isTakingOcrPhoto ? (
-                <div className="space-y-2">
-                  <div className="aspect-video bg-muted rounded-md flex flex-col items-center justify-center text-muted-foreground p-1 relative">
-                    <video ref={ocrVideoRef} className="w-full h-full object-cover rounded-md" autoPlay playsInline muted />
-                    {hasOcrCameraPermission === null && <Loader2 className="absolute h-8 w-8 animate-spin text-primary"/>}
-                    {hasOcrCameraPermission === false && (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 p-4 rounded-md">
-                        <CameraOff className="h-10 w-10 mb-2 text-destructive" />
-                        <p className="text-center text-destructive-foreground text-sm">Pristup OCR kameri je neophodan.</p>
-                      </div>
+        <div className="my-8">
+            {isScanningBarcode && (
+              <div className="space-y-4">
+                 <div className="aspect-video bg-muted rounded-md flex flex-col items-center justify-center text-muted-foreground p-4 relative">
+                   <div id={barcodeReaderElementId} className="w-full h-full"></div>
+                   {hasBarcodeCameraPermission === null && <Loader2 className="absolute h-8 w-8 animate-spin text-primary"/>}
+                   {hasBarcodeCameraPermission === false && (
+                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 p-4 rounded-md">
+                        <CameraOff className="h-12 w-12 mb-2 text-destructive" />
+                        <p className="text-center text-destructive-foreground">Potreban je pristup kameri. Molimo omogućite dozvole.</p>
+                     </div>
+                   )}
+                   {hasBarcodeCameraPermission === true && (
+                      <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-sm bg-black/50 text-white px-2 py-1 rounded">Uperite kameru ka barkodu...</p>
+                   )}
+                </div>
+                <Button onClick={handleCancelBarcodeScanning} variant="outline" className="w-full">Otkaži skeniranje barkoda</Button>
+              </div>
+            )}
+            {errorBarcode && !isScanningBarcode && (
+              <ShadcnAlert variant="destructive" className="mt-4">
+                <AlertCircle className="h-4 w-4" />
+                <ShadcnAlertTitle>Greška pri skeniranju barkoda</ShadcnAlertTitle>
+                <ShadcnAlertDescription>{errorBarcode}</ShadcnAlertDescription>
+              </ShadcnAlert>
+            )}
+            {barcodeScanResult && !isScanningBarcode && (
+              <Card className="mt-4 max-w-2xl mx-auto">
+                <CardHeader className="flex flex-row items-start gap-4">
+                  <Image src={barcodeScanResult.imageUrl} alt={barcodeScanResult.name} width={80} height={80} className="rounded-md object-cover" data-ai-hint={barcodeScanResult.dataAiHint || "product image"}/>
+                  <div>
+                    <CardTitle className="text-xl">{barcodeScanResult.name}</CardTitle>
+                    {barcodeScanResult.tags?.includes('gluten-free') && (
+                      <div className="flex items-center text-green-600 dark:text-green-400 mt-1"><CheckCircle className="h-5 w-5 mr-1" /><span>Verovatno bez glutena</span></div>
+                    )}
+                    {(barcodeScanResult.tags?.includes('contains-gluten') || barcodeScanResult.tags?.includes('contains-wheat') || barcodeScanResult.tags?.includes('contains-barley') || barcodeScanResult.tags?.includes('contains-rye') || (barcodeScanResult.tags?.includes('contains-oats') && !barcodeScanResult.tags?.includes('gluten-free'))) && (
+                      <div className="flex items-center text-red-600 dark:text-red-500 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>Sadrži gluten</span></div>
+                    )}
+                    {barcodeScanResult.tags?.includes('may-contain-gluten') && !barcodeScanResult.tags?.includes('gluten-free') && !barcodeScanResult.tags?.includes('contains-gluten') && (
+                       <div className="flex items-center text-orange-500 dark:text-orange-400 mt-1"><AlertTriangle className="h-5 w-5 mr-1" /><span>Može sadržati tragove</span></div>
                     )}
                   </div>
-                  <div className="flex gap-2">
-                    <Button onClick={handleCaptureOcrPhoto} disabled={!hasOcrCameraPermission || isLoadingOcr} className="flex-grow">
-                      {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Camera className="mr-2 h-4 w-4"/>}
-                       Snimi fotografiju
-                    </Button>
-                    <Button onClick={handleCancelOcrPhotoCapture} variant="outline" className="flex-grow">Otkaži</Button>
-                  </div>
-                </div>
-              ) : stagedImage ? (
-                 <div className="space-y-2 text-center">
-                  <div className="relative w-full max-w-sm mx-auto aspect-video rounded-md overflow-hidden border">
-                     <Image src={stagedImage} alt="Staged image for analysis" layout="fill" objectFit="contain" />
-                      <Button 
-                        variant="destructive" 
-                        size="icon" 
-                        className="absolute top-2 right-2 h-7 w-7"
-                        onClick={() => resetAnalysisInputs()}
-                      >
-                        <X className="h-4 w-4" />
-                        <span className="sr-only">Ukloni sliku</span>
-                      </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">Slika je spremna za analizu.</p>
-                 </div>
-              ) : (
-                <div className="space-y-4 text-center">
-                  <Label htmlFor="ocr-file-input" className="group cursor-pointer w-full border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center hover:border-primary hover:bg-muted/50 transition-colors">
-                    <UploadCloud className="h-8 w-8 text-muted-foreground group-hover:text-primary" />
-                    <span className="mt-2 text-sm font-semibold">Izaberi fajl</span>
-                    <Input id="ocr-file-input" type="file" className="sr-only" onChange={handleFileChange} accept="image/*" disabled={isLoadingAnyAnalysisProcess}/>
-                  </Label>
-                   <div className="flex items-center gap-2">
-                      <div className="flex-grow border-t"></div>
-                      <span className="text-xs text-muted-foreground">ILI</span>
-                      <div className="flex-grow border-t"></div>
-                   </div>
-                   <Button variant="outline" className="w-full" onClick={handleInitiateOcrPhotoCapture} disabled={isLoadingAnyAnalysisProcess}>
-                      <Camera className="mr-2 h-4 w-4" />
-                      Fotografiši
-                   </Button>
-                </div>
-              )}
-            </CardContent>
-            <CardFooter>
-               <Button onClick={handleAnalyzeStagedImage} size="lg" disabled={!stagedImage || isLoadingAnyAnalysisProcess} className="w-full">
-                  {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                  Analiziraj sa AI
-               </Button>
-            </CardFooter>
-          </Card>
-
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="item-1">
-              <AccordionTrigger>
-                 <div className="flex items-center gap-2">
-                   <FileText className="h-5 w-5"/> Ili nalepite tekst ručno
-                 </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <form onSubmit={handleDeclarationSubmit} className="space-y-4 pt-2">
-                    <Textarea
-                      id="declaration-text-area"
-                      placeholder="npr. pšenično brašno, šećer, so, kvasac, ekstrakt ječmenog slada..."
-                      value={declarationText}
-                      onChange={(e) => {
-                         setDeclarationText(e.target.value);
-                         if(e.target.value) { resetAnalysisInputs(true); }
-                      }}
-                      rows={6}
-                      className="resize-none"
-                      aria-label="Product Declaration Input"
-                      disabled={isLoadingAnyAnalysisProcess}
-                    />
-                  <Button type="submit" 
-                    size="lg"
-                    disabled={isLoadingDeclaration || !declarationText.trim() || isLoadingAnyAnalysisProcess} 
-                    className="w-full"
-                  >
-                    {isLoadingDeclaration && !isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                    Analiziraj tekst sa AI
-                  </Button>
-                </form>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-          
-          <div
-            ref={analysisReportRef}
-            aria-live="polite" 
-            aria-busy={isLoadingAnyAnalysisProcess}
-            className="mt-6"
-          >
-            {(analysisResult || isLoadingDeclaration || (isLoadingOcr && !isTakingOcrPhoto)) && !showLabelingQuestionModal && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg mb-2">Izveštaj AI analize</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {(isLoadingDeclaration || (isLoadingOcr && !isTakingOcrPhoto)) && (
-                    <div className="flex flex-col items-center justify-center h-24 text-muted-foreground">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
-                      <p>{isLoadingOcr ? 'Obrađujem sliku...' : 'Analiziram sastojke...'}</p>
+                  {barcodeScanResult.barcode && barcodeScanResult.barcode !== "N/A" && (
+                    <div className="flex items-center text-sm text-muted-foreground mb-2">
+                       <BarcodeIcon className="h-4 w-4 mr-2" />
+                       <span>{barcodeScanResult.barcode}</span>
                     </div>
                   )}
-                  {analysisResult && !isLoadingDeclaration && !isLoadingOcr && (
-                    <div className="space-y-4">
-                      {getAssessmentAlert(analysisResult)}
-
-                       {relevantGlutenIssueCount > 0 && (
-                          <div className="mt-3 p-2 bg-destructive/10 rounded-md text-sm text-destructive flex items-center gap-2">
-                              <ShieldAlert className="h-5 w-5"/>
-                              <span>Identifikovano {relevantGlutenIssueCount} kritičnih stavki vezanih za gluten.</span>
-                          </div>
-                       )}
-
-                      <div>
-                        <h4 className="font-semibold mb-1 text-sm">Obrazloženje:</h4>
-                        <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.finalnoObrazlozenje}</p>
-                      </div>
-                      
-                      {problematicIngredients.length > 0 && (
-                        <div>
-                          <h4 className="font-semibold mb-2 text-md">Analiza rizičnih sastojaka:</h4>
-                          <ul className="list-none space-y-2 text-sm">
-                            {problematicIngredients.map((item, index) => {
-                              let icon;
-                              let colorClasses;
-                              let textColor;
-                      
-                              switch (item.ocena) {
-                                case 'nije bezbedno':
-                                  icon = <XCircle className="h-5 w-5 text-red-600" />;
-                                  colorClasses = 'border-red-400/50 bg-red-50 dark:bg-red-900/20';
-                                  textColor = 'text-red-700 dark:text-red-300';
-                                  break;
-                                case 'rizično – proveriti poreklo':
-                                default:
-                                  icon = <AlertTriangle className="h-5 w-5 text-orange-500" />;
-                                  colorClasses = 'border-orange-400/50 bg-orange-50 dark:bg-orange-900/20';
-                                  textColor = 'text-orange-700 dark:text-orange-300';
-                                  break;
-                              }
-                      
-                              return (
-                                <li key={index} className={`p-3 rounded-lg border ${colorClasses}`}>
-                                  <Popover>
-                                    <PopoverTrigger asChild disabled={!item.napomena}>
-                                      <div className={`flex items-start gap-3 ${item.napomena ? 'cursor-pointer' : ''}`}>
-                                        <div className="pt-0.5">{icon}</div>
-                                        <div className="flex-1">
-                                          <p className="font-semibold text-foreground">{item.sastojak}</p>
-                                          <p className={`text-xs ${textColor}`}>
-                                            {item.ocena} (Nivo rizika: {item.nivoRizika})
-                                          </p>
-                                        </div>
-                                        {item.napomena && <Info className="h-4 w-4 text-blue-500 shrink-0" />}
-                                      </div>
-                                    </PopoverTrigger>
-                                    {item.napomena && (
-                                      <PopoverContent className="w-auto max-w-[300px] text-sm p-3" side="top" align="start">
-                                        <p className="font-bold mb-1">{item.kategorijaRizika || 'Napomena'}</p>
-                                        <p className="text-muted-foreground">{item.napomena}</p>
-                                      </PopoverContent>
-                                    )}
-                                  </Popover>
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        </div>
-                      )}
-                      
-                      {safeIngredients.length > 0 && (
-                         <Accordion type="single" collapsible className="w-full mt-4">
-                          <AccordionItem value="safe-ingredients">
-                            <AccordionTrigger>Prikaži {safeIngredients.length} bezbednih sastojaka</AccordionTrigger>
-                            <AccordionContent>
-                              <p className="text-sm text-muted-foreground p-2 bg-muted/50 rounded-md">
-                                {safeIngredients.map(item => item.sastojak).join(', ')}
-                              </p>
-                            </AccordionContent>
-                          </AccordionItem>
-                        </Accordion>
-                      )}
-
-                      <div className="mt-6 flex flex-col sm:flex-row gap-2">
-                         <Button variant="outline" className="w-full" onClick={() => resetAnalysisInputs()}>
-                          <RotateCcw className="mr-2 h-4 w-4" />
-                          Očisti i počni ponovo
-                        </Button>
-                         <Dialog open={showReportErrorModal} onOpenChange={(open) => {
-                             if (!open) {
-                                 setReportComment('');
-                                 setWantsContact(false);
-                                 setContactEmail('');
-                                 setReportPriority('');
-                                 setErrorType('');
-                                 setReportSubmissionStatus('idle');
-                             }
-                         }}>
-                           <DialogTrigger asChild>
-                             <Button className="w-full">
-                               <Flag className="mr-2 h-4 w-4" />
-                               Prijavi grešku
-                             </Button>
-                           </DialogTrigger>
-                           <DialogContent>
-                             {reportSubmissionStatus === 'success' ? (
-                               <div className="flex flex-col items-center justify-center text-center p-4">
-                                 <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
-                                 <DialogTitle className="text-xl">Prijava je poslata!</DialogTitle>
-                                 <DialogDescription className="mt-2">
-                                   Hvala što si deo GlutenScan zajednice. 💛 Ako si ostavio/la kontakt, možemo ti se javiti kad proverimo.
-                                 </DialogDescription>
-                                 <DialogFooter className="mt-6 w-full">
-                                   <Button className="w-full" onClick={() => setShowReportErrorModal(false)}>Zatvori</Button>
-                                 </DialogFooter>
-                               </div>
-                             ) : (
-                               <>
-                                 <DialogHeader>
-                                   <DialogTitle>Prijavi grešku u analizi</DialogTitle>
-                                   <DialogDescription>
-                                     Tvoje povratne informacije nam pomažu da poboljšamo tačnost aplikacije.
-                                   </DialogDescription>
-                                 </DialogHeader>
-                                 <div className="space-y-4 py-2 text-sm">
-
-                                    <div>
-                                      <Label className="font-semibold">Koliko je ova greška ozbiljna za vas? (opciono)</Label>
-                                      <RadioGroup value={reportPriority} onValueChange={setReportPriority} className="mt-2 space-y-1">
-                                        <div className="flex items-center space-x-2">
-                                          <RadioGroupItem value="niska" id="priority-low" />
-                                          <Label htmlFor="priority-low" className="font-normal">Niska (čisto informacija)</Label>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                          <RadioGroupItem value="srednja" id="priority-medium" />
-                                          <Label htmlFor="priority-medium" className="font-normal">Srednja (važno mi je)</Label>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                          <RadioGroupItem value="visoka" id="priority-high" />
-                                          <Label htmlFor="priority-high" className="font-normal">Visoka (utiče na moju bezbednost)</Label>
-                                        </div>
-                                      </RadioGroup>
-                                    </div>
-                                   
-                                    <div>
-                                      <Label className="font-semibold">Tip greške (opciono)</Label>
-                                       <RadioGroup value={errorType} onValueChange={setErrorType} className="mt-2 space-y-1">
-                                        <div className="flex items-center space-x-2">
-                                          <RadioGroupItem value="sastav" id="type-sastav" />
-                                          <Label htmlFor="type-sastav" className="font-normal">Greška u sastavu / AI analizi</Label>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                          <RadioGroupItem value="drugo" id="type-drugo" />
-                                          <Label htmlFor="type-drugo" className="font-normal">Ostalo</Label>
-                                        </div>
-                                      </RadioGroup>
-                                    </div>
-
-                                   <div className="space-y-2">
-                                     <Label htmlFor="report-comment">Komentar (opciono)</Label>
-                                     <Textarea id="report-comment" placeholder="Npr. Brašno od rogača je bez glutena, a označeno je kao rizično." onChange={(e) => setReportComment(e.target.value)} />
-                                   </div>
-                                   
-                                   <div className="flex items-center space-x-2">
-                                     <Checkbox id="wants-contact" onCheckedChange={(checked) => setWantsContact(!!checked)} />
-                                     <Label htmlFor="wants-contact">Želim da me kontaktirate povodom ove prijave.</Label>
-                                   </div>
-                                   {wantsContact && (
-                                     <div className="space-y-2 pl-6">
-                                       <Label htmlFor="contact-email">Email za odgovor</Label>
-                                       <Input id="contact-email" type="email" placeholder="vas.email@primer.com" onChange={(e) => setContactEmail(e.target.value)} />
-                                     </div>
-                                   )}
-                                   <p className="text-xs text-muted-foreground">
-                                     Napomena: Uz prijavu se automatski šalje i analizirani tekst (ili slika) radi lakše provere.
-                                   </p>
-                                 </div>
-                                 <DialogFooter>
-                                   <Button variant="outline" onClick={() => setShowReportErrorModal(false)}>Odustani</Button>
-                                   <Button onClick={handleReportSubmit} disabled={reportSubmissionStatus === 'submitting'}>
-                                     {reportSubmissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />} Pošalji prijavu
-                                   </Button>
-                                 </DialogFooter>
-                               </>
-                             )}
-                           </DialogContent>
-                         </Dialog>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-4 text-center">
-                        <Info className="inline h-3 w-3 mr-1" />
-                        Ova analiza je informativna i ne zamenjuje zvaničnu potvrdu proizvođača. Ako imate sumnje, pošaljite upit direktno preko aplikacije.
-                      </p>
-                    </div>
-                  )}
-                 </CardContent>
+                  <h4 className="font-semibold mb-1 text-sm">Sastojci:</h4>
+                  <p className="text-xs text-muted-foreground">{barcodeScanResult.ingredientsText || 'Nisu dostupni'}</p>
+                  <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => { setBarcodeScanResult(null); setErrorBarcode(null);}}>Skeniraj drugi barkod</Button>
+                </CardContent>
               </Card>
             )}
-             {errorDeclaration && !showLabelingQuestionModal && (
-                <ShadcnAlert variant="destructive" className="mt-4">
-                  <AlertCircle className="h-4 w-4" />
-                  <ShadcnAlertTitle>Greška</ShadcnAlertTitle>
-                  <ShadcnAlertDescription>{errorDeclaration}</ShadcnAlertDescription>
-                </ShadcnAlert>
+        </div>
+        
+        <div ref={analysisSectionRef} className="space-y-8 pt-10 scroll-mt-20">
+            <div className="text-center">
+                <h2 className="text-3xl font-bold tracking-tight">Analiziraj Deklaraciju</h2>
+                <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">Iskoristite moć veštačke inteligencije za proveru sastojaka. Možete uneti tekst ručno ili otpremiti sliku deklaracije.</p>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><Camera className="h-5 w-5" /> Analiziraj sa slike</CardTitle>
+                  <CardDescription>Otpremite sliku liste sastojaka ili slikajte.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {isTakingOcrPhoto ? (
+                    <div className="space-y-2">
+                      <div className="aspect-video bg-muted rounded-md flex flex-col items-center justify-center text-muted-foreground p-1 relative">
+                        <video ref={ocrVideoRef} className="w-full h-full object-cover rounded-md" autoPlay playsInline muted />
+                        {hasOcrCameraPermission === null && <Loader2 className="absolute h-8 w-8 animate-spin text-primary"/>}
+                        {hasOcrCameraPermission === false && (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 p-4 rounded-md">
+                            <CameraOff className="h-10 w-10 mb-2 text-destructive" />
+                            <p className="text-center text-destructive-foreground text-sm">Pristup OCR kameri je neophodan.</p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button onClick={handleCaptureOcrPhoto} disabled={!hasOcrCameraPermission || isLoadingOcr} className="flex-grow">
+                          {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Camera className="mr-2 h-4 w-4"/>}
+                           Snimi fotografiju
+                        </Button>
+                        <Button onClick={handleCancelOcrPhotoCapture} variant="outline" className="flex-grow">Otkaži</Button>
+                      </div>
+                    </div>
+                  ) : stagedImage ? (
+                     <div className="space-y-2 text-center">
+                      <div className="relative w-full max-w-sm mx-auto aspect-video rounded-md overflow-hidden border">
+                         <Image src={stagedImage} alt="Staged image for analysis" layout="fill" objectFit="contain" />
+                          <Button 
+                            variant="destructive" 
+                            size="icon" 
+                            className="absolute top-2 right-2 h-7 w-7"
+                            onClick={() => resetAnalysisInputs()}
+                          >
+                            <X className="h-4 w-4" />
+                            <span className="sr-only">Ukloni sliku</span>
+                          </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Slika je spremna za analizu.</p>
+                     </div>
+                  ) : (
+                    <div className="space-y-4 text-center">
+                      <Label htmlFor="ocr-file-input" className="group cursor-pointer w-full border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center hover:border-primary hover:bg-muted/50 transition-colors">
+                        <UploadCloud className="h-8 w-8 text-muted-foreground group-hover:text-primary" />
+                        <span className="mt-2 text-sm font-semibold">Izaberi fajl</span>
+                        <Input id="ocr-file-input" type="file" className="sr-only" onChange={handleFileChange} accept="image/*" disabled={isLoadingAnyAnalysisProcess}/>
+                      </Label>
+                       <div className="flex items-center gap-2">
+                          <div className="flex-grow border-t"></div>
+                          <span className="text-xs text-muted-foreground">ILI</span>
+                          <div className="flex-grow border-t"></div>
+                       </div>
+                       <Button variant="outline" className="w-full" onClick={handleInitiateOcrPhotoCapture} disabled={isLoadingAnyAnalysisProcess}>
+                          <Camera className="mr-2 h-4 w-4" />
+                          Fotografiši
+                       </Button>
+                    </div>
+                  )}
+                </CardContent>
+                <CardFooter>
+                   <Button onClick={handleAnalyzeStagedImage} size="lg" disabled={!stagedImage || isLoadingAnyAnalysisProcess} className="w-full">
+                      {isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                      Analiziraj Sliku sa AI
+                   </Button>
+                </CardFooter>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5"/> Nalepite tekst ručno</CardTitle>
+                    <CardDescription>Unesite sastojke direktno u polje ispod.</CardDescription>
+                </CardHeader>
+                <form onSubmit={handleDeclarationSubmit}>
+                    <CardContent>
+                         <Textarea
+                          id="declaration-text-area"
+                          placeholder="npr. pšenično brašno, šećer, so, kvasac, ekstrakt ječmenog slada..."
+                          value={declarationText}
+                          onChange={(e) => {
+                             setDeclarationText(e.target.value);
+                             if(e.target.value) { resetAnalysisInputs(true); }
+                          }}
+                          rows={10}
+                          className="resize-none"
+                          aria-label="Product Declaration Input"
+                          disabled={isLoadingAnyAnalysisProcess}
+                        />
+                    </CardContent>
+                    <CardFooter>
+                        <Button type="submit" 
+                            size="lg"
+                            disabled={isLoadingDeclaration || !declarationText.trim() || isLoadingAnyAnalysisProcess} 
+                            className="w-full"
+                          >
+                            {isLoadingDeclaration && !isLoadingOcr ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                            Analiziraj Tekst sa AI
+                        </Button>
+                    </CardFooter>
+                </form>
+              </Card>
+            </div>
+
+            <div
+              ref={analysisReportRef}
+              aria-live="polite" 
+              aria-busy={isLoadingAnyAnalysisProcess}
+              className="mt-6"
+            >
+              {(analysisResult || isLoadingDeclaration || (isLoadingOcr && !isTakingOcrPhoto)) && !showLabelingQuestionModal && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg mb-2">Izveštaj AI analize</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {(isLoadingDeclaration || (isLoadingOcr && !isTakingOcrPhoto)) && (
+                      <div className="flex flex-col items-center justify-center h-24 text-muted-foreground">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
+                        <p>{isLoadingOcr ? 'Obrađujem sliku...' : 'Analiziram sastojke...'}</p>
+                      </div>
+                    )}
+                    {analysisResult && !isLoadingDeclaration && !isLoadingOcr && (
+                      <div className="space-y-4">
+                        {getAssessmentAlert(analysisResult)}
+
+                         {relevantGlutenIssueCount > 0 && (
+                            <div className="mt-3 p-2 bg-destructive/10 rounded-md text-sm text-destructive flex items-center gap-2">
+                                <ShieldAlert className="h-5 w-5"/>
+                                <span>Identifikovano {relevantGlutenIssueCount} kritičnih stavki vezanih za gluten.</span>
+                            </div>
+                         )}
+
+                        <div>
+                          <h4 className="font-semibold mb-1 text-sm">Obrazloženje:</h4>
+                          <p className="text-xs text-muted-foreground p-2 bg-muted rounded-md whitespace-pre-wrap">{analysisResult.finalnoObrazlozenje}</p>
+                        </div>
+                        
+                        {problematicIngredients.length > 0 && (
+                          <div>
+                            <h4 className="font-semibold mb-2 text-md">Analiza rizičnih sastojaka:</h4>
+                            <ul className="list-none space-y-2 text-sm">
+                              {problematicIngredients.map((item, index) => {
+                                let icon;
+                                let colorClasses;
+                                let textColor;
+                        
+                                switch (item.ocena) {
+                                  case 'nije bezbedno':
+                                    icon = <XCircle className="h-5 w-5 text-red-600" />;
+                                    colorClasses = 'border-red-400/50 bg-red-50 dark:bg-red-900/20';
+                                    textColor = 'text-red-700 dark:text-red-300';
+                                    break;
+                                  case 'rizično – proveriti poreklo':
+                                  default:
+                                    icon = <AlertTriangle className="h-5 w-5 text-orange-500" />;
+                                    colorClasses = 'border-orange-400/50 bg-orange-50 dark:bg-orange-900/20';
+                                    textColor = 'text-orange-700 dark:text-orange-300';
+                                    break;
+                                }
+                        
+                                return (
+                                  <li key={index} className={`p-3 rounded-lg border ${colorClasses}`}>
+                                    <Popover>
+                                      <PopoverTrigger asChild disabled={!item.napomena}>
+                                        <div className={`flex items-start gap-3 ${item.napomena ? 'cursor-pointer' : ''}`}>
+                                          <div className="pt-0.5">{icon}</div>
+                                          <div className="flex-1">
+                                            <p className="font-semibold text-foreground">{item.sastojak}</p>
+                                            <p className={`text-xs ${textColor}`}>
+                                              {item.ocena} (Nivo rizika: {item.nivoRizika})
+                                            </p>
+                                          </div>
+                                          {item.napomena && <Info className="h-4 w-4 text-blue-500 shrink-0" />}
+                                        </div>
+                                      </PopoverTrigger>
+                                      {item.napomena && (
+                                        <PopoverContent className="w-auto max-w-[300px] text-sm p-3" side="top" align="start">
+                                          <p className="font-bold mb-1">{item.kategorijaRizika || 'Napomena'}</p>
+                                          <p className="text-muted-foreground">{item.napomena}</p>
+                                        </PopoverContent>
+                                      )}
+                                    </Popover>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        )}
+                        
+                        {safeIngredients.length > 0 && (
+                           <Accordion type="single" collapsible className="w-full mt-4">
+                            <AccordionItem value="safe-ingredients">
+                              <AccordionTrigger>Prikaži {safeIngredients.length} bezbednih sastojaka</AccordionTrigger>
+                              <AccordionContent>
+                                <p className="text-sm text-muted-foreground p-2 bg-muted/50 rounded-md">
+                                  {safeIngredients.map(item => item.sastojak).join(', ')}
+                                </p>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                        )}
+
+                        <div className="mt-6 flex flex-col sm:flex-row gap-2">
+                           <Button variant="outline" className="w-full" onClick={() => resetAnalysisInputs()}>
+                            <RotateCcw className="mr-2 h-4 w-4" />
+                            Očisti i počni ponovo
+                          </Button>
+                           <Dialog open={showReportErrorModal} onOpenChange={(open) => {
+                               if (!open) {
+                                   setReportComment('');
+                                   setWantsContact(false);
+                                   setContactEmail('');
+                                   setReportPriority('');
+                                   setErrorType('');
+                                   setReportSubmissionStatus('idle');
+                               }
+                           }}>
+                             <DialogTrigger asChild>
+                               <Button className="w-full">
+                                 <Flag className="mr-2 h-4 w-4" />
+                                 Prijavi grešku
+                               </Button>
+                             </DialogTrigger>
+                             <DialogContent>
+                               {reportSubmissionStatus === 'success' ? (
+                                 <div className="flex flex-col items-center justify-center text-center p-4">
+                                   <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+                                   <DialogTitle className="text-xl">Prijava je poslata!</DialogTitle>
+                                   <DialogDescription className="mt-2">
+                                     Hvala što si deo GlutenScan zajednice. 💛 Ako si ostavio/la kontakt, možemo ti se javiti kad proverimo.
+                                   </DialogDescription>
+                                   <DialogFooter className="mt-6 w-full">
+                                     <Button className="w-full" onClick={() => setShowReportErrorModal(false)}>Zatvori</Button>
+                                   </DialogFooter>
+                                 </div>
+                               ) : (
+                                 <>
+                                   <DialogHeader>
+                                     <DialogTitle>Prijavi grešku u analizi</DialogTitle>
+                                     <DialogDescription>
+                                       Tvoje povratne informacije nam pomažu da poboljšamo tačnost aplikacije.
+                                     </DialogDescription>
+                                   </DialogHeader>
+                                   <div className="space-y-4 py-2 text-sm">
+
+                                      <div>
+                                        <Label className="font-semibold">Koliko je ova greška ozbiljna za vas? (opciono)</Label>
+                                        <RadioGroup value={reportPriority} onValueChange={setReportPriority} className="mt-2 space-y-1">
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="niska" id="priority-low" />
+                                            <Label htmlFor="priority-low" className="font-normal">Niska (čisto informacija)</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="srednja" id="priority-medium" />
+                                            <Label htmlFor="priority-medium" className="font-normal">Srednja (važno mi je)</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="visoka" id="priority-high" />
+                                            <Label htmlFor="priority-high" className="font-normal">Visoka (utiče na moju bezbednost)</Label>
+                                          </div>
+                                        </RadioGroup>
+                                      </div>
+                                   
+                                      <div>
+                                        <Label className="font-semibold">Tip greške (opciono)</Label>
+                                         <RadioGroup value={errorType} onValueChange={setErrorType} className="mt-2 space-y-1">
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="sastav" id="type-sastav" />
+                                            <Label htmlFor="type-sastav" className="font-normal">Greška u sastavu / AI analizi</Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="drugo" id="type-drugo" />
+                                            <Label htmlFor="type-drugo" className="font-normal">Ostalo</Label>
+                                          </div>
+                                        </RadioGroup>
+                                      </div>
+
+                                     <div className="space-y-2">
+                                       <Label htmlFor="report-comment">Komentar (opciono)</Label>
+                                       <Textarea id="report-comment" placeholder="Npr. Brašno od rogača je bez glutena, a označeno je kao rizično." onChange={(e) => setReportComment(e.target.value)} />
+                                     </div>
+                                   
+                                     <div className="flex items-center space-x-2">
+                                       <Checkbox id="wants-contact" onCheckedChange={(checked) => setWantsContact(!!checked)} />
+                                       <Label htmlFor="wants-contact">Želim da me kontaktirate povodom ove prijave.</Label>
+                                     </div>
+                                     {wantsContact && (
+                                       <div className="space-y-2 pl-6">
+                                         <Label htmlFor="contact-email">Email za odgovor</Label>
+                                         <Input id="contact-email" type="email" placeholder="vas.email@primer.com" onChange={(e) => setContactEmail(e.target.value)} />
+                                       </div>
+                                     )}
+                                     <p className="text-xs text-muted-foreground">
+                                       Napomena: Uz prijavu se automatski šalje i analizirani tekst (ili slika) radi lakše provere.
+                                     </p>
+                                   </div>
+                                   <DialogFooter>
+                                     <Button variant="outline" onClick={() => setShowReportErrorModal(false)}>Odustani</Button>
+                                     <Button onClick={handleReportSubmit} disabled={reportSubmissionStatus === 'submitting'}>
+                                       {reportSubmissionStatus === 'submitting' ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Send className="mr-2 h-4 w-4" />} Pošalji prijavu
+                                     </Button>
+                                   </DialogFooter>
+                                 </>
+                               )}
+                             </DialogContent>
+                           </Dialog>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-4 text-center">
+                          <Info className="inline h-3 w-3 mr-1" />
+                          Ova analiza je informativna i ne zamenjuje zvaničnu potvrdu proizvođača. Ako imate sumnje, pošaljite upit direktno preko aplikacije.
+                        </p>
+                      </div>
+                    )}
+                   </CardContent>
+                </Card>
               )}
-          </div>
+               {errorDeclaration && !showLabelingQuestionModal && (
+                  <ShadcnAlert variant="destructive" className="mt-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <ShadcnAlertTitle>Greška</ShadcnAlertTitle>
+                    <ShadcnAlertDescription>{errorDeclaration}</ShadcnAlertDescription>
+                  </ShadcnAlert>
+                )}
+            </div>
         </div>
         
         <AlertDialog open={showLabelingQuestionModal} onOpenChange={(open) => {
