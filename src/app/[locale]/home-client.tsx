@@ -577,7 +577,7 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
             <Card className="flex flex-col text-center items-center justify-between p-6 hover:shadow-lg transition-shadow">
                 <div className="flex-grow flex flex-col items-center text-center">
                     <div className="flex justify-center items-center h-16 w-16 rounded-full bg-primary/10 text-primary mb-4">
-                        <Search className="h-8 w-8" />
+                        <ShoppingBag className="h-8 w-8" />
                     </div>
                     <CardTitle className="text-xl mb-1">Pretraži proizvode</CardTitle>
                     <CardDescription>Pronađite bezbedne proizvode u našoj bazi.</CardDescription>
