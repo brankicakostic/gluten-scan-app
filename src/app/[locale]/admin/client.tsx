@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -46,7 +47,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { Shield, PlusCircle, Edit, Trash2, Loader2, Mail, CheckSquare, ExternalLink, Hourglass, Save, MessageSquare, Flag, Send, CalendarIcon, CalendarDays } from 'lucide-react';
+import { Shield, PlusCircle, Edit, Trash2, Loader2, Mail, CheckSquare, ExternalLink, Hourglass, Save, MessageSquare, Flag, Send, CalendarIcon, CalendarDays, CircleAlert } from 'lucide-react';
 import type { Product } from '@/lib/products';
 import type { Report } from '@/lib/reports';
 import type { Event } from '@/lib/events';
@@ -77,6 +78,15 @@ const productFormSchema = z.object({
   isLactoseFree: z.boolean().optional(),
   isHighProtein: z.boolean().optional(),
   tags: z.string().optional().transform(value => value ? value.split(',').map(tag => tag.trim()).filter(Boolean) : []),
+  warning: z.boolean().optional(),
+  note: z.string().optional(),
+  seriesAffected: z.object({
+    lotNumbers: z.string().optional().transform(value => value ? value.split(',').map(tag => tag.trim()).filter(Boolean) : []),
+    expiry: z.string().optional(),
+    finding: z.string().optional(),
+    status: z.string().optional(),
+    sourceLink: z.string().url({ message: "Unesite validan URL." }).optional().or(z.literal('')),
+  }).optional(),
 });
 
 type ProductFormData = z.infer<typeof productFormSchema>;
@@ -169,7 +179,9 @@ export default function AdminClientPage({ initialProducts, initialReports, initi
 
   const productForm = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
-    defaultValues: {},
+    defaultValues: {
+      warning: false,
+    },
   });
 
   const eventForm = useForm<EventFormData>({
@@ -191,7 +203,16 @@ export default function AdminClientPage({ initialProducts, initialReports, initi
 
   const handleOpenProductForm = (product?: Product) => {
     setProductToEdit(product || null);
-    productForm.reset(product ? { ...product, tags: product.tags?.join(', ') } : {});
+    const formValues = product ? {
+      ...product,
+      tags: product.tags?.join(', ') || '',
+      note: product.note || '',
+      seriesAffected: product.seriesAffected ? {
+          ...product.seriesAffected,
+          lotNumbers: product.seriesAffected.lotNumbers?.join(', ') || ''
+      } : undefined
+    } : { warning: false };
+    productForm.reset(formValues);
     setIsProductFormOpen(true);
   };
 
@@ -430,6 +451,7 @@ export default function AdminClientPage({ initialProducts, initialReports, initi
                       <TableHead>Naziv Proizvoda</TableHead>
                       <TableHead>Brend</TableHead>
                       <TableHead>Kategorija</TableHead>
+                      <TableHead>Status</TableHead>
                       <TableHead className="text-right">Akcije</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -439,6 +461,9 @@ export default function AdminClientPage({ initialProducts, initialReports, initi
                         <TableCell className="font-medium">{product.name}</TableCell>
                         <TableCell>{product.brand}</TableCell>
                         <TableCell>{product.category}</TableCell>
+                        <TableCell>
+                          {product.warning && <Badge variant="destructive">Opozvan</Badge>}
+                        </TableCell>
                         <TableCell className="text-right space-x-2">
                           <Button variant="outline" size="icon" onClick={() => handleOpenProductForm(product)}>
                             <Edit className="h-4 w-4" />
@@ -689,6 +714,58 @@ export default function AdminClientPage({ initialProducts, initialReports, initi
                 <Label htmlFor="isHighProtein">Bogat proteinima</Label>
               </div>
             </div>
+            
+            <div className="space-y-4 pt-4 border-t">
+              <Controller name="warning" control={productForm.control} render={({ field }) => (
+                <div className="flex items-center space-x-2 p-3 bg-destructive/10 rounded-lg">
+                    <Checkbox id="warning" checked={field.value} onCheckedChange={field.onChange} className="border-destructive" />
+                    <Label htmlFor="warning" className="text-destructive font-semibold text-base">Označi proizvod kao povučen/problematičan</Label>
+                </div>
+              )} />
+              
+              {productForm.watch('warning') && (
+                <Accordion type="single" collapsible defaultValue="recall-details" className="w-full bg-muted/40 p-4 rounded-lg">
+                    <AccordionItem value="recall-details" className="border-0">
+                        <AccordionTrigger className="text-base py-2 hover:no-underline">
+                          <div className="flex items-center gap-2 text-destructive">
+                            <CircleAlert className="h-5 w-5" />
+                            <span>Unesi detalje o povlačenju</span>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-2">
+                            <div className="space-y-1">
+                                <Label htmlFor="note">Napomena (prikazuje se na vrhu stranice)</Label>
+                                <Textarea id="note" {...productForm.register('note')} placeholder="Npr. VAŽNO: Serija XYZ je povučena zbog prisustva glutena." />
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="lotNumbers">Pogođene serije (odvojene zarezom)</Label>
+                                <Input id="lotNumbers" {...productForm.register('seriesAffected.lotNumbers')} placeholder="npr. 1281203, 1281204" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-1">
+                                  <Label htmlFor="expiry">Rok trajanja pogođene serije</Label>
+                                  <Input id="expiry" {...productForm.register('seriesAffected.expiry')} placeholder="npr. 12.2025" />
+                              </div>
+                              <div className="space-y-1">
+                                  <Label htmlFor="status">Status</Label>
+                                  <Input id="status" {...productForm.register('seriesAffected.status')} placeholder="npr. Povučeno iz prodaje"/>
+                              </div>
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="finding">Nalaz/Razlog povlačenja</Label>
+                                <Textarea id="finding" {...productForm.register('seriesAffected.finding')} placeholder="npr. Prisustvo glutena iznad dozvoljenog nivoa."/>
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="sourceLink">Link ka izvoru (zvanično obaveštenje)</Label>
+                                <Input id="sourceLink" type="url" {...productForm.register('seriesAffected.sourceLink')} placeholder="https://..."/>
+                                {productForm.formState.errors.seriesAffected?.sourceLink && <p className="text-xs text-destructive">{productForm.formState.errors.seriesAffected.sourceLink.message}</p>}
+                            </div>
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+              )}
+            </div>
+
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setIsProductFormOpen(false)}>Odustani</Button>
               <Button type="submit" disabled={isLoading}>
@@ -745,7 +822,7 @@ export default function AdminClientPage({ initialProducts, initialReports, initi
                     </div>
                      <div className="space-y-1">
                         <Label htmlFor="event-time">Vreme</Label>
-                        <Input id="event-time" {...eventForm.register('time')} placeholder="npr. 18:00h" />
+                        <Input id="event-time" {...productForm.register('time')} placeholder="npr. 18:00h" />
                          {eventForm.formState.errors.time && <p className="text-xs text-destructive">{eventForm.formState.errors.time.message}</p>}
                     </div>
                 </div>
@@ -909,3 +986,5 @@ export default function AdminClientPage({ initialProducts, initialReports, initi
     </div>
   );
 }
+
+    

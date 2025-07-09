@@ -1,3 +1,4 @@
+
 // This file uses the Firebase client SDK, but is intended for use in Server Components
 // to fetch data from Firestore.
 
@@ -14,8 +15,8 @@ import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
  * @returns The full, public URL for the image.
  */
 function transformImageUrl(imageUrl: string): string {
-    if (!imageUrl || imageUrl.includes('placehold.co')) {
-        return '';
+    if (!imageUrl || imageUrl.includes('placehold.co') || imageUrl.startsWith('/placeholder.svg')) {
+        return '/placeholder.svg';
     }
     if (imageUrl.startsWith('http')) {
         // If it's already a full URL (like placeholders) or empty, return it as is.
@@ -29,7 +30,7 @@ function transformImageUrl(imageUrl: string): string {
     const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
     if (!bucket) {
         console.warn('Firebase storage bucket is not configured. Using placeholder for images.');
-        return '';
+        return '/placeholder.svg';
     }
     
     const encodedPath = encodeURIComponent(`products/${imageUrl}`);
@@ -101,7 +102,6 @@ function mapProductToDocData(product: Partial<Product>): DocumentData {
     if (product.labelText) data.labelText = product.labelText;
     if (product.source) data.source = product.source;
     if (product.nutriScore) data.nutriscore = product.nutriScore;
-    if (product.note) data.note = product.note;
     if (product.stores) data.Dostupnost = product.stores.join(', ');
     if (product.Poreklo) data.Poreklo = product.Poreklo;
 
@@ -111,21 +111,17 @@ function mapProductToDocData(product: Partial<Product>): DocumentData {
              try {
                 const url = new URL(product.imageUrl);
                 const path = decodeURIComponent(url.pathname);
-                // Extract path after '/o/products%2F'
                 const prefix = `/o/products%2F`;
                 const startIndex = path.indexOf(prefix);
                 if (startIndex !== -1) {
                   data.imageUrl = path.substring(startIndex + prefix.length);
                 } else {
-                  // Fallback for unexpected URL structures
                   data.imageUrl = path.substring(path.indexOf('/o/') + 3);
                 }
              } catch (e) {
-                // If URL parsing fails, assume it's a direct path or placeholder
                 data.imageUrl = product.imageUrl;
              }
         } else if (!product.imageUrl.startsWith('http') && product.imageUrl !== '/placeholder.svg') {
-            // This is a relative path, store it as is
             data.imageUrl = product.imageUrl;
         }
     }
@@ -134,14 +130,13 @@ function mapProductToDocData(product: Partial<Product>): DocumentData {
     data.license = !!product.hasAOECSLicense;
     data.manufacturerStatement = !!product.hasManufacturerStatement;
     data.verified = !!product.isVerifiedAdmin;
-    data.warning = !!product.warning;
 
     // ingredientsText string to ingredients array
     if (product.ingredientsText) {
         data.ingredients = product.ingredientsText.split(',').map(s => s.trim()).filter(Boolean);
     }
     
-    // Booleans to tagsFromInput array
+    // Booleans and tags to tagsFromInput array
     const tags = new Set<string>(product.tags || []);
     if (product.isVegan) tags.add('vegan'); else tags.delete('vegan');
     if (product.isPosno) tags.add('posno'); else tags.delete('posno');
@@ -149,6 +144,25 @@ function mapProductToDocData(product: Partial<Product>): DocumentData {
     if (product.isLactoseFree) tags.add('bez laktoze'); else tags.delete('bez laktoze');
     if (product.isHighProtein) tags.add('high-protein'); else tags.delete('high-protein');
     data.tagsFromInput = Array.from(tags);
+
+    // Handle recall information
+    data.warning = !!product.warning;
+    if (data.warning) {
+        data.note = product.note || '';
+        if (product.seriesAffected) {
+            data.seriesAffected = {
+                lotNumbers: product.seriesAffected.lotNumbers || [],
+                expiry: product.seriesAffected.expiry || '',
+                finding: product.seriesAffected.finding || '',
+                status: product.seriesAffected.status || '',
+                sourceLink: product.seriesAffected.sourceLink || '',
+            };
+        }
+    } else {
+        // If not a warning, clear the recall fields
+        data.note = '';
+        data.seriesAffected = null;
+    }
 
     return data;
 }
@@ -164,14 +178,12 @@ export async function getProducts(): Promise<Product[]> {
     }
     try {
         const productsCol = collection(db, 'products');
-        // Removed orderBy to prevent issues with missing Firestore indexes. Sorting is now done in-memory.
         const q = query(productsCol);
         const productSnapshot = await getDocs(q);
         const productList = productSnapshot.docs
             .map(mapDocToProduct)
-            .filter(p => p.name !== 'Bez imena'); // Filter out products that were missing a name
+            .filter(p => p.name !== 'Bez imena');
         
-        // Sort products by name alphabetically in JavaScript, respecting Serbian locale
         productList.sort((a, b) => a.name.localeCompare(b.name, 'sr'));
 
         return productList;
@@ -193,7 +205,6 @@ export async function getFeaturedProducts(count: number = 8): Promise<Product[]>
     }
     try {
         const productsCol = collection(db, 'products');
-        // Removed orderBy to prevent issues with missing Firestore indexes.
         const q = query(productsCol, limit(count));
         const productSnapshot = await getDocs(q);
         const productList = productSnapshot.docs.map(mapDocToProduct);
@@ -302,3 +313,5 @@ export async function deleteProduct(productId: string): Promise<void> {
   const productDocRef = doc(db, 'products', productId);
   await deleteDoc(productDocRef);
 }
+
+    
