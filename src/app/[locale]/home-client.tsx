@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert, Barcode as BarcodeIcon, X, FileText, Flag, XCircle, Send, PackagePlus } from 'lucide-react';
+import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert, Barcode as BarcodeIcon, X, FileText, Flag, XCircle, Send, PackagePlus, LayoutGrid } from 'lucide-react';
 import { analyzeDeclaration, type AnalyzeDeclarationOutput, type IngredientAssessment } from '@/ai/flows/analyze-declaration';
 import type { DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import { ocrDeclaration, type OcrDeclarationOutput } from '@/ai/flows/ocr-declaration-flow';
@@ -534,7 +534,7 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
             </div>
           )}
           {dailyTip && !isLoadingTip && (
-            <div className="relative rounded-lg border border-border bg-muted/50 p-3">
+            <div className="relative rounded-lg border border-primary/20 bg-secondary/30 p-3 pl-4 border-l-4">
               <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
                   <div className="flex items-center gap-3">
                       <Lightbulb className="h-5 w-5 text-primary flex-shrink-0" />
@@ -1001,8 +1001,8 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
         
         <div className="my-12 pt-10 scroll-mt-20">
             <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold tracking-tight">Pretraži po kategoriji</h2>
-                <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">Pronađite proizvode koji vas zanimaju pregledom naših najpopularnijih kategorija.</p>
+                <h2 className="text-3xl font-bold tracking-tight leading-snug">Pretraži po kategoriji</h2>
+                <p className="text-sm text-muted-foreground mt-2 max-w-2xl mx-auto">Pronađite proizvode koji vas zanimaju pregledom naših najpopularnijih kategorija.</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {categories.map((category) => (
@@ -1014,6 +1014,14 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
                         </Card>
                     </Link>
                 ))}
+            </div>
+            <div className="text-center mt-8">
+                <Button asChild variant="outline">
+                    <Link href={`/${locale}/products`}>
+                        <LayoutGrid className="mr-2 h-4 w-4" />
+                        Vidi sve proizvode i kategorije
+                    </Link>
+                </Button>
             </div>
         </div>
 
