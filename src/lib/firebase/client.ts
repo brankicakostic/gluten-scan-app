@@ -7,11 +7,12 @@ import { getFirestore, type Firestore } from "firebase/firestore";
 // Singleton instances, initialized to null. They will be populated by initializeFirebase.
 let appInstance: FirebaseApp | null = null;
 let dbInstance: Firestore | null = null;
+let initializationError: string | null = null; // Store error message to prevent re-logging
 
 // The initialization function, which will be called lazily.
 function initializeFirebase() {
-  // If already initialized, do nothing.
-  if (appInstance) return;
+  // If already initialized or if initialization previously failed, do nothing.
+  if (appInstance || initializationError) return;
 
   const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -22,9 +23,11 @@ function initializeFirebase() {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
   };
 
-  // This check now only runs when Firebase is first used, not on module load.
+  // Check for the essential projectId.
   if (!firebaseConfig.projectId) {
-    throw new Error("Firebase 'projectId' is missing. Please set NEXT_PUBLIC_FIREBASE_PROJECT_ID in your .env file.");
+    initializationError = "Firebase 'projectId' is missing. Please set NEXT_PUBLIC_FIREBASE_PROJECT_ID in your .env file.";
+    console.error(initializationError); // Log the error clearly for the developer.
+    return; // Exit without throwing, preventing the app crash.
   }
 
   // Initialize the app, or get the existing one.
@@ -43,13 +46,18 @@ function createLazyProxy<T extends object>(getInstance: () => T | null): T {
   // The 'as T' cast is safe because the proxy will forward all properties to the real object.
   return new Proxy({}, {
     get(target, prop, receiver) {
-      // Ensure initialization on any property access.
+      // Ensure initialization is attempted on any property access.
       initializeFirebase(); 
       const instance = getInstance();
+      
+      // If initialization failed, the instance will be null.
       if (!instance) {
-        // This should not happen if initializeFirebase works correctly.
-        throw new Error('Firebase instance is not available after initialization.');
+        // Throw a new, catchable Error. This is the key change.
+        // The service layer's try/catch block can now handle this gracefully.
+        const errorMsg = initializationError || 'Firebase instance is not available after initialization attempt.';
+        throw new Error(errorMsg);
       }
+      
       // Forward the property access to the real, initialized instance.
       return Reflect.get(instance, prop, receiver);
     }
@@ -57,8 +65,7 @@ function createLazyProxy<T extends object>(getInstance: () => T | null): T {
 }
 
 // Export lazy-loaded app and db instances using proxies.
-// This maintains the original import syntax (`import { db } from '...'`) across the app,
-// avoiding the need for widespread refactoring.
+// This maintains the original import syntax (`import { db } from '...'`) across the app.
 const db = createLazyProxy(() => dbInstance);
 const app = createLazyProxy(() => appInstance);
 
