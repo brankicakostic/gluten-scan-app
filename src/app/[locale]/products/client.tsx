@@ -26,14 +26,35 @@ const getNutriScoreClasses = (score?: string) => {
   }
 };
 
+const getCategoryIcon = (categoryName: string): string => {
+  const lowerCaseName = categoryName.toLowerCase();
+  if (lowerCaseName.includes('brašn') || lowerCaseName.includes('smeš')) return '🌾';
+  if (lowerCaseName.includes('hleb') || lowerCaseName.includes('peciv')) return '🍞';
+  if (lowerCaseName.includes('testenine') || lowerCaseName.includes('pasta')) return '🍝';
+  if (lowerCaseName.includes('slatkiš') || lowerCaseName.includes('keks') || lowerCaseName.includes('čokolad')) return '🍪';
+  if (lowerCaseName.includes('grickalice') || lowerCaseName.includes('kreker')) return '🥨';
+  if (lowerCaseName.includes('pahuljice') || lowerCaseName.includes('musli')) return '🥣';
+  if (lowerCaseName.includes('namaz') || lowerCaseName.includes('krem') || lowerCaseName.includes('med')) return '🍯';
+  if (lowerCaseName.includes('sos') || lowerCaseName.includes('preliv')) return '🥫';
+  if (lowerCaseName.includes('pić') || lowerCaseName.includes('sok')) return '🥤';
+  if (lowerCaseName.includes('začin')) return '🧂';
+  return '🛍️';
+};
+
 const PRODUCTS_PER_PAGE = 12;
+
+export interface CategoryInfo {
+  name: string;
+  count: number;
+}
 
 interface ProductsClientPageProps {
   allProducts: Product[];
-  productCategories: string[];
+  productCategories: CategoryInfo[];
+  quickFilterCategories: CategoryInfo[];
 }
 
-export default function ProductsClientPage({ allProducts, productCategories }: ProductsClientPageProps) {
+export default function ProductsClientPage({ allProducts, productCategories, quickFilterCategories }: ProductsClientPageProps) {
   const params = useParams();
   const searchParams = useSearchParams();
   const locale = params.locale as string;
@@ -83,7 +104,7 @@ export default function ProductsClientPage({ allProducts, productCategories }: P
           icon={ShoppingBag}
         />
 
-        <div className="mb-8 p-6 bg-card border rounded-lg shadow">
+        <div className="mb-6 p-6 bg-card border rounded-lg shadow">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             <div className="space-y-1.5 md:col-span-2">
               <label htmlFor="search" className="text-sm font-medium">Pretraži proizvode</label>
@@ -101,13 +122,41 @@ export default function ProductsClientPage({ allProducts, productCategories }: P
                   <SelectValue placeholder="Sve kategorije" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Sve kategorije</SelectItem>
+                  <SelectItem value="all">Sve kategorije ({allProducts.length})</SelectItem>
                   {productCategories.map(category => (
-                    <SelectItem key={category} value={category}>{category}</SelectItem>
+                    <SelectItem key={category.name} value={category.name}>
+                       <div className="flex items-center gap-2">
+                        <span>{getCategoryIcon(category.name)}</span>
+                        <span>{category.name} ({category.count})</span>
+                       </div>
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
+          </div>
+        </div>
+
+        <div className="mb-8">
+          <div className="flex gap-3 overflow-x-auto pb-2 -mx-6 px-6 no-scrollbar">
+              <Button 
+                  variant={selectedCategory === 'all' ? 'default' : 'outline'}
+                  className="rounded-full shrink-0"
+                  onClick={() => setSelectedCategory('all')}
+              >
+                  Sve
+              </Button>
+              {quickFilterCategories.slice(0, 7).map(category => (
+                  <Button
+                      key={category.name}
+                      variant={selectedCategory === category.name ? 'default' : 'outline'}
+                      className="rounded-full shrink-0"
+                      onClick={() => setSelectedCategory(category.name)}
+                  >
+                      <span className="mr-2">{getCategoryIcon(category.name)}</span>
+                      {category.name}
+                  </Button>
+              ))}
           </div>
         </div>
 
