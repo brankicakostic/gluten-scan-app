@@ -25,7 +25,7 @@ export const mainNavLinks: NavLink[] = [
     tooltip: 'Pretražite sve proizvode',
   },
   {
-    href: '/recalls', // The path remains /recalls, but the label and icon change
+    href: '/events', // The path remains /recalls, but the label and icon change
     label: 'Događaji',
     icon: CalendarDays,
     tooltip: 'Radionice i Događaji',

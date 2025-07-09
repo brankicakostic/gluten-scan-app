@@ -22,7 +22,7 @@ export const bottomNavLinks: NavLink[] = [
     icon: ShoppingBag,
   },
   {
-    href: '/recalls',
+    href: '/events',
     label: 'Događaji',
     icon: CalendarDays,
   },

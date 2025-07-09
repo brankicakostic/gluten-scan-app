@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { format } from 'date-fns';
 import { PageHeader } from '@/components/page-header';
 import {
   Table,
@@ -42,14 +43,20 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Shield, PlusCircle, Edit, Trash2, Loader2, Mail, CheckSquare, ExternalLink, Hourglass, Save, MessageSquare, Flag, Send } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { Shield, PlusCircle, Edit, Trash2, Loader2, Mail, CheckSquare, ExternalLink, Hourglass, Save, MessageSquare, Flag, Send, CalendarIcon, CalendarDays } from 'lucide-react';
 import type { Product } from '@/lib/products';
 import type { Report } from '@/lib/reports';
+import type { Event } from '@/lib/events';
 import { addProductAction, updateProductAction, deleteProductAction } from '@/app/actions/product-actions';
 import { deleteReportAction, updateReportStatusAction, updateReportNotesAction } from '@/app/actions/report-actions';
+import { addEventAction, updateEventAction, deleteEventAction } from '@/app/actions/event-actions';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
-// Zod schema for form validation
+
 const productFormSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, 'Name is required'),
@@ -74,56 +81,55 @@ const productFormSchema = z.object({
 
 type ProductFormData = z.infer<typeof productFormSchema>;
 
+const eventFormSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().min(1, 'Naziv je obavezan'),
+  category: z.enum(['Radionica', 'Festival', 'Predavanje', 'Sajam', 'Ostalo'], { required_error: 'Kategorija je obavezna' }),
+  date: z.date({ required_error: 'Datum je obavezan' }),
+  time: z.string().min(1, 'Vreme je obavezno'),
+  location: z.string().min(1, 'Lokacija je obavezna'),
+  registrationLink: z.string().url({ message: "Unesite validan URL." }).optional().or(z.literal('')),
+  imageUrl: z.string().optional(),
+  description: z.string().optional(),
+  organizer: z.string().optional(),
+  status: z.enum(['draft', 'published', 'scheduled'], { required_error: 'Status je obavezan' }),
+  tags: z.string().optional().transform(value => value ? value.split(',').map(tag => tag.trim()).filter(Boolean) : []),
+});
+
+type EventFormData = z.infer<typeof eventFormSchema>;
+
 interface AdminClientPageProps {
   initialProducts: Product[];
   initialReports: Report[];
+  initialEvents: Event[];
   locale: string;
 }
 
-/**
- * Generates a mailto link for sending an inquiry to a manufacturer.
- * @param report The report object containing inquiry details.
- * @returns A mailto link string.
- */
 const generateInquiryMailto = (report: Report): string => {
   const subject = `GlutenScan - Upit za proizvod: ${report.productName || 'Provera sastojaka'}`;
-  
   const bodyParts = [
-    'Poštovani,',
-    '',
-    'Korisnik GlutenScan aplikacije postavio je sledeći upit za vaš proizvod:',
-    '',
+    'Poštovani,', '',
+    'Korisnik GlutenScan aplikacije postavio je sledeći upit za vaš proizvod:', '',
     `📌 Proizvod: ${report.productName || '[Unesite naziv proizvoda ovde]'}`,
     `📝 Pitanje: "${report.comment || 'Nije specificiran komentar.'}"`,
   ];
-
   if (report.contactEmail && report.wantsContact) {
     bodyParts.push(`📩 Email korisnika (za cc): ${report.contactEmail}`);
   }
-
-  bodyParts.push(
-    '',
-    'Zahvaljujemo unapred na odgovoru, koji ćemo proslediti korisnicima aplikacije.',
-    '',
-    'Srdačno,',
-    'GlutenScan tim'
-  );
-
+  bodyParts.push('', 'Zahvaljujemo unapred na odgovoru, koji ćemo proslediti korisnicima aplikacije.', '', 'Srdačno,', 'GlutenScan tim');
   const body = bodyParts.join('\n');
-  
-  // The 'to' field is left empty for the admin to fill in the manufacturer's email.
   return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 };
 
 
-export default function AdminClientPage({ initialProducts, initialReports, locale }: AdminClientPageProps) {
+export default function AdminClientPage({ initialProducts, initialReports, initialEvents, locale }: AdminClientPageProps) {
   const router = useRouter();
   const { toast } = useToast();
 
   // Products state
   const [products, setProducts] = useState(initialProducts);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [isProductFormOpen, setIsProductFormOpen] = useState(false);
+  const [isProductDeleteAlertOpen, setIsProductDeleteAlertOpen] = useState(false);
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   
@@ -138,6 +144,12 @@ export default function AdminClientPage({ initialProducts, initialReports, local
   const [adminNotes, setAdminNotes] = useState<Record<string, string>>({});
   const [isSavingNote, setIsSavingNote] = useState<string | null>(null);
 
+  // Events state
+  const [events, setEvents] = useState(initialEvents);
+  const [isEventFormOpen, setIsEventFormOpen] = useState(false);
+  const [isEventDeleteAlertOpen, setIsEventDeleteAlertOpen] = useState(false);
+  const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
+  const [eventToDelete, setEventToDelete] = useState<Event | null>(null);
 
   // Common state
   const [isLoading, setIsLoading] = useState(false);
@@ -145,6 +157,7 @@ export default function AdminClientPage({ initialProducts, initialReports, local
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => setProducts(initialProducts), [initialProducts]);
+  useEffect(() => setEvents(initialEvents), [initialEvents]);
   useEffect(() => {
     setReports(initialReports);
     const initialNotes = initialReports.reduce((acc, report) => {
@@ -154,9 +167,17 @@ export default function AdminClientPage({ initialProducts, initialReports, local
     setAdminNotes(initialNotes);
   }, [initialReports]);
 
-  const form = useForm<ProductFormData>({
+  const productForm = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {},
+  });
+
+  const eventForm = useForm<EventFormData>({
+    resolver: zodResolver(eventFormSchema),
+    defaultValues: {
+        status: 'draft',
+        category: 'Radionica',
+    },
   });
 
   const handleAuth = (e: React.FormEvent) => {
@@ -168,13 +189,13 @@ export default function AdminClientPage({ initialProducts, initialReports, local
     }
   };
 
-  const handleOpenForm = (product?: Product) => {
+  const handleOpenProductForm = (product?: Product) => {
     setProductToEdit(product || null);
-    form.reset(product ? { ...product, tags: product.tags?.join(', ') } : {});
-    setIsFormOpen(true);
+    productForm.reset(product ? { ...product, tags: product.tags?.join(', ') } : {});
+    setIsProductFormOpen(true);
   };
 
-  const handleFormSubmit = async (data: ProductFormData) => {
+  const handleProductFormSubmit = async (data: ProductFormData) => {
     setIsLoading(true);
     const action = data.id ? updateProductAction(data.id, data) : addProductAction(data);
     
@@ -183,7 +204,7 @@ export default function AdminClientPage({ initialProducts, initialReports, local
 
     if (result.success) {
       toast({ title: `Proizvod ${data.id ? 'ažuriran' : 'dodan'}!` });
-      setIsFormOpen(false);
+      setIsProductFormOpen(false);
       router.refresh(); 
     } else {
       toast({ variant: 'destructive', title: 'Greška', description: result.error });
@@ -192,7 +213,7 @@ export default function AdminClientPage({ initialProducts, initialReports, local
 
   const handleDeleteProductClick = (product: Product) => {
     setProductToDelete(product);
-    setIsDeleteAlertOpen(true);
+    setIsProductDeleteAlertOpen(true);
   };
 
   const handleDeleteProductConfirm = async () => {
@@ -200,7 +221,7 @@ export default function AdminClientPage({ initialProducts, initialReports, local
     setIsLoading(true);
     const result = await deleteProductAction(productToDelete.id);
     setIsLoading(false);
-    setIsDeleteAlertOpen(false);
+    setIsProductDeleteAlertOpen(false);
 
     if (result.success) {
       toast({ title: `Proizvod "${productToDelete.name}" obrisan.` });
@@ -211,6 +232,50 @@ export default function AdminClientPage({ initialProducts, initialReports, local
     setProductToDelete(null);
   };
 
+  const handleOpenEventForm = (event?: Event) => {
+    setEventToEdit(event || null);
+    eventForm.reset(event ? { ...event, date: new Date(event.date), tags: event.tags?.join(', ') } : { status: 'draft' });
+    setIsEventFormOpen(true);
+  };
+  
+  const handleEventFormSubmit = async (data: EventFormData) => {
+    setIsLoading(true);
+    const action = data.id ? updateEventAction(data.id, data as Event) : addEventAction(data as Event);
+    const result = await action;
+    setIsLoading(false);
+  
+    if (result.success) {
+      toast({ title: `Događaj ${data.id ? 'ažuriran' : 'dodan'}!` });
+      setIsEventFormOpen(false);
+      router.refresh();
+    } else {
+      toast({ variant: 'destructive', title: 'Greška', description: result.error });
+    }
+  };
+  
+  const handleDeleteEventClick = (event: Event) => {
+    setEventToDelete(event);
+    setIsEventDeleteAlertOpen(true);
+  };
+  
+  const handleDeleteEventConfirm = async () => {
+    if (!eventToDelete?.id) return;
+    setIsLoading(true);
+    const result = await deleteEventAction(eventToDelete.id);
+    setIsLoading(false);
+    setIsEventDeleteAlertOpen(false);
+  
+    if (result.success) {
+      toast({ title: `Događaj "${eventToDelete.title}" obrisan.` });
+      router.refresh();
+    } else {
+      toast({ variant: 'destructive', title: 'Greška pri brisanju', description: result.error });
+    }
+    setEventToDelete(null);
+  };
+
+
+  // Report handlers...
   const handleDeleteReportClick = (report: Report) => {
     setReportToDelete(report);
     setIsReportDeleteAlertOpen(true);
@@ -328,6 +393,15 @@ export default function AdminClientPage({ initialProducts, initialReports, local
     }
   };
 
+  const getEventStatusBadge = (status?: string) => {
+    switch (status) {
+        case 'published': return <Badge variant="default" className="bg-green-600 hover:bg-green-600/80">Objavljeno</Badge>;
+        case 'draft': return <Badge variant="secondary">Nacrt</Badge>;
+        case 'scheduled': return <Badge variant="default" className="bg-blue-500 hover:bg-blue-500/80">Zakazano</Badge>;
+        default: return <Badge variant="outline">Nepoznato</Badge>;
+    }
+  };
+
 
   return (
     <div className="p-6 md:p-8">
@@ -338,12 +412,13 @@ export default function AdminClientPage({ initialProducts, initialReports, local
           <TabsList className="mb-4">
             <TabsTrigger value="products">Proizvodi</TabsTrigger>
             <TabsTrigger value="reports">Prijave i Upiti <Badge variant="destructive" className="ml-2">{reports.filter(r => r.status === 'new').length}</Badge></TabsTrigger>
+            <TabsTrigger value="events">Događaji</TabsTrigger>
           </TabsList>
 
           {/* Products Tab */}
           <TabsContent value="products">
             <div className="flex justify-end mb-4">
-              <Button onClick={() => handleOpenForm()}>
+              <Button onClick={() => handleOpenProductForm()}>
                 <PlusCircle className="mr-2 h-4 w-4" /> Dodaj novi proizvod
               </Button>
             </div>
@@ -365,7 +440,7 @@ export default function AdminClientPage({ initialProducts, initialReports, local
                         <TableCell>{product.brand}</TableCell>
                         <TableCell>{product.category}</TableCell>
                         <TableCell className="text-right space-x-2">
-                          <Button variant="outline" size="icon" onClick={() => handleOpenForm(product)}>
+                          <Button variant="outline" size="icon" onClick={() => handleOpenProductForm(product)}>
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button variant="destructive" size="icon" onClick={() => handleDeleteProductClick(product)}>
@@ -481,101 +556,141 @@ export default function AdminClientPage({ initialProducts, initialReports, local
                 ))}
               </Accordion>
           </TabsContent>
+          
+          {/* Events Tab */}
+          <TabsContent value="events">
+            <div className="flex justify-end mb-4">
+                <Button onClick={() => handleOpenEventForm()}>
+                    <PlusCircle className="mr-2 h-4 w-4" /> Dodaj novi događaj
+                </Button>
+            </div>
+            <Card>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Naziv Događaja</TableHead>
+                                <TableHead>Datum</TableHead>
+                                <TableHead>Lokacija</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-right">Akcije</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {events.map((event) => (
+                                <TableRow key={event.id}>
+                                    <TableCell className="font-medium">{event.title}</TableCell>
+                                    <TableCell>{new Date(event.date).toLocaleDateString('sr-RS')}</TableCell>
+                                    <TableCell>{event.location}</TableCell>
+                                    <TableCell>{getEventStatusBadge(event.status)}</TableCell>
+                                    <TableCell className="text-right space-x-2">
+                                        <Button variant="outline" size="icon" onClick={() => handleOpenEventForm(event)}>
+                                            <Edit className="h-4 w-4" />
+                                        </Button>
+                                        <Button variant="destructive" size="icon" onClick={() => handleDeleteEventClick(event)}>
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
-
       </div>
 
       {/* Add/Edit Product Dialog */}
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+      <Dialog open={isProductFormOpen} onOpenChange={setIsProductFormOpen}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{productToEdit ? 'Izmeni proizvod' : 'Dodaj novi proizvod'}</DialogTitle>
             <DialogDescription>Popunite detalje o proizvodu.</DialogDescription>
           </DialogHeader>
-          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
+          <form onSubmit={productForm.handleSubmit(handleProductFormSubmit)} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <Label htmlFor="name">Naziv</Label>
-                <Input id="name" {...form.register('name')} />
-                {form.formState.errors.name && <p className="text-xs text-destructive">{form.formState.errors.name.message}</p>}
+                <Input id="name" {...productForm.register('name')} />
+                {productForm.formState.errors.name && <p className="text-xs text-destructive">{productForm.formState.errors.name.message}</p>}
               </div>
               <div className="space-y-1">
                 <Label htmlFor="brand">Brend</Label>
-                <Input id="brand" {...form.register('brand')} />
+                <Input id="brand" {...productForm.register('brand')} />
               </div>
               <div className="space-y-1">
                 <Label htmlFor="category">Kategorija</Label>
-                <Input id="category" {...form.register('category')} />
-                 {form.formState.errors.category && <p className="text-xs text-destructive">{form.formState.errors.category.message}</p>}
+                <Input id="category" {...productForm.register('category')} />
+                 {productForm.formState.errors.category && <p className="text-xs text-destructive">{productForm.formState.errors.category.message}</p>}
               </div>
               <div className="space-y-1">
                 <Label htmlFor="barcode">Barcode</Label>
-                <Input id="barcode" {...form.register('barcode')} />
+                <Input id="barcode" {...productForm.register('barcode')} />
               </div>
             </div>
             <div className="space-y-1">
               <Label htmlFor="imageUrl">URL Slike (relativni putanja)</Label>
-              <Input id="imageUrl" placeholder="npr. aleksandrija-fruska-gora/instant-palenta.png" {...form.register('imageUrl')} />
+              <Input id="imageUrl" placeholder="npr. aleksandrija-fruska-gora/instant-palenta.png" {...productForm.register('imageUrl')} />
             </div>
             <div className="space-y-1">
               <Label htmlFor="description">Opis</Label>
-              <Textarea id="description" {...form.register('description')} />
+              <Textarea id="description" {...productForm.register('description')} />
             </div>
             <div className="space-y-1">
               <Label htmlFor="ingredientsText">Sastojci (odvojeni zarezom)</Label>
-              <Textarea id="ingredientsText" {...form.register('ingredientsText')} />
+              <Textarea id="ingredientsText" {...productForm.register('ingredientsText')} />
             </div>
              <div className="space-y-1">
                 <Label htmlFor="tags">Tagovi (odvojeni zarezom)</Label>
-                <Input id="tags" placeholder="npr. povučeno, sadrži-gluten, upozorenje" {...form.register('tags')} />
+                <Input id="tags" placeholder="npr. povučeno, sadrži-gluten, upozorenje" {...productForm.register('tags')} />
               </div>
             <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-1">
                     <Label htmlFor="nutriScore">Nutri-Score</Label>
-                    <Input id="nutriScore" {...form.register('nutriScore')} />
+                    <Input id="nutriScore" {...productForm.register('nutriScore')} />
                 </div>
                  <div className="space-y-1">
                     <Label htmlFor="Poreklo">Poreklo</Label>
-                    <Input id="Poreklo" {...form.register('Poreklo')} />
+                    <Input id="Poreklo" {...productForm.register('Poreklo')} />
                 </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <div className="flex items-center space-x-2">
-                 <Controller name="hasAOECSLicense" control={form.control} render={({ field }) => <Checkbox id="hasAOECSLicense" checked={field.value} onCheckedChange={field.onChange} />} />
+                 <Controller name="hasAOECSLicense" control={productForm.control} render={({ field }) => <Checkbox id="hasAOECSLicense" checked={field.value} onCheckedChange={field.onChange} />} />
                 <Label htmlFor="hasAOECSLicense">AOECS Licenca</Label>
               </div>
               <div className="flex items-center space-x-2">
-                 <Controller name="hasManufacturerStatement" control={form.control} render={({ field }) => <Checkbox id="hasManufacturerStatement" checked={field.value} onCheckedChange={field.onChange} />} />
+                 <Controller name="hasManufacturerStatement" control={productForm.control} render={({ field }) => <Checkbox id="hasManufacturerStatement" checked={field.value} onCheckedChange={field.onChange} />} />
                 <Label htmlFor="hasManufacturerStatement">Izjava proizvođača</Label>
               </div>
                <div className="flex items-center space-x-2">
-                 <Controller name="isVerifiedAdmin" control={form.control} render={({ field }) => <Checkbox id="isVerifiedAdmin" checked={field.value} onCheckedChange={field.onChange} />} />
+                 <Controller name="isVerifiedAdmin" control={productForm.control} render={({ field }) => <Checkbox id="isVerifiedAdmin" checked={field.value} onCheckedChange={field.onChange} />} />
                 <Label htmlFor="isVerifiedAdmin">Admin Verifikovan</Label>
               </div>
                <div className="flex items-center space-x-2">
-                 <Controller name="isVegan" control={form.control} render={({ field }) => <Checkbox id="isVegan" checked={field.value} onCheckedChange={field.onChange} />} />
+                 <Controller name="isVegan" control={productForm.control} render={({ field }) => <Checkbox id="isVegan" checked={field.value} onCheckedChange={field.onChange} />} />
                 <Label htmlFor="isVegan">Vegan</Label>
               </div>
                <div className="flex items-center space-x-2">
-                 <Controller name="isPosno" control={form.control} render={({ field }) => <Checkbox id="isPosno" checked={field.value} onCheckedChange={field.onChange} />} />
+                 <Controller name="isPosno" control={productForm.control} render={({ field }) => <Checkbox id="isPosno" checked={field.value} onCheckedChange={field.onChange} />} />
                 <Label htmlFor="isPosno">Posno</Label>
               </div>
                <div className="flex items-center space-x-2">
-                 <Controller name="isSugarFree" control={form.control} render={({ field }) => <Checkbox id="isSugarFree" checked={field.value} onCheckedChange={field.onChange} />} />
+                 <Controller name="isSugarFree" control={productForm.control} render={({ field }) => <Checkbox id="isSugarFree" checked={field.value} onCheckedChange={field.onChange} />} />
                 <Label htmlFor="isSugarFree">Bez šećera</Label>
               </div>
                 <div className="flex items-center space-x-2">
-                 <Controller name="isLactoseFree" control={form.control} render={({ field }) => <Checkbox id="isLactoseFree" checked={field.value} onCheckedChange={field.onChange} />} />
+                 <Controller name="isLactoseFree" control={productForm.control} render={({ field }) => <Checkbox id="isLactoseFree" checked={field.value} onCheckedChange={field.onChange} />} />
                 <Label htmlFor="isLactoseFree">Bez laktoze</Label>
               </div>
                <div className="flex items-center space-x-2">
-                 <Controller name="isHighProtein" control={form.control} render={({ field }) => <Checkbox id="isHighProtein" checked={field.value} onCheckedChange={field.onChange} />} />
+                 <Controller name="isHighProtein" control={productForm.control} render={({ field }) => <Checkbox id="isHighProtein" checked={field.value} onCheckedChange={field.onChange} />} />
                 <Label htmlFor="isHighProtein">Bogat proteinima</Label>
               </div>
             </div>
-
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsFormOpen(false)}>Odustani</Button>
+              <Button type="button" variant="outline" onClick={() => setIsProductFormOpen(false)}>Odustani</Button>
               <Button type="submit" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {productToEdit ? 'Sačuvaj izmene' : 'Dodaj proizvod'}
@@ -585,8 +700,124 @@ export default function AdminClientPage({ initialProducts, initialReports, local
         </DialogContent>
       </Dialog>
       
+      {/* Add/Edit Event Dialog */}
+      <Dialog open={isEventFormOpen} onOpenChange={setIsEventFormOpen}>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+                <DialogTitle>{eventToEdit ? 'Izmeni događaj' : 'Dodaj novi događaj'}</DialogTitle>
+                <DialogDescription>Popunite detalje o događaju.</DialogDescription>
+            </DialogHeader>
+            <form onSubmit={eventForm.handleSubmit(handleEventFormSubmit)} className="space-y-4">
+                <div className="space-y-1">
+                    <Label htmlFor="event-title">Naziv događaja</Label>
+                    <Input id="event-title" {...eventForm.register('title')} />
+                    {eventForm.formState.errors.title && <p className="text-xs text-destructive">{eventForm.formState.errors.title.message}</p>}
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                        <Label>Datum</Label>
+                        <Controller
+                            control={eventForm.control}
+                            name="date"
+                            render={({ field }) => (
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant={"outline"}
+                                            className={cn("w-full justify-start text-left font-normal", !field.value && "text-muted-foreground")}
+                                        >
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {field.value ? format(field.value, "PPP") : <span>Izaberi datum</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0">
+                                        <Calendar
+                                            mode="single"
+                                            selected={field.value}
+                                            onSelect={field.onChange}
+                                            initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            )}
+                        />
+                         {eventForm.formState.errors.date && <p className="text-xs text-destructive">{eventForm.formState.errors.date.message}</p>}
+                    </div>
+                     <div className="space-y-1">
+                        <Label htmlFor="event-time">Vreme</Label>
+                        <Input id="event-time" {...eventForm.register('time')} placeholder="npr. 18:00h" />
+                         {eventForm.formState.errors.time && <p className="text-xs text-destructive">{eventForm.formState.errors.time.message}</p>}
+                    </div>
+                </div>
+                 <div className="space-y-1">
+                    <Label htmlFor="event-location">Lokacija</Label>
+                    <Input id="event-location" {...eventForm.register('location')} placeholder="npr. Kreativni Centar, Beograd" />
+                     {eventForm.formState.errors.location && <p className="text-xs text-destructive">{eventForm.formState.errors.location.message}</p>}
+                </div>
+                 <div className="space-y-1">
+                    <Label htmlFor="event-image">URL Slike</Label>
+                    <Input id="event-image" {...eventForm.register('imageUrl')} placeholder="https://placehold.co/600x400.png" />
+                </div>
+                 <div className="space-y-1">
+                    <Label htmlFor="event-desc">Opis</Label>
+                    <Textarea id="event-desc" {...eventForm.register('description')} />
+                </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                        <Label>Kategorija</Label>
+                        <Controller
+                            control={eventForm.control}
+                            name="category"
+                            render={({ field }) => (
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Radionica">Radionica</SelectItem>
+                                        <SelectItem value="Festival">Festival</SelectItem>
+                                        <SelectItem value="Predavanje">Predavanje</SelectItem>
+                                        <SelectItem value="Sajam">Sajam</SelectItem>
+                                        <SelectItem value="Ostalo">Ostalo</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
+                    </div>
+                     <div className="space-y-1">
+                        <Label>Status</Label>
+                         <Controller
+                            control={eventForm.control}
+                            name="status"
+                            render={({ field }) => (
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="draft">Nacrt (Draft)</SelectItem>
+                                        <SelectItem value="published">Objavljeno</SelectItem>
+                                        <SelectItem value="scheduled">Zakazano</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
+                    </div>
+                </div>
+                 <div className="space-y-1">
+                    <Label htmlFor="event-reg-link">Link za registraciju</Label>
+                    <Input id="event-reg-link" {...eventForm.register('registrationLink')} placeholder="https://..." />
+                    {eventForm.formState.errors.registrationLink && <p className="text-xs text-destructive">{eventForm.formState.errors.registrationLink.message}</p>}
+                </div>
+                <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setIsEventFormOpen(false)}>Odustani</Button>
+                    <Button type="submit" disabled={isLoading}>
+                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Sačuvaj'}
+                    </Button>
+                </DialogFooter>
+            </form>
+        </DialogContent>
+      </Dialog>
+
+
       {/* Delete Product Confirmation Dialog */}
-      <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+      <AlertDialog open={isProductDeleteAlertOpen} onOpenChange={setIsProductDeleteAlertOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Da li ste sigurni?</AlertDialogTitle>
@@ -602,6 +833,25 @@ export default function AdminClientPage({ initialProducts, initialReports, local
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+       {/* Delete Event Confirmation Dialog */}
+      <AlertDialog open={isEventDeleteAlertOpen} onOpenChange={setIsEventDeleteAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Da li ste sigurni?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Ova akcija se ne može opozvati. Događaj "{eventToDelete?.title}" će biti trajno obrisan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setEventToDelete(null)}>Odustani</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteEventConfirm} disabled={isLoading} className="bg-destructive hover:bg-destructive/90">
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Obriši'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
 
       {/* Delete Report Confirmation Dialog */}
       <AlertDialog open={isReportDeleteAlertOpen} onOpenChange={setIsReportDeleteAlertOpen}>
