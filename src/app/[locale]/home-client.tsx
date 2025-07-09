@@ -764,11 +764,11 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
                        <div className="flex flex-wrap gap-1 mb-3">
                           {product.isPosno && <Badge variant="secondary" className="text-xs">Posno</Badge>}
                           {product.isVegan && <Badge variant="secondary" className="text-xs">Vegan</Badge>}
-                          {product.isLactoseFree && <Badge variant="secondary" className="text-xs">Bez laktoze</Badge>}
-                          {product.isSugarFree && <Badge variant="secondary" className="text-xs">Bez šećera</Badge>}
-                          {product.isHighProtein && <Badge variant="secondary" className="text-xs">Bogat proteinima</Badge>}
+                          {product.isLactoseFree && <Badge variant="outline" className="text-xs">Bez laktoze</Badge>}
+                          {product.isSugarFree && <Badge variant="outline" className="text-xs">Bez šećera</Badge>}
+                          {product.isHighProtein && <Badge variant="default" className="text-xs">Bogat proteinima</Badge>}
                        </div>
-                      <Button asChild variant="outline" size="sm" className="w-full mt-auto">
+                      <Button asChild variant="default" size="sm" className="w-full mt-auto">
                         <Link href={`/${locale}/products/${product.id}`}>Vidi detalje</Link>
                       </Button>
                     </CardContent>
