@@ -15,29 +15,46 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container relative flex h-16 items-center justify-between">
         
-        {/* Left Section: Mobile trigger and full desktop nav */}
-        <div className="flex items-center gap-6">
-          <SidebarTrigger className="md:hidden" />
-          <div className="hidden md:flex items-center gap-6">
-            <Link href={`/${locale}`} className="flex items-center">
-              <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={150} height={38} className="h-10 w-auto dark:hidden" />
-              <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={150} height={38} className="h-10 w-auto hidden dark:block" />
+        {/* --- MOBILE HEADER --- */}
+        <div className="flex w-full items-center justify-between md:hidden">
+          <SidebarTrigger />
+          {/* Absolutely positioned logo for perfect centering */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+             <Link href={`/${locale}`} className="inline-block">
+              <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={120} height={30} className="h-8 w-auto dark:hidden" />
+              <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={120} height={30} className="h-8 w-auto hidden dark:block" />
             </Link>
-            <nav className="flex items-center gap-4 text-sm lg:gap-6">
+          </div>
+          <ThemeToggle />
+        </div>
+
+        {/* --- DESKTOP HEADER --- */}
+        <div className="hidden w-full items-center justify-between md:flex">
+          {/* Left: Logo */}
+          <Link href={`/${locale}`} className="flex items-center">
+            <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={150} height={38} className="h-10 w-auto dark:hidden" />
+            <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={150} height={38} className="h-10 w-auto hidden dark:block" />
+          </Link>
+
+          {/* Center: Navigation (Absolutely positioned for perfect centering) */}
+          <nav className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div className="flex items-center gap-4 text-sm lg:gap-6">
               {mainNavLinks.map((link: NavLink) => {
                 if (link.href === '/admin') return null;
 
                 const localizedHref = `/${locale}${link.href === '/' ? '' : link.href}`;
-                const isActive = link.href === '/' ? pathname === `/${locale}` : pathname.startsWith(localizedHref);
+                const isActive = link.href === '/' 
+                  ? pathname === localizedHref
+                  : pathname.startsWith(localizedHref);
                 
                 return (
                   <Link
                     key={link.href}
                     href={localizedHref}
                     className={cn(
-                      "transition-colors hover:text-foreground",
+                      "transition-colors hover:text-foreground/80",
                       isActive ? "text-foreground font-semibold" : "text-muted-foreground"
                     )}
                   >
@@ -45,23 +62,12 @@ export function SiteHeader() {
                   </Link>
                 );
               })}
-            </nav>
-          </div>
-        </div>
+            </div>
+          </nav>
 
-        {/* Center Section: Mobile Logo */}
-        <div className="md:hidden">
-          <Link href={`/${locale}`}>
-            <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={120} height={30} className="h-8 w-auto dark:hidden" />
-            <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={120} height={30} className="h-8 w-auto hidden dark:block" />
-          </Link>
-        </div>
-        
-        {/* Right Section: Theme Toggle */}
-        <div className="flex items-center gap-2">
+          {/* Right: Theme Toggle */}
           <ThemeToggle />
         </div>
-
       </div>
     </header>
   );
