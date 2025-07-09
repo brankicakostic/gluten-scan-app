@@ -559,7 +559,7 @@ export default function HomeClient({ initialProducts, initialTip }: HomeClientPr
               <CardDescription>Pretražite kompletan katalog proizvoda.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 flex flex-col items-center justify-center h-[180px] text-center">
-               <PackageOpen className="h-16 w-16 text-primary" />
+               <ShoppingBag className="h-16 w-16 text-primary" />
                <p className="text-muted-foreground">Preko {initialProducts.length}+ proizvoda u bazi podataka.</p>
                <Button asChild>
                  <Link href={`/${locale}/products`}>

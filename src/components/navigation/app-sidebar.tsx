@@ -78,6 +78,9 @@ export function AppSidebar() {
             Privatnost
           </Link>
         </p>
+        <p className="text-xs text-sidebar-foreground/70 mt-2">
+          Napravljeno sa 💛 u GlutenScan-u
+        </p>
       </SidebarFooter>
     </Sidebar>
   );
