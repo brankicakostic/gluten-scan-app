@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useParams } from 'next/navigation';
@@ -171,6 +172,47 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   if(product.isLactoseFree) allProductTags.add('bez laktoze');
   if(product.isHighProtein) allProductTags.add('high-protein');
 
+  const GlutenStatusBadge = () => {
+    if (product.warning) {
+      return (
+        <Badge variant="destructive" className="text-base py-1 px-3">
+          <AlertTriangle className="h-4 w-4 mr-2" />
+          <span>Sadrži gluten</span>
+        </Badge>
+      );
+    }
+    if (isConsideredGF) {
+      return (
+        <Badge variant="default" className="text-base py-1 px-3 bg-green-600 hover:bg-green-600/90">
+          <ShieldCheck className="h-4 w-4 mr-2" />
+          <span>Bez glutena</span>
+        </Badge>
+      );
+    }
+    if (containsGluten) {
+      return (
+        <Badge variant="destructive" className="text-base py-1 px-3">
+          <AlertTriangle className="h-4 w-4 mr-2" />
+          <span>Sadrži gluten</span>
+        </Badge>
+      );
+    }
+    if (mayContainGluten) {
+      return (
+        <Badge variant="default" className="text-base py-1 px-3 bg-orange-500 hover:bg-orange-500/90">
+          <AlertTriangle className="h-4 w-4 mr-2" />
+          <span>Mogući tragovi</span>
+        </Badge>
+      );
+    }
+    return (
+       <Badge variant="secondary" className="text-base py-1 px-3">
+        <Info className="h-4 w-4 mr-2" />
+        <span>Status nepoznat</span>
+      </Badge>
+    );
+  };
+  
   return (
     <div className="p-6 md:p-8">
       <div className="mx-auto max-w-4xl">
@@ -224,41 +266,15 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         </Card>
         
         <Card className="mt-4">
-          <CardContent className="p-3 flex items-center justify-between gap-2">
-            <div className="flex-1">
-              {product.warning ? (
-                <div className="flex items-center justify-center sm:justify-start text-red-600 dark:text-red-400 font-semibold text-base">
-                  <AlertTriangle className="h-5 w-5 mr-2" />
-                  <span>SADRŽI GLUTEN</span>
-                </div>
-              ) : isConsideredGF ? (
-                <div className="flex items-center justify-center sm:justify-start text-green-600 dark:text-green-400 text-base font-semibold">
-                  <ShieldCheck className="h-5 w-5 mr-2" />
-                  <span>Bez glutena</span>
-                </div>
-              ) : containsGluten ? (
-                <div className="flex items-center justify-center sm:justify-start text-red-600 dark:text-red-500 text-base font-semibold">
-                  <AlertTriangle className="h-5 w-5 mr-2" />
-                  <span>Sadrži gluten</span>
-                </div>
-              ) : mayContainGluten ? (
-                <div className="flex items-center justify-center sm:justify-start text-orange-500 dark:text-orange-400 text-base font-semibold">
-                  <AlertTriangle className="h-5 w-5 mr-2" />
-                  <span>Mogući tragovi</span>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center sm:justify-start text-muted-foreground text-base font-semibold">
-                  <Info className="h-5 w-5 mr-2" />
-                  <span>Status nepoznat</span>
-                </div>
-              )}
-            </div>
-
-            {product.nutriScore && product.nutriScore !== 'N/A' && (
-              <span className={`px-3 py-1 rounded-lg text-lg font-bold border-2 ${getNutriScoreClasses(product.nutriScore)}`}>
-                {product.nutriScore}
-              </span>
-            )}
+          <CardContent className="p-3 flex items-center justify-between gap-4">
+             <div className="flex items-center gap-4">
+                <GlutenStatusBadge />
+                {product.nutriScore && product.nutriScore !== 'N/A' && (
+                  <span className={`px-3 py-1 rounded-lg text-lg font-bold border-2 ${getNutriScoreClasses(product.nutriScore)}`}>
+                    {product.nutriScore}
+                  </span>
+                )}
+             </div>
             
             <Button variant="outline" size="icon" onClick={handleToggleFavorite} className="flex-shrink-0">
               <Heart className="h-5 w-5" fill={isCurrentlyFavorite ? 'hsl(var(--primary))' : 'none'} />
@@ -335,22 +351,19 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               </CardContent>
             </Card>
           )}
-
+          
           <Card>
-            <CardHeader>
-              <CardTitle className="text-xl">Detalji o proizvodu</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Accordion type="multiple" className="w-full">
+            <CardContent className="p-0">
+               <Accordion type="multiple" className="w-full" defaultValue={['item-2']}>
                 {product.ingredientsText && (
-                  <AccordionItem value="item-1">
+                  <AccordionItem value="item-1" className="px-6">
                     <AccordionTrigger className="text-lg font-semibold">Sastojci</AccordionTrigger>
                     <AccordionContent>
                       <p className="text-sm text-muted-foreground p-3 bg-muted rounded-md whitespace-pre-wrap">{product.ingredientsText}</p>
                     </AccordionContent>
                   </AccordionItem>
                 )}
-                <AccordionItem value="item-2">
+                <AccordionItem value="item-2" className="px-6">
                   <AccordionTrigger className="text-lg font-semibold">Napomene o alergenima</AccordionTrigger>
                   <AccordionContent className="space-y-3 pt-2">
                     {product.warning && identifiedGlutenSources.length === 0 && (
@@ -368,10 +381,16 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     {mentionedNonGlutenAllergens.length > 0 && (
                       <p className="text-sm text-muted-foreground"><strong>Ostali potencijalni alergeni:</strong> {mentionedNonGlutenAllergens.join(', ')}.</p>
                     )}
-                    <p className="text-xs text-muted-foreground pt-2 italic">Uvek proverite ambalažu proizvoda za najtačnije detalje o alergenima. Informacije ovde su samo smernice.</p>
+                     <ShadcnAlert className="mt-4">
+                      <Info className="h-4 w-4" />
+                      <ShadcnAlertTitle>Važna napomena</ShadcnAlertTitle>
+                      <ShadcnAlertDescription>
+                        Uvek proverite ambalažu proizvoda za najtačnije i najažurnije informacije o sastojcima i alergenima. Informacije u aplikaciji su samo smernice.
+                      </ShadcnAlertDescription>
+                    </ShadcnAlert>
                   </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="item-3">
+                <AccordionItem value="item-3" className="px-6">
                   <AccordionTrigger className="text-lg font-semibold">Sertifikati i verifikacije</AccordionTrigger>
                   <AccordionContent className="space-y-2 pt-2">
                     <p className="text-xs text-muted-foreground italic">Ove oznake pomažu u identifikaciji bezbednosti proizvoda.</p>
@@ -381,13 +400,33 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     {!(product.hasAOECSLicense || product.hasManufacturerStatement || product.isVerifiedAdmin) && <p className="text-sm text-muted-foreground">Nema dostupnih sertifikata ili izjava.</p>}
                   </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="item-4">
+                <AccordionItem value="item-4" className="px-6 border-b-0">
                   <AccordionTrigger className="text-lg font-semibold">Ostali detalji</AccordionTrigger>
-                  <AccordionContent className="space-y-3 pt-2 text-sm text-muted-foreground">
-                    {product.Poreklo && <p><span className="mr-2">{getCountryFlag(product.Poreklo)}</span><strong>Poreklo:</strong> {product.Poreklo}</p>}
-                    {product.stores && product.stores.length > 0 && <p><strong>Dostupno u:</strong> {product.stores.join(', ')}</p>}
-                    {product.barcode && <p><strong>Barkod:</strong> {product.barcode}</p>}
-                    {product.source && <p><strong>Izvor podataka:</strong> {product.source}</p>}
+                   <AccordionContent className="space-y-3 pt-2 text-sm text-muted-foreground">
+                    {product.Poreklo && (
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium text-foreground">Poreklo</span>
+                        <span className="flex items-center gap-2">{product.Poreklo} {getCountryFlag(product.Poreklo)}</span>
+                      </div>
+                    )}
+                    {product.stores && product.stores.length > 0 && (
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium text-foreground">Dostupno u</span>
+                        <span>{product.stores.join(', ')}</span>
+                      </div>
+                    )}
+                    {product.barcode && (
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium text-foreground">Barkod</span>
+                        <span>{product.barcode}</span>
+                      </div>
+                    )}
+                    {product.source && (
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium text-foreground">Izvor podataka</span>
+                        <span>{product.source}</span>
+                      </div>
+                    )}
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
