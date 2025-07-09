@@ -573,38 +573,38 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-12">
             <Card className="flex flex-col text-center items-center justify-between p-6 hover:shadow-lg transition-shadow">
-                <div className="mb-4">
-                    <div className="mb-4 flex justify-center items-center h-16 w-16 rounded-full bg-primary/10 text-primary">
+                <div className="flex-grow flex flex-col items-center text-center">
+                    <div className="flex justify-center items-center h-16 w-16 rounded-full bg-primary/10 text-primary mb-3">
                         <Search className="h-8 w-8" />
                     </div>
-                    <CardTitle className="text-xl">Pretraži proizvode</CardTitle>
-                    <CardDescription className="mt-1">Pronađite bezbedne proizvode u našoj bazi.</CardDescription>
+                    <CardTitle className="text-xl mb-1">Pretraži proizvode</CardTitle>
+                    <CardDescription>Pronađite bezbedne proizvode u našoj bazi.</CardDescription>
                 </div>
-                <Button asChild className="w-full mt-auto">
+                <Button asChild className="w-full mt-auto hover:scale-[.98] transition-transform duration-200">
                     <Link href={`/${locale}/products`}>Pretraži bazu</Link>
                 </Button>
             </Card>
 
             <Card className="flex flex-col text-center items-center justify-between p-6 hover:shadow-lg transition-shadow">
-                 <div className="mb-4">
-                    <div className="mb-4 flex justify-center items-center h-16 w-16 rounded-full bg-primary/10 text-primary">
+                 <div className="flex-grow flex flex-col items-center text-center">
+                    <div className="flex justify-center items-center h-16 w-16 rounded-full bg-primary/10 text-primary mb-3">
                         <QrCode className="h-8 w-8" />
                     </div>
-                    <CardTitle className="text-xl">Skeniraj barkod</CardTitle>
-                    <CardDescription className="mt-1">Proverite proizvod koristeći kameru telefona.</CardDescription>
+                    <CardTitle className="text-xl mb-1">Skeniraj barkod</CardTitle>
+                    <CardDescription>Proverite proizvod koristeći kameru telefona.</CardDescription>
                 </div>
-                <Button onClick={handleStartBarcodeScanning} disabled={isLoadingAnyAnalysisProcess || isTakingOcrPhoto} className="w-full mt-auto">Pokreni skener</Button>
+                <Button onClick={handleStartBarcodeScanning} disabled={isLoadingAnyAnalysisProcess || isTakingOcrPhoto} className="w-full mt-auto hover:scale-[.98] transition-transform duration-200">Pokreni skener</Button>
             </Card>
 
             <Card className="flex flex-col text-center items-center justify-between p-6 hover:shadow-lg transition-shadow">
-                <div className="mb-4">
-                    <div className="mb-4 flex justify-center items-center h-16 w-16 rounded-full bg-primary/10 text-primary">
+                <div className="flex-grow flex flex-col items-center text-center">
+                    <div className="flex justify-center items-center h-16 w-16 rounded-full bg-primary/10 text-primary mb-3">
                         <ScanSearch className="h-8 w-8" />
                     </div>
-                    <CardTitle className="text-xl">Analiziraj sastojke</CardTitle>
-                    <CardDescription className="mt-1">Unesite sastojke ručno ili slikajte deklaraciju.</CardDescription>
+                    <CardTitle className="text-xl mb-1">Analiziraj sastojke</CardTitle>
+                    <CardDescription>Unesite sastojke ručno ili slikajte deklaraciju.</CardDescription>
                 </div>
-                <Button onClick={() => analysisSectionRef.current?.scrollIntoView({ behavior: 'smooth' })} className="w-full mt-auto">Započni analizu</Button>
+                <Button onClick={() => analysisSectionRef.current?.scrollIntoView({ behavior: 'smooth' })} className="w-full mt-auto hover:scale-[.98] transition-transform duration-200">Započni analizu</Button>
             </Card>
         </div>
 
@@ -1010,7 +1010,7 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
                         <Card className="h-full flex flex-col items-center justify-center text-center p-4 hover:bg-muted/50 hover:shadow-lg transition-all duration-200 group-hover:border-primary">
                             <div className="text-4xl mb-2 transition-transform duration-200 group-hover:scale-110">{getCategoryIcon(category.name)}</div>
                             <p className="font-semibold text-sm">{category.name}</p>
-                            <Badge variant="secondary" className="mt-1">{category.count} proizvoda</Badge>
+                            <Badge variant="outline" className="mt-1 bg-muted/50 font-semibold">{category.count} proizvoda</Badge>
                         </Card>
                     </Link>
                 ))}
@@ -1292,3 +1292,4 @@ function AddProductDialog({ barcode, isOpen, onClose }: AddProductDialogProps) {
     </Dialog>
   );
 }
+
