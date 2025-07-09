@@ -32,6 +32,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { getProductByBarcode } from '@/lib/services/product-service';
 import { addReportAction } from '@/app/actions/report-actions';
 import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 
 interface BarcodeScanResult {
@@ -582,7 +583,10 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
                     <CardDescription>Pronađite bezbedne proizvode u našoj bazi.</CardDescription>
                 </div>
                 <Button asChild className="w-full mt-4 hover:scale-[.98] transition-transform duration-200">
-                    <Link href={`/${locale}/products`}>Pretraži bazu</Link>
+                    <Link href={`/${locale}/products`}>
+                        <Search className="mr-2 h-4 w-4" />
+                        Pretraži bazu
+                    </Link>
                 </Button>
             </Card>
 
@@ -594,7 +598,10 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
                     <CardTitle className="text-xl mb-1">Skeniraj barkod</CardTitle>
                     <CardDescription>Proverite proizvod koristeći kameru telefona.</CardDescription>
                 </div>
-                <Button onClick={handleStartBarcodeScanning} disabled={isLoadingAnyAnalysisProcess || isTakingOcrPhoto} className="w-full mt-4 hover:scale-[.98] transition-transform duration-200">Pokreni skener</Button>
+                <Button onClick={handleStartBarcodeScanning} disabled={isLoadingAnyAnalysisProcess || isTakingOcrPhoto} className="w-full mt-4 hover:scale-[.98] transition-transform duration-200">
+                    <QrCode className="mr-2 h-4 w-4" />
+                    Pokreni skener
+                </Button>
             </Card>
 
             <Card className="flex flex-col text-center items-center justify-between p-6 hover:shadow-lg transition-shadow">
@@ -605,7 +612,10 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
                     <CardTitle className="text-xl mb-1">Analiziraj sastojke</CardTitle>
                     <CardDescription>Unesite sastojke ručno ili slikajte deklaraciju.</CardDescription>
                 </div>
-                <Button onClick={() => analysisSectionRef.current?.scrollIntoView({ behavior: 'smooth' })} className="w-full mt-4 hover:scale-[.98] transition-transform duration-200">Započni analizu</Button>
+                <Button onClick={() => analysisSectionRef.current?.scrollIntoView({ behavior: 'smooth' })} className="w-full mt-4 hover:scale-[.98] transition-transform duration-200">
+                    <ScanSearch className="mr-2 h-4 w-4" />
+                    Započni analizu
+                </Button>
             </Card>
         </div>
 
@@ -1003,19 +1013,28 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
         <div className="my-12 pt-10 scroll-mt-20">
             <div className="text-center mb-8">
                 <h2 className="text-2xl font-semibold tracking-tight" style={{ lineHeight: 1.4 }}>Pretraži po kategoriji</h2>
-                <p className="text-sm text-muted-foreground mt-2 max-w-2xl mx-auto" style={{ lineHeight: 1.5 }}>Pronađite proizvode koji vas zanimaju pregledom naših najpopularnijih kategorija.</p>
+                <p className="text-sm text-muted-foreground mt-2 max-w-2xl mx-auto" style={{ lineHeight: 1.5 }}>Ne znate odakle da krenete? Istražite po kategorijama 👇</p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {categories.map((category) => (
-                    <Link key={category.name} href={`/${locale}/products?category=${encodeURIComponent(category.name)}`} className="block group">
-                        <Card className="h-full flex flex-col items-center justify-center text-center p-4 hover:bg-muted/50 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group-hover:border-primary">
-                            <div className="text-4xl mb-2 transition-transform duration-200 group-hover:scale-110">{getCategoryIcon(category.name)}</div>
-                            <p className="font-semibold text-sm">{category.name}</p>
-                            <Badge variant="secondary" className="mt-2 text-xs font-semibold">{category.count} proizvoda</Badge>
-                        </Card>
-                    </Link>
-                ))}
-            </div>
+            <TooltipProvider delayDuration={200}>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {categories.map((category) => (
+                        <Link key={category.name} href={`/${locale}/products?category=${encodeURIComponent(category.name)}`} className="block group focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-lg">
+                            <Card className="h-full flex flex-col items-center justify-center text-center p-4 hover:bg-muted/50 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group-hover:border-primary">
+                                <div className="text-4xl mb-2 transition-transform duration-200 group-hover:scale-110">{getCategoryIcon(category.name)}</div>
+                                <p className="font-semibold text-sm">{category.name}</p>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Badge variant="secondary" className="mt-2 text-xs font-semibold group-hover:scale-105 transition-transform duration-200">{category.count} proizvoda</Badge>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Ukupno {category.count} proizvoda u ovoj kategoriji</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </Card>
+                        </Link>
+                    ))}
+                </div>
+            </TooltipProvider>
             <div className="text-center mt-8">
                 <Button asChild variant="outline">
                     <Link href={`/${locale}/products`}>
@@ -1023,6 +1042,7 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
                         Vidi sve proizvode i kategorije
                     </Link>
                 </Button>
+                <p className="text-xs text-muted-foreground mt-2">Ne vidite kategoriju koju tražite? Pogledajte sve proizvode i filtrirajte ručno.</p>
             </div>
         </div>
 
@@ -1293,4 +1313,3 @@ function AddProductDialog({ barcode, isOpen, onClose }: AddProductDialogProps) {
     </Dialog>
   );
 }
-
