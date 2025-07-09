@@ -27,14 +27,26 @@ export default async function RecallsPage({ params }: { params: { locale: string
                 <CardHeader>
                     <div className="flex flex-col md:flex-row items-start gap-4">
                         <Link href={`/${params.locale}/products/${product.id}`} className="block flex-shrink-0">
-                          <Image
-                            src={product.imageUrl || '/placeholder.svg'}
-                            alt={product.name}
-                            width={120}
-                            height={120}
-                            className="rounded-md object-cover aspect-square"
-                            data-ai-hint={product.dataAiHint || 'product image'}
-                          />
+                          {product.imageUrl && product.imageUrl !== '/placeholder.svg' ? (
+                            <Image
+                              src={product.imageUrl}
+                              alt={product.name}
+                              width={120}
+                              height={120}
+                              className="rounded-md object-cover aspect-square"
+                              data-ai-hint={product.dataAiHint || 'product image'}
+                            />
+                          ) : (
+                            <div className="h-[120px] w-[120px] flex items-center justify-center bg-secondary text-muted-foreground rounded-md">
+                              <Image
+                                src="/placeholder.svg"
+                                alt="Slika nije dostupna"
+                                width={56}
+                                height={56}
+                                className="opacity-50"
+                              />
+                            </div>
+                          )}
                         </Link>
                         <div className="flex-grow">
                             <CardTitle className="text-xl mb-1">

@@ -210,7 +210,7 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
                 return (
                   <Card key={product.id} className={`overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col ${product.warning ? 'border-destructive border-2' : ''}`}>
                     <CardHeader className="p-0">
-                      {product.imageUrl ? (
+                      {product.imageUrl && product.imageUrl !== '/placeholder.svg' ? (
                         <Image
                           src={product.imageUrl}
                           alt={product.name}
@@ -220,13 +220,13 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
                           data-ai-hint={product.dataAiHint}
                         />
                       ) : (
-                        <div className="w-full h-48 flex items-center justify-center bg-secondary">
+                        <div className="w-full h-48 flex items-center justify-center bg-secondary text-muted-foreground">
                           <Image
                             src="/placeholder.svg"
                             alt="Slika nije dostupna"
-                            width={64}
-                            height={64}
-                            className="opacity-50 text-muted-foreground"
+                            width={80}
+                            height={80}
+                            className="opacity-50"
                           />
                         </div>
                       )}

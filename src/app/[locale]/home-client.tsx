@@ -655,16 +655,16 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
             {barcodeScanResult && !isScanningBarcode && (
               <Card className="mt-4 max-w-2xl mx-auto">
                 <CardHeader className="flex flex-row items-start gap-4">
-                  {barcodeScanResult.imageUrl ? (
+                  {barcodeScanResult.imageUrl && barcodeScanResult.imageUrl !== '/placeholder.svg' ? (
                     <Image src={barcodeScanResult.imageUrl} alt={barcodeScanResult.name} width={80} height={80} className="rounded-md object-cover" data-ai-hint={barcodeScanResult.dataAiHint || "product image"}/>
                   ) : (
-                    <div className="aspect-[1/1] w-20 h-20 flex-shrink-0 flex items-center justify-center bg-secondary rounded-md">
+                    <div className="aspect-[1/1] w-20 h-20 flex-shrink-0 flex items-center justify-center bg-secondary text-muted-foreground rounded-md">
                       <Image
                         src="/placeholder.svg"
                         alt="Slika nije dostupna"
-                        width={32}
-                        height={32}
-                        className="opacity-50 text-muted-foreground"
+                        width={40}
+                        height={40}
+                        className="opacity-50"
                       />
                     </div>
                   )}

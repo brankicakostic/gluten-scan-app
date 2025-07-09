@@ -254,7 +254,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         )}
 
         <Card className={`overflow-hidden shadow-lg ${product.warning ? 'border-2 border-destructive' : ''}`}>
-           {product.imageUrl ? (
+           {product.imageUrl && product.imageUrl !== '/placeholder.svg' ? (
             <Image
               src={product.imageUrl}
               alt={product.name}
@@ -265,13 +265,13 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               priority
             />
            ) : (
-             <div className="w-full aspect-[3/2] flex items-center justify-center bg-secondary">
+             <div className="w-full aspect-[3/2] flex items-center justify-center bg-secondary text-muted-foreground">
                <Image
                  src="/placeholder.svg"
                  alt="Slika nije dostupna"
                  width={96}
                  height={96}
-                 className="opacity-50 text-muted-foreground"
+                 className="opacity-50"
                />
              </div>
            )}

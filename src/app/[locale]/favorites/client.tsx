@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -54,7 +55,7 @@ export default function FavoritesClientPage({ allProducts }: FavoritesClientPage
               <Card key={product.id} className="overflow-hidden group hover:shadow-xl transition-shadow duration-200 flex flex-col">
                 <CardHeader className="p-0 relative">
                   <Link href={`/${locale}/products/${product.id}`}>
-                    {product.imageUrl ? (
+                    {product.imageUrl && product.imageUrl !== '/placeholder.svg' ? (
                       <Image 
                         src={product.imageUrl} 
                         alt={product.name} 
@@ -64,13 +65,13 @@ export default function FavoritesClientPage({ allProducts }: FavoritesClientPage
                         data-ai-hint={product.dataAiHint || 'product image'}
                       />
                     ) : (
-                      <div className="w-full h-48 flex items-center justify-center bg-secondary">
+                      <div className="w-full h-48 flex items-center justify-center bg-secondary text-muted-foreground">
                         <Image
                           src="/placeholder.svg"
                           alt="Slika nije dostupna"
-                          width={64}
-                          height={64}
-                          className="opacity-50 text-muted-foreground"
+                          width={80}
+                          height={80}
+                          className="opacity-50"
                         />
                       </div>
                     )}
