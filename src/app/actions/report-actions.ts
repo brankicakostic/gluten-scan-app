@@ -20,6 +20,10 @@ type ReportClientData = {
 }
 
 export async function addReportAction(reportData: ReportClientData) {
+  if (!db) {
+    console.error("addReportAction failed: Firestore is not initialized.");
+    return { success: false, error: "Servis za prijavu grešaka trenutno nije dostupan." };
+  }
   try {
     const reportsCol = collection(db, 'reports');
     await addDoc(reportsCol, {

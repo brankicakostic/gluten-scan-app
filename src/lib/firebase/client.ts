@@ -4,73 +4,33 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getFirestore, type Firestore } from "firebase/firestore";
 
-// Singleton instances, initialized to null.
-let appInstance: FirebaseApp | null = null;
-let dbInstance: Firestore | null = null;
-let hasInitializationAttempted = false;
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
+};
 
-// The initialization function.
-function initializeFirebase() {
-  // Only attempt to initialize once.
-  if (hasInitializationAttempted) return;
-  hasInitializationAttempted = true;
+let app: FirebaseApp | null = null;
+let db: Firestore | null = null;
 
-  const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
-  };
-
-  // Check for the essential projectId.
-  if (!firebaseConfig.projectId) {
-    console.error("Firebase 'projectId' is missing. Please set NEXT_PUBLIC_FIREBASE_PROJECT_ID in your .env file. Firebase features will be disabled.");
-    return; // Exit without initializing.
-  }
-
+// Check if projectId is provided. If not, Firebase cannot be initialized.
+if (firebaseConfig.projectId) {
   try {
-    // Initialize the app, or get the existing one.
-    appInstance = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-    dbInstance = getFirestore(appInstance);
+    app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+    db = getFirestore(app);
   } catch (error) {
-      console.error("An error occurred during Firebase initialization:", error);
-      // Ensure instances are null if initialization fails.
-      appInstance = null;
-      dbInstance = null;
+    console.error("An error occurred during Firebase initialization:", error);
+    // Ensure instances are null on error, to be handled by service-layer checks.
+    app = null;
+    db = null;
   }
+} else {
+  // This warning will appear in the server console if the config is missing.
+  console.warn("Firebase 'projectId' is missing. Please set NEXT_PUBLIC_FIREBASE_PROJECT_ID in your .env file. Firebase features will be disabled.");
 }
 
-/**
- * Creates a proxy object that lazily initializes Firebase upon first property access.
- */
-function createLazyProxy<T extends object>(getInstance: () => T | null): T {
-  return new Proxy({}, {
-    get(target, prop, receiver) {
-      initializeFirebase(); 
-      const instance = getInstance();
-      
-      // If initialization failed, the instance will be null.
-      // Reflect.get on a null/undefined target will throw a TypeError.
-      // This TypeError should be caught by the try/catch blocks in the service files.
-      if (!instance) {
-          // This check is to provide a slightly more helpful error in the console
-          // before the TypeError is thrown.
-          if (prop !== 'then') { // Avoid logging on promise checks
-            console.error(`Firebase not initialized. Cannot access property "${String(prop)}". Please check your .env configuration.`);
-          }
-      }
-      
-      // The non-null assertion operator (!) is used here because if instance is null,
-      // we want the code to throw a TypeError, which will then be caught upstream.
-      return Reflect.get(instance!, prop, receiver);
-    }
-  }) as T;
-}
-
-// Export lazy-loaded app and db instances.
-const db = createLazyProxy(() => dbInstance);
-const app = createLazyProxy(() => appInstance);
-
+// Export the potentially null instances.
 export { app, db };

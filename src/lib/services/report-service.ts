@@ -37,6 +37,10 @@ function mapDocToReport(doc: QueryDocumentSnapshot<DocumentData>): Report {
  * @returns A promise that resolves to an array of reports.
  */
 export async function getReports(): Promise<Report[]> {
+    if (!db) {
+        console.warn("Firestore is not initialized. Skipping getReports.");
+        return [];
+    }
     try {
         const reportsCol = collection(db, 'reports');
         const q = query(reportsCol, orderBy("createdAt", "desc"));
@@ -54,6 +58,9 @@ export async function getReports(): Promise<Report[]> {
  * @param reportData The data to update.
  */
 export async function updateReport(reportId: string, reportData: Partial<Report>): Promise<void> {
+  if (!db) {
+    throw new Error("Firestore is not initialized. Cannot update report.");
+  }
   const reportDocRef = doc(db, 'reports', reportId);
   await updateDoc(reportDocRef, { ...reportData });
 }
@@ -64,6 +71,9 @@ export async function updateReport(reportId: string, reportData: Partial<Report>
  * @param reportId The ID of the report to delete.
  */
 export async function deleteReport(reportId: string): Promise<void> {
+  if (!db) {
+    throw new Error("Firestore is not initialized. Cannot delete report.");
+  }
   const reportDocRef = doc(db, 'reports', reportId);
   await deleteDoc(reportDocRef);
 }

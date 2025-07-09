@@ -150,6 +150,10 @@ function mapProductToDocData(product: Partial<Product>): DocumentData {
  * @returns A promise that resolves to an array of products.
  */
 export async function getProducts(): Promise<Product[]> {
+    if (!db) {
+        console.warn("Firestore is not initialized. Skipping getProducts.");
+        return [];
+    }
     try {
         const productsCol = collection(db, 'products');
         // Removed orderBy to prevent issues with missing Firestore indexes. Sorting is now done in-memory.
@@ -175,6 +179,10 @@ export async function getProducts(): Promise<Product[]> {
  * @returns A promise that resolves to an array of featured products.
  */
 export async function getFeaturedProducts(count: number = 8): Promise<Product[]> {
+    if (!db) {
+        console.warn("Firestore is not initialized. Skipping getFeaturedProducts.");
+        return [];
+    }
     try {
         const productsCol = collection(db, 'products');
         // Removed orderBy to prevent issues with missing Firestore indexes.
@@ -194,6 +202,10 @@ export async function getFeaturedProducts(count: number = 8): Promise<Product[]>
  * @returns A promise that resolves to the product object or null if not found.
  */
 export async function getProductById(id: string): Promise<Product | null> {
+    if (!db) {
+        console.warn(`Firestore is not initialized. Skipping getProductById for ID: ${id}.`);
+        return null;
+    }
     try {
         const productDocRef = doc(db, 'products', id);
         const productSnap = await getDoc(productDocRef);
@@ -216,6 +228,10 @@ export async function getProductById(id: string): Promise<Product | null> {
  * @returns A promise that resolves to the product object or null if not found.
  */
 export async function getProductByBarcode(barcode: string): Promise<Product | null> {
+    if (!db) {
+        console.warn(`Firestore is not initialized. Skipping getProductByBarcode for barcode: ${barcode}.`);
+        return null;
+    }
     try {
         const productsCol = collection(db, 'products');
         const q = query(productsCol, where("barcode", "==", barcode), limit(1));
@@ -241,6 +257,9 @@ export async function getProductByBarcode(barcode: string): Promise<Product | nu
  * @returns The ID of the newly created document.
  */
 export async function createProduct(productData: Partial<Product>): Promise<string> {
+  if (!db) {
+    throw new Error("Firestore is not initialized. Cannot create product.");
+  }
   const dataToSave = mapProductToDocData(productData);
   const productsCol = collection(db, 'products');
   const docRef = await addDoc(productsCol, dataToSave);
@@ -253,6 +272,9 @@ export async function createProduct(productData: Partial<Product>): Promise<stri
  * @param productData The data to update.
  */
 export async function updateProduct(productId: string, productData: Partial<Product>): Promise<void> {
+  if (!db) {
+    throw new Error("Firestore is not initialized. Cannot update product.");
+  }
   const dataToSave = mapProductToDocData(productData);
   const productDocRef = doc(db, 'products', productId);
   await updateDoc(productDocRef, dataToSave);
@@ -263,6 +285,9 @@ export async function updateProduct(productId: string, productData: Partial<Prod
  * @param productId The ID of the product to delete.
  */
 export async function deleteProduct(productId: string): Promise<void> {
+  if (!db) {
+    throw new Error("Firestore is not initialized. Cannot delete product.");
+  }
   const productDocRef = doc(db, 'products', productId);
   await deleteDoc(productDocRef);
 }
