@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { PageHeader } from '@/components/page-header';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -35,10 +35,13 @@ interface ProductsClientPageProps {
 
 export default function ProductsClientPage({ allProducts, productCategories }: ProductsClientPageProps) {
   const params = useParams();
+  const searchParams = useSearchParams();
   const locale = params.locale as string;
+  
+  const initialCategory = searchParams.get('category') || 'all';
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [filteredProducts, setFilteredProducts] = useState(allProducts);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -173,7 +176,7 @@ export default function ProductsClientPage({ allProducts, productCategories }: P
                           {product.isVegan && <Badge variant="secondary" className="text-xs">Vegan</Badge>}
                           {product.isLactoseFree && <Badge variant="outline" className="text-xs">Bez laktoze</Badge>}
                           {product.isSugarFree && <Badge variant="outline" className="text-xs">Bez šećera</Badge>}
-                          {product.isHighProtein && <Badge variant="default" className="text-xs">Visok sadržaj proteina</Badge>}
+                          {product.isHighProtein && <Badge variant="default" className="text-xs bg-primary/80">Bogat proteinima</Badge>}
                       </div>
                       <Button asChild variant="default" size="sm" className="w-full mt-auto">
                         <Link href={`/${locale}/products/${product.id}`}>Vidi detalje</Link>
