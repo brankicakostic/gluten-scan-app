@@ -14,6 +14,13 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
+// Check for missing project ID, which is a common cause for "INVALID_ARGUMENT"
+if (!firebaseConfig.projectId) {
+    // This is a server-side check. It will fail loudly during page render.
+    throw new Error("Firebase 'projectId' is missing. Please set NEXT_PUBLIC_FIREBASE_PROJECT_ID in your .env file.");
+}
+
+
 // Initialize Firebase
 // This check prevents re-initializing the app on every hot-reload
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
