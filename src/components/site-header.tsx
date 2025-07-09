@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { mainNavLinks, type NavLink } from '@/components/navigation/main-nav-links';
+import { mainNavLinks } from '@/components/navigation/main-nav-links';
 import { cn } from '@/lib/utils';
 
 export function SiteHeader() {
@@ -15,7 +15,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container relative flex h-16 items-center justify-between">
+      <div className="container relative flex items-center justify-between py-3">
         
         {/* --- MOBILE HEADER --- */}
         <div className="flex w-full items-center justify-between md:hidden">
@@ -41,11 +41,11 @@ export function SiteHeader() {
           {/* Center: Navigation (Absolutely positioned for perfect centering) */}
           <nav className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <div className="flex items-center gap-4 text-sm lg:gap-6">
-              {mainNavLinks.map((link: NavLink) => {
+              {mainNavLinks.map((link) => {
                 if (link.href === '/admin') return null;
 
                 const localizedHref = `/${locale}${link.href === '/' ? '' : link.href}`;
-                const isActive = (link.href === '/' && pathname === localizedHref) || (link.href !== '/' && pathname.startsWith(localizedHref));
+                const isActive = (link.href === '/' && pathname === `/${locale}`) || (link.href !== '/' && pathname.startsWith(localizedHref));
                 
                 return (
                   <Link
@@ -53,7 +53,7 @@ export function SiteHeader() {
                     href={localizedHref}
                     className={cn(
                       "transition-colors hover:text-foreground/80",
-                      isActive ? "text-foreground font-semibold" : "text-muted-foreground"
+                      isActive ? "text-foreground font-semibold underline underline-offset-4 decoration-primary decoration-2" : "text-muted-foreground"
                     )}
                   >
                     {link.label}
