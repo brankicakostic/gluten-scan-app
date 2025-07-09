@@ -34,7 +34,9 @@ export function AppSidebar() {
         <SidebarMenu>
           {mainNavLinks.map((link: NavLink) => {
             const localizedHref = `/${locale}${link.href === '/' ? '' : link.href}`;
-            const isActive = (link.href === '/' && pathname === localizedHref) || (link.href !== '/' && pathname.startsWith(localizedHref));
+            const isActive = 
+                (link.href === '/' && pathname === `/${locale}`) || 
+                (link.href !== '/' && pathname.startsWith(localizedHref));
             
             return (
               <SidebarMenuItem key={link.href}>
@@ -43,6 +45,7 @@ export function AppSidebar() {
                   isActive={isActive}
                   tooltip={{ children: link.tooltip || link.label, className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
                   className={cn(
+                    "text-base font-medium", // 16px font, 500 weight for mobile
                     isActive ? 
                     "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90" :
                     "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"

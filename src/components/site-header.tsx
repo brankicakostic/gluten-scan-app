@@ -29,30 +29,34 @@ export function SiteHeader() {
           <ThemeToggle />
         </div>
 
-        {/* --- DESKTOP HEADER (Absolute Centering for Nav) --- */}
+        {/* --- DESKTOP HEADER --- */}
         <div className="hidden w-full items-center justify-between relative md:flex">
-          {/* Left section for Logo */}
           <Link href={`/${locale}`} className="flex items-center">
             <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={150} height={38} className="h-10 w-auto dark:hidden" />
             <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={150} height={38} className="h-10 w-auto hidden dark:block" />
           </Link>
 
-          {/* Center section for Navigation */}
           <nav className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-             <div className="flex items-center gap-4 text-sm lg:gap-6">
+             <div className="flex items-center gap-2 lg:gap-4">
               {mainNavLinks.map((link) => {
                 if (link.href === '/admin') return null;
 
                 const localizedHref = `/${locale}${link.href === '/' ? '' : link.href}`;
-                const isActive = (link.href === '/' && pathname === `/${locale}`) || (link.href !== '/' && pathname.startsWith(localizedHref) && link.href !== '/');
+                const isActive = 
+                    (link.href === '/' && pathname === `/${locale}`) || 
+                    (link.href !== '/' && pathname.startsWith(localizedHref));
                 
                 return (
                   <Link
                     key={link.href}
                     href={localizedHref}
                     className={cn(
-                      "transition-colors hover:text-foreground/80",
-                      isActive ? "text-foreground font-semibold underline underline-offset-4 decoration-primary decoration-2" : "text-muted-foreground"
+                      // Font size, tap area, and general styling
+                      "px-3 py-2 text-lg rounded-md transition-colors", 
+                      // Active/Inactive styles
+                      isActive 
+                        ? "font-semibold text-foreground" 
+                        : "font-medium text-muted-foreground hover:text-foreground/80"
                     )}
                   >
                     {link.label}
@@ -62,7 +66,6 @@ export function SiteHeader() {
             </div>
           </nav>
 
-          {/* Right section for Theme Toggle */}
           <ThemeToggle />
         </div>
       </div>
