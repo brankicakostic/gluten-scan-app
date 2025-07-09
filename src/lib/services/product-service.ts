@@ -29,9 +29,9 @@ function transformImageUrl(imageUrl: string): string {
         return 'https://placehold.co/400x200.png';
     }
     
-    // Final attempt: Assume the path in the database is the EXACT path in the bucket root.
-    // No "products/" prefix will be added.
-    const encodedPath = encodeURIComponent(imageUrl);
+    // Always prepend 'products/' to the relative image URL from the database.
+    const fullPathInStorage = `products/${imageUrl}`;
+    const encodedPath = encodeURIComponent(fullPathInStorage);
     
     return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
 }
@@ -82,6 +82,7 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
 
 /**
  * Maps a Product object to a Firestore document data structure for saving.
+ * This ensures data consistency by storing image paths without the 'products/' prefix.
  * @param product The Product object.
  * @returns A plain object suitable for Firestore.
  */
@@ -100,20 +101,20 @@ function mapProductToDocData(product: Partial<Product>): DocumentData {
     if (product.note) data.note = product.note;
     if (product.stores) data.stores = product.stores;
 
-    // Handle image URL (storing only the relative path)
+    // Handle image URL, storing only the relative path without any 'products/' prefix.
     if (product.imageUrl) {
         if (product.imageUrl.includes('firebasestorage')) {
-             // Extract relative path if it's a full URL
              try {
                 const url = new URL(product.imageUrl);
                 const path = decodeURIComponent(url.pathname);
-                // Correctly extract the full path after /o/
                 const objectPath = path.substring(path.indexOf('/o/') + 3);
-                data.imageUrl = objectPath;
+                // Store the path without the 'products/' prefix for consistency.
+                data.imageUrl = objectPath.startsWith('products/') ? objectPath.substring('products/'.length) : objectPath;
              } catch (e) {
-                data.imageUrl = 'placeholder.png'; // fallback
+                data.imageUrl = 'placeholder.png';
              }
         } else if (!product.imageUrl.startsWith('http')) {
+            // This is a relative path, store it as is (should not contain 'products/').
             data.imageUrl = product.imageUrl;
         }
     }
