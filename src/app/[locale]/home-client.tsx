@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert, Barcode as BarcodeIcon, X, FileText, Flag, XCircle, Send, PackagePlus, LayoutGrid, Wheat, Sandwich, UtensilsCrossed, Cookie, Popcorn, Soup, Container, CookingPot, CupSoda, Package, Box, Droplet, Bean, type LucideIcon } from 'lucide-react';
+import { ScanLine, QrCode, ScanSearch, AlertCircle, CheckCircle, Info, Loader2, Sparkles, ShoppingBag, PackageOpen, Search, Camera, CameraOff, Lightbulb, BookOpen, AlertTriangle, UploadCloud, Star, RotateCcw, ShieldAlert, Barcode as BarcodeIcon, X, FileText, Flag, XCircle, Send, PackagePlus, LayoutGrid, Wheat, Sandwich, UtensilsCrossed, Cookie, Popcorn, Soup, Container, CookingPot, CupSoda, Package, Box, Droplet, type LucideIcon, Layers, Utensils, Dumbbell, Sprout } from 'lucide-react';
 import { analyzeDeclaration, type AnalyzeDeclarationOutput, type IngredientAssessment } from '@/ai/flows/analyze-declaration';
 import type { DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import { ocrDeclaration, type OcrDeclarationOutput } from '@/ai/flows/ocr-declaration-flow';
@@ -65,22 +65,26 @@ interface HomeClientProps {
   categories: CategoryInfo[];
 }
 
+const categoryIconMap: Record<string, LucideIcon> = {
+  "Brašno i smeše": Wheat,
+  "Hleb i peciva": Sandwich,
+  "Testenine": Utensils,
+  "Keks i slatkiši": Cookie,
+  "Grickalice": Package,
+  "Pahuljice": Layers,
+  "Kremovi i namazi": Container,
+  "Proteinski proizvodi": Dumbbell,
+  "Drevna zrna": Sprout,
+  "Palenta i pire": UtensilsCrossed,
+  "Med": Droplet,
+  "Začini": CookingPot,
+  "Pića": CupSoda,
+  "Sosovi i prelivi": CookingPot,
+  "Nekategorizovano": Box,
+};
+
 const getCategoryIcon = (categoryName: string): LucideIcon => {
-  const lowerCaseName = categoryName.toLowerCase();
-  if (lowerCaseName.includes('brašn') || lowerCaseName.includes('smeš')) return Wheat;
-  if (lowerCaseName.includes('hleb') || lowerCaseName.includes('peciv')) return Sandwich;
-  if (lowerCaseName.includes('testenine') || lowerCaseName.includes('pasta')) return UtensilsCrossed;
-  if (lowerCaseName.includes('slatkiš') || lowerCaseName.includes('keks') || lowerCaseName.includes('čokolad')) return Cookie;
-  if (lowerCaseName.includes('grickalice') || lowerCaseName.includes('kreker')) return Popcorn;
-  if (lowerCaseName.includes('pahuljice') || lowerCaseName.includes('musli')) return Soup;
-  if (lowerCaseName.includes('namaz') || lowerCaseName.includes('krem')) return Container;
-  if (lowerCaseName.includes('med')) return Droplet;
-  if (lowerCaseName.includes('drevna zrna')) return Bean;
-  if (lowerCaseName.includes('sos') || lowerCaseName.includes('preliv')) return CookingPot;
-  if (lowerCaseName.includes('pić') || lowerCaseName.includes('sok')) return CupSoda;
-  if (lowerCaseName.includes('začin')) return CookingPot;
-  if (lowerCaseName.includes('nekategorizovano')) return Box;
-  return Package;
+  return categoryIconMap[categoryName] || Box;
 };
 
 

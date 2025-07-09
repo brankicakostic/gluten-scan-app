@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle, X, Wheat, Sandwich, UtensilsCrossed, Cookie, Popcorn, Soup, Container, CookingPot, CupSoda, Package, Box, Droplet, Bean, type LucideIcon } from 'lucide-react';
+import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle, X, Wheat, Sandwich, Utensils, Cookie, Popcorn, Soup, Container, CookingPot, CupSoda, Package, Box, Droplet, Layers, Dumbbell, Sprout, UtensilsCrossed, type LucideIcon } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import type { Product } from '@/lib/products';
@@ -35,23 +35,28 @@ const getNutriScoreClasses = (score?: string) => {
   }
 };
 
-const getCategoryIcon = (categoryName: string): LucideIcon => {
-  const lowerCaseName = categoryName.toLowerCase();
-  if (lowerCaseName.includes('brašn') || lowerCaseName.includes('smeš')) return Wheat;
-  if (lowerCaseName.includes('hleb') || lowerCaseName.includes('peciv')) return Sandwich;
-  if (lowerCaseName.includes('testenine') || lowerCaseName.includes('pasta')) return UtensilsCrossed;
-  if (lowerCaseName.includes('slatkiš') || lowerCaseName.includes('keks') || lowerCaseName.includes('čokolad')) return Cookie;
-  if (lowerCaseName.includes('grickalice') || lowerCaseName.includes('kreker')) return Popcorn;
-  if (lowerCaseName.includes('pahuljice') || lowerCaseName.includes('musli')) return Soup;
-  if (lowerCaseName.includes('namaz') || lowerCaseName.includes('krem')) return Container;
-  if (lowerCaseName.includes('med')) return Droplet;
-  if (lowerCaseName.includes('drevna zrna')) return Bean;
-  if (lowerCaseName.includes('sos') || lowerCaseName.includes('preliv')) return CookingPot;
-  if (lowerCaseName.includes('pić') || lowerCaseName.includes('sok')) return CupSoda;
-  if (lowerCaseName.includes('začin')) return CookingPot;
-  if (lowerCaseName.includes('nekategorizovano')) return Box;
-  return Package;
+const categoryIconMap: Record<string, LucideIcon> = {
+  "Brašno i smeše": Wheat,
+  "Hleb i peciva": Sandwich,
+  "Testenine": Utensils,
+  "Keks i slatkiši": Cookie,
+  "Grickalice": Package,
+  "Pahuljice": Layers,
+  "Kremovi i namazi": Container,
+  "Proteinski proizvodi": Dumbbell,
+  "Drevna zrna": Sprout,
+  "Palenta i pire": UtensilsCrossed,
+  "Med": Droplet,
+  "Začini": CookingPot,
+  "Pića": CupSoda,
+  "Sosovi i prelivi": CookingPot,
+  "Nekategorizovano": Box,
 };
+
+const getCategoryIcon = (categoryName: string): LucideIcon => {
+  return categoryIconMap[categoryName] || Box;
+};
+
 
 const PRODUCTS_PER_PAGE = 12;
 
