@@ -15,7 +15,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-auto items-center py-3">
+      <div className="mx-auto flex h-auto max-w-6xl items-center px-6 py-3">
         
         {/* --- MOBILE HEADER --- */}
         <div className="relative flex w-full items-center justify-between md:hidden">
