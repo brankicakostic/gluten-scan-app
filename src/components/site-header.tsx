@@ -45,9 +45,7 @@ export function SiteHeader() {
                 if (link.href === '/admin') return null;
 
                 const localizedHref = `/${locale}${link.href === '/' ? '' : link.href}`;
-                const isActive = link.href === '/' 
-                  ? pathname === localizedHref
-                  : pathname.startsWith(localizedHref);
+                const isActive = (link.href === '/' && pathname === localizedHref) || (link.href !== '/' && pathname.startsWith(localizedHref));
                 
                 return (
                   <Link

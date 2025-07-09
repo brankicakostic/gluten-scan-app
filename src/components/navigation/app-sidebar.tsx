@@ -33,11 +33,8 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarMenu>
           {mainNavLinks.map((link: NavLink) => {
-            // Ensure link hrefs are prefixed with the current locale
             const localizedHref = `/${locale}${link.href === '/' ? '' : link.href}`;
-            // Check if current pathname matches the localized link href
-            // For the homepage, a simple check against `/${locale}` is needed if link.href is '/'
-            const isActive = link.href === '/' ? pathname === `/${locale}` : pathname.startsWith(localizedHref) && (link.href !== '/' || pathname === `/${locale}`);
+            const isActive = (link.href === '/' && pathname === localizedHref) || (link.href !== '/' && pathname.startsWith(localizedHref));
             
             return (
               <SidebarMenuItem key={link.href}>
