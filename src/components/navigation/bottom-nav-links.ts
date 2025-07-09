@@ -1,6 +1,6 @@
 
 import type { LucideIcon } from 'lucide-react';
-import { Home, ShoppingBag, Siren, History } from 'lucide-react';
+import { Home, ShoppingBag, CalendarDays, History } from 'lucide-react';
 
 export interface NavLink {
   href: string;
@@ -23,8 +23,8 @@ export const bottomNavLinks: NavLink[] = [
   },
   {
     href: '/recalls',
-    label: 'Opozivi',
-    icon: Siren,
+    label: 'Događaji',
+    icon: CalendarDays,
   },
   {
     href: '/history',

@@ -1,6 +1,6 @@
 
 import type { LucideIcon } from 'lucide-react';
-import { Home, History, Heart, ShoppingBag, BookOpenText, Siren, Shield } from 'lucide-react';
+import { Home, History, Heart, ShoppingBag, CalendarDays, Shield } from 'lucide-react';
 
 export interface NavLink {
   href: string;
@@ -25,16 +25,10 @@ export const mainNavLinks: NavLink[] = [
     tooltip: 'Pretražite sve proizvode',
   },
   {
-    href: '/recalls', // Relative to locale - NEW PAGE
-    label: 'Opozivi',
-    icon: Siren,
-    tooltip: 'Aktivni opozivi proizvoda',
-  },
-  {
-    href: '/edukacija', // Relative to locale
-    label: 'Edukacija',
-    icon: BookOpenText,
-    tooltip: 'Edukativni članci',
+    href: '/recalls', // The path remains /recalls, but the label and icon change
+    label: 'Događaji',
+    icon: CalendarDays,
+    tooltip: 'Radionice i Događaji',
   },
   {
     href: '/history', // Relative to locale
