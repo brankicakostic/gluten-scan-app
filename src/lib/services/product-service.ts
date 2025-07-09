@@ -29,12 +29,12 @@ function transformImageUrl(imageUrl: string): string {
         return 'https://placehold.co/400x200.png';
     }
     
-    // Always prepend 'products/' to the relative image URL from the database.
-    const fullPathInStorage = `products/${imageUrl}`;
-    const encodedPath = encodeURIComponent(fullPathInStorage);
+    // Assume the path from DB is correct and just needs the bucket prefix.
+    const encodedPath = encodeURIComponent(imageUrl);
     
     return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
 }
+
 
 /**
  * Maps a Firestore document to a structured Product object, normalizing inconsistent fields.
@@ -72,7 +72,8 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
         dataAiHint: data.dataAiHint || '',
         warning: !!data.warning,
         note: data.note || '',
-        stores: data.stores || [],
+        stores: data.Dostupnost ? data.Dostupnost.split(',').map((s: string) => s.trim()) : [],
+        Poreklo: data.Poreklo || '',
         seriesAffected: data.seriesAffected, // This can be undefined
     };
 
@@ -82,7 +83,7 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
 
 /**
  * Maps a Product object to a Firestore document data structure for saving.
- * This ensures data consistency by storing image paths without the 'products/' prefix.
+ * This ensures data consistency by storing image paths without any 'products/' prefix.
  * @param product The Product object.
  * @returns A plain object suitable for Firestore.
  */
@@ -99,22 +100,23 @@ function mapProductToDocData(product: Partial<Product>): DocumentData {
     if (product.source) data.source = product.source;
     if (product.nutriScore) data.nutriscore = product.nutriScore;
     if (product.note) data.note = product.note;
-    if (product.stores) data.stores = product.stores;
+    if (product.stores) data.Dostupnost = product.stores.join(', ');
+    if (product.Poreklo) data.Poreklo = product.Poreklo;
 
-    // Handle image URL, storing only the relative path without any 'products/' prefix.
+    // Handle image URL, storing only the relative path
     if (product.imageUrl) {
         if (product.imageUrl.includes('firebasestorage')) {
              try {
                 const url = new URL(product.imageUrl);
                 const path = decodeURIComponent(url.pathname);
-                const objectPath = path.substring(path.indexOf('/o/') + 3);
-                // Store the path without the 'products/' prefix for consistency.
-                data.imageUrl = objectPath.startsWith('products/') ? objectPath.substring('products/'.length) : objectPath;
+                // Extract path after '/o/'
+                data.imageUrl = path.substring(path.indexOf('/o/') + 3);
              } catch (e) {
-                data.imageUrl = 'placeholder.png';
+                // If URL parsing fails, assume it's a direct path or placeholder
+                data.imageUrl = product.imageUrl;
              }
         } else if (!product.imageUrl.startsWith('http')) {
-            // This is a relative path, store it as is (should not contain 'products/').
+            // This is a relative path, store it as is
             data.imageUrl = product.imageUrl;
         }
     }

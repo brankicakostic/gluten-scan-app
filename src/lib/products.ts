@@ -24,6 +24,7 @@ export interface Product {
   warning: boolean;
   note: string;
   stores: string[];
+  Poreklo: string;
   seriesAffected?: {
     lotNumbers: string[];
     expiry: string;

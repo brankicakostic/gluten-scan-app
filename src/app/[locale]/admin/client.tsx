@@ -60,6 +60,7 @@ const productFormSchema = z.object({
   imageUrl: z.string().optional(),
   barcode: z.string().optional(),
   nutriScore: z.string().optional(),
+  Poreklo: z.string().optional(),
   hasAOECSLicense: z.boolean().optional(),
   hasManufacturerStatement: z.boolean().optional(),
   isVerifiedAdmin: z.boolean().optional(),
@@ -532,6 +533,10 @@ export default function AdminClientPage({ initialProducts, initialReports, local
                  <div className="space-y-1">
                     <Label htmlFor="nutriScore">Nutri-Score</Label>
                     <Input id="nutriScore" {...form.register('nutriScore')} />
+                </div>
+                 <div className="space-y-1">
+                    <Label htmlFor="Poreklo">Poreklo</Label>
+                    <Input id="Poreklo" {...form.register('Poreklo')} />
                 </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
