@@ -46,6 +46,7 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
     const productData: any = {
         id: doc.id,
         ...data,
+        name: data.name || 'Bez imena', // Ensure name is always a string to prevent crashes
         imageUrl: transformImageUrl(data.imageUrl || ''),
     };
 
@@ -153,7 +154,9 @@ export async function getProducts(): Promise<Product[]> {
         // Removed orderBy to prevent issues with missing Firestore indexes. Sorting is now done in-memory.
         const q = query(productsCol);
         const productSnapshot = await getDocs(q);
-        const productList = productSnapshot.docs.map(mapDocToProduct);
+        const productList = productSnapshot.docs
+            .map(mapDocToProduct)
+            .filter(p => p.name !== 'Bez imena'); // Filter out products that were missing a name
         
         // Sort products by name alphabetically in JavaScript, respecting Serbian locale
         productList.sort((a, b) => a.name.localeCompare(b.name, 'sr'));
