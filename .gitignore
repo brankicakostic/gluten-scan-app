@@ -1,40 +1,46 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Firebase / Google Cloud
-serviceAccountKey.json
-*.firebase.json
-*.firebaserc
-firebase-debug.log
-google-services.json
-
 # Dependencies
 /node_modules
 /.pnp
 .pnp.js
+.pnp.cjs
+yarn-error.log
+npm-debug.log*
 .yarn/install-state.gz
 
-# Next.js
-/.next/
-/out/
-next-env.d.ts
-
-# Production
-/build
-
-# Misc
-.DS_Store
-*.pem
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Local .env files
-.env.local
+# Local Environment Variables
+# --- VRLO VAŽNO: Nikada ne commit-ujte .env fajlove ---
+.env
+.env*.local
 .env.development.local
 .env.test.local
 .env.production.local
-.env
-.env
+serviceAccountKey.json
+
+# Build output
+.next
+/out
+
+# Turbopack
+.turbo
+
+# Next.js build-manifest
+.next/build-manifest.json
+
+# Production
+.vercel
+/build
+
+# IDE configuration
+.vscode/
+*.swp
+*~
+
+# Test results
+/coverage
+/reports
+
+# Other
+.DS_Store
+*.pem
