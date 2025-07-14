@@ -18,27 +18,21 @@ import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 function transformImageUrl(imageUrl?: string): string {
     const placeholder = '/placeholder.svg';
 
-    if (!imageUrl || imageUrl === placeholder) {
+    if (!imageUrl || imageUrl.trim() === '') {
         return placeholder;
+    }
+
+    // If it's a full Firebase Storage URL (with or without token), return it as is.
+    // This is the most reliable way to ensure tokens are preserved.
+    if (imageUrl.includes('firebasestorage.googleapis.com')) {
+        return imageUrl;
     }
 
     if (imageUrl.startsWith('https://placehold.co')) {
         return imageUrl;
     }
-
-    // If the URL is already a full Firebase Storage URL, use it directly.
-    if (imageUrl.includes('firebasestorage.googleapis.com')) {
-        // Ensure it ends with ?alt=media, but don't add if a token is already present
-        if (imageUrl.includes('?')) {
-            // It might already have alt=media or a token
-            if (!imageUrl.includes('alt=media')) {
-                return `${imageUrl}&alt=media`;
-            }
-            return imageUrl;
-        }
-        return `${imageUrl}?alt=media`;
-    }
-
+    
+    // Fallback for relative paths - this might not be used if DB stores full URLs
     const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
     if (!bucket) {
         console.warn('Firebase storage bucket is not configured. Using placeholder for images.');
@@ -46,7 +40,6 @@ function transformImageUrl(imageUrl?: string): string {
     }
     
     // The path stored in the database should be like 'aleksandrija-fruska-gora/image.png'
-    // Remove any leading slashes
     const imagePath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
     const encodedPath = encodeURIComponent(`products/${imagePath}`);
     
