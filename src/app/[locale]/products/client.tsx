@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { useParams, useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { PageHeader } from '@/components/page-header';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,7 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { cn } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
 
 
 const getNutriScoreClasses = (score?: string) => {
@@ -78,7 +79,6 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const pathname = usePathname();
   const locale = params.locale as string;
   
   const initialCategory = searchParams.get('category') || 'all';
@@ -143,7 +143,6 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
     }
   };
 
-
   const handleResetFilters = () => {
     setSearchTerm('');
     setSelectedCategory('all');
@@ -174,11 +173,11 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
           description="Pretražite i filtrirajte listu bezglutenskih proizvoda."
           icon={ShoppingBag}
         />
-
+        
         <div className="mb-6 p-4 md:p-6 bg-muted/30 border-muted/50 rounded-lg md:sticky top-[calc(var(--header-height,6rem)-1px)] z-10 bg-background/80 backdrop-blur-sm -mx-4 md:mx-0">
-           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 items-end">
-              <div className="space-y-1.5 col-span-2 md:col-span-1">
-                <label htmlFor="search" className="text-sm font-medium">Pretraži po nazivu</label>
+           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-end">
+              <div className="space-y-1.5 col-span-2">
+                <Label htmlFor="search">Pretraži po nazivu</Label>
                 <Input
                   id="search"
                   placeholder="Unesite naziv, brend..."
@@ -186,8 +185,8 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-               <div className="space-y-1.5">
-                <label htmlFor="category" className="text-sm font-medium">Kategorija</label>
+               <div className="space-y-1.5 col-span-2 md:col-span-1">
+                <Label htmlFor="category">Kategorija</Label>
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                   <SelectTrigger id="category"><SelectValue placeholder="Sve kategorije" /></SelectTrigger>
                   <SelectContent>
@@ -196,8 +195,8 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-1.5">
-                <label htmlFor="manufacturer" className="text-sm font-medium">Proizvođač</label>
+              <div className="space-y-1.5 col-span-2 md:col-span-1">
+                <Label htmlFor="manufacturer">Proizvođač</Label>
                 <Select value={selectedManufacturer} onValueChange={setSelectedManufacturer}>
                   <SelectTrigger id="manufacturer"><SelectValue placeholder="Svi proizvođači" /></SelectTrigger>
                   <SelectContent>
@@ -206,41 +205,40 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-1.5">
-                <label htmlFor="barcode" className="text-sm font-medium">Bar-kod (EAN)</label>
+              <div className="space-y-1.5 col-span-2 md:col-span-1">
+                <Label htmlFor="barcode">Bar-kod (EAN)</Label>
                 <Input id="barcode" placeholder="Unesite bar-kod..." value={barcode} onChange={(e) => setBarcode(e.target.value)} />
               </div>
-               <div className="space-y-1.5">
-                <label htmlFor="gf-status" className="text-sm font-medium">BG Status</label>
-                <TooltipProvider>
+               <div className="space-y-1.5 col-span-2 md:col-span-1">
+                  <Label htmlFor="gf-status" className="flex items-center gap-1">
+                    BG Status
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs text-center p-2" side="top">
+                          <ul className="list-disc list-inside text-left space-y-1">
+                              <li><span className="font-bold">AOECS sertifikat:</span> Zvanični EU standard (precrtani klas).</li>
+                              <li><span className="font-bold">Izjava proizvođača:</span> Nije nezavisno testirano.</li>
+                              <li><span className="font-bold">Nema podataka:</span> Nema zvanične GF oznake.</li>
+                          </ul>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </Label>
                   <Select value={selectedGfStatus} onValueChange={setSelectedGfStatus}>
                     <SelectTrigger id="gf-status"><SelectValue placeholder="Svi statusi" /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">Svi statusi</SelectItem>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <SelectItem value="aoecs">AOECS Sertifikat</SelectItem>
-                          </TooltipTrigger>
-                          <TooltipContent><p>Proizvod sa zvaničnim sertifikatom (precrtani klas).</p></TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <SelectItem value="izjava">Izjava proizvođača</SelectItem>
-                          </TooltipTrigger>
-                          <TooltipContent><p>Proizvođač tvrdi da je proizvod bez glutena, ali nema sertifikat.</p></TooltipContent>
-                        </Tooltip>
-                         <Tooltip>
-                          <TooltipTrigger asChild>
-                            <SelectItem value="nema_podataka">Nema podataka</SelectItem>
-                          </TooltipTrigger>
-                          <TooltipContent><p>Proizvod nema zvaničnu GF oznaku ili izjavu.</p></TooltipContent>
-                        </Tooltip>
+                        <SelectItem value="aoecs">AOECS Sertifikat</SelectItem>
+                        <SelectItem value="izjava">Izjava proizvođača</SelectItem>
+                        <SelectItem value="nema_podataka">Nema podataka</SelectItem>
                     </SelectContent>
                   </Select>
-                </TooltipProvider>
               </div>
-               <div className="space-y-1.5">
-                <label htmlFor="origin" className="text-sm font-medium">Zemlja porekla</label>
+               <div className="space-y-1.5 col-span-2 md:col-span-1">
+                <Label htmlFor="origin">Zemlja porekla</Label>
                 <Select value={selectedOrigin} onValueChange={setSelectedOrigin}>
                   <SelectTrigger id="origin"><SelectValue placeholder="Sve zemlje" /></SelectTrigger>
                   <SelectContent>
@@ -249,36 +247,18 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex gap-2 items-end col-span-2 md:col-span-1">
-                <Button className="w-full" disabled>
+              <div className="col-span-2 md:col-span-1 flex gap-2 items-end">
+                <Button className="w-full transition-transform active:scale-95" disabled>
                     <Search className="h-4 w-4" />
                     <span>Pretraži</span>
                 </Button>
                 {areFiltersActive && (
-                  <Button variant="ghost" size="icon" onClick={handleResetFilters} title="Očisti filtere">
+                  <Button variant="outline" size="icon" onClick={handleResetFilters} title="Očisti filtere">
                     <FilterX className="h-5 w-5" />
                   </Button>
                 )}
               </div>
           </div>
-           <div className="mt-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-            <p className="text-sm text-muted-foreground">
-                Pronađeno {filteredProducts.length} od {allProducts.length} proizvoda.
-            </p>
-          </div>
-            {areFiltersActive && (
-                <div className="mt-3 pt-3 border-t md:hidden">
-                    <p className="text-xs font-semibold mb-2 text-muted-foreground">Aktivni filteri:</p>
-                    <div className="flex flex-wrap gap-2">
-                        {searchTerm.trim() && <Badge variant="outline">Tekst: {searchTerm}<button onClick={() => handleRemoveFilter('searchTerm')} className="ml-1 rounded-full p-0.5 hover:bg-background"><X className="h-3 w-3"/></button></Badge>}
-                        {selectedCategory !== 'all' && <Badge variant="outline">Kategorija: {selectedCategory}<button onClick={() => handleRemoveFilter('category')} className="ml-1 rounded-full p-0.5 hover:bg-background"><X className="h-3 w-3"/></button></Badge>}
-                        {selectedManufacturer !== 'all' && <Badge variant="outline">Proizvođač: {selectedManufacturer}<button onClick={() => handleRemoveFilter('manufacturer')} className="ml-1 rounded-full p-0.5 hover:bg-background"><X className="h-3 w-3"/></button></Badge>}
-                        {barcode.trim() && <Badge variant="outline">Barkod: {barcode}<button onClick={() => handleRemoveFilter('barcode')} className="ml-1 rounded-full p-0.5 hover:bg-background"><X className="h-3 w-3"/></button></Badge>}
-                        {selectedGfStatus !== 'all' && <Badge variant="outline">Status: {selectedGfStatus}<button onClick={() => handleRemoveFilter('gfStatus')} className="ml-1 rounded-full p-0.5 hover:bg-background"><X className="h-3 w-3"/></button></Badge>}
-                        {selectedOrigin !== 'all' && <Badge variant="outline">Poreklo: {selectedOrigin}<button onClick={() => handleRemoveFilter('origin')} className="ml-1 rounded-full p-0.5 hover:bg-background"><X className="h-3 w-3"/></button></Badge>}
-                    </div>
-                </div>
-            )}
         </div>
 
         {currentProductsToDisplay.length > 0 ? (
@@ -292,30 +272,34 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
                 return (
                   <Card key={product.id} className={cn(`overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col`, product.warning && 'border-destructive border-2')}>
                     <CardHeader className="p-0">
-                      {product.imageUrl && !product.imageUrl.includes('placehold.co') ? (
-                        <Image
-                          src={product.imageUrl}
-                          alt={product.name}
-                          width={400}
-                          height={200}
-                          className="w-full h-48 object-cover"
-                          data-ai-hint={product.dataAiHint}
-                        />
-                      ) : (
-                        <div className="w-full h-48 flex items-center justify-center bg-secondary text-muted-foreground">
-                           <Image
-                            src="https://placehold.co/400x200.png"
-                            alt="Slika nije dostupna"
+                      <Link href={`/${locale}/products/${product.id}`}>
+                        {product.imageUrl && !product.imageUrl.includes('placehold.co') ? (
+                          <Image
+                            src={product.imageUrl}
+                            alt={product.name}
                             width={400}
                             height={200}
                             className="w-full h-48 object-cover"
-                            data-ai-hint="product placeholder"
+                            data-ai-hint={product.dataAiHint}
                           />
-                        </div>
-                      )}
+                        ) : (
+                          <div className="w-full h-48 flex items-center justify-center bg-secondary text-muted-foreground">
+                            <Image
+                              src="https://placehold.co/400x200.png"
+                              alt="Slika nije dostupna"
+                              width={400}
+                              height={200}
+                              className="w-full h-48 object-cover"
+                              data-ai-hint="product placeholder"
+                            />
+                          </div>
+                        )}
+                      </Link>
                     </CardHeader>
                     <CardContent className="p-4 flex flex-col flex-grow">
-                      <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
+                      <Link href={`/${locale}/products/${product.id}`} className="hover:underline">
+                        <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
+                      </Link>
                       {product.brand && <CardDescription className="text-xs text-muted-foreground mb-1">{product.brand}</CardDescription>}
                       <div className="flex justify-between items-center mb-2">
                         <CardDescription className="text-sm text-muted-foreground">{product.category}</CardDescription>

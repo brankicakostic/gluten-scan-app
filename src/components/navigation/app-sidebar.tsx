@@ -31,10 +31,8 @@ export function AppSidebar() {
   const { setOpenMobile } = useSidebar();
   const locale = params.locale as string || 'sr';
   
-  // Example: assuming no user is logged in for now
   const isLoggedIn = false; 
 
-  // Reordered links for better UX
   const mainLinks = mainNavLinks.filter(link => ['/', '/products', '/events', '/recalls'].includes(link.href));
   const secondaryLinks = mainNavLinks.filter(link => ['/favorites', '/history'].includes(link.href));
   const adminLink = mainNavLinks.find(link => link.href === '/admin');
@@ -54,7 +52,7 @@ export function AppSidebar() {
           className={cn(
             "h-12 justify-start text-base font-medium relative",
             isActive ? 
-            "bg-primary/10 text-primary font-semibold border-l-4 border-primary" :
+            "bg-primary/10 text-primary font-semibold border-l-4 border-primary hover:bg-primary/20" :
             "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
           )}
           onClick={() => setOpenMobile(false)} // Close on link click
@@ -82,7 +80,7 @@ export function AppSidebar() {
          </div>
       </SidebarHeader>
 
-      <SidebarContent className="p-4 flex flex-col gap-4">
+      <SidebarContent className="p-4 flex flex-col gap-2">
         <SidebarMenu className="flex flex-col gap-2">
           {mainLinks.map(link => renderLink(link, true))}
         </SidebarMenu>
@@ -96,16 +94,16 @@ export function AppSidebar() {
         {adminLink && (
            <>
             <SidebarSeparator />
-            <SidebarMenu>
+            <SidebarMenu className="mt-2">
                 {renderLink(adminLink, false)}
             </SidebarMenu>
            </>
         )}
       </SidebarContent>
 
-      <SidebarFooter className="mt-auto space-y-4 p-4">
+      <SidebarFooter className="mt-auto space-y-2 p-4">
          <SidebarSeparator />
-         <div className="group-data-[collapsible=icon]:hidden mt-4">
+         <div className="group-data-[collapsible=icon]:hidden mt-2">
              {isLoggedIn ? (
                  <div className="flex items-center gap-3">
                     <Avatar className="h-9 w-9">

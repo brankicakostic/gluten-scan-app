@@ -18,9 +18,6 @@ export function MobileBottomNav() {
         {bottomNavLinks.map((link) => {
           const localizedHref = `/${locale}${link.href === '/' ? '' : link.href}`;
           
-          // More robust active check:
-          // For the homepage, it must be an exact match.
-          // For other pages, it should match the start of the path.
           const isActive = link.href === '/' 
             ? pathname === `/${locale}` 
             : pathname.startsWith(localizedHref);
