@@ -20,12 +20,10 @@ function transformImageUrl(imageUrl: string): string {
         return '/placeholder.svg';
     }
     if (imageUrl.startsWith('http')) {
-        // If it's already a full URL, strip the token for Next/Image compatibility
         const url = new URL(imageUrl);
         url.searchParams.delete('token');
         return url.toString();
     }
-    // If it starts with a slash, it's a local public asset.
     if (imageUrl.startsWith('/')) {
         return imageUrl;
     }
@@ -36,8 +34,8 @@ function transformImageUrl(imageUrl: string): string {
         return '/placeholder.svg';
     }
     
+    // Correctly construct the URL for Firebase Storage
     const encodedPath = encodeURIComponent(`products/${imageUrl}`);
-    
     return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
 }
 
