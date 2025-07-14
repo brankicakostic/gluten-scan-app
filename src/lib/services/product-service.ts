@@ -23,11 +23,13 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
     const tagsFromDb = Array.isArray(data.tagsFromInput) ? data.tagsFromInput : [];
     const tagsLower = new Set(tagsFromDb.map((t: string) => String(t).toLowerCase()));
 
-    let finalImageUrl = 'https://placehold.co/400x200.png';
+    // Robust image URL validation
+    let finalImageUrl = 'https://placehold.co/400x200.png'; // Default placeholder
     const imageUrlFromDb = data.imageUrl;
-
-    if (typeof imageUrlFromDb === 'string' && imageUrlFromDb.startsWith('http')) {
-        finalImageUrl = imageUrlFromDb;
+    
+    if (typeof imageUrlFromDb === 'string' && imageUrlFromDb.startsWith('https')) {
+      // If it's a string and looks like a valid URL, use it
+      finalImageUrl = imageUrlFromDb;
     }
 
     return {
