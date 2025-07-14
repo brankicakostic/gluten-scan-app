@@ -1,6 +1,12 @@
 // This is a Server Component responsible for fetching all products.
 import { getProducts } from '@/lib/services/product-service';
-import ProductsClientPage, { type CategoryInfo } from './client';
+import ProductsClientPage from './client';
+
+// Define the type locally to avoid unnecessary imports
+export interface CategoryInfo {
+  name: string;
+  count: number;
+}
 
 export default async function ProductsPage() {
   // Fetch all products on the server
