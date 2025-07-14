@@ -16,12 +16,14 @@ import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
  * @returns The full, public URL for the image.
  */
 function transformImageUrl(imageUrl: string): string {
-    if (!imageUrl || imageUrl.includes('placehold.co') || imageUrl.startsWith('/placeholder.svg')) {
+    if (!imageUrl || imageUrl.startsWith('https://placehold.co') || imageUrl.startsWith('/placeholder.svg')) {
         return '/placeholder.svg';
     }
     if (imageUrl.startsWith('http')) {
-        // If it's already a full URL (like placeholders) or empty, return it as is.
-        return imageUrl;
+        // If it's already a full URL, strip the token for Next/Image compatibility
+        const url = new URL(imageUrl);
+        url.searchParams.delete('token');
+        return url.toString();
     }
     // If it starts with a slash, it's a local public asset.
     if (imageUrl.startsWith('/')) {
@@ -34,8 +36,6 @@ function transformImageUrl(imageUrl: string): string {
         return '/placeholder.svg';
     }
     
-    // The path in firestore is already url-encoded, so we don't need to re-encode it.
-    // The path should be something like `aleksandrija-fruska-gora/instant-palenta-8606112581172.png`
     const encodedPath = encodeURIComponent(`products/${imageUrl}`);
     
     return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
