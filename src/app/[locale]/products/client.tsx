@@ -10,10 +10,11 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle, X, Wheat, Sandwich, Utensils, Cookie, Popcorn, Soup, Container, CookingPot, CupSoda, Package, Box, Droplet, Layers, Dumbbell, Sprout, UtensilsCrossed, type LucideIcon, FilterX } from 'lucide-react';
+import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle, X, Wheat, Sandwich, Utensils, Cookie, Popcorn, Soup, Container, CookingPot, CupSoda, Package, Box, Droplet, Layers, Dumbbell, Sprout, UtensilsCrossed, type LucideIcon, FilterX, Info } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import type { Product } from '@/lib/products';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Pagination,
   PaginationContent,
@@ -158,9 +159,9 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
           icon={ShoppingBag}
         />
 
-        <div className="mb-6 p-4 md:p-6 bg-muted/30 border-muted/50 rounded-lg md:sticky top-0 z-10 bg-background/80 backdrop-blur-sm -mx-4 md:mx-0">
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-              <div className="space-y-1.5">
+        <div className="mb-6 p-4 md:p-6 bg-muted/30 border-muted/50 rounded-lg md:sticky md:top-16 z-10 bg-background/80 backdrop-blur-sm -mx-4 md:mx-0">
+           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 items-end">
+              <div className="space-y-1.5 col-span-2 md:col-span-1">
                 <label htmlFor="search" className="text-sm font-medium">Pretraži po nazivu</label>
                 <Input
                   id="search"
@@ -195,15 +196,32 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
               </div>
                <div className="space-y-1.5">
                 <label htmlFor="gf-status" className="text-sm font-medium">BG Status</label>
-                <Select value={selectedGfStatus} onValueChange={setSelectedGfStatus}>
-                  <SelectTrigger id="gf-status"><SelectValue placeholder="Svi statusi" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Svi statusi</SelectItem>
-                    <SelectItem value="aoecs">AOECS Sertifikat</SelectItem>
-                    <SelectItem value="izjava">Izjava proizvođača</SelectItem>
-                    <SelectItem value="nema_podataka">Nema podataka</SelectItem>
-                  </SelectContent>
-                </Select>
+                <TooltipProvider>
+                  <Select value={selectedGfStatus} onValueChange={setSelectedGfStatus}>
+                    <SelectTrigger id="gf-status"><SelectValue placeholder="Svi statusi" /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">Svi statusi</SelectItem>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <SelectItem value="aoecs">AOECS Sertifikat</SelectItem>
+                          </TooltipTrigger>
+                          <TooltipContent><p>Proizvod sa zvaničnim sertifikatom (precrtani klas).</p></TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <SelectItem value="izjava">Izjava proizvođača</SelectItem>
+                          </TooltipTrigger>
+                          <TooltipContent><p>Proizvođač tvrdi da je proizvod bez glutena, ali nema sertifikat.</p></TooltipContent>
+                        </Tooltip>
+                         <Tooltip>
+                          <TooltipTrigger asChild>
+                            <SelectItem value="nema_podataka">Nema podataka</SelectItem>
+                          </TooltipTrigger>
+                          <TooltipContent><p>Proizvod nema zvaničnu GF oznaku ili izjavu.</p></TooltipContent>
+                        </Tooltip>
+                    </SelectContent>
+                  </Select>
+                </TooltipProvider>
               </div>
                <div className="space-y-1.5">
                 <label htmlFor="origin" className="text-sm font-medium">Zemlja porekla</label>
@@ -215,7 +233,7 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex gap-2 items-end">
+              <div className="flex gap-2 items-end col-span-2 md:col-span-1">
                 <Button className="w-full" disabled>
                     <Search className="h-4 w-4" />
                     <span>Pretraži</span>
