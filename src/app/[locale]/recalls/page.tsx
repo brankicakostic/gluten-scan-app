@@ -23,31 +23,23 @@ export default async function RecallsPage({ params }: { params: { locale: string
         />
         {recalledProducts.length > 0 ? (
           <div className="space-y-6">
-            {recalledProducts.map((product) => (
+            {recalledProducts.map((product) => {
+              const imageUrl = product.imageUrl && product.imageUrl.startsWith('http')
+                ? product.imageUrl
+                : '/placeholder.svg';
+              return (
               <Card key={product.id} className="border-destructive border-2 overflow-hidden shadow-lg">
                 <CardHeader>
                     <div className="flex flex-col md:flex-row items-start gap-4">
                         <Link href={`/${params.locale}/products/${product.id}`} className="block flex-shrink-0">
-                          {product.imageUrl && product.imageUrl.startsWith('http') ? (
-                            <Image
-                              src={product.imageUrl}
-                              alt={product.name}
-                              width={120}
-                              height={120}
-                              className="rounded-md object-cover aspect-square"
-                              data-ai-hint={product.dataAiHint || 'product image'}
-                            />
-                          ) : (
-                            <div className="h-[120px] w-[120px] flex items-center justify-center bg-secondary text-muted-foreground rounded-md">
-                              <Image
-                                src="/placeholder.svg"
-                                alt="Slika nije dostupna"
-                                width={56}
-                                height={56}
-                                className="opacity-50"
-                              />
-                            </div>
-                          )}
+                          <Image
+                            src={imageUrl}
+                            alt={product.name}
+                            width={120}
+                            height={120}
+                            className="rounded-md object-cover aspect-square"
+                            data-ai-hint={product.dataAiHint || 'product image'}
+                          />
                         </Link>
                         <div className="flex-grow">
                             <CardTitle className="text-xl mb-1">
@@ -87,7 +79,7 @@ export default async function RecallsPage({ params }: { params: { locale: string
                     </div>
                 </CardContent>
               </Card>
-            ))}
+            )})}
           </div>
         ) : (
           <div className="text-center py-12 text-muted-foreground">

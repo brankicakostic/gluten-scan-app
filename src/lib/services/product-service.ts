@@ -24,9 +24,10 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
     const tagsLower = new Set(tagsFromDb.map((t: string) => String(t).toLowerCase()));
 
     const imageUrlFromDb = data.imageUrl;
-    let finalImageUrl = '/placeholder.svg'; // Default to our local, styled placeholder
+    let finalImageUrl = '/placeholder.svg';
 
-    if (imageUrlFromDb && typeof imageUrlFromDb === 'string' && imageUrlFromDb.startsWith('https')) {
+    // Simple, robust check: If the URL is a string and starts with https, use it. Otherwise, fall back.
+    if (typeof imageUrlFromDb === 'string' && imageUrlFromDb.startsWith('https://')) {
         finalImageUrl = imageUrlFromDb;
     }
 
