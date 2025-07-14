@@ -23,7 +23,7 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
 
     // Robust check for a valid, absolute URL. If not valid, use a placeholder.
     let finalImageUrl = 'https://placehold.co/400x200.png'; // Default placeholder
-    if (data.imageUrl && typeof data.imageUrl === 'string' && data.imageUrl.startsWith('http')) {
+    if (data.imageUrl && typeof data.imageUrl === 'string' && data.imageUrl.trim() !== '') {
         finalImageUrl = data.imageUrl;
     }
 
