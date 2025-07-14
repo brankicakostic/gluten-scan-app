@@ -20,17 +20,17 @@ function transformImageUrl(imageUrl?: string): string {
         return '/placeholder.svg';
     }
     
-    // If it's already a full Firebase URL, just ensure it's in the correct format without a token.
     if (imageUrl.startsWith('http')) {
         try {
             const url = new URL(imageUrl);
-            if (url.hostname === 'firebasestorage.googleapis.com') {
-                url.searchParams.delete('token'); // Remove token for consistency
-                return url.toString();
+            // Ensure correct hostname for next/image
+            if (url.hostname.endsWith('appspot.com') || url.hostname === 'firebasestorage.googleapis.com') {
+                 url.searchParams.delete('token'); // Remove token for consistency
+                 return url.toString();
             }
-            return imageUrl; // It's some other valid URL
+            return imageUrl;
         } catch (e) {
-            return '/placeholder.svg'; // Invalid URL
+            return '/placeholder.svg';
         }
     }
 
@@ -40,6 +40,7 @@ function transformImageUrl(imageUrl?: string): string {
         return '/placeholder.svg';
     }
     
+    // The path stored in the database should be like 'aleksandrija-fruska-gora/image.png'
     const encodedPath = encodeURIComponent(`products/${imageUrl}`);
     return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
 }
@@ -54,7 +55,7 @@ function transformImageUrl(imageUrl?: string): string {
 function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData): Product {
     const data = doc.data() || {};
     
-    const tags = data.tagsFromInput || [];
+    const tags = Array.isArray(data.tagsFromInput) ? data.tagsFromInput : [];
     const tagsLower = new Set(tags.map((t: string) => t.toLowerCase()));
 
     const productData: Product = {
@@ -116,21 +117,22 @@ function mapProductToDocData(product: Partial<Product>): DocumentData {
         if (product.imageUrl.includes('firebasestorage')) {
              try {
                 const url = new URL(product.imageUrl);
-                const path = decodeURIComponent(url.pathname);
-                // Example path: /v0/b/project-id.appspot.com/o/products%2Fimage.png
-                const prefix = `/o/products%2F`;
-                const startIndex = path.indexOf(prefix);
-                if (startIndex !== -1) {
-                  // Extract just "image.png"
-                  data.imageUrl = path.substring(startIndex + prefix.length);
-                } else if (path.includes('/o/')) {
-                  // Fallback for slightly different paths
-                  data.imageUrl = path.substring(path.lastIndexOf('/') + 1);
-                } else {
-                    data.imageUrl = product.imageUrl;
+                let path = decodeURIComponent(url.pathname);
+                const prefix = `/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/`;
+                if (path.startsWith(prefix)) {
+                    path = path.substring(prefix.length);
                 }
+                const mediaSuffix = '?alt=media';
+                if (path.endsWith(mediaSuffix)) {
+                    path = path.substring(0, path.length - mediaSuffix.length);
+                }
+                 const productsPrefix = 'products/';
+                 if (path.startsWith(productsPrefix)) {
+                    path = path.substring(productsPrefix.length);
+                 }
+                 data.imageUrl = path;
+
              } catch (e) {
-                // If URL parsing fails, just store it as is, might be a placeholder or other URL
                 data.imageUrl = product.imageUrl;
              }
         } else if (!product.imageUrl.startsWith('http') && product.imageUrl !== '/placeholder.svg') {
