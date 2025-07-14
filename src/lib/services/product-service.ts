@@ -23,13 +23,10 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
     const tagsFromDb = Array.isArray(data.tagsFromInput) ? data.tagsFromInput : [];
     const tagsLower = new Set(tagsFromDb.map((t: string) => String(t).toLowerCase()));
 
-    const imageUrlFromDb = data.imageUrl;
-    let finalImageUrl = '/placeholder.svg';
-
-    // FINAL FIX: This is the definitive logic. If the URL is a valid string, use it. Otherwise, use the placeholder.
-    if (typeof imageUrlFromDb === 'string' && imageUrlFromDb.startsWith('https://')) {
-        finalImageUrl = imageUrlFromDb;
-    }
+    // This is the definitive logic. If the URL is a valid string, use it. Otherwise, use the placeholder.
+    const imageUrl = (typeof data.imageUrl === 'string' && data.imageUrl.startsWith('https://'))
+        ? data.imageUrl
+        : '/placeholder.svg';
 
     return {
         id: doc.id,
@@ -37,7 +34,7 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
         brand: data.brand || '',
         barcode: data.barcode || '',
         category: data.category || data.jsonCategory || 'Nekategorizovano',
-        imageUrl: finalImageUrl,
+        imageUrl: imageUrl,
         description: data.description || '',
         ingredientsText: Array.isArray(data.ingredients) ? data.ingredients.join(', ') : (typeof data.ingredients === 'string' ? data.ingredients : ''),
         labelText: data.labelText || '',
