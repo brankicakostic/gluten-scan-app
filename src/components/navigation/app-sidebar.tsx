@@ -121,7 +121,7 @@ export function AppSidebar() {
                     </Button>
                  </div>
              ) : (
-                <SidebarMenuButton className="h-12 w-full justify-start text-base font-medium mt-4">
+                <SidebarMenuButton className="h-12 w-full justify-start text-base font-medium mt-4 hover:bg-sidebar-accent">
                     <LogIn className="h-5 w-5" /> <span>Prijavi se</span>
                 </SidebarMenuButton>
             )}
