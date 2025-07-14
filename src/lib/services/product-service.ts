@@ -21,13 +21,10 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
     const tagsFromDb = Array.isArray(data.tagsFromInput) ? data.tagsFromInput : [];
     const tagsLower = new Set(tagsFromDb.map((t: string) => String(t).toLowerCase()));
 
-    // Robustly check for a valid, absolute URL.
-    // The Image component requires a full URL. If data.imageUrl exists but is not a full URL
-    // (e.g., just a filename), it will cause a crash.
+    // If imageUrl exists and is a non-empty string, use it. Otherwise, use a placeholder.
+    // This is the most reliable way to handle the data from Firestore.
     const finalImageUrl = 
-        data.imageUrl && 
-        typeof data.imageUrl === 'string' && 
-        data.imageUrl.startsWith('http')
+        data.imageUrl && typeof data.imageUrl === 'string' && data.imageUrl.trim() !== ''
       ? data.imageUrl
       : 'https://placehold.co/400x200.png';
 
