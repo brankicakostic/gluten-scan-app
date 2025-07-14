@@ -12,19 +12,18 @@ import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 /**
  * Helper to construct the full Firebase Storage URL from a relative path.
  * If the URL is already absolute or a placeholder, it returns it as is.
- * @param imageUrl The relative path to the image in Firebase Storage.
+ * @param imageUrl The relative or full path to the image in Firebase Storage.
  * @returns The full, public URL for the image.
  */
 function transformImageUrl(imageUrl?: string): string {
     const placeholder = '/placeholder.svg';
-    
-    // If no URL is provided, or it's already a placeholder or a placehold.co URL, return the placeholder.
-    if (!imageUrl || imageUrl === placeholder || imageUrl.startsWith('https://placehold.co')) {
+
+    if (!imageUrl || imageUrl.startsWith('https://placehold.co') || imageUrl === placeholder) {
         return placeholder;
     }
-    
-    // If it's already a full Firebase URL, just return it.
-    if (imageUrl.startsWith('https://firebasestorage.googleapis.com')) {
+
+    // If the URL is already a full Firebase Storage URL (with or without a token), use it directly.
+    if (imageUrl.includes('firebasestorage.googleapis.com')) {
         return imageUrl;
     }
 
@@ -35,8 +34,9 @@ function transformImageUrl(imageUrl?: string): string {
     }
     
     // The path stored in the database should be like 'aleksandrija-fruska-gora/image.png'
-    const imagePath = `products/${imageUrl}`;
-    const encodedPath = encodeURIComponent(imagePath);
+    // Remove any leading slashes
+    const imagePath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
+    const encodedPath = encodeURIComponent(`products/${imagePath}`);
     
     return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
 }
@@ -75,7 +75,7 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
         isPosno: tagsLower.has('posno'),
         isVegan: tagsLower.has('vegan'),
         isHighProtein: tagsLower.has('protein') || tagsLower.has('high-protein'),
-        dataAiHint: data.dataAiHint || '',
+        dataAiHint: data.dataAiHint || 'product photo',
         warning: !!data.warning,
         note: data.note || '',
         stores: data.Dostupnost ? data.Dostupnost.split(',').map((s: string) => s.trim()) : [],

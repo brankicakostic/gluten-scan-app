@@ -20,14 +20,10 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'placehold.co',
-        port: '',
-        pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'firebasestorage.googleapis.com', // This is the correct hostname for Firebase Storage
-        port: '',
-        pathname: '/**',
       },
     ],
   },
