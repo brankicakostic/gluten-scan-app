@@ -22,11 +22,15 @@ export default async function EventsPage() {
         />
         {publishedEvents.length > 0 ? (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {publishedEvents.map((event) => (
+            {publishedEvents.map((event) => {
+              const imageUrl = event.imageUrl && event.imageUrl.startsWith('http')
+                ? event.imageUrl
+                : '/placeholder.svg';
+              return (
               <Card key={event.id} className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <CardHeader className="p-0">
                   <Image
-                    src={event.imageUrl}
+                    src={imageUrl}
                     alt={event.title}
                     width={400}
                     height={200}
@@ -69,7 +73,7 @@ export default async function EventsPage() {
                   )}
                 </CardFooter>
               </Card>
-            ))}
+            )})}
           </div>
         ) : (
           <div className="text-center py-12 text-muted-foreground">

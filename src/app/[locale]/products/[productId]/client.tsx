@@ -216,7 +216,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   
   const imageUrl = product.imageUrl && product.imageUrl.startsWith('http') 
       ? product.imageUrl 
-      : 'https://placehold.co/800x533.png';
+      : '/placeholder.svg';
 
   return (
     <div className="p-6 md:p-8">

@@ -272,7 +272,7 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
                 
                 const imageUrl = product.imageUrl && product.imageUrl.startsWith('http') 
                     ? product.imageUrl 
-                    : 'https://placehold.co/400x200.png';
+                    : '/placeholder.svg';
 
                 return (
                   <Card key={product.id} className={cn(`overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col`, product.warning && 'border-destructive border-2')}>

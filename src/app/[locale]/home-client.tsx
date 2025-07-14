@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, type FormEvent, useRef, useEffect, ChangeEvent } from 'react';
@@ -655,18 +656,15 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
             {barcodeScanResult && !isScanningBarcode && (
               <Card className="mt-4 max-w-2xl mx-auto">
                 <CardHeader className="flex flex-row items-start gap-4">
-                  {barcodeScanResult.imageUrl && barcodeScanResult.imageUrl !== '/placeholder.svg' ? (
-                    <Image src={barcodeScanResult.imageUrl} alt={barcodeScanResult.name} width={80} height={80} className="rounded-md object-cover" data-ai-hint={barcodeScanResult.dataAiHint || "product image"}/>
-                  ) : (
-                    <div className="aspect-[1/1] w-20 h-20 flex-shrink-0 flex items-center justify-center bg-secondary text-muted-foreground rounded-md">
-                      <Image
-                        src="/placeholder.svg"
-                        alt="Slika nije dostupna"
-                        width={40}
-                        height={40}
-                        className="opacity-50"
-                      />
-                    </div>
+                  {barcodeScanResult.imageUrl && (
+                    <Image
+                      src={barcodeScanResult.imageUrl.startsWith('http') ? barcodeScanResult.imageUrl : '/placeholder.svg'}
+                      alt={barcodeScanResult.name}
+                      width={80}
+                      height={80}
+                      className="rounded-md object-cover"
+                      data-ai-hint={barcodeScanResult.dataAiHint || "product image"}
+                    />
                   )}
                   <div>
                     <CardTitle className="text-xl">{barcodeScanResult.name}</CardTitle>

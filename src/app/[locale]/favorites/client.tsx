@@ -54,7 +54,7 @@ export default function FavoritesClientPage({ allProducts }: FavoritesClientPage
               
               const imageUrl = product.imageUrl && product.imageUrl.startsWith('http') 
                   ? product.imageUrl 
-                  : 'https://placehold.co/400x200.png';
+                  : '/placeholder.svg';
 
               return (
               <Card key={product.id} className="overflow-hidden group hover:shadow-xl transition-shadow duration-200 flex flex-col">

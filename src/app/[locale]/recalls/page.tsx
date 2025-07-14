@@ -1,4 +1,5 @@
 
+
 import { getProducts } from '@/lib/services/product-service';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -27,7 +28,7 @@ export default async function RecallsPage({ params }: { params: { locale: string
                 <CardHeader>
                     <div className="flex flex-col md:flex-row items-start gap-4">
                         <Link href={`/${params.locale}/products/${product.id}`} className="block flex-shrink-0">
-                          {product.imageUrl && product.imageUrl !== '/placeholder.svg' ? (
+                          {product.imageUrl && product.imageUrl.startsWith('http') ? (
                             <Image
                               src={product.imageUrl}
                               alt={product.name}

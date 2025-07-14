@@ -25,9 +25,9 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
 
     // Robust image URL handling
     const imageUrlFromDb = data.imageUrl;
-    let finalImageUrl = imageUrlFromDb && typeof imageUrlFromDb === 'string' && imageUrlFromDb.trim() !== ''
+    let finalImageUrl = (imageUrlFromDb && typeof imageUrlFromDb === 'string' && imageUrlFromDb.trim() !== '' && imageUrlFromDb.startsWith('https'))
         ? imageUrlFromDb
-        : 'https://placehold.co/400x200.png'; // Default placeholder
+        : '/placeholder.svg';
 
     return {
         id: doc.id,

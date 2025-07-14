@@ -56,6 +56,7 @@ import { deleteReportAction, updateReportStatusAction, updateReportNotesAction }
 import { addEventAction, updateEventAction, deleteEventAction } from '@/app/actions/event-actions';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 
 const productFormSchema = z.object({
@@ -655,8 +656,8 @@ export default function AdminClientPage({ initialProducts, initialReports, initi
               </div>
             </div>
             <div className="space-y-1">
-              <Label htmlFor="imageUrl">URL Slike (relativni putanja)</Label>
-              <Input id="imageUrl" placeholder="npr. aleksandrija-fruska-gora/instant-palenta.png" {...productForm.register('imageUrl')} />
+              <Label htmlFor="imageUrl">URL Slike</Label>
+              <Input id="imageUrl" placeholder="https://..." {...productForm.register('imageUrl')} />
             </div>
             <div className="space-y-1">
               <Label htmlFor="description">Opis</Label>
@@ -822,7 +823,7 @@ export default function AdminClientPage({ initialProducts, initialReports, initi
                     </div>
                      <div className="space-y-1">
                         <Label htmlFor="event-time">Vreme</Label>
-                        <Input id="event-time" {...productForm.register('time')} placeholder="npr. 18:00h" />
+                        <Input id="event-time" {...eventForm.register('time')} placeholder="npr. 18:00h" />
                          {eventForm.formState.errors.time && <p className="text-xs text-destructive">{eventForm.formState.errors.time.message}</p>}
                     </div>
                 </div>
@@ -986,5 +987,3 @@ export default function AdminClientPage({ initialProducts, initialReports, initi
     </div>
   );
 }
-
-    
