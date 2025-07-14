@@ -28,9 +28,6 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
 
     if (typeof imageUrlFromDb === 'string' && imageUrlFromDb.startsWith('http')) {
         finalImageUrl = imageUrlFromDb;
-    } else if (imageUrlFromDb) {
-        // Log the problematic URL for debugging purposes
-        console.error(`[Product Service Error] Invalid imageUrl for product ID: ${doc.id} (Name: "${productName}"). Received: "${imageUrlFromDb}". Falling back to placeholder.`);
     }
 
     return {

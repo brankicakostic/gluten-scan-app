@@ -964,7 +964,7 @@
     "ingredients": ["Prirodni med od heljde 100%"], "labelText": "Prirodni med od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan"], "imageUrl": "https://placehold.co/400x200.png"
   },
   {
-    "barcode": 8600955501298,
+    "barcode": "8600955501298",
     "name": "Keks sa voćnim punjenjem od aronije, šljive i jabuke",
     "size": "180g",
     "Dostupnost": "",
@@ -977,13 +977,13 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "molendini/keks-sa-vocnim-punjenjem-od-aronije-sljive-i-jabuke-8600955501298.jpg",
+    "imageUrl": "https://placehold.co/400x200.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
   {
-    "barcode": 8600955501281,
+    "barcode": "8600955501281",
     "name": "Keks sa voćnim punjenjem od kajsije i jabuke",
     "size": "180g",
     "Dostupnost": "",
@@ -996,13 +996,13 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "molendini/keks-sa-vocnim-punjenjem-od-kajsije-i-jabuke-8600955501281.jpg",
+    "imageUrl": "https://placehold.co/400x200.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
   {
-    "barcode": 8600955501311,
+    "barcode": "8600955501311",
     "name": "Keks sa voćnim punjenjem od višnje i jabuke",
     "size": "180g",
     "Dostupnost": "",
@@ -1015,13 +1015,13 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "molendini/keks-sa-vocnim-punjenjem-od-visnje-i-jabuke-8600955501311.jpg",
+    "imageUrl": "https://placehold.co/400x200.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
   {
-    "barcode": 8600955501274,
+    "barcode": "8600955501274",
     "name": "Keks punjen kremom",
     "size": "180g",
     "Dostupnost": "",
@@ -1034,13 +1034,13 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "molendini/keks-punjen-kremom-8600955501274.jpg",
+    "imageUrl": "https://placehold.co/400x200.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
   {
-    "barcode": 8600955501526,
+    "barcode": "8600955501526",
     "name": "Keks punjen belim kremom",
     "size": "180g",
     "Dostupnost": "",
@@ -1053,13 +1053,13 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "molendini/keks-punjen-belim-kremom-8600955501526.jpg",
+    "imageUrl": "https://placehold.co/400x200.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
   {
-    "barcode": 8600955501519,
+    "barcode": "8600955501519",
     "name": "Keks punjen kremom sa lešnikom",
     "size": "180g",
     "Dostupnost": "",
@@ -1072,13 +1072,13 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "molendini/keks-punjen-kremom-sa-lesnikom-8600955501519.jpg",
+    "imageUrl": "https://placehold.co/400x200.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
   {
-    "barcode": 8600955501304,
+    "barcode": "8600955501304",
     "name": "Keks sa šumskim voćem",
     "size": "180g",
     "Dostupnost": "",
@@ -1091,13 +1091,13 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "molendini/keks-sa-sumskim-vocem-8600955501304.jpg",
+    "imageUrl": "https://placehold.co/400x200.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
   {
-    "barcode": 8600955501809,
+    "barcode": "8600955501809",
     "name": "Keks Frollini sa kremom",
     "size": "120g",
     "Dostupnost": "",
@@ -1110,13 +1110,13 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "molendini/keks-frollini-sa-kremom-8600955501809.png",
+    "imageUrl": "https://placehold.co/400x200.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
   {
-    "barcode": 8600955501816,
+    "barcode": "8600955501816",
     "name": "Keks Frollini sa belim kremom",
     "size": "120g",
     "Dostupnost": "",
@@ -1129,13 +1129,13 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "molendini/keks-frollini-sa-belim-kremom-8600955501816.png",
+    "imageUrl": "https://placehold.co/400x200.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
   {
-    "barcode": 8600955501861,
+    "barcode": "8600955501861",
     "name": "Keks sa urmom punjen šljivom",
     "size": "180g",
     "Dostupnost": "",
@@ -1148,13 +1148,13 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "molendini/keks-sa-urmom-punjen-sljivom-8600955501861.jpg",
+    "imageUrl": "https://placehold.co/400x200.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
   {
-    "barcode": 8600955501878,
+    "barcode": "8600955501878",
     "name": "Keks sa urmom punjen višnjom",
     "size": "180g",
     "Dostupnost": "",
@@ -1167,13 +1167,13 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "molendini/keks-sa-urmom-punjen-visnjom-8600955501878.jpg",
+    "imageUrl": "https://placehold.co/400x200.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
   {
-    "barcode": 8600955501885,
+    "barcode": "8600955501885",
     "name": "Keks sa urmom punjen smokvom",
     "size": "180g",
     "Dostupnost": "",
@@ -1186,13 +1186,13 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "molendini/keks-sa-urmom-punjen-smokvom-8600955501885.jpg",
+    "imageUrl": "https://placehold.co/400x200.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
   {
-    "barcode": 8600955501991,
+    "barcode": "8600955501991",
     "name": "Kreker sa đumbirom",
     "size": "120g",
     "Dostupnost": "",
@@ -1205,13 +1205,13 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": ["bez šećera"],
-    "imageUrl": "molendini/kreker-sa-djumbirom-8600955501991.jpg",
+    "imageUrl": "https://placehold.co/400x200.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
   {
-    "barcode": 8600955501977,
+    "barcode": "8600955501977",
     "name": "Kreker sa belim lukom ",
     "size": "120g",
     "Dostupnost": "",
@@ -1224,13 +1224,13 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": ["bez šećera"],
-    "imageUrl": "molendini/kreker-sa-belim-lukom-8600955501977.jpg",
+    "imageUrl": "https://placehold.co/400x200.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
   {
-    "barcode": 8600955501984,
+    "barcode": "8600955501984",
     "name": "Kreker sa čilijem",
     "size": "120g",
     "Dostupnost": "",
@@ -1243,13 +1243,13 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": ["bez šećera"],
-    "imageUrl": "molendini/kreker-sa-cilijem-8600955501984.jpg",
+    "imageUrl": "https://placehold.co/400x200.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
   {
-    "barcode": 8600955502004,
+    "barcode": "8600955502004",
     "name": "Kreker sa kikirikijem",
     "size": "120g",
     "Dostupnost": "",
@@ -1262,7 +1262,7 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": ["bez šećera"],
-    "imageUrl": "molendini/kreker-sa-kikirikijem-8600955502004.jpg",
+    "imageUrl": "https://placehold.co/400x200.png",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
@@ -1294,5 +1294,3 @@
     "note": "VAŽNO: Serija 1281203 ukusa Salted Caramel je povučena zbog utvrđenog prisustva glutena. Obavezno proverite broj serije na pakovanju pre konzumacije!"
   }
 ]
-
-    
