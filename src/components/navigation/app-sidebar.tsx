@@ -13,137 +13,134 @@ import {
   SidebarMenuButton,
   SidebarFooter,
   SidebarSeparator,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { mainNavLinks, type NavLink } from './main-nav-links';
 import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
 import { ThemeToggle } from '../theme-toggle';
-import { UserCircle, LogIn, LogOut } from 'lucide-react';
+import { UserCircle, LogIn, LogOut, X } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+
 
 export function AppSidebar() {
   const pathname = usePathname();
   const params = useParams();
+  const { setOpenMobile } = useSidebar();
   const locale = params.locale as string || 'sr';
   
   // Example: assuming no user is logged in for now
   const isLoggedIn = false; 
 
-  const mainLinks = mainNavLinks.filter(link => !['/admin', '/history', '/favorites'].includes(link.href));
-  const secondaryLinks = mainNavLinks.filter(link => ['/history', '/favorites'].includes(link.href));
+  // Reordered links for better UX
+  const mainLinks = mainNavLinks.filter(link => ['/', '/products', '/events', '/recalls'].includes(link.href));
+  const secondaryLinks = mainNavLinks.filter(link => ['/favorites', '/history'].includes(link.href));
   const adminLink = mainNavLinks.find(link => link.href === '/admin');
+
+  const renderLink = (link: NavLink, isPrimary: boolean) => {
+    const localizedHref = `/${locale}${link.href === '/' ? '' : link.href}`;
+    const isActive = 
+        (link.href === '/' && pathname === `/${locale}`) || 
+        (link.href !== '/' && pathname.startsWith(localizedHref));
+    
+    return (
+      <SidebarMenuItem key={link.href}>
+        <SidebarMenuButton
+          asChild
+          isActive={isActive}
+          tooltip={{ children: link.tooltip || link.label, className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
+          className={cn(
+            "text-base font-medium h-12 justify-start relative",
+            isActive ? 
+            "bg-primary/10 text-primary font-semibold border-l-4 border-primary" :
+            "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          )}
+          onClick={() => setOpenMobile(false)} // Close on link click
+        >
+          <Link href={localizedHref}>
+            <link.icon className="h-5 w-5" />
+            <span>{link.label}</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
+  };
 
   return (
     <Sidebar side="left" variant="sidebar" collapsible="icon">
-      <SidebarHeader className="p-4 flex justify-between items-center">
+      <SidebarHeader className="p-4 flex justify-between items-center relative">
         <Link href={`/${locale}`} className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
-          {/* Light Mode Logo */}
           <Image src="/logo-light.svg" alt="Gluten Scan Logo" width={180} height={46} className="w-auto h-12 dark:hidden" />
-          {/* Dark Mode Logo */}
           <Image src="/logo-dark.svg" alt="Gluten Scan Logo" width={180} height={46} className="w-auto h-12 hidden dark:block" />
         </Link>
-         <div className="group-data-[collapsible=icon]:hidden">
-           <ThemeToggle />
+         <div className="md:hidden">
+            <Button variant="ghost" size="icon" onClick={() => setOpenMobile(false)} aria-label="Zatvori meni">
+                <X className="h-6 w-6" />
+            </Button>
          </div>
       </SidebarHeader>
-      <SidebarContent>
-        <SidebarMenu>
-          {mainLinks.map((link: NavLink) => {
-            const localizedHref = `/${locale}${link.href === '/' ? '' : link.href}`;
-            const isActive = 
-                (link.href === '/' && pathname === `/${locale}`) || 
-                (link.href !== '/' && pathname.startsWith(localizedHref));
-            
-            return (
-              <SidebarMenuItem key={link.href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isActive}
-                  tooltip={{ children: link.tooltip || link.label, className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
-                  className={cn(
-                    "text-base font-medium h-12", 
-                    isActive ? 
-                    "bg-primary text-primary-foreground hover:bg-primary/90 font-semibold" :
-                    "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                  )}
-                >
-                  <Link href={localizedHref}>
-                    <link.icon />
-                    <span>{link.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            );
-          })}
+
+      <SidebarContent className="p-4 space-y-4">
+        <SidebarMenu className="flex flex-col gap-2">
+          {mainLinks.map(link => renderLink(link, true))}
         </SidebarMenu>
 
         <SidebarSeparator />
 
-        <SidebarMenu>
-          {secondaryLinks.map((link: NavLink) => {
-            const localizedHref = `/${locale}${link.href}`;
-            const isActive = pathname.startsWith(localizedHref);
-            
-            return (
-              <SidebarMenuItem key={link.href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isActive}
-                  tooltip={{ children: link.tooltip || link.label, className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
-                   className={cn(
-                    "text-base font-medium h-12",
-                    isActive ? "bg-primary text-primary-foreground hover:bg-primary/90 font-semibold" : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                  )}
-                >
-                  <Link href={localizedHref}>
-                    <link.icon />
-                    <span>{link.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            );
-          })}
+        <SidebarMenu className="flex flex-col gap-2">
+          {secondaryLinks.map(link => renderLink(link, false))}
         </SidebarMenu>
-      </SidebarContent>
 
-      <SidebarFooter className="mt-auto space-y-2">
-         {adminLink && (
+        {adminLink && (
            <>
             <SidebarSeparator />
             <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname.startsWith(`/${locale}${adminLink.href}`)}
-                      tooltip={{ children: adminLink.tooltip || adminLink.label, className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
-                      className={cn(
-                        "text-base font-medium h-12",
-                        pathname.startsWith(`/${locale}${adminLink.href}`) ? "bg-primary text-primary-foreground hover:bg-primary/90 font-semibold" : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                      )}
-                    >
-                      <Link href={`/${locale}${adminLink.href}`}>
-                        <adminLink.icon />
-                        <span>{adminLink.label}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
+                {renderLink(adminLink, false)}
             </SidebarMenu>
            </>
-         )}
+        )}
+      </SidebarContent>
 
+      <SidebarFooter className="mt-auto space-y-4 p-4">
          <SidebarSeparator />
-
-         <div className="p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:py-2">
-            {isLoggedIn ? (
-                 <SidebarMenuButton tooltip={{children: "Podešavanja profila"}} className="h-12 w-full justify-start text-base font-medium">
-                    <UserCircle /> <span>Moj Profil</span>
-                </SidebarMenuButton>
-            ) : (
-                <SidebarMenuButton tooltip={{children: "Prijavi se"}} className="h-12 w-full justify-start text-base font-medium">
-                    <LogIn /> <span>Prijavi se</span>
+         <div className="group-data-[collapsible=icon]:hidden">
+             {isLoggedIn ? (
+                 <div className="flex items-center gap-3">
+                    <Avatar className="h-9 w-9">
+                        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                        <AvatarFallback>BG</AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-foreground">Brankica G.</span>
+                      <span className="text-xs text-muted-foreground">brankica@email.com</span>
+                    </div>
+                     <Button variant="ghost" size="icon" className="ml-auto">
+                        <LogOut className="h-5 w-5" />
+                    </Button>
+                 </div>
+             ) : (
+                <SidebarMenuButton className="h-12 w-full justify-start text-base font-medium">
+                    <LogIn className="h-5 w-5" /> <span>Prijavi se</span>
                 </SidebarMenuButton>
             )}
          </div>
 
+         <div className="group-data-[collapsible=icon]:hidden">
+           <TooltipProvider>
+             <Tooltip>
+               <TooltipTrigger asChild>
+                 <ThemeToggle />
+               </TooltipTrigger>
+               <TooltipContent side="right" align="center">
+                 <p>Prebaci temu</p>
+               </TooltipContent>
+             </Tooltip>
+           </TooltipProvider>
+         </div>
+         <div className="hidden group-data-[collapsible=icon]:block mx-auto">
+            <ThemeToggle />
+         </div>
       </SidebarFooter>
     </Sidebar>
   );
