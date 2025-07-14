@@ -16,32 +16,33 @@ import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
  * @returns The full, public URL for the image.
  */
 function transformImageUrl(imageUrl?: string): string {
-    if (!imageUrl || imageUrl.startsWith('https://placehold.co') || imageUrl === '/placeholder.svg') {
-        return '/placeholder.svg';
+    const placeholder = '/placeholder.svg';
+    if (!imageUrl || imageUrl.startsWith('https://placehold.co') || imageUrl === placeholder) {
+        return placeholder;
     }
     
-    if (imageUrl.startsWith('http')) {
+    // If it's already a full Firebase URL, just ensure it's in the correct format without a token.
+    if (imageUrl.startsWith('https://firebasestorage.googleapis.com')) {
         try {
             const url = new URL(imageUrl);
-            // Ensure correct hostname for next/image
-            if (url.hostname.endsWith('appspot.com') || url.hostname === 'firebasestorage.googleapis.com') {
-                 url.searchParams.delete('token'); // Remove token for consistency
-                 return url.toString();
-            }
-            return imageUrl;
+            url.searchParams.delete('token'); // Remove token for consistent caching by Next/image
+            return url.toString();
         } catch (e) {
-            return '/placeholder.svg';
+             return placeholder; // Invalid URL format
         }
     }
 
     const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
     if (!bucket) {
         console.warn('Firebase storage bucket is not configured. Using placeholder for images.');
-        return '/placeholder.svg';
+        return placeholder;
     }
     
     // The path stored in the database should be like 'aleksandrija-fruska-gora/image.png'
-    const encodedPath = encodeURIComponent(`products/${imageUrl}`);
+    // It should not start with 'products/' if the stored path is already relative to the 'products/' folder.
+    const imagePath = imageUrl.startsWith('products/') ? imageUrl : `products/${imageUrl}`;
+    const encodedPath = encodeURIComponent(imagePath);
+    
     return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
 }
 
@@ -118,7 +119,10 @@ function mapProductToDocData(product: Partial<Product>): DocumentData {
              try {
                 const url = new URL(product.imageUrl);
                 let path = decodeURIComponent(url.pathname);
-                const prefix = `/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/`;
+                const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+                if (!bucketName) throw new Error("Storage bucket not configured");
+
+                const prefix = `/v0/b/${bucketName}/o/`;
                 if (path.startsWith(prefix)) {
                     path = path.substring(prefix.length);
                 }
@@ -133,7 +137,8 @@ function mapProductToDocData(product: Partial<Product>): DocumentData {
                  data.imageUrl = path;
 
              } catch (e) {
-                data.imageUrl = product.imageUrl;
+                // If parsing fails, store the raw URL but clean it
+                data.imageUrl = product.imageUrl.split('?')[0];
              }
         } else if (!product.imageUrl.startsWith('http') && product.imageUrl !== '/placeholder.svg') {
             data.imageUrl = product.imageUrl;
