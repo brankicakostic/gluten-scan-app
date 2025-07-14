@@ -79,6 +79,7 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
   const locale = params.locale as string;
   
   const initialCategory = searchParams.get('category') || 'all';
@@ -269,31 +270,23 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
                 const containsGlutenTag = product.warning || product.tags?.includes('contains-gluten') || product.tags?.includes('sadrži-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isConsideredGF);
                 const mayContainGlutenTag = !product.warning && (product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination'));
 
+                // Robust image URL check
+                const imageUrl = (product.imageUrl && product.imageUrl.startsWith('http'))
+                  ? product.imageUrl
+                  : 'https://placehold.co/400x200.png';
+
                 return (
                   <Card key={product.id} className={cn(`overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col`, product.warning && 'border-destructive border-2')}>
                     <CardHeader className="p-0">
                       <Link href={`/${locale}/products/${product.id}`}>
-                        {product.imageUrl && !product.imageUrl.includes('placehold.co') ? (
-                          <Image
-                            src={product.imageUrl}
-                            alt={product.name}
-                            width={400}
-                            height={200}
-                            className="w-full h-48 object-cover"
-                            data-ai-hint={product.dataAiHint}
-                          />
-                        ) : (
-                          <div className="w-full h-48 flex items-center justify-center bg-secondary text-muted-foreground">
-                            <Image
-                              src="https://placehold.co/400x200.png"
-                              alt="Slika nije dostupna"
-                              width={400}
-                              height={200}
-                              className="w-full h-48 object-cover"
-                              data-ai-hint="product placeholder"
-                            />
-                          </div>
-                        )}
+                        <Image
+                          src={imageUrl}
+                          alt={product.name}
+                          width={400}
+                          height={200}
+                          className="w-full h-48 object-cover"
+                          data-ai-hint={product.dataAiHint}
+                        />
                       </Link>
                     </CardHeader>
                     <CardContent className="p-4 flex flex-col flex-grow">
