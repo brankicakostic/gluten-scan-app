@@ -34,6 +34,7 @@ import { getProductByBarcodeAction } from '@/app/actions/product-actions';
 import { addReportAction } from '@/app/actions/report-actions';
 import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from '@/lib/utils';
 
 
 interface BarcodeScanResult {
@@ -64,6 +65,7 @@ interface CategoryInfo {
 interface HomeClientProps {
   initialTip: DailyCeliacTipOutput;
   categories: CategoryInfo[];
+  featuredProducts: Product[];
 }
 
 const categoryIconMap: Record<string, LucideIcon> = {
@@ -89,7 +91,7 @@ const getCategoryIcon = (categoryName: string): LucideIcon => {
 };
 
 
-export default function HomeClient({ initialTip, categories }: HomeClientProps) {
+export default function HomeClient({ initialTip, categories, featuredProducts }: HomeClientProps) {
   const routeParams = useParams(); 
   const locale = routeParams.locale as string;
   const { toast } = useToast();
@@ -694,6 +696,64 @@ export default function HomeClient({ initialTip, categories }: HomeClientProps) 
             )}
         </div>
         
+        {featuredProducts.length > 0 && (
+          <div className="my-12 pt-10 scroll-mt-20">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-semibold tracking-tight" style={{ lineHeight: 1.4 }}>Popularni proizvodi</h2>
+              <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">Neki od proizvoda koje naši korisnici najčešće traže.</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {featuredProducts.map(product => {
+                const isConsideredGF = product.hasAOECSLicense || product.hasManufacturerStatement || product.isVerifiedAdmin;
+                const containsGlutenTag = product.warning || product.tags?.includes('contains-gluten') || product.tags?.includes('sadrži-gluten');
+                const mayContainGlutenTag = !product.warning && product.tags?.includes('may-contain-gluten');
+
+                const imageUrl = product.imageUrl && product.imageUrl.startsWith('http')
+                  ? product.imageUrl
+                  : '/placeholder.svg';
+
+                return (
+                  <Card key={product.id} className={cn("overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col", product.warning && 'border-destructive border-2')}>
+                    <CardHeader className="p-0">
+                      <Link href={`/${locale}/products/${product.id}`}>
+                        <Image
+                          src={imageUrl}
+                          alt={product.name}
+                          width={400}
+                          height={200}
+                          className="w-full h-48 object-cover"
+                          data-ai-hint={product.dataAiHint}
+                        />
+                      </Link>
+                    </CardHeader>
+                    <CardContent className="p-4 flex flex-col flex-grow">
+                      <Link href={`/${locale}/products/${product.id}`} className="hover:underline">
+                        <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
+                      </Link>
+                      {product.brand && <CardDescription className="text-xs text-muted-foreground mb-2">{product.brand}</CardDescription>}
+
+                      {isConsideredGF ? (
+                        <div className="flex items-center text-green-600 dark:text-green-400 text-xs mt-1 mb-1 font-medium"><CheckCircle className="h-3.5 w-3.5 mr-1" /><span>Bez glutena</span></div>
+                      ) : containsGlutenTag ? (
+                        <div className="flex items-center text-red-600 dark:text-red-500 text-xs mt-1 mb-1 font-medium"><AlertTriangle className="h-3.5 w-3.5 mr-1" /><span>Sadrži gluten</span></div>
+                      ) : mayContainGlutenTag ? (
+                        <div className="flex items-center text-orange-500 dark:text-orange-400 text-xs mt-1 mb-1 font-medium"><AlertTriangle className="h-3.5 w-3.5 mr-1" /><span>Mogući tragovi</span></div>
+                      ) : (
+                         <div className="flex items-center text-muted-foreground text-xs mt-1 mb-1 font-medium"><Info className="h-3.5 w-3.5 mr-1" /><span>Proveriti sastav</span></div>
+                      )}
+                      
+                      <div className="flex-grow"></div>
+                      <Button asChild variant="secondary" size="sm" className="w-full mt-4">
+                        <Link href={`/${locale}/products/${product.id}`}>Vidi detalje</Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
         <div ref={analysisSectionRef} className="space-y-8 pt-10 scroll-mt-20">
             <div className="text-center">
                 <h2 className="text-2xl font-semibold tracking-tight" style={{ lineHeight: 1.4 }}>Analiziraj Deklaraciju</h2>

@@ -1,7 +1,8 @@
 // This is a Server Component responsible for fetching initial data.
 import { getDailyCeliacTip, type DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
 import HomeClient from './home-client';
-import { getProducts } from '@/lib/services/product-service';
+import { getProducts, getFeaturedProducts } from '@/lib/services/product-service';
+import type { Product } from '@/lib/products';
 
 interface CategoryInfo {
   name: string;
@@ -33,11 +34,14 @@ export default async function HomePage() {
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count); // Sort by count descending
 
+  // Fetch featured products for the new section
+  const featuredProducts = await getFeaturedProducts(8);
 
   return (
     <HomeClient 
       initialTip={initialTip} 
       categories={categoriesWithCounts}
+      featuredProducts={featuredProducts}
     />
   );
 }
