@@ -17,19 +17,15 @@ import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
  */
 function transformImageUrl(imageUrl?: string): string {
     const placeholder = '/placeholder.svg';
-    if (!imageUrl || imageUrl.startsWith('https://placehold.co') || imageUrl === placeholder) {
+    
+    // If no URL is provided, or it's already a placeholder or a placehold.co URL, return the placeholder.
+    if (!imageUrl || imageUrl === placeholder || imageUrl.startsWith('https://placehold.co')) {
         return placeholder;
     }
     
-    // If it's already a full Firebase URL, just ensure it's in the correct format without a token.
+    // If it's already a full Firebase URL, just return it.
     if (imageUrl.startsWith('https://firebasestorage.googleapis.com')) {
-        try {
-            const url = new URL(imageUrl);
-            url.searchParams.delete('token'); // Remove token for consistent caching by Next/image
-            return url.toString();
-        } catch (e) {
-             return placeholder; // Invalid URL format
-        }
+        return imageUrl;
     }
 
     const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
@@ -39,8 +35,7 @@ function transformImageUrl(imageUrl?: string): string {
     }
     
     // The path stored in the database should be like 'aleksandrija-fruska-gora/image.png'
-    // It should not start with 'products/' if the stored path is already relative to the 'products/' folder.
-    const imagePath = imageUrl.startsWith('products/') ? imageUrl : `products/${imageUrl}`;
+    const imagePath = `products/${imageUrl}`;
     const encodedPath = encodeURIComponent(imagePath);
     
     return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
