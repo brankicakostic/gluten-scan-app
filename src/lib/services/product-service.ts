@@ -18,13 +18,25 @@ import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 function transformImageUrl(imageUrl?: string): string {
     const placeholder = '/placeholder.svg';
 
-    if (!imageUrl || imageUrl.startsWith('https://placehold.co') || imageUrl === placeholder) {
+    if (!imageUrl || imageUrl === placeholder) {
         return placeholder;
     }
 
-    // If the URL is already a full Firebase Storage URL (with or without a token), use it directly.
-    if (imageUrl.includes('firebasestorage.googleapis.com')) {
+    if (imageUrl.startsWith('https://placehold.co')) {
         return imageUrl;
+    }
+
+    // If the URL is already a full Firebase Storage URL, use it directly.
+    if (imageUrl.includes('firebasestorage.googleapis.com')) {
+        // Ensure it ends with ?alt=media, but don't add if a token is already present
+        if (imageUrl.includes('?')) {
+            // It might already have alt=media or a token
+            if (!imageUrl.includes('alt=media')) {
+                return `${imageUrl}&alt=media`;
+            }
+            return imageUrl;
+        }
+        return `${imageUrl}?alt=media`;
     }
 
     const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
