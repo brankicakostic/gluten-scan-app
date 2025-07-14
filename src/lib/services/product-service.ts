@@ -1,4 +1,5 @@
 
+
 // This file uses the Firebase client SDK, but is intended for use in Server Components
 // to fetch data from Firestore.
 
@@ -33,6 +34,8 @@ function transformImageUrl(imageUrl: string): string {
         return '/placeholder.svg';
     }
     
+    // The path in firestore is already url-encoded, so we don't need to re-encode it.
+    // The path should be something like `aleksandrija-fruska-gora/instant-palenta-8606112581172.png`
     const encodedPath = encodeURIComponent(`products/${imageUrl}`);
     
     return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
@@ -111,14 +114,20 @@ function mapProductToDocData(product: Partial<Product>): DocumentData {
              try {
                 const url = new URL(product.imageUrl);
                 const path = decodeURIComponent(url.pathname);
+                // Example path: /v0/b/project-id.appspot.com/o/products%2Fimage.png
                 const prefix = `/o/products%2F`;
                 const startIndex = path.indexOf(prefix);
                 if (startIndex !== -1) {
+                  // Extract just "image.png"
                   data.imageUrl = path.substring(startIndex + prefix.length);
+                } else if (path.includes('/o/')) {
+                  // Fallback for slightly different paths
+                  data.imageUrl = path.substring(path.lastIndexOf('/') + 1);
                 } else {
-                  data.imageUrl = path.substring(path.indexOf('/o/') + 3);
+                    data.imageUrl = product.imageUrl;
                 }
              } catch (e) {
+                // If URL parsing fails, just store it as is, might be a placeholder or other URL
                 data.imageUrl = product.imageUrl;
              }
         } else if (!product.imageUrl.startsWith('http') && product.imageUrl !== '/placeholder.svg') {
@@ -313,5 +322,3 @@ export async function deleteProduct(productId: string): Promise<void> {
   const productDocRef = doc(db, 'products', productId);
   await deleteDoc(productDocRef);
 }
-
-    
