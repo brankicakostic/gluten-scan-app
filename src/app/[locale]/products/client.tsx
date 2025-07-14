@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle, X, Wheat, Sandwich, Utensils, Cookie, Popcorn, Soup, Container, CookingPot, CupSoda, Package, Box, Droplet, Layers, Dumbbell, Sprout, UtensilsCrossed, type LucideIcon } from 'lucide-react';
+import { Search, ShoppingBag, PackageOpen, CheckCircle, AlertTriangle, X, Wheat, Sandwich, Utensils, Cookie, Popcorn, Soup, Container, CookingPot, CupSoda, Package, Box, Droplet, Layers, Dumbbell, Sprout, UtensilsCrossed, type LucideIcon, FilterX } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import type { Product } from '@/lib/products';
@@ -58,7 +58,6 @@ const getCategoryIcon = (categoryName: string): LucideIcon => {
   return categoryIconMap[categoryName] || Box;
 };
 
-
 const PRODUCTS_PER_PAGE = 12;
 
 export interface CategoryInfo {
@@ -81,11 +80,20 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+  const [selectedManufacturer, setSelectedManufacturer] = useState('all');
+  const [selectedOrigin, setSelectedOrigin] = useState('all');
+  const [selectedGfStatus, setSelectedGfStatus] = useState('all');
+  const [barcode, setBarcode] = useState('');
+  
   const [filteredProducts, setFilteredProducts] = useState(allProducts);
   const [currentPage, setCurrentPage] = useState(1);
+  
+  const manufacturers = useMemo(() => Array.from(new Set(allProducts.map(p => p.brand).filter(Boolean))).sort(), [allProducts]);
+  const origins = useMemo(() => Array.from(new Set(allProducts.map(p => p.Poreklo).filter(Boolean))).sort(), [allProducts]);
 
   useEffect(() => {
     let newFilteredProducts = allProducts;
+    
     if (searchTerm.trim()) {
       newFilteredProducts = newFilteredProducts.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase().trim()) ||
@@ -96,16 +104,39 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
     if (selectedCategory !== 'all') {
       newFilteredProducts = newFilteredProducts.filter(product => product.category === selectedCategory);
     }
+    if (selectedManufacturer !== 'all') {
+      newFilteredProducts = newFilteredProducts.filter(product => product.brand === selectedManufacturer);
+    }
+    if (selectedOrigin !== 'all') {
+      newFilteredProducts = newFilteredProducts.filter(product => product.Poreklo === selectedOrigin);
+    }
+    if (barcode.trim()) {
+      newFilteredProducts = newFilteredProducts.filter(product => product.barcode && product.barcode.includes(barcode.trim()));
+    }
+    if (selectedGfStatus !== 'all') {
+       newFilteredProducts = newFilteredProducts.filter(product => {
+        const isConsideredGF = product.hasAOECSLicense || product.hasManufacturerStatement || product.isVerifiedAdmin;
+        if (selectedGfStatus === 'aoecs') return product.hasAOECSLicense;
+        if (selectedGfStatus === 'izjava') return product.hasManufacturerStatement && !product.hasAOECSLicense;
+        if (selectedGfStatus === 'nema_podataka') return !isConsideredGF && !product.warning;
+        return false;
+      });
+    }
+
     setFilteredProducts(newFilteredProducts);
     setCurrentPage(1);
-  }, [searchTerm, selectedCategory, allProducts]);
+  }, [searchTerm, selectedCategory, selectedManufacturer, selectedOrigin, selectedGfStatus, barcode, allProducts]);
 
   const handleResetFilters = () => {
     setSearchTerm('');
     setSelectedCategory('all');
+    setSelectedManufacturer('all');
+    setSelectedOrigin('all');
+    setSelectedGfStatus('all');
+    setBarcode('');
   };
 
-  const areFiltersActive = searchTerm.trim() !== '' || selectedCategory !== 'all';
+  const areFiltersActive = searchTerm.trim() !== '' || selectedCategory !== 'all' || selectedManufacturer !== 'all' || selectedOrigin !== 'all' || selectedGfStatus !== 'all' || barcode.trim() !== '';
 
   const indexOfLastProduct = currentPage * PRODUCTS_PER_PAGE;
   const indexOfFirstProduct = indexOfLastProduct - PRODUCTS_PER_PAGE;
@@ -127,76 +158,79 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
           icon={ShoppingBag}
         />
 
-        <div className="mb-6 p-6 bg-muted/30 border-muted/50 rounded-lg">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-            <div className="space-y-1.5 md:col-span-2">
-              <label htmlFor="search" className="text-sm font-medium">Pretraži proizvode</label>
-              <Input
-                id="search"
-                placeholder="Unesite naziv, brend ili sastojke..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="category" className="text-sm font-medium">Kategorija</label>
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger id="category">
-                  <SelectValue placeholder="Sve kategorije" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Sve kategorije ({allProducts.length})</SelectItem>
-                  {productCategories.map(category => {
-                    const Icon = getCategoryIcon(category.name);
-                    return (
-                      <SelectItem key={category.name} value={category.name}>
-                         <div className="flex items-center gap-2">
-                          <Icon className="h-4 w-4" />
-                          <span>{category.name} ({category.count})</span>
-                         </div>
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            </div>
+        <div className="mb-6 p-4 md:p-6 bg-muted/30 border-muted/50 rounded-lg md:sticky top-0 z-10 bg-background/80 backdrop-blur-sm -mx-4 md:mx-0">
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+              <div className="space-y-1.5">
+                <label htmlFor="search" className="text-sm font-medium">Pretraži po nazivu</label>
+                <Input
+                  id="search"
+                  placeholder="Unesite naziv, brend..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+               <div className="space-y-1.5">
+                <label htmlFor="category" className="text-sm font-medium">Kategorija</label>
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger id="category"><SelectValue placeholder="Sve kategorije" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Sve kategorije ({allProducts.length})</SelectItem>
+                    {productCategories.map(cat => <SelectItem key={cat.name} value={cat.name}>{cat.name} ({cat.count})</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <label htmlFor="manufacturer" className="text-sm font-medium">Proizvođač</label>
+                <Select value={selectedManufacturer} onValueChange={setSelectedManufacturer}>
+                  <SelectTrigger id="manufacturer"><SelectValue placeholder="Svi proizvođači" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Svi proizvođači</SelectItem>
+                    {manufacturers.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <label htmlFor="barcode" className="text-sm font-medium">Bar-kod (EAN)</label>
+                <Input id="barcode" placeholder="Unesite bar-kod..." value={barcode} onChange={(e) => setBarcode(e.target.value)} />
+              </div>
+               <div className="space-y-1.5">
+                <label htmlFor="gf-status" className="text-sm font-medium">BG Status</label>
+                <Select value={selectedGfStatus} onValueChange={setSelectedGfStatus}>
+                  <SelectTrigger id="gf-status"><SelectValue placeholder="Svi statusi" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Svi statusi</SelectItem>
+                    <SelectItem value="aoecs">AOECS Sertifikat</SelectItem>
+                    <SelectItem value="izjava">Izjava proizvođača</SelectItem>
+                    <SelectItem value="nema_podataka">Nema podataka</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+               <div className="space-y-1.5">
+                <label htmlFor="origin" className="text-sm font-medium">Zemlja porekla</label>
+                <Select value={selectedOrigin} onValueChange={setSelectedOrigin}>
+                  <SelectTrigger id="origin"><SelectValue placeholder="Sve zemlje" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Sve zemlje</SelectItem>
+                    {origins.map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex gap-2 items-end">
+                <Button className="w-full" disabled>
+                    <Search className="h-4 w-4" />
+                    <span>Pretraži</span>
+                </Button>
+                {areFiltersActive && (
+                  <Button variant="ghost" size="icon" onClick={handleResetFilters} title="Očisti filtere">
+                    <FilterX className="h-5 w-5" />
+                  </Button>
+                )}
+              </div>
           </div>
-          <div className="mt-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+           <div className="mt-4 flex flex-col sm:flex-row justify-between items-center gap-2">
             <p className="text-sm text-muted-foreground">
                 Pronađeno {filteredProducts.length} od {allProducts.length} proizvoda.
             </p>
-            {areFiltersActive && (
-                <Button variant="ghost" onClick={handleResetFilters} size="sm">
-                    <X className="mr-2 h-4 w-4" />
-                    Resetuj filtere
-                </Button>
-            )}
-          </div>
-        </div>
-
-        <div className="mb-8">
-          <div className="flex gap-3 overflow-x-auto pb-2 -mx-6 px-6 no-scrollbar">
-              <Button 
-                  variant={selectedCategory === 'all' ? 'default' : 'outline'}
-                  className="rounded-full shrink-0"
-                  onClick={() => setSelectedCategory('all')}
-              >
-                  Sve
-              </Button>
-              {quickFilterCategories.slice(0, 7).map(category => {
-                  const Icon = getCategoryIcon(category.name);
-                  return (
-                    <Button
-                        key={category.name}
-                        variant={selectedCategory === category.name ? 'default' : 'outline'}
-                        className="rounded-full shrink-0"
-                        onClick={() => setSelectedCategory(category.name)}
-                    >
-                        <Icon className="mr-2 h-4 w-4" />
-                        {category.name}
-                    </Button>
-                  );
-              })}
           </div>
         </div>
 
@@ -355,7 +389,11 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
           <div className="text-center py-12 text-muted-foreground">
             <PackageOpen className="mx-auto h-16 w-16 mb-4" />
             <h3 className="text-xl font-semibold mb-2">Nema pronađenih proizvoda</h3>
-            <p>Pokušajte da promenite filtere ili termine pretrage.</p>
+            <p className="mb-4">Pokušajte da promenite filtere ili termine pretrage.</p>
+             <Button variant="outline" onClick={handleResetFilters} size="sm">
+              <FilterX className="mr-2 h-4 w-4" />
+              Očisti sve filtere
+            </Button>
           </div>
         )}
       </div>
