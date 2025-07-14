@@ -1267,30 +1267,4 @@
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
-  {
-    "brand": "Scitec Nutrition",
-    "name": "Choco Pro Bar 50g - Salted Caramel",
-    "Dostupnost": "",
-    "barcode": "5999100025684",
-    "size": "50g",
-    "category": "Proteinski proizvodi",
-    "ingredients": ["Sastojci nisu dostupni za ovaj unos. VAŽNO: Serija 1281203 (Salted Caramel) je povučena zbog prisustva glutena."],
-    "labelText": "Gluten free",
-    "license": true,
-    "manufacturerStatement": true,
-    "verified": false,
-    "source": "Scitec Nutrition Obaveštenje o Povlačenju",
-    "tagsFromInput": ["povučeno", "sadrži-gluten", "serija-problematična", "upozorenje", "salted caramel", "protein bar"],
-    "imageUrl": "https://firebasestorage.googleapis.com/v0/b/gluten-detective-8ukpw.appspot.com/o/products%2Fscitec-nutrition%2Fscitec-choco-pro-bar-salted-caramel-5999100025684.png?alt=media&token=e1f72a6b-67e4-41d3-8551-78921ec56d78",
-    "Poreklo": "EU (Proveriti na pakovanju)",
-    "seriesAffected": {
-      "lotNumbers": ["1281203"],
-      "expiry": "12.2025",
-      "finding": "Prisustvo glutena iznad dozvoljenog nivoa u seriji 1281203.",
-      "status": "Povučeno iz prodaje",
-      "sourceLink": "https://scitecnutrition.com/scitec-choco-pro-product-recall-a23062"
-    },
-    "warning": true,
-    "note": "VAŽNO: Serija 1281203 ukusa Salted Caramel je povučena zbog utvrđenog prisustva glutena. Obavezno proverite broj serije na pakovanju pre konzumacije!"
-  }
 ]

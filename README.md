@@ -1,3 +1,4 @@
+
 # Gluten Scan u Firebase Studiju
 
 Ovo je NextJS starter projekat razvijen u Firebase Studiju.
