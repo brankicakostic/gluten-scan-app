@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -50,31 +51,23 @@ export default function FavoritesClientPage({ allProducts }: FavoritesClientPage
               const isGlutenFreeTag = product.tags?.includes('gluten-free');
               const containsGlutenTag = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat');
               const mayContainGlutenTag = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
+              
+              const imageUrl = product.imageUrl && product.imageUrl.startsWith('http') 
+                  ? product.imageUrl 
+                  : 'https://placehold.co/400x200.png';
 
               return (
               <Card key={product.id} className="overflow-hidden group hover:shadow-xl transition-shadow duration-200 flex flex-col">
                 <CardHeader className="p-0 relative">
                   <Link href={`/${locale}/products/${product.id}`}>
-                    {product.imageUrl && product.imageUrl !== '/placeholder.svg' ? (
-                      <Image 
-                        src={product.imageUrl} 
-                        alt={product.name} 
-                        width={400} 
-                        height={200} 
-                        className="w-full h-48 object-cover"
-                        data-ai-hint={product.dataAiHint || 'product image'}
-                      />
-                    ) : (
-                      <div className="w-full h-48 flex items-center justify-center bg-secondary text-muted-foreground">
-                        <Image
-                          src="/placeholder.svg"
-                          alt="Slika nije dostupna"
-                          width={80}
-                          height={80}
-                          className="opacity-50"
-                        />
-                      </div>
-                    )}
+                    <Image 
+                      src={imageUrl} 
+                      alt={product.name} 
+                      width={400} 
+                      height={200} 
+                      className="w-full h-48 object-cover"
+                      data-ai-hint={product.dataAiHint || 'product image'}
+                    />
                   </Link>
                   <Button 
                     variant="destructive" 

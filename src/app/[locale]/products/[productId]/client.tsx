@@ -214,6 +214,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     );
   };
   
+  const imageUrl = product.imageUrl && product.imageUrl.startsWith('http') 
+      ? product.imageUrl 
+      : 'https://placehold.co/800x533.png';
+
   return (
     <div className="p-6 md:p-8">
       <div className="mx-auto max-w-4xl">
@@ -255,27 +259,15 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         )}
 
         <Card className={`overflow-hidden shadow-lg ${product.warning ? 'border-2 border-destructive' : ''}`}>
-           {product.imageUrl && !product.imageUrl.includes('placehold.co') ? (
-            <Image
-              src={product.imageUrl}
-              alt={product.name}
-              width={800}
-              height={533}
-              className="w-full h-auto object-cover aspect-[3/2]"
-              data-ai-hint={product.dataAiHint}
-              priority
-            />
-           ) : (
-             <div className="w-full aspect-[3/2] flex items-center justify-center bg-secondary text-muted-foreground">
-               <Image
-                 src="/placeholder.svg"
-                 alt="Slika nije dostupna"
-                 width={96}
-                 height={96}
-                 className="opacity-50"
-               />
-             </div>
-           )}
+           <Image
+             src={imageUrl}
+             alt={product.name}
+             width={800}
+             height={533}
+             className="w-full h-auto object-cover aspect-[3/2]"
+             data-ai-hint={product.dataAiHint}
+             priority
+           />
         </Card>
         
         <Card className="mt-4">
