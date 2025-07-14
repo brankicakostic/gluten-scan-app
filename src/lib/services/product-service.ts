@@ -21,13 +21,20 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
     const tagsFromDb = Array.isArray(data.tagsFromInput) ? data.tagsFromInput : [];
     const tagsLower = new Set(tagsFromDb.map((t: string) => String(t).toLowerCase()));
 
+    // Ensure imageUrl is always a valid absolute URL or a specific placeholder string
+    let finalImageUrl = data.imageUrl;
+    if (!finalImageUrl || typeof finalImageUrl !== 'string' || finalImageUrl.trim() === '' || finalImageUrl === '/placeholder.svg') {
+        finalImageUrl = 'https://placehold.co/400x200.png'; // Use a valid absolute URL for placeholders
+    }
+
+
     return {
         id: doc.id,
         name: data.name || 'Bez imena',
         brand: data.brand || '',
         barcode: data.barcode || '',
         category: data.category || data.jsonCategory || 'Nekategorizovano',
-        imageUrl: data.imageUrl || '/placeholder.svg',
+        imageUrl: finalImageUrl,
         description: data.description || '',
         ingredientsText: Array.isArray(data.ingredients) ? data.ingredients.join(', ') : (typeof data.ingredients === 'string' ? data.ingredients : ''),
         labelText: data.labelText || '',
