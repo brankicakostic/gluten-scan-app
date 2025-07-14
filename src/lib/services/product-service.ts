@@ -21,11 +21,11 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
     const tagsFromDb = Array.isArray(data.tagsFromInput) ? data.tagsFromInput : [];
     const tagsLower = new Set(tagsFromDb.map((t: string) => String(t).toLowerCase()));
 
-    // Robust check for a valid, absolute URL. If not valid, use a placeholder.
-    let finalImageUrl = 'https://placehold.co/400x200.png'; // Default placeholder
-    if (data.imageUrl && typeof data.imageUrl === 'string' && data.imageUrl.startsWith('http')) {
-        finalImageUrl = data.imageUrl;
-    }
+    // Use the URL from the database if it exists, otherwise use a placeholder.
+    // This is the most reliable way to ensure correct URLs are used.
+    const finalImageUrl = data.imageUrl && typeof data.imageUrl === 'string' && data.imageUrl.trim() !== ''
+        ? data.imageUrl
+        : 'https://placehold.co/400x200.png';
 
 
     return {
