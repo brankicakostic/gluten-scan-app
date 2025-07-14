@@ -24,9 +24,7 @@ export default async function RecallsPage({ params }: { params: { locale: string
         {recalledProducts.length > 0 ? (
           <div className="space-y-6">
             {recalledProducts.map((product) => {
-              const imageUrl = product.imageUrl && product.imageUrl.startsWith('http')
-                ? product.imageUrl
-                : '/placeholder.svg';
+              const imageUrl = product.imageUrl;
               return (
               <Card key={product.id} className="border-destructive border-2 overflow-hidden shadow-lg">
                 <CardHeader>

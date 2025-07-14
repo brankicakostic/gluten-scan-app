@@ -214,9 +214,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     );
   };
   
-  const imageUrl = product.imageUrl && product.imageUrl.startsWith('http') 
-      ? product.imageUrl 
-      : '/placeholder.svg';
+  const imageUrl = product.imageUrl;
 
   return (
     <div className="p-6 md:p-8">

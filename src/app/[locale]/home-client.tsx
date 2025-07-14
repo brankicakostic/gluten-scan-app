@@ -660,7 +660,7 @@ export default function HomeClient({ initialTip, categories, featuredProducts }:
                 <CardHeader className="flex flex-row items-start gap-4">
                   {barcodeScanResult.imageUrl && (
                     <Image
-                      src={barcodeScanResult.imageUrl && barcodeScanResult.imageUrl.startsWith('http') ? barcodeScanResult.imageUrl : '/placeholder.svg'}
+                      src={barcodeScanResult.imageUrl}
                       alt={barcodeScanResult.name}
                       width={80}
                       height={80}
@@ -707,7 +707,7 @@ export default function HomeClient({ initialTip, categories, featuredProducts }:
                 const isConsideredGF = product.hasAOECSLicense || product.hasManufacturerStatement || product.isVerifiedAdmin;
                 const containsGlutenTag = product.warning || product.tags?.includes('contains-gluten') || product.tags?.includes('sadrži-gluten');
                 const mayContainGlutenTag = !product.warning && product.tags?.includes('may-contain-gluten');
-                const imageUrl = product.imageUrl && product.imageUrl.startsWith('http') ? product.imageUrl : '/placeholder.svg';
+                const imageUrl = product.imageUrl;
 
                 return (
                   <Card key={product.id} className={cn("overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col", product.warning && 'border-destructive border-2')}>

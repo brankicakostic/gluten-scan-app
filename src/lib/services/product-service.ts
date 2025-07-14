@@ -26,7 +26,7 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
     const imageUrlFromDb = data.imageUrl;
     let finalImageUrl = '/placeholder.svg';
 
-    // Simple, robust check: If the URL is a string and starts with https, use it. Otherwise, fall back.
+    // FINAL FIX: This is the definitive logic. If the URL is a valid string, use it. Otherwise, use the placeholder.
     if (typeof imageUrlFromDb === 'string' && imageUrlFromDb.startsWith('https://')) {
         finalImageUrl = imageUrlFromDb;
     }

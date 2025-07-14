@@ -52,9 +52,7 @@ export default function FavoritesClientPage({ allProducts }: FavoritesClientPage
               const containsGlutenTag = product.tags?.includes('contains-gluten') || product.tags?.includes('contains-wheat');
               const mayContainGlutenTag = product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination');
               
-              const imageUrl = product.imageUrl && product.imageUrl.startsWith('http') 
-                               ? product.imageUrl 
-                               : '/placeholder.svg';
+              const imageUrl = product.imageUrl;
 
               return (
               <Card key={product.id} className="overflow-hidden group hover:shadow-xl transition-shadow duration-200 flex flex-col">
