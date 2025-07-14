@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { useParams, useSearchParams, useRouter } from 'next/navigation';
+import { useParams, useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { PageHeader } from '@/components/page-header';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -303,8 +303,14 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
                         />
                       ) : (
                         <div className="w-full h-48 flex items-center justify-center bg-secondary text-muted-foreground">
-                          <PackageOpen className="h-12 w-12 opacity-50" />
-                          <span className="sr-only">Slika nije dostupna</span>
+                           <Image
+                            src="https://placehold.co/400x200.png"
+                            alt="Slika nije dostupna"
+                            width={400}
+                            height={200}
+                            className="w-full h-48 object-cover"
+                            data-ai-hint="product placeholder"
+                          />
                         </div>
                       )}
                     </CardHeader>
