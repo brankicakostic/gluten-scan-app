@@ -23,7 +23,6 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
     const tagsFromDb = Array.isArray(data.tagsFromInput) ? data.tagsFromInput : [];
     const tagsLower = new Set(tagsFromDb.map((t: string) => String(t).toLowerCase()));
 
-    // Robust image URL handling
     const imageUrlFromDb = data.imageUrl;
     let finalImageUrl = '/placeholder.svg'; // Default to our local, styled placeholder
 
