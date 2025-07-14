@@ -23,16 +23,10 @@ function transformImageUrl(imageUrl?: string): string {
     }
 
     // If it's a full Firebase Storage URL (with or without token), return it as is.
-    // This is the most reliable way to ensure tokens are preserved.
-    if (imageUrl.includes('firebasestorage.googleapis.com')) {
-        return imageUrl;
-    }
-
-    if (imageUrl.startsWith('https://placehold.co')) {
+    if (imageUrl.startsWith('http')) {
         return imageUrl;
     }
     
-    // Fallback for relative paths - this might not be used if DB stores full URLs
     const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
     if (!bucket) {
         console.warn('Firebase storage bucket is not configured. Using placeholder for images.');
@@ -56,10 +50,10 @@ function transformImageUrl(imageUrl?: string): string {
 function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData): Product {
     const data = doc.data() || {};
     
-    const tags = Array.isArray(data.tagsFromInput) ? data.tagsFromInput : [];
-    const tagsLower = new Set(tags.map((t: string) => t.toLowerCase()));
+    const tagsFromDb = Array.isArray(data.tagsFromInput) ? data.tagsFromInput : [];
+    const tagsLower = new Set(tagsFromDb.map((t: string) => String(t).toLowerCase()));
 
-    const productData: Product = {
+    return {
         id: doc.id,
         name: data.name || 'Bez imena',
         brand: data.brand || '',
@@ -73,7 +67,7 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
         hasManufacturerStatement: !!data.manufacturerStatement,
         isVerifiedAdmin: !!data.verified,
         source: data.source || '',
-        tags: tags,
+        tags: tagsFromDb,
         nutriScore: data.nutriscore || 'N/A',
         isLactoseFree: tagsLower.has('bez laktoze') || tagsLower.has('lactose-free'),
         isSugarFree: tagsLower.has('bez šećera') || tagsLower.has('sugar-free'),
@@ -83,12 +77,10 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
         dataAiHint: data.dataAiHint || 'product photo',
         warning: !!data.warning,
         note: data.note || '',
-        stores: data.Dostupnost ? data.Dostupnost.split(',').map((s: string) => s.trim()) : [],
+        stores: data.Dostupnost ? String(data.Dostupnost).split(',').map((s: string) => s.trim()) : [],
         Poreklo: data.Poreklo || '',
-        seriesAffected: data.seriesAffected, // This can be undefined
+        seriesAffected: data.seriesAffected || undefined,
     };
-
-    return productData;
 }
 
 
@@ -101,85 +93,57 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
 function mapProductToDocData(product: Partial<Product>): DocumentData {
     const data: DocumentData = {};
     
-    // Direct mappings
-    if (product.name) data.name = product.name;
-    if (product.brand) data.brand = product.brand;
-    if (product.barcode) data.barcode = product.barcode;
-    if (product.category) data.category = product.category;
-    if (product.description) data.description = product.description;
-    if (product.labelText) data.labelText = product.labelText;
-    if (product.source) data.source = product.source;
-    if (product.nutriScore) data.nutriscore = product.nutriScore;
-    if (product.stores) data.Dostupnost = product.stores.join(', ');
-    if (product.Poreklo) data.Poreklo = product.Poreklo;
+    // Handle all string and simple properties
+    Object.keys(product).forEach(key => {
+        const productKey = key as keyof Product;
+        const value = product[productKey];
 
-    // Handle image URL, storing only the relative path
-    if (product.imageUrl) {
-        if (product.imageUrl.includes('firebasestorage')) {
-             try {
-                const url = new URL(product.imageUrl);
-                let path = decodeURIComponent(url.pathname);
-                const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
-                if (!bucketName) throw new Error("Storage bucket not configured");
-
-                const prefix = `/v0/b/${bucketName}/o/`;
-                if (path.startsWith(prefix)) {
-                    path = path.substring(prefix.length);
-                }
-                const mediaSuffix = '?alt=media';
-                if (path.endsWith(mediaSuffix)) {
-                    path = path.substring(0, path.length - mediaSuffix.length);
-                }
-                 const productsPrefix = 'products/';
-                 if (path.startsWith(productsPrefix)) {
-                    path = path.substring(productsPrefix.length);
-                 }
-                 data.imageUrl = path;
-
-             } catch (e) {
-                // If parsing fails, store the raw URL but clean it
-                data.imageUrl = product.imageUrl.split('?')[0];
-             }
-        } else if (!product.imageUrl.startsWith('http') && product.imageUrl !== '/placeholder.svg') {
-            data.imageUrl = product.imageUrl;
+        if (typeof value === 'string' && value.trim() !== '') {
+            if (productKey === 'nutriScore') data['nutriscore'] = value;
+            else if (productKey === 'Poreklo') data['Poreklo'] = value;
+            else if (productKey === 'stores') data['Dostupnost'] = Array.isArray(value) ? value.join(', ') : value;
+            else if (!['id', 'imageUrl', 'ingredientsText', 'tags'].includes(productKey)) {
+                data[productKey] = value;
+            }
         }
-    }
+    });
 
-    // Boolean to database fields
+    // Handle boolean properties
     data.license = !!product.hasAOECSLicense;
     data.manufacturerStatement = !!product.hasManufacturerStatement;
     data.verified = !!product.isVerifiedAdmin;
 
-    // ingredientsText string to ingredients array
+    // Handle image URL - store only relative path
+    if (product.imageUrl && !product.imageUrl.startsWith('http') && product.imageUrl !== '/placeholder.svg') {
+        data.imageUrl = product.imageUrl;
+    }
+
+    // Handle ingredients text to array
     if (product.ingredientsText) {
         data.ingredients = product.ingredientsText.split(',').map(s => s.trim()).filter(Boolean);
     }
     
-    // Booleans and tags to tagsFromInput array
-    const tags = new Set<string>(product.tags || []);
-    if (product.isVegan) tags.add('vegan'); else tags.delete('vegan');
-    if (product.isPosno) tags.add('posno'); else tags.delete('posno');
-    if (product.isSugarFree) tags.add('bez šećera'); else tags.delete('bez šećera');
-    if (product.isLactoseFree) tags.add('bez laktoze'); else tags.delete('bez laktoze');
-    if (product.isHighProtein) tags.add('high-protein'); else tags.delete('high-protein');
-    data.tagsFromInput = Array.from(tags);
-
-    // Handle recall information
+    // Consolidate all boolean tags and text tags into `tagsFromInput`
+    const tagsSet = new Set<string>(product.tags || []);
+    if (product.isVegan) tagsSet.add('vegan');
+    if (product.isPosno) tagsSet.add('posno');
+    if (product.isSugarFree) tagsSet.add('bez šećera');
+    if (product.isLactoseFree) tagsSet.add('bez laktoze');
+    if (product.isHighProtein) tagsSet.add('high-protein');
+    data.tagsFromInput = Array.from(tagsSet);
+    
+    // Handle recall/warning information
     data.warning = !!product.warning;
-    if (data.warning) {
-        data.note = product.note || '';
-        if (product.seriesAffected) {
-            data.seriesAffected = {
-                lotNumbers: product.seriesAffected.lotNumbers || [],
-                expiry: product.seriesAffected.expiry || '',
-                finding: product.seriesAffected.finding || '',
-                status: product.seriesAffected.status || '',
-                sourceLink: product.seriesAffected.sourceLink || '',
-            };
-        }
+    data.note = product.note || '';
+    if (data.warning && product.seriesAffected) {
+        data.seriesAffected = {
+            lotNumbers: product.seriesAffected.lotNumbers || [],
+            expiry: product.seriesAffected.expiry || '',
+            finding: product.seriesAffected.finding || '',
+            status: product.seriesAffected.status || '',
+            sourceLink: product.seriesAffected.sourceLink || '',
+        };
     } else {
-        // If not a warning, clear the recall fields
-        data.note = '';
         data.seriesAffected = null;
     }
 

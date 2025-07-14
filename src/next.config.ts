@@ -24,7 +24,6 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'firebasestorage.googleapis.com',
-        pathname: '/v0/b/gluten-detective-8ukpw.appspot.com/o/**',
       },
     ],
   },
