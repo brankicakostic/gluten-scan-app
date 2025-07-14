@@ -15,17 +15,23 @@ import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
  * @param imageUrl The relative path to the image in Firebase Storage.
  * @returns The full, public URL for the image.
  */
-function transformImageUrl(imageUrl: string): string {
-    if (!imageUrl || imageUrl.startsWith('https://placehold.co') || imageUrl.startsWith('/placeholder.svg')) {
+function transformImageUrl(imageUrl?: string): string {
+    if (!imageUrl || imageUrl.startsWith('https://placehold.co') || imageUrl === '/placeholder.svg') {
         return '/placeholder.svg';
     }
+    
+    // If it's already a full Firebase URL, just ensure it's in the correct format without a token.
     if (imageUrl.startsWith('http')) {
-        const url = new URL(imageUrl);
-        url.searchParams.delete('token');
-        return url.toString();
-    }
-    if (imageUrl.startsWith('/')) {
-        return imageUrl;
+        try {
+            const url = new URL(imageUrl);
+            if (url.hostname === 'firebasestorage.googleapis.com') {
+                url.searchParams.delete('token'); // Remove token for consistency
+                return url.toString();
+            }
+            return imageUrl; // It's some other valid URL
+        } catch (e) {
+            return '/placeholder.svg'; // Invalid URL
+        }
     }
 
     const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
@@ -34,7 +40,6 @@ function transformImageUrl(imageUrl: string): string {
         return '/placeholder.svg';
     }
     
-    // Correctly construct the URL for Firebase Storage
     const encodedPath = encodeURIComponent(`products/${imageUrl}`);
     return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
 }
@@ -58,7 +63,7 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
         brand: data.brand || '',
         barcode: data.barcode || '',
         category: data.category || data.jsonCategory || 'Nekategorizovano',
-        imageUrl: transformImageUrl(data.imageUrl || ''),
+        imageUrl: transformImageUrl(data.imageUrl),
         description: data.description || '',
         ingredientsText: Array.isArray(data.ingredients) ? data.ingredients.join(', ') : (typeof data.ingredients === 'string' ? data.ingredients : ''),
         labelText: data.labelText || '',
