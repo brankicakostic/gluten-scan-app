@@ -57,7 +57,7 @@ const getNutriScoreClasses = (score?: string) => {
   }
 };
 
-export interface CategoryInfo {
+interface CategoryInfo {
   name: string;
   count: number;
 }

@@ -1,7 +1,12 @@
 // This is a Server Component responsible for fetching initial data.
 import { getDailyCeliacTip, type DailyCeliacTipOutput } from '@/ai/flows/daily-celiac-tip-flow';
-import HomeClient, { type CategoryInfo } from './home-client';
+import HomeClient from './home-client';
 import { getProducts } from '@/lib/services/product-service';
+
+interface CategoryInfo {
+  name: string;
+  count: number;
+}
 
 export default async function HomePage() {
   // Fetch initial data on the server

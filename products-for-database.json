@@ -500,7 +500,7 @@
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
     "tagsFromInput": ["vegan"],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
@@ -801,7 +801,7 @@
     "verified": true,
     "source": "aleksandrijaglutenfree.com",
     "tagsFromInput": ["bez šećera", "vegan"],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
   },
@@ -883,85 +883,85 @@
     "verified": true,
     "source": "Aleva.rs (primer)",
     "tagsFromInput": ["vegan"],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "nutriscore": "A",
     "Poreklo": "Srbija"
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176510", "name": "Integralno brašno od prosa", "size": "500g", "category": "Brašno i smeše", "nutriscore": "B", "Poreklo": "Srbija",
-    "ingredients": ["Integralno brašno od prosa 100%"], "labelText": "Integralno brašno od prosa", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Integralno brašno od prosa 100%"], "labelText": "Integralno brašno od prosa", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176329", "name": "Integralno brašno od heljde", "size": "500g", "category": "Brašno i smeše", "nutriscore": "B", "Poreklo": "Srbija",
-    "ingredients": ["Integralno brašno od heljde 100%"], "labelText": "Integralno brašno od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Integralno brašno od heljde 100%"], "labelText": "Integralno brašno od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176497", "name": "Integralno brašno od prosa", "size": "5kg", "category": "Brašno i smeše", "nutriscore": "B", "Poreklo": "Srbija",
-    "ingredients": ["Integralno brašno od prosa 100%"], "labelText": "Integralno brašno od prosa", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Integralno brašno od prosa 100%"], "labelText": "Integralno brašno od prosa", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176473", "name": "Integralno brašno od heljde", "size": "5kg", "category": "Brašno i smeše", "nutriscore": "B", "Poreklo": "Srbija",
-    "ingredients": ["Integralno brašno od heljde 100%"], "labelText": "Integralno brašno od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Integralno brašno od heljde 100%"], "labelText": "Integralno brašno od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176459", "name": "Pahuljice od sirove heljde", "size": "300g", "category": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
-    "ingredients": ["Pahuljice od sirove heljde 100%"], "labelText": "Pahuljice od sirove heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Pahuljice od sirove heljde 100%"], "labelText": "Pahuljice od sirove heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176138", "name": "Pahuljice od heljde", "size": "300g", "category": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
-    "ingredients": ["Pahuljice od heljde 100%"], "labelText": "Pahuljice od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Pahuljice od heljde 100%"], "labelText": "Pahuljice od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176022", "name": "Pahuljice od prosa", "size": "300g", "category": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
-    "ingredients": ["Pahuljice od prosa 100%"], "labelText": "Pahuljice od prosa", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Pahuljice od prosa 100%"], "labelText": "Pahuljice od prosa", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176015", "name": "Pahuljice od pirinča", "size": "300g", "category": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
-    "ingredients": ["Pahuljice od pirinča 100%"], "labelText": "Pahuljice od pirinča", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Pahuljice od pirinča 100%"], "labelText": "Pahuljice od pirinča", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176039", "name": "Pahuljice od graška", "size": "300g", "category": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
-    "ingredients": ["Pahuljice od graška 100%"], "labelText": "Pahuljice od graška", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Pahuljice od graška 100%"], "labelText": "Pahuljice od graška", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176084", "name": "Pahuljice od kukuruza", "size": "300g", "category": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
-    "ingredients": ["Pahuljice od kukuruza 100%"], "labelText": "Pahuljice od kukuruza", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Pahuljice od kukuruza 100%"], "labelText": "Pahuljice od kukuruza", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176008", "name": "Pahuljice od heljde", "size": "500g", "category": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
-    "ingredients": ["Pahuljice od heljde 100%"], "labelText": "Pahuljice od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Pahuljice od heljde 100%"], "labelText": "Pahuljice od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176768", "name": "Pahuljice od kukuruza", "size": "3kg", "category": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
-    "ingredients": ["Pahuljice od kukuruza 100%"], "labelText": "Pahuljice od kukuruza", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Pahuljice od kukuruza 100%"], "labelText": "Pahuljice od kukuruza", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176183", "name": "Pahuljice od prosa", "size": "3kg", "category": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
-    "ingredients": ["Pahuljice od prosa 100%"], "labelText": "Pahuljice od prosa", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Pahuljice od prosa 100%"], "labelText": "Pahuljice od prosa", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176176", "name": "Pahuljice od kukuruza", "size": "3kg", "category": "Pahuljice", "nutriscore": "A", "Poreklo": "Srbija",
-    "ingredients": ["Pahuljice od kukuruza 100%"], "labelText": "Pahuljice od kukuruza", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Pahuljice od kukuruza 100%"], "labelText": "Pahuljice od kukuruza", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109177628", "name": "Heljda oljuštena-sirova", "size": "300g", "category": "Drevna zrna", "nutriscore": "A", "Poreklo": "Srbija",
-    "ingredients": ["Heljda oljuštena-sirova 100%"], "labelText": "Heljda oljuštena-sirova", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Heljda oljuštena-sirova 100%"], "labelText": "Heljda oljuštena-sirova", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176275", "name": "Heljda propržena", "size": "300g", "category": "Drevna zrna", "nutriscore": "A", "Poreklo": "Srbija",
-    "ingredients": ["Heljda propržena 100%"], "labelText": "Heljda propržena", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Heljda propržena 100%"], "labelText": "Heljda propržena", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176251", "name": "Proso", "size": "300g", "category": "Drevna zrna", "nutriscore": "A", "Poreklo": "Srbija",
-    "ingredients": ["Proso 100%"], "labelText": "Proso", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Proso 100%"], "labelText": "Proso", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan", "bez šećera"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109177669", "name": "Prirodni med od heljde", "size": "900g", "category": "Med", "nutriscore": "C", "Poreklo": "Srbija",
-    "ingredients": ["Prirodni med od heljde 100%"], "labelText": "Prirodni med od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Prirodni med od heljde 100%"], "labelText": "Prirodni med od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan"], "imageUrl": ""
   },
   {
     "brand": "Slavuj", "Dostupnost": "","barcode": "8606109176893", "name": "Prirodni med od heljde", "size": "400g", "category": "Med", "nutriscore": "C", "Poreklo": "Srbija",
-    "ingredients": ["Prirodni med od heljde 100%"], "labelText": "Prirodni med od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan"], "imageUrl": "https://placehold.co/400x200.png"
+    "ingredients": ["Prirodni med od heljde 100%"], "labelText": "Prirodni med od heljde", "license": false, "manufacturerStatement": true, "verified": true, "source": "Slavuj (dodato iz liste)", "tagsFromInput": ["vegan"], "imageUrl": ""
   },
   {
     "barcode": "8600955501298",
@@ -977,7 +977,7 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
@@ -996,7 +996,7 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
@@ -1015,7 +1015,7 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
@@ -1034,7 +1034,7 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
@@ -1053,7 +1053,7 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
@@ -1072,7 +1072,7 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
@@ -1091,7 +1091,7 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
@@ -1110,7 +1110,7 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
@@ -1129,7 +1129,7 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
@@ -1148,7 +1148,7 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
@@ -1167,7 +1167,7 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
@@ -1186,7 +1186,7 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": [],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
@@ -1205,7 +1205,7 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": ["bez šećera"],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
@@ -1224,7 +1224,7 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": ["bez šećera"],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
@@ -1243,7 +1243,7 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": ["bez šećera"],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"
@@ -1262,7 +1262,7 @@
     "verified": false,
     "source": "Molendini katalog",
     "tagsFromInput": ["bez šećera"],
-    "imageUrl": "https://placehold.co/400x200.png",
+    "imageUrl": "",
     "brand": "Molendini (Velptom)",
     "nutriscore": "N/A",
     "Poreklo": "Srbija"

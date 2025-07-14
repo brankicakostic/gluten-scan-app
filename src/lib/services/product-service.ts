@@ -25,9 +25,13 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
 
     // Robust image URL handling
     const imageUrlFromDb = data.imageUrl;
-    let finalImageUrl = (imageUrlFromDb && typeof imageUrlFromDb === 'string' && imageUrlFromDb.trim() !== '' && imageUrlFromDb.startsWith('https'))
-        ? imageUrlFromDb
-        : '/placeholder.svg';
+    // Default to our styled placeholder.
+    let finalImageUrl = '/placeholder.svg'; 
+
+    // Only use the URL from the database if it's a valid string starting with 'https://firebasestorage'
+    if (imageUrlFromDb && typeof imageUrlFromDb === 'string' && imageUrlFromDb.startsWith('https://firebasestorage.googleapis.com')) {
+        finalImageUrl = imageUrlFromDb;
+    }
 
     return {
         id: doc.id,

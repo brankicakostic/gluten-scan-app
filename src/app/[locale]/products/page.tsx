@@ -3,7 +3,7 @@ import { getProducts } from '@/lib/services/product-service';
 import ProductsClientPage from './client';
 
 // Define the type locally to avoid unnecessary imports
-export interface CategoryInfo {
+interface CategoryInfo {
   name: string;
   count: number;
 }
