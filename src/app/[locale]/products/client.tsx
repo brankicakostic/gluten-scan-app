@@ -270,16 +270,12 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
                 const containsGlutenTag = product.warning || product.tags?.includes('contains-gluten') || product.tags?.includes('sadrži-gluten') || product.tags?.includes('contains-wheat') || product.tags?.includes('contains-barley') || product.tags?.includes('contains-rye') || (product.tags?.includes('contains-oats') && !isConsideredGF);
                 const mayContainGlutenTag = !product.warning && (product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination'));
 
-                const imageUrl = product.imageUrl && product.imageUrl.startsWith('http') 
-                                 ? product.imageUrl 
-                                 : '/placeholder.svg';
-
                 return (
                   <Card key={product.id} className={cn(`overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col`, product.warning && 'border-destructive border-2')}>
                     <CardHeader className="p-0">
                       <Link href={`/${locale}/products/${product.id}`}>
                         <Image
-                          src={imageUrl}
+                          src={product.imageUrl}
                           alt={product.name}
                           width={400}
                           height={200}
