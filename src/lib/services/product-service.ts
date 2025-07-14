@@ -10,38 +10,6 @@ import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 
 
 /**
- * Helper to construct the full Firebase Storage URL from a relative path.
- * If the URL is already absolute or a placeholder, it returns it as is.
- * @param imageUrl The relative or full path to the image in Firebase Storage.
- * @returns The full, public URL for the image.
- */
-function transformImageUrl(imageUrl?: string): string {
-    const placeholder = '/placeholder.svg';
-
-    if (!imageUrl || imageUrl.trim() === '') {
-        return placeholder;
-    }
-
-    // If it's a full Firebase Storage URL (with or without token), return it as is.
-    if (imageUrl.startsWith('http')) {
-        return imageUrl;
-    }
-    
-    const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
-    if (!bucket) {
-        console.warn('Firebase storage bucket is not configured. Using placeholder for images.');
-        return placeholder;
-    }
-    
-    // The path stored in the database should be like 'aleksandrija-fruska-gora/image.png'
-    const imagePath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
-    const encodedPath = encodeURIComponent(`products/${imagePath}`);
-    
-    return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
-}
-
-
-/**
  * Maps a Firestore document to a structured Product object, normalizing inconsistent fields.
  * This function is robust and provides default values for all fields to prevent runtime errors.
  * @param doc The Firestore document snapshot.
@@ -59,7 +27,7 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
         brand: data.brand || '',
         barcode: data.barcode || '',
         category: data.category || data.jsonCategory || 'Nekategorizovano',
-        imageUrl: transformImageUrl(data.imageUrl),
+        imageUrl: data.imageUrl || '/placeholder.svg',
         description: data.description || '',
         ingredientsText: Array.isArray(data.ingredients) ? data.ingredients.join(', ') : (typeof data.ingredients === 'string' ? data.ingredients : ''),
         labelText: data.labelText || '',
@@ -114,7 +82,7 @@ function mapProductToDocData(product: Partial<Product>): DocumentData {
     data.verified = !!product.isVerifiedAdmin;
 
     // Handle image URL - store only relative path
-    if (product.imageUrl && !product.imageUrl.startsWith('http') && product.imageUrl !== '/placeholder.svg') {
+    if (product.imageUrl) {
         data.imageUrl = product.imageUrl;
     }
 
