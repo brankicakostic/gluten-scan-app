@@ -64,7 +64,7 @@ const getCategoryIcon = (categoryName: string): LucideIcon => {
 
 const PRODUCTS_PER_PAGE = 12;
 
-export interface CategoryInfo {
+interface CategoryInfo {
   name: string;
   count: number;
 }
