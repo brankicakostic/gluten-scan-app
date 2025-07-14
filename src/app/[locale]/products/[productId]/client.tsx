@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useParams } from 'next/navigation';
@@ -254,7 +255,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         )}
 
         <Card className={`overflow-hidden shadow-lg ${product.warning ? 'border-2 border-destructive' : ''}`}>
-           {product.imageUrl && product.imageUrl !== '/placeholder.svg' ? (
+           {product.imageUrl && !product.imageUrl.includes('placehold.co') ? (
             <Image
               src={product.imageUrl}
               alt={product.name}

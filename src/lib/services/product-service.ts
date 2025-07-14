@@ -21,10 +21,10 @@ function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData
     const tagsFromDb = Array.isArray(data.tagsFromInput) ? data.tagsFromInput : [];
     const tagsLower = new Set(tagsFromDb.map((t: string) => String(t).toLowerCase()));
 
-    // Ensure imageUrl is always a valid absolute URL or a specific placeholder string
-    let finalImageUrl = data.imageUrl;
-    if (!finalImageUrl || typeof finalImageUrl !== 'string' || finalImageUrl.trim() === '' || finalImageUrl === '/placeholder.svg') {
-        finalImageUrl = 'https://placehold.co/400x200.png'; // Use a valid absolute URL for placeholders
+    // Robust check for a valid, absolute URL. If not valid, use a placeholder.
+    let finalImageUrl = 'https://placehold.co/400x200.png'; // Default placeholder
+    if (data.imageUrl && typeof data.imageUrl === 'string' && data.imageUrl.startsWith('http')) {
+        finalImageUrl = data.imageUrl;
     }
 
 
