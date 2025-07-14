@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -51,7 +52,7 @@ export function AppSidebar() {
           isActive={isActive}
           tooltip={{ children: link.tooltip || link.label, className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
           className={cn(
-            "text-base font-medium h-12 justify-start relative",
+            "h-12 justify-start text-base font-medium relative",
             isActive ? 
             "bg-primary/10 text-primary font-semibold border-l-4 border-primary" :
             "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
@@ -81,7 +82,7 @@ export function AppSidebar() {
          </div>
       </SidebarHeader>
 
-      <SidebarContent className="p-4 space-y-4">
+      <SidebarContent className="p-4 flex flex-col gap-4">
         <SidebarMenu className="flex flex-col gap-2">
           {mainLinks.map(link => renderLink(link, true))}
         </SidebarMenu>
@@ -104,7 +105,7 @@ export function AppSidebar() {
 
       <SidebarFooter className="mt-auto space-y-4 p-4">
          <SidebarSeparator />
-         <div className="group-data-[collapsible=icon]:hidden">
+         <div className="group-data-[collapsible=icon]:hidden mt-4">
              {isLoggedIn ? (
                  <div className="flex items-center gap-3">
                     <Avatar className="h-9 w-9">
@@ -120,7 +121,7 @@ export function AppSidebar() {
                     </Button>
                  </div>
              ) : (
-                <SidebarMenuButton className="h-12 w-full justify-start text-base font-medium">
+                <SidebarMenuButton className="h-12 w-full justify-start text-base font-medium mt-4">
                     <LogIn className="h-5 w-5" /> <span>Prijavi se</span>
                 </SidebarMenuButton>
             )}

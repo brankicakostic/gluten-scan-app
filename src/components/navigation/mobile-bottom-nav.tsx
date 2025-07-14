@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -29,7 +30,7 @@ export function MobileBottomNav() {
               key={link.href}
               href={localizedHref}
               className={cn(
-                'inline-flex flex-col items-center justify-center px-5 hover:bg-muted group',
+                'inline-flex flex-col items-center justify-center px-5 hover:bg-muted group transition-colors duration-150',
                 isActive ? 'text-primary' : 'text-muted-foreground'
               )}
             >

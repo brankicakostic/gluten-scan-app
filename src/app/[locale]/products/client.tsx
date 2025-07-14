@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { PageHeader } from '@/components/page-header';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import { cn } from '@/lib/utils';
+
 
 const getNutriScoreClasses = (score?: string) => {
   if (!score) return 'border-gray-300 text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500';
@@ -75,6 +77,8 @@ interface ProductsClientPageProps {
 export default function ProductsClientPage({ allProducts, productCategories, quickFilterCategories }: ProductsClientPageProps) {
   const params = useParams();
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const locale = params.locale as string;
   
   const initialCategory = searchParams.get('category') || 'all';
@@ -127,6 +131,18 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
     setFilteredProducts(newFilteredProducts);
     setCurrentPage(1);
   }, [searchTerm, selectedCategory, selectedManufacturer, selectedOrigin, selectedGfStatus, barcode, allProducts]);
+  
+  const handleRemoveFilter = (filterType: string) => {
+    switch (filterType) {
+        case 'searchTerm': setSearchTerm(''); break;
+        case 'category': setSelectedCategory('all'); break;
+        case 'manufacturer': setSelectedManufacturer('all'); break;
+        case 'origin': setSelectedOrigin('all'); break;
+        case 'gfStatus': setSelectedGfStatus('all'); break;
+        case 'barcode': setBarcode(''); break;
+    }
+  };
+
 
   const handleResetFilters = () => {
     setSearchTerm('');
@@ -159,7 +175,7 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
           icon={ShoppingBag}
         />
 
-        <div className="mb-6 p-4 md:p-6 bg-muted/30 border-muted/50 rounded-lg md:sticky md:top-16 z-10 bg-background/80 backdrop-blur-sm -mx-4 md:mx-0">
+        <div className="mb-6 p-4 md:p-6 bg-muted/30 border-muted/50 rounded-lg md:sticky top-[calc(var(--header-height,6rem)-1px)] z-10 bg-background/80 backdrop-blur-sm -mx-4 md:mx-0">
            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 items-end">
               <div className="space-y-1.5 col-span-2 md:col-span-1">
                 <label htmlFor="search" className="text-sm font-medium">Pretraži po nazivu</label>
@@ -250,6 +266,19 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
                 Pronađeno {filteredProducts.length} od {allProducts.length} proizvoda.
             </p>
           </div>
+            {areFiltersActive && (
+                <div className="mt-3 pt-3 border-t md:hidden">
+                    <p className="text-xs font-semibold mb-2 text-muted-foreground">Aktivni filteri:</p>
+                    <div className="flex flex-wrap gap-2">
+                        {searchTerm.trim() && <Badge variant="outline">Tekst: {searchTerm}<button onClick={() => handleRemoveFilter('searchTerm')} className="ml-1 rounded-full p-0.5 hover:bg-background"><X className="h-3 w-3"/></button></Badge>}
+                        {selectedCategory !== 'all' && <Badge variant="outline">Kategorija: {selectedCategory}<button onClick={() => handleRemoveFilter('category')} className="ml-1 rounded-full p-0.5 hover:bg-background"><X className="h-3 w-3"/></button></Badge>}
+                        {selectedManufacturer !== 'all' && <Badge variant="outline">Proizvođač: {selectedManufacturer}<button onClick={() => handleRemoveFilter('manufacturer')} className="ml-1 rounded-full p-0.5 hover:bg-background"><X className="h-3 w-3"/></button></Badge>}
+                        {barcode.trim() && <Badge variant="outline">Barkod: {barcode}<button onClick={() => handleRemoveFilter('barcode')} className="ml-1 rounded-full p-0.5 hover:bg-background"><X className="h-3 w-3"/></button></Badge>}
+                        {selectedGfStatus !== 'all' && <Badge variant="outline">Status: {selectedGfStatus}<button onClick={() => handleRemoveFilter('gfStatus')} className="ml-1 rounded-full p-0.5 hover:bg-background"><X className="h-3 w-3"/></button></Badge>}
+                        {selectedOrigin !== 'all' && <Badge variant="outline">Poreklo: {selectedOrigin}<button onClick={() => handleRemoveFilter('origin')} className="ml-1 rounded-full p-0.5 hover:bg-background"><X className="h-3 w-3"/></button></Badge>}
+                    </div>
+                </div>
+            )}
         </div>
 
         {currentProductsToDisplay.length > 0 ? (
@@ -261,7 +290,7 @@ export default function ProductsClientPage({ allProducts, productCategories, qui
                 const mayContainGlutenTag = !product.warning && (product.tags?.includes('may-contain-gluten') || product.tags?.includes('risk-of-contamination'));
 
                 return (
-                  <Card key={product.id} className={`overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col ${product.warning ? 'border-destructive border-2' : ''}`}>
+                  <Card key={product.id} className={cn(`overflow-hidden hover:shadow-xl transition-shadow duration-200 flex flex-col`, product.warning && 'border-destructive border-2')}>
                     <CardHeader className="p-0">
                       {product.imageUrl && !product.imageUrl.includes('placehold.co') ? (
                         <Image
