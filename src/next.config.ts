@@ -25,16 +25,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'firebasestorage.googleapis.com', // Keep this for general access
+        hostname: 'firebasestorage.googleapis.com', // This is the correct hostname for Firebase Storage
         port: '',
         pathname: '/**',
       },
-      {
-        protocol: 'https',
-        hostname: 'gluten-detective-8ukpw.appspot.com', // Added specific bucket hostname
-        port: '',
-        pathname: '/**',
-      }
     ],
   },
 };
