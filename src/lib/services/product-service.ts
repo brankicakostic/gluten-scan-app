@@ -12,26 +12,30 @@ import type { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 /**
  * Maps a Firestore document to a structured Product object, normalizing inconsistent fields.
  * This function is robust and provides default values for all fields to prevent runtime errors.
+ * It also logs errors for products with invalid image URLs.
  * @param doc The Firestore document snapshot.
  * @returns A normalized Product object.
  */
 function mapDocToProduct(doc: QueryDocumentSnapshot<DocumentData> | DocumentData): Product {
     const data = doc.data() || {};
+    const productName = data.name || 'Bez imena';
     
     const tagsFromDb = Array.isArray(data.tagsFromInput) ? data.tagsFromInput : [];
     const tagsLower = new Set(tagsFromDb.map((t: string) => String(t).toLowerCase()));
 
-    // If imageUrl exists and is a non-empty string, use it. Otherwise, use a placeholder.
-    // This is the most reliable way to handle the data from Firestore.
-    const finalImageUrl = 
-        data.imageUrl && typeof data.imageUrl === 'string' && data.imageUrl.trim() !== ''
-      ? data.imageUrl
-      : 'https://placehold.co/400x200.png';
+    let finalImageUrl = 'https://placehold.co/400x200.png';
+    const imageUrlFromDb = data.imageUrl;
 
+    if (typeof imageUrlFromDb === 'string' && imageUrlFromDb.startsWith('http')) {
+        finalImageUrl = imageUrlFromDb;
+    } else if (imageUrlFromDb) {
+        // Log the problematic URL for debugging purposes
+        console.error(`[Product Service Error] Invalid imageUrl for product ID: ${doc.id} (Name: "${productName}"). Received: "${imageUrlFromDb}". Falling back to placeholder.`);
+    }
 
     return {
         id: doc.id,
-        name: data.name || 'Bez imena',
+        name: productName,
         brand: data.brand || '',
         barcode: data.barcode || '',
         category: data.category || data.jsonCategory || 'Nekategorizovano',
